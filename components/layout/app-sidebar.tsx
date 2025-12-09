@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Sidebar,
@@ -14,7 +15,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-  BookOpen,
   Library,
   Quote,
   Settings,
@@ -98,7 +98,13 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border px-6 py-5">
         <Link href="/dashboard" className="flex items-center gap-3">
-          <BookOpen className="h-8 w-8 text-sidebar-primary" />
+          <Image
+            src="/asyakitap.png"
+            alt="AsyaKitap Logo"
+            width={36}
+            height={36}
+            className="rounded-lg"
+          />
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tight text-white">
               AsyaKitap

@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Input } from "@/components/ui/input"
 import {
     Map,
     BookOpen,
@@ -16,6 +17,8 @@ import {
     ArrowLeft,
     CheckCircle2,
     BookMarked,
+    Search,
+    X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -79,6 +82,7 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
     const [expandedLevels, setExpandedLevels] = useState<Set<string>>(
         new Set(list.levels.map(l => l.id))
     )
+    const [searchQuery, setSearchQuery] = useState("")
 
     const toggleLevel = (levelId: string) => {
         setExpandedLevels(prev => {
@@ -91,6 +95,24 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
             return next
         })
     }
+
+    // Arama filtreleme
+    const filteredLevels = useMemo(() => {
+        if (!searchQuery.trim()) return list.levels
+
+        const query = searchQuery.toLowerCase().trim()
+        return list.levels.map(level => ({
+            ...level,
+            books: level.books.filter(book =>
+                book.title.toLowerCase().includes(query) ||
+                book.author.toLowerCase().includes(query)
+            )
+        })).filter(level => level.books.length > 0)
+    }, [list.levels, searchQuery])
+
+    const totalFilteredBooks = useMemo(() => {
+        return filteredLevels.reduce((sum, level) => sum + level.books.length, 0)
+    }, [filteredLevels])
 
     const overallProgress = list.progress.total > 0
         ? Math.round((list.progress.completed / list.progress.total) * 100)
@@ -143,11 +165,43 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
                         </span>
                     </div>
                 </div>
+
+                {/* Search */}
+                <div className="mt-4 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        type="text"
+                        placeholder="Kitap veya yazar ara..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 pr-10"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    )}
+                </div>
+                {searchQuery && (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        {totalFilteredBooks} kitap bulundu
+                    </p>
+                )}
             </div>
 
             {/* Levels */}
             <div className="space-y-6">
-                {list.levels.map((level) => {
+                {searchQuery && filteredLevels.length === 0 && (
+                    <div className="text-center py-12 text-muted-foreground">
+                        <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg font-medium">Kitap bulunamadı</p>
+                        <p className="text-sm mt-1">&quot;{searchQuery}&quot; ile eşleşen kitap yok</p>
+                    </div>
+                )}
+                {filteredLevels.map((level) => {
                     const isExpanded = expandedLevels.has(level.id)
                     const levelProgress = level.progress.total > 0
                         ? Math.round((level.progress.completed / level.progress.total) * 100)
