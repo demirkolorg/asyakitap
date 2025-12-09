@@ -113,7 +113,9 @@ async function main() {
                                 { title: "Yol (The Road)", author: "Cormac McCarthy", neden: "Bir baba ve oğulun, kül olmuş dünyada güneye yürüyüşü. Çok sarsıcı ve gerçekçi.", sortOrder: 1 },
                                 { title: "Triffidlerin Günü", author: "John Wyndham", neden: "İnsanların kör olduğu ve yürüyen bitkilerin saldırdığı klasik bir felaket senaryosu.", sortOrder: 2 },
                                 { title: "İstasyon On Bir", author: "Emily St. John Mandel", neden: "Salgın sonrası dünyada tiyatro yaparak medeniyeti hatırlatmaya çalışan bir grup.", sortOrder: 3 },
-                                { title: "Leibowitz İçin Bir İlahi", author: "Walter M. Miller", neden: "Nükleer yıkımdan sonra bilimi korumaya çalışan rahipler. Din ve bilim döngüsü.", sortOrder: 4 }
+                                { title: "Leibowitz İçin Bir İlahi", author: "Walter M. Miller", neden: "Nükleer yıkımdan sonra bilimi korumaya çalışan rahipler. Din ve bilim döngüsü.", sortOrder: 4 },
+                                { title: "Kum", author: "Hugh Howey", neden: "Çöle gömülmüş bir medeniyetin hayatta kalma mücadelesi. Silo serisinin yazarından.", sortOrder: 5 },
+                                { title: "Salgın", author: "Ling Ma", neden: "Salgın sonrası distopya. Kapitalizm eleştirisi ve zombi metaforu.", sortOrder: 6 }
                             ]
                         }
                     },
@@ -128,7 +130,8 @@ async function main() {
                                 { title: "Mesaj (Contact)", author: "Carl Sagan", neden: "Bir gökbilimcinin dünya dışı sinyal alması. Bilim ve inanç çatışması.", sortOrder: 1 },
                                 { title: "Rama ile Buluşma", author: "Arthur C. Clarke", neden: "Güneş sistemine giren devasa bir silindir nesnenin keşfi. Mühendislik ve gizem.", sortOrder: 2 },
                                 { title: "Geliş (Hayatının Hikayesi)", author: "Ted Chiang", neden: "Uzaylıların dilini öğrenmek, zaman algımızı değiştirir mi? Dilbilimsel bilim kurgu.", sortOrder: 3 },
-                                { title: "Solaris", author: "Stanislaw Lem", neden: "İletişim kurulamayan, okyanus gezegen. İnsanın kendi bilinçaltıyla savaşı.", sortOrder: 4 }
+                                { title: "Solaris", author: "Stanislaw Lem", neden: "İletişim kurulamayan, okyanus gezegen. İnsanın kendi bilinçaltıyla savaşı.", sortOrder: 4 },
+                                { title: "Kıyamete Bir Milyar Yıl", author: "Arkadi ve Boris Strugatski", neden: "Felsefi bilim kurgu ve bilinmezlik. İnsanlığın evrensel engelle karşılaşması.", sortOrder: 5 }
                             ]
                         }
                     },
@@ -170,10 +173,15 @@ async function main() {
                         books: {
                             create: [
                                 { title: "Dune", author: "Frank Herbert", neden: "Çöl gezegeni, siyaset, din ve ekoloji. Bilim kurgunun Yüzüklerin Efendisi.", sortOrder: 0 },
-                                { title: "Vakıf", author: "Isaac Asimov", neden: "Galaktik İmparatorluk çökerken, medeniyeti kurtarmak için kurulan matematiksel plan: Psikotarih.", sortOrder: 1 },
-                                { title: "Üç Cisim Problemi", author: "Cixin Liu", neden: "Fizik kurallarının silah olarak kullanıldığı, evrenin karanlık orman teorisi.", sortOrder: 2 },
-                                { title: "Karanlığın Sol Eli", author: "Ursula K. Le Guin", neden: "Cinsiyetin olmadığı bir gezegende diplomasi ve insanlık üzerine felsefi bir yolculuk.", sortOrder: 3 },
-                                { title: "Hyperion", author: "Dan Simmons", neden: "Farklı gezegenlerden gelen hacıların anlattığı hikayeler. Canterbury Hikayeleri'nin uzay versiyonu.", sortOrder: 4 }
+                                { title: "Dune Mesihi", author: "Frank Herbert", neden: "Kahramanlık mitinin eleştirisi. Paul Atreides'in trajedisi.", sortOrder: 1 },
+                                { title: "Dune Çocukları", author: "Frank Herbert", neden: "Genetik hafıza ve gelecek vizyonu. Serinin en karmaşık kitabı.", sortOrder: 2 },
+                                { title: "Dune Tanrı İmparatoru", author: "Frank Herbert", neden: "3500 yıl sonra. İnsanlığın geleceği için yapılan en büyük fedakarlık.", sortOrder: 3 },
+                                { title: "Dune Sapkınları", author: "Frank Herbert", neden: "Dağılma sonrası yeni düzen. Bene Gesserit'in geri dönüşü.", sortOrder: 4 },
+                                { title: "Dune Rahibeler Meclisi", author: "Frank Herbert", neden: "Serinin finali. Herbert'ın son eseri.", sortOrder: 5 },
+                                { title: "Vakıf", author: "Isaac Asimov", neden: "Galaktik İmparatorluk çökerken, medeniyeti kurtarmak için kurulan matematiksel plan: Psikotarih.", sortOrder: 6 },
+                                { title: "Üç Cisim Problemi", author: "Cixin Liu", neden: "Fizik kurallarının silah olarak kullanıldığı, evrenin karanlık orman teorisi.", sortOrder: 7 },
+                                { title: "Karanlığın Sol Eli", author: "Ursula K. Le Guin", neden: "Cinsiyetin olmadığı bir gezegende diplomasi ve insanlık üzerine felsefi bir yolculuk.", sortOrder: 8 },
+                                { title: "Hyperion", author: "Dan Simmons", neden: "Farklı gezegenlerden gelen hacıların anlattığı hikayeler. Canterbury Hikayeleri'nin uzay versiyonu.", sortOrder: 9 }
                             ]
                         }
                     }
@@ -206,9 +214,12 @@ async function main() {
                                 { title: "Yürek Dede ile Padişah", author: "Cahit Zarifoğlu", neden: "Masal tadında tasavvuf.", sortOrder: 1 },
                                 { title: "Uzun Hikaye", author: "Mustafa Kutlu", neden: "Anadolu irfanının en sıcak, en sinematografik hali.", sortOrder: 2 },
                                 { title: "Beyhude Ömrüm", author: "Mustafa Kutlu", neden: "Toprağa tutunma ve sabır öyküsü.", sortOrder: 3 },
-                                { title: "Memleket Hikayeleri", author: "Refik Halit Karay", neden: "Türkçenin lezzetini damakta bırakan hikayeler.", sortOrder: 4 },
-                                { title: "Yollar Dönüşe Gider", author: "Nurullah Genç", neden: "Erzurum soğuğunda geçen sıcak bir hayat hikayesi.", sortOrder: 5 },
-                                { title: "Toprak Ana", author: "Cengiz Aytmatov", neden: "Savaş ve kıtlıkta insan kalabilmek.", sortOrder: 6 }
+                                { title: "Sır", author: "Mustafa Kutlu", neden: "Mustafa Kutlu külliyatından. Anadolu hikayelerinin sıcaklığı.", sortOrder: 4 },
+                                { title: "Memleket Hikayeleri", author: "Refik Halit Karay", neden: "Türkçenin lezzetini damakta bırakan hikayeler.", sortOrder: 5 },
+                                { title: "Yollar Dönüşe Gider", author: "Nurullah Genç", neden: "Erzurum soğuğunda geçen sıcak bir hayat hikayesi.", sortOrder: 6 },
+                                { title: "Toprak Ana", author: "Cengiz Aytmatov", neden: "Savaş ve kıtlıkta insan kalabilmek.", sortOrder: 7 },
+                                { title: "Martin Eden", author: "Jack London", neden: "Kimlik inşası ve mücadele. Bir insanın kendini yetiştirme öyküsü.", sortOrder: 8 },
+                                { title: "Beyaz Diş", author: "Jack London", neden: "Doğa, hayatta kalma ve medeniyetle tanışma.", sortOrder: 9 }
                             ]
                         }
                     },
@@ -254,11 +265,12 @@ async function main() {
                         books: {
                             create: [
                                 { title: "Reis Bey", author: "Necip Fazıl Kısakürek", neden: "Merhamet ve adalet üzerine sarsıcı bir piyes.", sortOrder: 0 },
-                                { title: "Anneler ve Kudüsler", author: "Nuri Pakdil", neden: "Kudüs bilinci ve \"Klas Duruş\".", sortOrder: 1 },
-                                { title: "Yedi Güzel Adam", author: "Cahit Zarifoğlu", neden: "Müslüman şairin bakış açısı.", sortOrder: 2 },
-                                { title: "Yağmur", author: "Nurullah Genç", neden: "Peygamber sevgisi - Naat.", sortOrder: 3 },
-                                { title: "Bağlanma", author: "Nuri Pakdil", neden: "Yabancılaşmaya karşı yerli düşünceye tutunmak.", sortOrder: 4 },
-                                { title: "İnce Memed 1", author: "Yaşar Kemal", neden: "Başkaldırı kültürü.", sortOrder: 5 }
+                                { title: "İdeolocya Örgüsü", author: "Necip Fazıl Kısakürek", neden: "Necip Fazıl'ın düşünce sistemi. Teorik temel.", sortOrder: 1 },
+                                { title: "Anneler ve Kudüsler", author: "Nuri Pakdil", neden: "Kudüs bilinci ve \"Klas Duruş\".", sortOrder: 2 },
+                                { title: "Yedi Güzel Adam", author: "Cahit Zarifoğlu", neden: "Müslüman şairin bakış açısı.", sortOrder: 3 },
+                                { title: "Yağmur", author: "Nurullah Genç", neden: "Peygamber sevgisi - Naat.", sortOrder: 4 },
+                                { title: "Bağlanma", author: "Nuri Pakdil", neden: "Yabancılaşmaya karşı yerli düşünceye tutunmak.", sortOrder: 5 },
+                                { title: "İnce Memed 1", author: "Yaşar Kemal", neden: "Başkaldırı kültürü.", sortOrder: 6 }
                             ]
                         }
                     },
@@ -271,10 +283,11 @@ async function main() {
                             create: [
                                 { title: "Suyu Arayan Adam", author: "Şevket Süreyya Aydemir", neden: "En kritik otobiyografi. Fikir çilesinin haritası.", sortOrder: 0 },
                                 { title: "Gençlerle Başbaşa", author: "Ali Fuad Başgil", neden: "İrade eğitimi ve çalışma disiplini.", sortOrder: 1 },
-                                { title: "Savaşçı", author: "Doğan Cüceloğlu", neden: "Güçlü bir karakter inşası.", sortOrder: 2 },
-                                { title: "Malcolm X", author: "Alex Haley", neden: "Dönüşüm ve mücadele.", sortOrder: 3 },
-                                { title: "Zeytindağı", author: "Falih Rıfkı Atay", neden: "İmparatorluğun çöküşü.", sortOrder: 4 },
-                                { title: "O ve Ben", author: "Necip Fazıl Kısakürek", neden: "Manevi arayış ve buluş.", sortOrder: 5 }
+                                { title: "Atomik Alışkanlıklar", author: "James Clear", neden: "Küçük alışkanlıkların büyük dönüşümleri. İrade eğitiminin modern versiyonu.", sortOrder: 2 },
+                                { title: "Savaşçı", author: "Doğan Cüceloğlu", neden: "Güçlü bir karakter inşası.", sortOrder: 3 },
+                                { title: "Malcolm X", author: "Alex Haley", neden: "Dönüşüm ve mücadele.", sortOrder: 4 },
+                                { title: "Zeytindağı", author: "Falih Rıfkı Atay", neden: "İmparatorluğun çöküşü.", sortOrder: 5 },
+                                { title: "O ve Ben", author: "Necip Fazıl Kısakürek", neden: "Manevi arayış ve buluş.", sortOrder: 6 }
                             ]
                         }
                     },
@@ -419,7 +432,9 @@ async function main() {
                                 { title: "Devlet Ana", author: "Kemal Tahir", neden: "Osmanlı'nın kuruluşunu, Anadolu insanının yapısını ve söğüt ağacının gölgesini anlatan dev bir eser.", sortOrder: 1 },
                                 { title: "Semerkant", author: "Amin Maalouf", neden: "Orta Doğu, Selçuklular, Ömer Hayyam ve Hasan Sabbah... Doğu'nun gizemli tarihine büyülü bir giriş.", sortOrder: 2 },
                                 { title: "Bozkurtların Ölümü", author: "Hüseyin Nihal Atsız", neden: "Orta Asya Türk tarihi, Göktürkler ve Kürşad destanı. Mitoloji ile tarihin iç içe geçtiği heyecanlı bir roman.", sortOrder: 3 },
-                                { title: "Osmancık", author: "Tarık Buğra", neden: "Osman Gazi'nin bir \"alp\"ten bir \"devlet adamı\"na dönüşümünün psikolojik ve tarihi romanı.", sortOrder: 4 }
+                                { title: "Osmancık", author: "Tarık Buğra", neden: "Osman Gazi'nin bir \"alp\"ten bir \"devlet adamı\"na dönüşümünün psikolojik ve tarihi romanı.", sortOrder: 4 },
+                                { title: "Puslu Kıtalar Atlası", author: "İhsan Oktay Anar", neden: "Tarihi atmosferi ve Osmanlı İstanbul'unun gizemini hissettiren büyülü gerçekçi bir roman.", sortOrder: 5 },
+                                { title: "Ben Ayşe", author: "Fikret Eroğlu", neden: "Milli mücadele ve yakın tarih romanı. Anadolu kadınının gözünden kurtuluş.", sortOrder: 6 }
                             ]
                         }
                     },
@@ -434,7 +449,10 @@ async function main() {
                                 { title: "Sorularla Osmanlı İmparatorluğu", author: "Erhan Afyoncu", neden: "Kronolojik sıkıcılık yok. \"Padişahlar içki içer miydi?\", \"Harem nasıldı?\" gibi merak edilen sorulara net cevaplar.", sortOrder: 1 },
                                 { title: "Sultanın Casusları", author: "Emrah Safa Gürkan", neden: "Akademik bilgiyi inanılmaz eğlenceli ve mizahi bir dille anlatır. 16. yüzyıl istihbarat savaşları.", sortOrder: 2 },
                                 { title: "Türklerin Tarihi (1. Cilt)", author: "İlber Ortaylı", neden: "Orta Asya'dan Anadolu'ya göçü İlber Hoca'nın sohbetiyle dinler gibi okursun.", sortOrder: 3 },
-                                { title: "Yavuz", author: "Feridun Andaç", neden: "Yavuz Sultan Selim dönemi ve Orta Doğu siyasetinin şekillenişi üzerine roman tadında anlatılar.", sortOrder: 4 }
+                                { title: "Yavuz", author: "Feridun Andaç", neden: "Yavuz Sultan Selim dönemi ve Orta Doğu siyasetinin şekillenişi üzerine roman tadında anlatılar.", sortOrder: 4 },
+                                { title: "Türklerin Serüveni", author: "Cansu Canan Özgen", neden: "Popüler ve görsel tarih anlatımı. Orta Asya'dan Anadolu'ya.", sortOrder: 5 },
+                                { title: "İnsanlığın Medeniyet Destanı", author: "Cansu Canan Özgen", neden: "Dünya medeniyetlerinin hikayesi, akıcı ve öğretici.", sortOrder: 6 },
+                                { title: "Türklerin Büyükleri", author: "Cansu Canan Özgen", neden: "Türk tarihinin önemli isimleri, biyografik anlatım.", sortOrder: 7 }
                             ]
                         }
                     },
@@ -509,7 +527,8 @@ async function main() {
                                 { title: "Tek Adam (1. Cilt)", author: "Şevket Süreyya Aydemir", neden: "Atatürk biyografisinin zirvesi. Hem insan hem lider olarak Atatürk.", sortOrder: 1 },
                                 { title: "Demokrasinin İlk Yılları (1947-1951)", author: "Taha Akyol", neden: "Çok partili hayata geçiş sancıları. Siyasi tarih okuması.", sortOrder: 2 },
                                 { title: "Türkiye'nin Yakın Tarihi", author: "İlber Ortaylı", neden: "Yakın dönemin olaylarına eleştirel bir bakış.", sortOrder: 3 },
-                                { title: "Gölgedekiler", author: "Murat Bardakçı", neden: "Cumhuriyet kurulurken dışarıda kalan hanedan üyeleri ve sürgünlerin hüzünlü tarihi.", sortOrder: 4 }
+                                { title: "Gölgedekiler", author: "Murat Bardakçı", neden: "Cumhuriyet kurulurken dışarıda kalan hanedan üyeleri ve sürgünlerin hüzünlü tarihi.", sortOrder: 4 },
+                                { title: "Darbeye Geçit Yok", author: "Abdulkadir Selvi", neden: "15 Temmuz ve yakın siyasi tarih. Güncel bir tanıklık.", sortOrder: 5 }
                             ]
                         }
                     },
@@ -722,7 +741,10 @@ async function main() {
                                 { title: "İlmihal (2 Cilt)", author: "Diyanet Vakfı", neden: "Fıkıh kuralları için en güvenilir, en modern dilli başvuru kaynağı.", sortOrder: 1 },
                                 { title: "Hak Dini Kur'an Dili (Tefsir)", author: "Elmalılı Hamdi Yazır", neden: "Fatiha ve kısa surelerin tefsiri mutlaka okunmalı.", sortOrder: 2 },
                                 { title: "Şifa-i Şerif", author: "Kadı İyaz", neden: "Peygamber sevgisi ve ona saygı üzerine yazılmış klasik bir eser.", sortOrder: 3 },
-                                { title: "Veda Hutbesi", author: "Hz. Muhammed", neden: "Peygamberin son mesajı. İnsan hakları evrensel beyannamesi niteliğinde, tekrar tekrar okunmalı.", sortOrder: 4 }
+                                { title: "Veda Hutbesi", author: "Hz. Muhammed", neden: "Peygamberin son mesajı. İnsan hakları evrensel beyannamesi niteliğinde, tekrar tekrar okunmalı.", sortOrder: 4 },
+                                { title: "Sabredenler ve Şükredenler", author: "İbn Kayyim el-Cevziyye", neden: "Sabır ve şükür üzerine klasik bir maneviyat eseri.", sortOrder: 5 },
+                                { title: "Namaz Çağrısı", author: "Ramazan Kayan", neden: "İbadet bilinci ve namazın anlamı üzerine.", sortOrder: 6 },
+                                { title: "İslam'ın Vadettikleri", author: "Roger Garaudy", neden: "Batılı bir düşünürün İslam'a bakışı. Medeniyet perspektifi.", sortOrder: 7 }
                             ]
                         }
                     }
@@ -755,7 +777,11 @@ async function main() {
                                 { title: "Sultanın Casusları", author: "Emrah Safa Gürkan", neden: "Osmanlı casusluk ağları. Eğlenceli ve öğretici.", sortOrder: 1 },
                                 { title: "Köstebek", author: "John le Carré", neden: "İstihbarat dünyasının \"bürokratik\" ve gerçekçi yüzü.", sortOrder: 2 },
                                 { title: "Teşkilat-ı Mahsusa", author: "Abdullah Muradoğlu", neden: "Türk istihbaratının kökleri ve fedai geleneği.", sortOrder: 3 },
-                                { title: "Araf'tan Kurtuluş", author: "Cengiz Abdullayev", neden: "Eski KGB ajanının yazdığı, Drongo serisinden bir casusluk romanı.", sortOrder: 4 }
+                                { title: "Araf'tan Kurtuluş", author: "Cengiz Abdullayev", neden: "Eski KGB ajanının yazdığı, Drongo serisinden bir casusluk romanı.", sortOrder: 4 },
+                                { title: "İstihbarat Savaşları", author: "Hüseyin Aziz Akyürek", neden: "İstihbarat dünyasının perde arkası ve gerçek operasyonlar.", sortOrder: 5 },
+                                { title: "Suç Ortakları", author: "Agatha Christie", neden: "Dedektiflik ve zeka oyunlarına klasik bir giriş.", sortOrder: 6 },
+                                { title: "Leyleklerin Uçuşu", author: "J.C. Grangé", neden: "Kurgusal suç analizi ve gerilim.", sortOrder: 7 },
+                                { title: "Sakkara'nın Kumları", author: "Glenn Meade", neden: "Soğuk Savaş dönemi casusluk romanı.", sortOrder: 8 }
                             ]
                         }
                     },
@@ -845,7 +871,9 @@ async function main() {
                                 { title: "Kitleler Psikolojisi", author: "Gustave Le Bon", neden: "Toplumların zihniyeti nasıl çalışır?", sortOrder: 1 },
                                 { title: "İknanın Psikolojisi", author: "Robert Cialdini", neden: "İnsanlar neden \"evet\" der?", sortOrder: 2 },
                                 { title: "Rol Yapmayın Lütfen", author: "Eric Morris", neden: "Maskeleme ve insan davranışı üzerine.", sortOrder: 3 },
-                                { title: "Soğuk Savaş", author: "John Lewis Gaddis", neden: "Casuslar Köprüsü döneminin tarihi.", sortOrder: 4 }
+                                { title: "Soğuk Savaş", author: "John Lewis Gaddis", neden: "Casuslar Köprüsü döneminin tarihi.", sortOrder: 4 },
+                                { title: "Stratejik İletişim", author: "Dr. Rıza Güler", neden: "Algı yönetimi ve iletişim stratejileri.", sortOrder: 5 },
+                                { title: "Outliers (Çizginin Dışındakiler)", author: "Malcolm Gladwell", neden: "Başarının arka planındaki görünmeyen stratejiler ve toplumsal algı.", sortOrder: 6 }
                             ]
                         }
                     },
