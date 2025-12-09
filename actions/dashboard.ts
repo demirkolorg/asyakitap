@@ -10,65 +10,147 @@ export async function getDashboardData() {
     if (!user) return null
 
     try {
-        // Get all books with quotes and author
-        const books = await prisma.book.findMany({
-            where: { userId: user.id },
-            include: { quotes: true, author: true },
-            orderBy: { updatedAt: 'desc' }
-        })
-
-        // Get unique authors from user's books
-        const authorIds = new Set(books.map(b => b.authorId).filter(Boolean))
-        const uniqueAuthors = authorIds.size
-
-        // Currently reading
-        const currentlyReading = books.filter(b => b.status === 'READING')
-
-        // Recently completed
-        const recentlyCompleted = books
-            .filter(b => b.status === 'COMPLETED')
-            .slice(0, 5)
-
-        // Recent quotes (from all books)
-        const allQuotes = books.flatMap(b =>
-            b.quotes.map(q => ({ ...q, bookTitle: b.title, bookAuthor: b.author?.name || "Bilinmiyor" }))
-        ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        const recentQuotes = allQuotes.slice(0, 5)
-
-        // Books with tortu (summaries)
-        const booksWithTortu = books
-            .filter(b => b.tortu && b.tortu.trim() !== '')
-            .slice(0, 5)
-
-        // Books with imza
-        const booksWithImza = books
-            .filter(b => b.imza && b.imza.trim() !== '')
-            .slice(0, 5)
-
-        // Stats
-        const stats = {
-            totalBooks: books.length,
-            reading: books.filter(b => b.status === 'READING').length,
-            completed: books.filter(b => b.status === 'COMPLETED').length,
-            toRead: books.filter(b => b.status === 'TO_READ').length,
-            dnf: books.filter(b => b.status === 'DNF').length,
-            totalQuotes: allQuotes.length,
-            totalPages: books.reduce((sum, b) => sum + (b.pageCount || 0), 0),
-            pagesRead: books
-                .filter(b => b.status === 'COMPLETED')
-                .reduce((sum, b) => sum + (b.pageCount || 0), 0),
-            uniqueAuthors,
-            totalTortu: books.filter(b => b.tortu && b.tortu.trim() !== '').length,
-            totalImza: books.filter(b => b.imza && b.imza.trim() !== '').length,
-        }
-
-        return {
+        // Paralel sorgular - her biri sadece ihtiyacı olan veriyi çeker
+        const [
+            stats,
             currentlyReading,
             recentlyCompleted,
             recentQuotes,
             booksWithTortu,
             booksWithImza,
-            stats,
+            uniqueAuthorsCount
+        ] = await Promise.all([
+            // Stats - groupBy ile tek sorguda status sayıları
+            prisma.book.groupBy({
+                by: ['status'],
+                where: { userId: user.id },
+                _count: { _all: true },
+                _sum: { pageCount: true }
+            }),
+
+            // Currently reading - sadece okunan kitaplar
+            prisma.book.findMany({
+                where: { userId: user.id, status: 'READING' },
+                include: { author: true },
+                orderBy: { updatedAt: 'desc' },
+                take: 10
+            }),
+
+            // Recently completed - sadece son 5 tamamlanan
+            prisma.book.findMany({
+                where: { userId: user.id, status: 'COMPLETED' },
+                include: { author: true },
+                orderBy: { endDate: 'desc' },
+                take: 5
+            }),
+
+            // Recent quotes - sadece son 5 alıntı
+            prisma.quote.findMany({
+                where: { book: { userId: user.id } },
+                include: {
+                    book: {
+                        select: { title: true, author: { select: { name: true } } }
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 5
+            }),
+
+            // Books with tortu - DB seviyesinde filtreleme
+            prisma.book.findMany({
+                where: {
+                    userId: user.id,
+                    tortu: { not: null },
+                    NOT: { tortu: '' }
+                },
+                include: { author: true },
+                orderBy: { updatedAt: 'desc' },
+                take: 5
+            }),
+
+            // Books with imza - DB seviyesinde filtreleme
+            prisma.book.findMany({
+                where: {
+                    userId: user.id,
+                    imza: { not: null },
+                    NOT: { imza: '' }
+                },
+                include: { author: true },
+                orderBy: { updatedAt: 'desc' },
+                take: 5
+            }),
+
+            // Unique authors count
+            prisma.author.count({
+                where: {
+                    books: { some: { userId: user.id } }
+                }
+            })
+        ])
+
+        // Ek count sorguları (paralel)
+        const [totalQuotes, totalTortu, totalImza] = await Promise.all([
+            prisma.quote.count({
+                where: { book: { userId: user.id } }
+            }),
+            prisma.book.count({
+                where: {
+                    userId: user.id,
+                    tortu: { not: null },
+                    NOT: { tortu: '' }
+                }
+            }),
+            prisma.book.count({
+                where: {
+                    userId: user.id,
+                    imza: { not: null },
+                    NOT: { imza: '' }
+                }
+            })
+        ])
+
+        // Stats'ı işle
+        const statusCounts = stats.reduce((acc, item) => {
+            acc[item.status] = {
+                count: item._count._all,
+                pages: item._sum.pageCount || 0
+            }
+            return acc
+        }, {} as Record<string, { count: number; pages: number }>)
+
+        const totalBooks = Object.values(statusCounts).reduce((sum, s) => sum + s.count, 0)
+        const totalPages = Object.values(statusCounts).reduce((sum, s) => sum + s.pages, 0)
+        const completedPages = statusCounts['COMPLETED']?.pages || 0
+
+        // Quote'ları formatla
+        const formattedQuotes = recentQuotes.map(q => ({
+            id: q.id,
+            content: q.content,
+            page: q.page,
+            createdAt: q.createdAt,
+            bookTitle: q.book.title,
+            bookAuthor: q.book.author?.name || "Bilinmiyor"
+        }))
+
+        return {
+            currentlyReading,
+            recentlyCompleted,
+            recentQuotes: formattedQuotes,
+            booksWithTortu,
+            booksWithImza,
+            stats: {
+                totalBooks,
+                reading: statusCounts['READING']?.count || 0,
+                completed: statusCounts['COMPLETED']?.count || 0,
+                toRead: statusCounts['TO_READ']?.count || 0,
+                dnf: statusCounts['DNF']?.count || 0,
+                totalQuotes,
+                totalPages,
+                pagesRead: completedPages,
+                uniqueAuthors: uniqueAuthorsCount,
+                totalTortu,
+                totalImza,
+            },
         }
     } catch (error) {
         console.error("Failed to fetch dashboard data:", error)

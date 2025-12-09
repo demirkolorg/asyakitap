@@ -61,6 +61,8 @@ model Book {
 
   @@index([userId])
   @@index([authorId])
+  @@index([userId, status]) // Status bazlı sorgular için (reading, completed, etc.)
+  @@index([userId, updatedAt]) // Son güncellenen kitaplar için
 }
 
 enum ReadingAction {
@@ -80,6 +82,7 @@ model ReadingLog {
   createdAt DateTime      @default(now())
 
   @@index([bookId])
+  @@index([bookId, createdAt]) // Sıralı okuma logları için
 }
 
 model Quote {
@@ -92,6 +95,7 @@ model Quote {
   updatedAt DateTime @updatedAt
 
   @@index([bookId])
+  @@index([bookId, createdAt]) // Sıralı alıntılar için
 }
 
 // ==========================================
