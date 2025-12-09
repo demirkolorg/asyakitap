@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx prisma generate:*)",
+      "WebFetch(domain:www.prisma.io)",
+      "Bash(npm install:*)",
+      "Bash(cat:*)",
+      "Bash(npx shadcn:*)",
+      "Bash(del \"D:\\projects\\asyakitap\\lib\\providers\\theme-provider.tsx\")",
+      "Bash(del \"D:\\projects\\asyakitap\\components\\layout\\sidebar.tsx\")",
+      "Bash(del \"D:\\projects\\asyakitap\\components\\layout\\header.tsx\")",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run db:seed:*)",
+      "Bash(npx prisma db push:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,314 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+import {
+    Map,
+    BookOpen,
+    ChevronDown,
+    ChevronUp,
+    Plus,
+    Check,
+    Clock,
+    ArrowLeft,
+    CheckCircle2,
+    BookMarked,
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+
+type BookStatus = "not_added" | "added" | "reading" | "completed"
+
+interface ReadingListBook {
+    id: string
+    title: string
+    author: string
+    neden: string | null
+    pageCount: number | null
+    coverUrl: string | null
+    userStatus: BookStatus
+    userBook: {
+        id: string
+        status: string
+        currentPage: number
+        pageCount: number | null
+        coverUrl: string | null
+    } | null
+}
+
+interface ReadingListLevel {
+    id: string
+    levelNumber: number
+    name: string
+    description: string | null
+    books: ReadingListBook[]
+    progress: {
+        added: number
+        completed: number
+        total: number
+    }
+}
+
+interface ReadingListData {
+    id: string
+    slug: string
+    name: string
+    description: string | null
+    levels: ReadingListLevel[]
+    progress: {
+        total: number
+        added: number
+        completed: number
+    }
+}
+
+interface ReadingListClientProps {
+    list: ReadingListData
+}
+
+const statusConfig: Record<BookStatus, { label: string; icon: React.ReactNode; color: string; bgColor: string }> = {
+    not_added: { label: "Ekle", icon: <Plus className="h-4 w-4" />, color: "text-muted-foreground", bgColor: "bg-muted" },
+    added: { label: "Eklendi", icon: <BookMarked className="h-4 w-4" />, color: "text-blue-600", bgColor: "bg-blue-100" },
+    reading: { label: "Okunuyor", icon: <Clock className="h-4 w-4" />, color: "text-yellow-600", bgColor: "bg-yellow-100" },
+    completed: { label: "Okundu", icon: <Check className="h-4 w-4" />, color: "text-green-600", bgColor: "bg-green-100" },
+}
+
+export default function ReadingListClient({ list }: ReadingListClientProps) {
+    const [expandedLevels, setExpandedLevels] = useState<Set<string>>(
+        new Set(list.levels.map(l => l.id))
+    )
+
+    const toggleLevel = (levelId: string) => {
+        setExpandedLevels(prev => {
+            const next = new Set(prev)
+            if (next.has(levelId)) {
+                next.delete(levelId)
+            } else {
+                next.add(levelId)
+            }
+            return next
+        })
+    }
+
+    const overallProgress = list.progress.total > 0
+        ? Math.round((list.progress.completed / list.progress.total) * 100)
+        : 0
+
+    return (
+        <div className="max-w-5xl mx-auto">
+            {/* Back Link */}
+            <Link
+                href="/reading-lists"
+                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
+            >
+                <ArrowLeft className="h-4 w-4" />
+                Tüm Listeler
+            </Link>
+
+            {/* Header */}
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold flex items-center gap-3">
+                    <Map className="h-8 w-8 text-primary" />
+                    {list.name}
+                </h1>
+                {list.description && (
+                    <p className="text-muted-foreground mt-2 max-w-3xl">
+                        {list.description}
+                    </p>
+                )}
+
+                {/* Overall Progress */}
+                <div className="mt-6 p-4 bg-muted/30 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">Genel İlerleme</span>
+                        <span className="text-sm text-muted-foreground">
+                            {list.progress.completed}/{list.progress.total} kitap tamamlandı
+                        </span>
+                    </div>
+                    <Progress value={overallProgress} className="h-2" />
+                    <div className="flex items-center gap-6 mt-3 text-sm">
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                            <BookOpen className="h-4 w-4" />
+                            {list.levels.length} seviye
+                        </span>
+                        <span className="flex items-center gap-1 text-blue-600">
+                            <BookMarked className="h-4 w-4" />
+                            {list.progress.added} eklendi
+                        </span>
+                        <span className="flex items-center gap-1 text-green-600">
+                            <CheckCircle2 className="h-4 w-4" />
+                            {list.progress.completed} okundu
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Levels */}
+            <div className="space-y-6">
+                {list.levels.map((level) => {
+                    const isExpanded = expandedLevels.has(level.id)
+                    const levelProgress = level.progress.total > 0
+                        ? Math.round((level.progress.completed / level.progress.total) * 100)
+                        : 0
+                    const isLevelComplete = levelProgress === 100
+
+                    return (
+                        <div key={level.id} className="border rounded-xl overflow-hidden">
+                            {/* Level Header */}
+                            <button
+                                onClick={() => toggleLevel(level.id)}
+                                className={cn(
+                                    "w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors",
+                                    isLevelComplete && "bg-green-50 dark:bg-green-900/10"
+                                )}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-full flex items-center justify-center font-bold",
+                                        isLevelComplete
+                                            ? "bg-green-500 text-white"
+                                            : "bg-primary text-primary-foreground"
+                                    )}>
+                                        {isLevelComplete ? <Check className="h-5 w-5" /> : level.levelNumber}
+                                    </div>
+                                    <div className="text-left">
+                                        <h2 className="font-semibold">
+                                            Seviye {level.levelNumber}: {level.name}
+                                        </h2>
+                                        <p className="text-sm text-muted-foreground">
+                                            {level.progress.completed}/{level.progress.total} kitap okundu
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <div className="hidden sm:block w-32">
+                                        <Progress value={levelProgress} className="h-1.5" />
+                                    </div>
+                                    {isExpanded ? (
+                                        <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                    ) : (
+                                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                    )}
+                                </div>
+                            </button>
+
+                            {/* Level Content */}
+                            {isExpanded && (
+                                <div className="border-t">
+                                    {level.description && (
+                                        <p className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
+                                            {level.description}
+                                        </p>
+                                    )}
+
+                                    <div className="divide-y">
+                                        {level.books.map((book) => (
+                                            <div
+                                                key={book.id}
+                                                className={cn(
+                                                    "p-4 hover:bg-muted/30 transition-colors",
+                                                    book.userStatus === "completed" && "bg-green-50/50 dark:bg-green-900/5"
+                                                )}
+                                            >
+                                                <div className="flex items-start gap-4">
+                                                    {/* Book Cover */}
+                                                    {book.userBook?.coverUrl ? (
+                                                        <Link href={`/book/${book.userBook.id}`} className="flex-shrink-0">
+                                                            <div className="relative h-20 w-14 overflow-hidden rounded-md border shadow-sm hover:shadow-md transition-shadow">
+                                                                <Image
+                                                                    src={book.userBook.coverUrl}
+                                                                    alt={book.title}
+                                                                    fill
+                                                                    className="object-cover"
+                                                                />
+                                                            </div>
+                                                        </Link>
+                                                    ) : book.userStatus !== "not_added" ? (
+                                                        <div className="flex-shrink-0 h-20 w-14 rounded-md border bg-muted flex items-center justify-center">
+                                                            <BookOpen className="h-6 w-6 text-muted-foreground" />
+                                                        </div>
+                                                    ) : null}
+
+                                                    {/* Book Info */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-start justify-between gap-4">
+                                                            <div>
+                                                                <h3 className="font-medium">
+                                                                    {book.userBook ? (
+                                                                        <Link href={`/book/${book.userBook.id}`} className="hover:underline">
+                                                                            {book.title}
+                                                                        </Link>
+                                                                    ) : (
+                                                                        book.title
+                                                                    )}
+                                                                </h3>
+                                                                <p className="text-sm text-muted-foreground">
+                                                                    {book.author}
+                                                                    {book.pageCount && ` • ${book.pageCount} sayfa`}
+                                                                </p>
+                                                            </div>
+
+                                                            {/* Status Badge / Add Button */}
+                                                            {book.userStatus === "not_added" ? (
+                                                                <Button
+                                                                    asChild
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                >
+                                                                    <Link
+                                                                        href={`/library/add?q=${encodeURIComponent(book.title + " " + book.author)}&rlBookId=${book.id}`}
+                                                                    >
+                                                                        <Plus className="h-4 w-4 mr-1" />
+                                                                        Ekle
+                                                                    </Link>
+                                                                </Button>
+                                                            ) : (
+                                                                <Link href={book.userBook ? `/book/${book.userBook.id}` : "#"}>
+                                                                    <span className={cn(
+                                                                        "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium",
+                                                                        statusConfig[book.userStatus].bgColor,
+                                                                        statusConfig[book.userStatus].color
+                                                                    )}>
+                                                                        {statusConfig[book.userStatus].icon}
+                                                                        {statusConfig[book.userStatus].label}
+                                                                    </span>
+                                                                </Link>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Neden (Why) */}
+                                                        {book.neden && (
+                                                            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                                                                <span className="font-medium text-foreground">Neden: </span>
+                                                                {book.neden}
+                                                            </p>
+                                                        )}
+
+                                                        {/* Reading Progress */}
+                                                        {book.userStatus === "reading" && book.userBook && book.userBook.pageCount && (
+                                                            <div className="mt-2 flex items-center gap-2">
+                                                                <Progress
+                                                                    value={(book.userBook.currentPage / book.userBook.pageCount) * 100}
+                                                                    className="h-1 flex-1 max-w-32"
+                                                                />
+                                                                <span className="text-xs text-muted-foreground">
+                                                                    {book.userBook.currentPage}/{book.userBook.pageCount}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+    )
+}

@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                   String                @id @default(uuid())
+  email                String                @unique
+  books                Book[]
+  userReadingListBooks UserReadingListBook[]
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+}
+
+enum BookStatus {
+  TO_READ
+  READING
+  COMPLETED
+  DNF
+}
+
+// ==========================================
+// Yazar Modeli
+// ==========================================
+
+model Author {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String?
+  bio       String?  @db.Text
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}
+
+model Book {
+  id                   String                @id @default(cuid())
+  userId               String
+  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title                String
+  authorId             String?
+  author               Author?               @relation(fields: [authorId], references: [id])
+  coverUrl             String?
+  pageCount            Int?
+  status               BookStatus            @default(TO_READ)
+  currentPage          Int                   @default(0)
+  tortu                String?               @db.Text // Kitaptan aklında kalanlar
+  imza                 String?               @db.Text // Yazarın bu kitaptaki üslubu/tarzı
+  quotes               Quote[]
+  readingLogs          ReadingLog[]
+  userReadingListBooks UserReadingListBook[]
+  startDate            DateTime?
+  endDate              DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  @@index([userId])
+  @@index([authorId])
+}
+
+enum ReadingAction {
+  STARTED
+  FINISHED
+  ABANDONED
+  RESTARTED
+  ADDED_TO_LIST
+}
+
+model ReadingLog {
+  id        String        @id @default(cuid())
+  bookId    String
+  book      Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  action    ReadingAction
+  note      String?
+  createdAt DateTime      @default(now())
+
+  @@index([bookId])
+}
+
+model Quote {
+  id        String   @id @default(cuid())
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  page      Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([bookId])
+}
+
+// ==========================================
+// Tematik Okuma Listeleri
+// ==========================================
+
+model ReadingList {
+  id          String             @id @default(cuid())
+  slug        String             @unique
+  name        String
+  description String?            @db.Text
+  coverUrl    String?
+  sortOrder   Int                @default(0)
+  levels      ReadingListLevel[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model ReadingListLevel {
+  id            String            @id @default(cuid())
+  readingListId String
+  readingList   ReadingList       @relation(fields: [readingListId], references: [id], onDelete: Cascade)
+  levelNumber   Int
+  name          String
+  description   String?           @db.Text
+  books         ReadingListBook[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@unique([readingListId, levelNumber])
+  @@index([readingListId])
+}
+
+model ReadingListBook {
+  id        String                @id @default(cuid())
+  levelId   String
+  level     ReadingListLevel      @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  title     String
+  author    String
+  neden     String?               @db.Text
+  pageCount Int?
+  coverUrl  String?
+  sortOrder Int                   @default(0)
+  userLinks UserReadingListBook[]
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+
+  @@index([levelId])
+}
+
+model UserReadingListBook {
+  id                String          @id @default(cuid())
+  userId            String
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  readingListBookId String
+  readingListBook   ReadingListBook @relation(fields: [readingListBookId], references: [id], onDelete: Cascade)
+  bookId            String?
+  book              Book?           @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  createdAt         DateTime        @default(now())
+
+  @@unique([userId, readingListBookId])
+  @@index([userId])
+  @@index([readingListBookId])
+  @@index([bookId])
+}
