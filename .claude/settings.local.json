@@ -21,7 +21,9 @@
       "Bash(ls:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Okuma listelerine 42 yeni kitap eklendi\n\n- Bilim Kurgu: Kum, Salgın, Kıyamete Bir Milyar Yıl, Dune serisi devamları\n- Düşünce ve Dava: Sır, Martin Eden, Beyaz Diş, İdeolocya Örgüsü, Atomik Alışkanlıklar\n- Tarih ve Medeniyet: Puslu Kıtalar Atlası, Ben Ayşe, Cansu Canan Özgen kitapları, Darbeye Geçit Yok\n- Din ve İslam: Sabredenler ve Şükredenler, Namaz Çağrısı, İslam''ın Vadettikleri\n- İstihbarat ve Strateji: İstihbarat Savaşları, Suç Ortakları, Leyleklerin Uçuşu, Sakkara''nın Kumları, Stratejik İletişim, Outliers\n\nToplam kitap sayısı: 367\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push)"
     ],
     "deny": [],
     "ask": []

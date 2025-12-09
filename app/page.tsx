@@ -1,8 +1,24 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
-import { BookOpen } from "lucide-react"
+import {
+    BookOpen,
+    BookMarked,
+    Quote,
+    ListChecks,
+    Sparkles,
+    Library,
+    PenLine,
+    Target,
+    Users,
+    TrendingUp,
+    ChevronRight,
+    Star,
+    Bookmark,
+    BookOpenCheck
+} from "lucide-react"
 
 export default function LandingPage() {
     const supabase = createClient()
@@ -16,49 +32,439 @@ export default function LandingPage() {
         })
     }
 
+    const features = [
+        {
+            icon: Library,
+            title: "Kişisel Kütüphane",
+            description: "Tüm kitaplarını tek bir yerde topla. Okuduklarını, okumak istediklerini ve yarım bıraktıklarını takip et."
+        },
+        {
+            icon: Quote,
+            title: "Alıntı Defteri",
+            description: "Seni etkileyen cümleleri kaydet. Sayfa numarasıyla birlikte alıntılarını sakla, istediğin zaman geri dön."
+        },
+        {
+            icon: Sparkles,
+            title: "Tortu & İmza",
+            description: "Her kitaptan aklında kalanı yaz. Yazarın üslubunu, sana bıraktığı izi not et. Kendi okuma deneyimini oluştur."
+        },
+        {
+            icon: ListChecks,
+            title: "Okuma Listeleri",
+            description: "Tematik okuma yol haritaları. Bilim kurgudan felsefeye, tarihten stratejiye - seviyeli listelerle ilerle."
+        },
+        {
+            icon: Target,
+            title: "İlerleme Takibi",
+            description: "Hangi sayfadasın? Ne kadar okudun? Okuma alışkanlıklarını görselleştir ve motivasyonunu koru."
+        },
+        {
+            icon: PenLine,
+            title: "Yazar Profilleri",
+            description: "Sevdiğin yazarların tüm kitaplarını bir arada gör. Hangi yazarlardan ne kadar okuduğunu keşfet."
+        }
+    ]
+
+    const readingLists = [
+        {
+            name: "Bilim Kurgu Okumaları",
+            icon: "🚀",
+            books: 58,
+            levels: 10,
+            description: "En basit, en \"film gibi\" olandan ağır toplara uzanan yol haritası"
+        },
+        {
+            name: "Düşünce ve Dava",
+            icon: "💡",
+            books: 83,
+            levels: 12,
+            description: "Entelektüel omurganı sıfırdan inşa edecek münevver olma projesi"
+        },
+        {
+            name: "Tarih ve Medeniyet",
+            icon: "🏛️",
+            books: 57,
+            levels: 10,
+            description: "Romanlarla tarihi sevdir, akademik derinliğe ulaş"
+        },
+        {
+            name: "Din ve İslam",
+            icon: "📿",
+            books: 53,
+            levels: 10,
+            description: "Siyer'den fıkha, tasavvuftan modern meselelere"
+        },
+        {
+            name: "İstihbarat ve Strateji",
+            icon: "🎯",
+            books: 56,
+            levels: 10,
+            description: "İnsan psikolojisinden jeopolitiğe, stratejik düşünce"
+        },
+        {
+            name: "Teknoloji ve Yapay Zeka",
+            icon: "🤖",
+            books: 50,
+            levels: 10,
+            description: "Vizyonerlerden YZ felsefesine, geleceği anla"
+        }
+    ]
+
+    const stats = [
+        { value: "367", label: "Kitap", icon: BookOpen },
+        { value: "6", label: "Tematik Liste", icon: BookMarked },
+        { value: "62", label: "Seviye", icon: TrendingUp },
+        { value: "∞", label: "Tortu & Alıntı", icon: Sparkles }
+    ]
+
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-screen flex-col bg-background">
             {/* Header */}
-            <header className="flex items-center justify-between px-6 py-4 border-b">
-                <div className="flex items-center gap-2">
-                    <BookOpen className="h-8 w-8 text-primary" />
-                    <span className="text-xl font-bold">AsyaKitap</span>
+            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                <div className="container flex h-16 items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+                            <BookOpen className="h-5 w-5 text-primary-foreground" />
+                        </div>
+                        <span className="text-xl font-bold">AsyaKitap</span>
+                    </div>
+                    <nav className="hidden md:flex items-center gap-6 text-sm">
+                        <a href="#ozellikler" className="text-muted-foreground hover:text-foreground transition-colors">Özellikler</a>
+                        <a href="#listeler" className="text-muted-foreground hover:text-foreground transition-colors">Okuma Listeleri</a>
+                        <a href="#nasil-calisir" className="text-muted-foreground hover:text-foreground transition-colors">Nasıl Çalışır</a>
+                    </nav>
+                    <Button onClick={handleLogin}>Giriş Yap</Button>
                 </div>
-                <Button onClick={handleLogin}>Giriş Yap</Button>
             </header>
 
-            {/* Hero */}
-            <main className="flex-1 flex flex-col items-center justify-center px-4">
-                <div className="max-w-3xl text-center space-y-8">
-                    <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-                        Kitaplarını Yönet,
-                        <br />
-                        <span className="text-primary">Tortularını</span> Sakla
-                    </h1>
-                    <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-                        Okuduğun kitapları takip et, alıntı kaydet ve her kitaptan
-                        aklında kalan tortuyu yaz. Kişisel kütüphaneni oluştur.
-                    </p>
-                    <div className="flex gap-4 justify-center">
-                        <Button size="lg" onClick={handleLogin}>
-                            <svg
-                                className="mr-2 h-5 w-5"
-                                viewBox="0 0 488 512"
-                            >
-                                <path
-                                    fill="currentColor"
-                                    d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
-                                />
-                            </svg>
-                            Google ile Başla
-                        </Button>
+            <main className="flex-1">
+                {/* Hero Section */}
+                <section className="relative overflow-hidden">
+                    {/* Background gradient */}
+                    <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),rgba(255,255,255,0))]" />
+
+                    <div className="container py-24 md:py-32 lg:py-40">
+                        <div className="mx-auto max-w-4xl text-center">
+                            {/* Badge */}
+                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm">
+                                <Sparkles className="h-4 w-4 text-primary" />
+                                <span>367 kitaplık hazır okuma listeleri</span>
+                            </div>
+
+                            {/* Heading */}
+                            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                                Kitaplarını Yönet,
+                                <br />
+                                <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                                    Tortularını Sakla
+                                </span>
+                            </h1>
+
+                            {/* Description */}
+                            <p className="mt-6 text-lg text-muted-foreground md:text-xl max-w-2xl mx-auto">
+                                Okuduğun kitapları takip et, alıntıları kaydet ve her kitaptan aklında kalan
+                                <span className="font-medium text-foreground"> tortuyu </span>
+                                yaz. Kişisel kütüphaneni oluştur, tematik listelerle okuma yolculuğuna çık.
+                            </p>
+
+                            {/* CTA Buttons */}
+                            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                                <Button size="lg" onClick={handleLogin} className="text-base h-12 px-8">
+                                    <svg className="mr-2 h-5 w-5" viewBox="0 0 488 512">
+                                        <path
+                                            fill="currentColor"
+                                            d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+                                        />
+                                    </svg>
+                                    Google ile Başla
+                                </Button>
+                                <Button size="lg" variant="outline" className="text-base h-12 px-8" asChild>
+                                    <a href="#listeler">
+                                        Listeleri Keşfet
+                                        <ChevronRight className="ml-2 h-4 w-4" />
+                                    </a>
+                                </Button>
+                            </div>
+
+                            {/* Stats */}
+                            <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+                                {stats.map((stat) => (
+                                    <div key={stat.label} className="text-center">
+                                        <div className="flex items-center justify-center gap-2 mb-1">
+                                            <stat.icon className="h-5 w-5 text-primary" />
+                                            <span className="text-3xl font-bold">{stat.value}</span>
+                                        </div>
+                                        <span className="text-sm text-muted-foreground">{stat.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>
+
+                {/* Features Section */}
+                <section id="ozellikler" className="border-t bg-muted/30">
+                    <div className="container py-24">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+                                Okuma Deneyimini Dönüştür
+                            </h2>
+                            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                                AsyaKitap, sadece kitap takibi değil - okuma alışkanlıklarını geliştiren,
+                                öğrendiklerini kalıcı kılan bir platform.
+                            </p>
+                        </div>
+
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {features.map((feature) => (
+                                <Card key={feature.title} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                                    <CardContent className="p-6">
+                                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                                            <feature.icon className="h-6 w-6" />
+                                        </div>
+                                        <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                                        <p className="text-muted-foreground text-sm leading-relaxed">
+                                            {feature.description}
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Reading Lists Section */}
+                <section id="listeler" className="border-t">
+                    <div className="container py-24">
+                        <div className="text-center mb-16">
+                            <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-primary/10 px-4 py-1.5 text-sm text-primary">
+                                <BookMarked className="h-4 w-4" />
+                                <span>Tematik Okuma Yol Haritaları</span>
+                            </div>
+                            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+                                Hazır Okuma Listeleri
+                            </h2>
+                            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                                Basitten karmaşığa, seviye seviye ilerle. Her liste uzman küratörlüğüyle
+                                hazırlanmış, neden okunması gerektiği açıklanmış kitaplardan oluşuyor.
+                            </p>
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {readingLists.map((list) => (
+                                <Card key={list.name} className="group hover:shadow-lg transition-all duration-300 hover:border-primary/50">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-start gap-4">
+                                            <div className="text-4xl">{list.icon}</div>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-semibold text-lg mb-1 truncate">{list.name}</h3>
+                                                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                                                    {list.description}
+                                                </p>
+                                                <div className="flex items-center gap-4 text-sm">
+                                                    <span className="flex items-center gap-1 text-muted-foreground">
+                                                        <BookOpen className="h-4 w-4" />
+                                                        {list.books} kitap
+                                                    </span>
+                                                    <span className="flex items-center gap-1 text-muted-foreground">
+                                                        <TrendingUp className="h-4 w-4" />
+                                                        {list.levels} seviye
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+
+                        <div className="mt-12 text-center">
+                            <Button size="lg" onClick={handleLogin}>
+                                Listeleri Keşfetmeye Başla
+                                <ChevronRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+
+                {/* How it Works Section */}
+                <section id="nasil-calisir" className="border-t bg-muted/30">
+                    <div className="container py-24">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+                                Nasıl Çalışır?
+                            </h2>
+                            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                                Üç adımda okuma alışkanlıklarını dönüştür
+                            </p>
+                        </div>
+
+                        <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
+                            <div className="relative text-center">
+                                <div className="mb-4 mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground text-2xl font-bold">
+                                    1
+                                </div>
+                                <h3 className="text-lg font-semibold mb-2">Kayıt Ol</h3>
+                                <p className="text-muted-foreground text-sm">
+                                    Google hesabınla saniyeler içinde giriş yap. Karmaşık kayıt formları yok.
+                                </p>
+                                {/* Connector line - hidden on mobile */}
+                                <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-border" />
+                            </div>
+
+                            <div className="relative text-center">
+                                <div className="mb-4 mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground text-2xl font-bold">
+                                    2
+                                </div>
+                                <h3 className="text-lg font-semibold mb-2">Kitaplarını Ekle</h3>
+                                <p className="text-muted-foreground text-sm">
+                                    Kitaplarını manuel ekle veya hazır listelerden başla. Kapak görselleri otomatik.
+                                </p>
+                                <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-border" />
+                            </div>
+
+                            <div className="text-center">
+                                <div className="mb-4 mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground text-2xl font-bold">
+                                    3
+                                </div>
+                                <h3 className="text-lg font-semibold mb-2">Oku ve Kaydet</h3>
+                                <p className="text-muted-foreground text-sm">
+                                    Alıntıları kaydet, tortu yaz, imzaları not et. Okuma deneyimini zenginleştir.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Tortu Explanation Section */}
+                <section className="border-t">
+                    <div className="container py-24">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="grid md:grid-cols-2 gap-12 items-center">
+                                <div>
+                                    <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-orange-500/10 px-4 py-1.5 text-sm text-orange-600 dark:text-orange-400">
+                                        <Sparkles className="h-4 w-4" />
+                                        <span>AsyaKitap'ın Farkı</span>
+                                    </div>
+                                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+                                        Tortu Nedir?
+                                    </h2>
+                                    <p className="text-muted-foreground mb-6">
+                                        Bir kitabı okuduktan sonra aklında kalan şey nedir? İşte o "tortu".
+                                        Özet değil, analiz değil - sadece senin zihninde bıraktığı iz.
+                                    </p>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-start gap-3">
+                                            <div className="mt-1 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center">
+                                                <Star className="h-3 w-3 text-primary" />
+                                            </div>
+                                            <span className="text-sm">Kitabın sana ne hissettirdiğini yaz</span>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <div className="mt-1 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center">
+                                                <Bookmark className="h-3 w-3 text-primary" />
+                                            </div>
+                                            <span className="text-sm">Yazarın üslubunu (imza) not et</span>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <div className="mt-1 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center">
+                                                <BookOpenCheck className="h-3 w-3 text-primary" />
+                                            </div>
+                                            <span className="text-sm">Yıllar sonra bile hatırla</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div className="relative">
+                                    <Card className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-orange-200 dark:border-orange-800">
+                                        <div className="mb-4 text-sm text-muted-foreground">Tortu Örneği - Suç ve Ceza</div>
+                                        <p className="text-foreground italic leading-relaxed">
+                                            "İnsan vicdanından kaçamaz. Raskolnikov'un çöküşü, aslında hepimizin içindeki
+                                            o 'üstün insan' yanılgısının çöküşü. Dostoyevski, psikolojik gerilimi öyle
+                                            kurmuş ki, katille empati kurarken kendimden utandım."
+                                        </p>
+                                        <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-800 text-xs text-muted-foreground">
+                                            Fyodor Dostoyevski
+                                        </div>
+                                    </Card>
+                                    {/* Decorative elements */}
+                                    <div className="absolute -top-4 -right-4 h-24 w-24 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-2xl" />
+                                    <div className="absolute -bottom-4 -left-4 h-32 w-32 bg-gradient-to-br from-orange-500/20 to-transparent rounded-full blur-2xl" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* CTA Section */}
+                <section className="border-t bg-primary text-primary-foreground">
+                    <div className="container py-16">
+                        <div className="max-w-3xl mx-auto text-center">
+                            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+                                Okuma Yolculuğuna Başla
+                            </h2>
+                            <p className="text-primary-foreground/80 text-lg mb-8">
+                                367 kitaplık hazır listeler, sınırsız alıntı ve tortu imkanı.
+                                Tamamen ücretsiz, reklamsız.
+                            </p>
+                            <Button
+                                size="lg"
+                                variant="secondary"
+                                onClick={handleLogin}
+                                className="text-base h-12 px-8"
+                            >
+                                <svg className="mr-2 h-5 w-5" viewBox="0 0 488 512">
+                                    <path
+                                        fill="currentColor"
+                                        d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+                                    />
+                                </svg>
+                                Hemen Başla
+                            </Button>
+                        </div>
+                    </div>
+                </section>
             </main>
 
             {/* Footer */}
-            <footer className="py-6 text-center text-sm text-muted-foreground border-t">
-                AsyaKitap - Kişisel Kütüphane Yönetimi
+            <footer className="border-t bg-muted/30">
+                <div className="container py-12">
+                    <div className="grid gap-8 md:grid-cols-4">
+                        <div className="md:col-span-2">
+                            <div className="flex items-center gap-2 mb-4">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+                                    <BookOpen className="h-5 w-5 text-primary-foreground" />
+                                </div>
+                                <span className="text-xl font-bold">AsyaKitap</span>
+                            </div>
+                            <p className="text-muted-foreground text-sm max-w-xs">
+                                Kişisel kütüphane yönetimi ve okuma takibi. Kitaplarını yönet,
+                                alıntılarını sakla, tortularını yaz.
+                            </p>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold mb-4">Özellikler</h4>
+                            <ul className="space-y-2 text-sm text-muted-foreground">
+                                <li>Kitap Takibi</li>
+                                <li>Alıntı Defteri</li>
+                                <li>Tortu & İmza</li>
+                                <li>Okuma Listeleri</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold mb-4">Listeler</h4>
+                            <ul className="space-y-2 text-sm text-muted-foreground">
+                                <li>Bilim Kurgu</li>
+                                <li>Düşünce ve Dava</li>
+                                <li>Tarih ve Medeniyet</li>
+                                <li>+3 liste daha</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
+                        <p>AsyaKitap - Kişisel Kütüphane Yönetimi</p>
+                        <p className="mt-1">Okumak güzeldir. Hatırlamak daha güzel.</p>
+                    </div>
+                </div>
             </footer>
         </div>
     )
