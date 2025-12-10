@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
     Dialog,
     DialogContent,
@@ -28,7 +27,6 @@ import {
     Search,
     BookOpen,
     Grid3X3,
-    List,
     BookMarked,
     CheckCircle2,
     Clock,
@@ -62,7 +60,6 @@ interface LibraryClientProps {
     shelves: ShelfWithBooks[]
 }
 
-type ViewMode = "grid" | "list"
 type StatusFilter = "ALL" | BookStatus
 
 const statusConfig: Record<StatusFilter, { label: string; icon: React.ReactNode; color: string }> = {
@@ -95,7 +92,6 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<"cards" | "shelves">("shelves")
     const [activeStatus, setActiveStatus] = useState<StatusFilter>("ALL")
-    const [viewMode, setViewMode] = useState<ViewMode>("grid")
     const [searchQuery, setSearchQuery] = useState("")
 
     // Shelf management
@@ -330,113 +326,37 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                         </Link>
                     </Button>
 
-                    {/* View Tabs */}
-                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "cards" | "shelves")} className="mb-6">
-                        <TabsList className="w-full">
-                            <TabsTrigger value="cards" className="flex-1">
-                                <Grid3X3 className="h-4 w-4 mr-2" />
-                                Kart
-                            </TabsTrigger>
-                            <TabsTrigger value="shelves" className="flex-1">
-                                <Layers className="h-4 w-4 mr-2" />
-                                Raf
-                            </TabsTrigger>
-                        </TabsList>
-                    </Tabs>
-
-                    {/* Status Filters (for Card view) */}
-                    {activeTab === "cards" && (
-                        <div className="space-y-1">
-                            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                                Durum
-                            </h3>
-                            {(Object.keys(statusConfig) as StatusFilter[]).map((status) => (
-                                <button
-                                    key={status}
-                                    onClick={() => setActiveStatus(status)}
-                                    className={cn(
-                                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
-                                        activeStatus === status
-                                            ? "bg-primary text-primary-foreground"
-                                            : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                                    )}
-                                >
-                                    <span className="flex items-center gap-2">
-                                        {statusConfig[status].icon}
-                                        {statusConfig[status].label}
-                                    </span>
-                                    <span className={cn(
-                                        "text-xs font-medium px-2 py-0.5 rounded-full",
-                                        activeStatus === status
-                                            ? "bg-primary-foreground/20"
-                                            : "bg-muted-foreground/20"
-                                    )}>
-                                        {getStatusCount(status)}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Shelves List (for Shelf view) */}
-                    {activeTab === "shelves" && (
-                        <div className="space-y-1">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Raflarım
-                                </h3>
-                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={openNewShelf}>
-                                    <Plus className="h-4 w-4" />
-                                </Button>
-                            </div>
-                            {shelves.map((shelf) => (
-                                <div
-                                    key={shelf.id}
-                                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-muted transition-colors group"
-                                >
-                                    <span className="flex items-center gap-2 text-sm">
-                                        <div
-                                            className="w-3 h-3 rounded-full"
-                                            style={{ backgroundColor: shelf.color || '#6b7280' }}
-                                        />
-                                        {shelf.name}
-                                        <span className="text-xs text-muted-foreground">
-                                            ({shelf._count.books})
-                                        </span>
-                                    </span>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-6 w-6 opacity-0 group-hover:opacity-100"
-                                            >
-                                                <MoreVertical className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => openEditShelf(shelf)}>
-                                                <Edit className="h-4 w-4 mr-2" />
-                                                Düzenle
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onClick={() => handleDeleteShelf(shelf)}
-                                                className="text-red-600"
-                                            >
-                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                Sil
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            ))}
-                            {shelves.length === 0 && (
-                                <p className="text-sm text-muted-foreground text-center py-4">
-                                    Henüz raf oluşturmadınız
-                                </p>
-                            )}
-                        </div>
-                    )}
+                    {/* Status Filters */}
+                    <div className="space-y-1">
+                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                            Durum
+                        </h3>
+                        {(Object.keys(statusConfig) as StatusFilter[]).map((status) => (
+                            <button
+                                key={status}
+                                onClick={() => setActiveStatus(status)}
+                                className={cn(
+                                    "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
+                                    activeStatus === status
+                                        ? "bg-primary text-primary-foreground"
+                                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                <span className="flex items-center gap-2">
+                                    {statusConfig[status].icon}
+                                    {statusConfig[status].label}
+                                </span>
+                                <span className={cn(
+                                    "text-xs font-medium px-2 py-0.5 rounded-full",
+                                    activeStatus === status
+                                        ? "bg-primary-foreground/20"
+                                        : "bg-muted-foreground/20"
+                                )}>
+                                    {getStatusCount(status)}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
 
                     {/* Quick Stats */}
                     <div className="mt-8 p-4 bg-muted/50 rounded-lg">
@@ -472,53 +392,61 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
 
             {/* Main Content */}
             <main className="flex-1 min-w-0">
+                {/* Unified Header */}
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+                    <div>
+                        <h1 className="text-2xl font-bold">
+                            {activeTab === "shelves" ? "Raflarım" : statusConfig[activeStatus].label}
+                        </h1>
+                        <p className="text-muted-foreground text-sm">
+                            {activeTab === "shelves"
+                                ? `${shelves.length} raf, ${books.length} kitap`
+                                : `${filteredBooks.length} kitap`
+                            }
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <div className="relative flex-1 sm:w-64">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Kitap veya yazar ara..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-9"
+                            />
+                        </div>
+
+                        <Button variant="outline" size="icon" onClick={openNewShelf} title="Raf Ekle">
+                            <FolderPlus className="h-4 w-4" />
+                        </Button>
+
+                        <div className="flex border rounded-lg">
+                            <Button
+                                variant={activeTab === "cards" ? "secondary" : "ghost"}
+                                size="icon"
+                                className="rounded-r-none"
+                                onClick={() => setActiveTab("cards")}
+                                title="Kart Görünümü"
+                            >
+                                <Grid3X3 className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant={activeTab === "shelves" ? "secondary" : "ghost"}
+                                size="icon"
+                                className="rounded-l-none"
+                                onClick={() => setActiveTab("shelves")}
+                                title="Raf Görünümü"
+                            >
+                                <Layers className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Card View */}
                 {activeTab === "cards" && (
                     <>
-                        {/* Header */}
-                        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-                            <div>
-                                <h1 className="text-2xl font-bold">
-                                    {statusConfig[activeStatus].label}
-                                </h1>
-                                <p className="text-muted-foreground text-sm">
-                                    {filteredBooks.length} kitap
-                                </p>
-                            </div>
-
-                            <div className="flex items-center gap-2 w-full sm:w-auto">
-                                <div className="relative flex-1 sm:w-64">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Kitap veya yazar ara..."
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-9"
-                                    />
-                                </div>
-
-                                <div className="flex border rounded-lg">
-                                    <Button
-                                        variant={viewMode === "grid" ? "secondary" : "ghost"}
-                                        size="icon"
-                                        className="rounded-r-none"
-                                        onClick={() => setViewMode("grid")}
-                                    >
-                                        <Grid3X3 className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        variant={viewMode === "list" ? "secondary" : "ghost"}
-                                        size="icon"
-                                        className="rounded-l-none"
-                                        onClick={() => setViewMode("list")}
-                                    >
-                                        <List className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Books Grid/List */}
                         {filteredBooks.length === 0 ? (
                             <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-lg bg-muted/40">
                                 <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
@@ -538,67 +466,10 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                                     </>
                                 )}
                             </div>
-                        ) : viewMode === "grid" ? (
+                        ) : (
                             <div className="grid gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
                                 {filteredBooks.map((book) => (
                                     <BookCard key={book.id} book={book} showShelfButton />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="space-y-2">
-                                {filteredBooks.map((book) => (
-                                    <Link
-                                        key={book.id}
-                                        href={`/book/${book.id}`}
-                                        className="flex gap-4 p-3 rounded-lg border hover:bg-muted/50 transition-colors group"
-                                    >
-                                        <div className="relative w-16 h-24 flex-shrink-0 rounded overflow-hidden bg-muted">
-                                            {book.coverUrl ? (
-                                                <Image
-                                                    src={book.coverUrl.replace("http:", "https:")}
-                                                    alt={book.title}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            ) : (
-                                                <div className="flex items-center justify-center h-full text-muted-foreground">
-                                                    <BookOpen className="h-6 w-6" />
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="flex-1 min-w-0 py-1">
-                                            <h3 className="font-medium line-clamp-1 group-hover:text-primary transition-colors">
-                                                {book.title}
-                                            </h3>
-                                            <p className="text-sm text-muted-foreground">
-                                                {book.author?.name || "Bilinmiyor"}
-                                            </p>
-                                            <div className="flex items-center gap-3 mt-2">
-                                                <span className={cn(
-                                                    "text-xs px-2 py-0.5 rounded font-medium text-white",
-                                                    statusBadgeConfig[book.status].bgColor
-                                                )}>
-                                                    {statusBadgeConfig[book.status].label}
-                                                </span>
-                                                {book.pageCount && (
-                                                    <span className="text-xs text-muted-foreground">
-                                                        {book.pageCount} sayfa
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        {book.status === "READING" && book.pageCount && (
-                                            <div className="flex-shrink-0 w-24 flex flex-col justify-center">
-                                                <div className="text-xs text-muted-foreground text-right mb-1">
-                                                    {Math.round((book.currentPage / book.pageCount) * 100)}%
-                                                </div>
-                                                <Progress
-                                                    value={(book.currentPage / book.pageCount) * 100}
-                                                    className="h-1.5"
-                                                />
-                                            </div>
-                                        )}
-                                    </Link>
                                 ))}
                             </div>
                         )}
@@ -607,104 +478,88 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
 
                 {/* Shelf View */}
                 {activeTab === "shelves" && (
-                    <>
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h1 className="text-2xl font-bold">Raflarım</h1>
-                                <p className="text-muted-foreground text-sm">
-                                    {shelves.length} raf, {books.length} kitap
-                                </p>
-                            </div>
-                            <Button onClick={openNewShelf}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Yeni Raf
-                            </Button>
-                        </div>
-
-                        {/* Shelves */}
-                        <div className="space-y-8">
-                            {shelves.map((shelf) => (
-                                <div key={shelf.id} className="border rounded-lg p-4">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className="w-4 h-4 rounded-full"
-                                                style={{ backgroundColor: shelf.color || '#6b7280' }}
-                                            />
-                                            <h2 className="text-lg font-semibold">{shelf.name}</h2>
-                                            <span className="text-sm text-muted-foreground">
-                                                ({shelf.books.length} kitap)
-                                            </span>
-                                        </div>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon">
-                                                    <MoreVertical className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onClick={() => openEditShelf(shelf)}>
-                                                    <Edit className="h-4 w-4 mr-2" />
-                                                    Düzenle
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={() => handleDeleteShelf(shelf)}
-                                                    className="text-red-600"
-                                                >
-                                                    <Trash2 className="h-4 w-4 mr-2" />
-                                                    Sil
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-                                    {shelf.books.length > 0 ? (
-                                        <div className="grid gap-3 grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
-                                            {shelf.books.map((book) => (
-                                                <BookCard key={book.id} book={book} showShelfButton />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center justify-center py-8 border-2 border-dashed rounded-lg bg-muted/20">
-                                            <p className="text-sm text-muted-foreground">
-                                                Bu rafta henüz kitap yok
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-
-                            {/* Unshelved Books */}
-                            {unshelfedBooks.length > 0 && (
-                                <div className="border rounded-lg p-4 border-dashed">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="w-4 h-4 rounded-full bg-gray-400" />
-                                        <h2 className="text-lg font-semibold text-muted-foreground">
-                                            Rafsız Kitaplar
-                                        </h2>
+                    <div className="space-y-8">
+                        {shelves.map((shelf) => (
+                            <div key={shelf.id} className="border rounded-lg p-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className="w-4 h-4 rounded-full"
+                                            style={{ backgroundColor: shelf.color || '#6b7280' }}
+                                        />
+                                        <h2 className="text-lg font-semibold">{shelf.name}</h2>
                                         <span className="text-sm text-muted-foreground">
-                                            ({unshelfedBooks.length} kitap)
+                                            ({shelf.books.length} kitap)
                                         </span>
                                     </div>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreVertical className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => openEditShelf(shelf)}>
+                                                <Edit className="h-4 w-4 mr-2" />
+                                                Düzenle
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onClick={() => handleDeleteShelf(shelf)}
+                                                className="text-red-600"
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Sil
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                                {shelf.books.length > 0 ? (
                                     <div className="grid gap-3 grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
-                                        {unshelfedBooks.map((book) => (
+                                        {shelf.books.map((book) => (
                                             <BookCard key={book.id} book={book} showShelfButton />
                                         ))}
                                     </div>
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="flex items-center justify-center py-8 border-2 border-dashed rounded-lg bg-muted/20">
+                                        <p className="text-sm text-muted-foreground">
+                                            Bu rafta henüz kitap yok
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
 
-                            {shelves.length === 0 && unshelfedBooks.length === 0 && (
-                                <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-lg bg-muted/40">
-                                    <Layers className="h-12 w-12 text-muted-foreground mb-4" />
-                                    <p className="text-muted-foreground mb-4">Henüz raf oluşturmadınız</p>
-                                    <Button onClick={openNewShelf}>
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        İlk Rafı Oluştur
-                                    </Button>
+                        {/* Unshelved Books */}
+                        {unshelfedBooks.length > 0 && (
+                            <div className="border rounded-lg p-4 border-dashed">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-4 h-4 rounded-full bg-gray-400" />
+                                    <h2 className="text-lg font-semibold text-muted-foreground">
+                                        Rafsız Kitaplar
+                                    </h2>
+                                    <span className="text-sm text-muted-foreground">
+                                        ({unshelfedBooks.length} kitap)
+                                    </span>
                                 </div>
-                            )}
-                        </div>
-                    </>
+                                <div className="grid gap-3 grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+                                    {unshelfedBooks.map((book) => (
+                                        <BookCard key={book.id} book={book} showShelfButton />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {shelves.length === 0 && unshelfedBooks.length === 0 && (
+                            <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-lg bg-muted/40">
+                                <Layers className="h-12 w-12 text-muted-foreground mb-4" />
+                                <p className="text-muted-foreground mb-4">Henüz raf oluşturmadınız</p>
+                                <Button onClick={openNewShelf}>
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    İlk Rafı Oluştur
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                 )}
             </main>
 
