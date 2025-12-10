@@ -43,6 +43,7 @@ export function AddBookForm() {
     const [pageCount, setPageCount] = useState("")
     const [coverUrl, setCoverUrl] = useState("")
     const [isbn, setIsbn] = useState("")
+    const [publishedDate, setPublishedDate] = useState("")
 
     // Author modal
     const [authorModalOpen, setAuthorModalOpen] = useState(false)
@@ -118,6 +119,8 @@ export function AddBookForm() {
             publisherId: publisherId || undefined,
             coverUrl: coverUrl.trim() || undefined,
             pageCount: pageCount ? parseInt(pageCount) : undefined,
+            isbn: isbn.trim() || undefined,
+            publishedDate: publishedDate.trim() || undefined,
             status: "TO_READ",
         })
 
@@ -135,6 +138,7 @@ export function AddBookForm() {
                 setPageCount("")
                 setCoverUrl("")
                 setIsbn("")
+                setPublishedDate("")
             }
         } else {
             toast.error("Kitap eklenirken bir hata oluştu")
@@ -255,15 +259,40 @@ export function AddBookForm() {
                             />
                         </div>
 
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="pageCount">Sayfa Sayısı</Label>
+                                <Input
+                                    id="pageCount"
+                                    type="number"
+                                    placeholder="Örn: 450"
+                                    value={pageCount}
+                                    onChange={(e) => setPageCount(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="publishedDate">Yayın Tarihi</Label>
+                                <Input
+                                    id="publishedDate"
+                                    placeholder="Örn: 29.10.2025"
+                                    value={publishedDate}
+                                    onChange={(e) => setPublishedDate(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
                         <div className="space-y-2">
-                            <Label htmlFor="pageCount">Sayfa Sayısı</Label>
+                            <Label htmlFor="isbnField">ISBN</Label>
                             <Input
-                                id="pageCount"
-                                type="number"
-                                placeholder="Örn: 450"
-                                value={pageCount}
-                                onChange={(e) => setPageCount(e.target.value)}
+                                id="isbnField"
+                                placeholder="Örn: 9786253695033"
+                                value={isbn}
+                                onChange={(e) => setIsbn(e.target.value)}
                             />
+                            <p className="text-xs text-muted-foreground">
+                                ISBN numarası kitabın benzersiz kimliğidir.
+                            </p>
                         </div>
 
                         <div className="space-y-2">

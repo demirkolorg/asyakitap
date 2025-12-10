@@ -12,6 +12,8 @@ export async function addBookToLibrary(bookData: {
     publisherId?: string
     coverUrl?: string
     pageCount?: number
+    isbn?: string
+    publishedDate?: string
     status?: BookStatus
 }) {
     const supabase = await createClient()
@@ -30,6 +32,8 @@ export async function addBookToLibrary(bookData: {
                 publisherId: bookData.publisherId,
                 coverUrl: bookData.coverUrl,
                 pageCount: bookData.pageCount,
+                isbn: bookData.isbn,
+                publishedDate: bookData.publishedDate,
                 status: bookData.status || "TO_READ",
             },
             include: {
@@ -116,6 +120,8 @@ export async function updateBook(id: string, data: {
     status?: BookStatus
     currentPage?: number
     pageCount?: number | null
+    isbn?: string | null
+    publishedDate?: string | null
     tortu?: string
     imza?: string
     startDate?: Date | null

@@ -26,7 +26,8 @@
       "Bash(git push)",
       "Bash(magick convert:*)",
       "Bash(node scripts/create-dark-favicon.mjs:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(timeout /t 5 /nobreak)"
     ],
     "deny": [],
     "ask": []

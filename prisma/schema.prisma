@@ -88,6 +88,8 @@ model Book {
   shelf                Shelf?                @relation(fields: [shelfId], references: [id], onDelete: SetNull)
   coverUrl             String?
   pageCount            Int?
+  isbn                 String?
+  publishedDate        String?               // Yayın tarihi (örn: "29.10.2025")
   status               BookStatus            @default(TO_READ)
   currentPage          Int                   @default(0)
   tortu                String?               @db.Text // Kitaptan aklında kalanlar

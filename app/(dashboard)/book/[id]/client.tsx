@@ -38,6 +38,7 @@ import {
     Building2,
     Map,
     Layers,
+    Barcode,
 } from "lucide-react"
 import { addQuote, deleteQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -123,6 +124,8 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [editTitle, setEditTitle] = useState(book.title)
     const [editAuthorId, setEditAuthorId] = useState(book.authorId || "")
     const [editPageCount, setEditPageCount] = useState(book.pageCount?.toString() || "")
+    const [editIsbn, setEditIsbn] = useState(book.isbn || "")
+    const [editPublishedDate, setEditPublishedDate] = useState(book.publishedDate || "")
     const [editCoverUrl, setEditCoverUrl] = useState(book.coverUrl || "")
     const [isSavingEdit, setIsSavingEdit] = useState(false)
     const [showAddAuthorModal, setShowAddAuthorModal] = useState(false)
@@ -161,6 +164,8 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             title: editTitle,
             authorId: editAuthorId,
             pageCount: editPageCount ? parseInt(editPageCount) : null,
+            isbn: editIsbn.trim() || null,
+            publishedDate: editPublishedDate.trim() || null,
             coverUrl: editCoverUrl.trim() || null,
         })
         if (result.success) {
@@ -509,6 +514,22 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 </span>
                             </div>
                         )}
+                        {book.isbn && (
+                            <div className="flex items-center gap-2">
+                                <Barcode className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm">
+                                    ISBN: <strong>{book.isbn}</strong>
+                                </span>
+                            </div>
+                        )}
+                        {book.publishedDate && (
+                            <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm">
+                                    Yayın: <strong>{book.publishedDate}</strong>
+                                </span>
+                            </div>
+                        )}
                         {book.startDate && (
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -737,13 +758,33 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 onAddNew={() => setShowAddAuthorModal(true)}
                             />
                         </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="pageCount">Sayfa Sayısı</Label>
+                                <Input
+                                    id="pageCount"
+                                    type="number"
+                                    value={editPageCount}
+                                    onChange={(e) => setEditPageCount(e.target.value)}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="publishedDate">Yayın Tarihi</Label>
+                                <Input
+                                    id="publishedDate"
+                                    placeholder="Örn: 29.10.2025"
+                                    value={editPublishedDate}
+                                    onChange={(e) => setEditPublishedDate(e.target.value)}
+                                />
+                            </div>
+                        </div>
                         <div className="space-y-2">
-                            <Label htmlFor="pageCount">Sayfa Sayısı</Label>
+                            <Label htmlFor="isbn">ISBN</Label>
                             <Input
-                                id="pageCount"
-                                type="number"
-                                value={editPageCount}
-                                onChange={(e) => setEditPageCount(e.target.value)}
+                                id="isbn"
+                                placeholder="Örn: 9786253695033"
+                                value={editIsbn}
+                                onChange={(e) => setEditIsbn(e.target.value)}
                             />
                         </div>
                         <div className="space-y-2">

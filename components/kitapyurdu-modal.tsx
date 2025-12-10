@@ -22,7 +22,9 @@ import {
     ExternalLink,
     User,
     FileText,
-    Building2
+    Building2,
+    Barcode,
+    Calendar
 } from "lucide-react"
 import { scrapeKitapyurdu, addBookFromKitapyurdu } from "@/actions/kitapyurdu"
 import { toast } from "sonner"
@@ -33,6 +35,8 @@ interface ScrapedData {
     pageCount: number | null
     coverUrl: string | null
     publisher: string | null
+    isbn: string | null
+    publishedDate: string | null
 }
 
 type ModalStep = "input" | "loading" | "preview" | "success" | "error"
@@ -212,6 +216,18 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                             <Building2 className="h-4 w-4" />
                                             {scrapedData.publisher}
+                                        </div>
+                                    )}
+                                    {scrapedData.isbn && (
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Barcode className="h-4 w-4" />
+                                            {scrapedData.isbn}
+                                        </div>
+                                    )}
+                                    {scrapedData.publishedDate && (
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Calendar className="h-4 w-4" />
+                                            {scrapedData.publishedDate}
                                         </div>
                                     )}
                                 </div>
