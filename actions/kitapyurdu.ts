@@ -7,9 +7,11 @@ import { revalidatePath } from "next/cache"
 interface ScrapedBookData {
     title: string
     author: string
+    authorImageUrl: string | null
     pageCount: number | null
     coverUrl: string | null
     publisher: string | null
+    publisherImageUrl: string | null
     isbn: string | null
     publishedDate: string | null
 }
@@ -65,10 +67,14 @@ export async function scrapeKitapyurdu(url: string): Promise<ScrapeResult> {
             return { success: false, error: "Kitap adı bulunamadı" }
         }
 
-        // Yazar adını çek - pr_producers__link class'lı linkten
-        const authorMatch = html.match(/<a[^>]*class="pr_producers__link"[^>]*href="[^"]*\/yazar\/[^"]*"[^>]*>\s*([^<]+)<\/a>/i)
-            || html.match(/kitapyurdu\.com\/yazar\/[^"]*"[^>]*>\s*([^<]+)<\/a>/i)
-        const author = authorMatch ? authorMatch[1].trim() : "Bilinmeyen Yazar"
+        // Yazar adını ve URL'sini çek
+        const authorLinkMatch = html.match(/<a[^>]*class="pr_producers__link"[^>]*href="([^"]*\/yazar\/[^"]*)"[^>]*>\s*([^<]+)<\/a>/i)
+            || html.match(/href="(https?:\/\/www\.kitapyurdu\.com\/yazar\/[^"]*)"[^>]*>\s*([^<]+)<\/a>/i)
+        const author = authorLinkMatch ? authorLinkMatch[2].trim() : "Bilinmeyen Yazar"
+        let authorPageUrl = authorLinkMatch ? authorLinkMatch[1] : null
+        if (authorPageUrl && !authorPageUrl.startsWith("http")) {
+            authorPageUrl = "https://www.kitapyurdu.com" + authorPageUrl
+        }
 
         // Sayfa sayısını çek - tablo hücresinden
         const pageMatch = html.match(/<td>Sayfa Sayısı:<\/td>\s*<td>(\d+)<\/td>/i)
@@ -87,10 +93,14 @@ export async function scrapeKitapyurdu(url: string): Promise<ScrapeResult> {
             coverUrl = "https://www.kitapyurdu.com" + coverUrl
         }
 
-        // Yayınevini çek - pr_producers__link class'lı linkten
-        const publisherMatch = html.match(/<a[^>]*class="pr_producers__link"[^>]*href="[^"]*\/yayinevi\/[^"]*"[^>]*>([^<]+)<\/a>/i)
-            || html.match(/kitapyurdu\.com\/yayinevi\/[^"]*"[^>]*>\s*([^<]+)<\/a>/i)
-        const publisher = publisherMatch ? publisherMatch[1].trim() : null
+        // Yayınevini ve URL'sini çek
+        const publisherLinkMatch = html.match(/<a[^>]*class="pr_producers__link"[^>]*href="([^"]*\/yayinevi\/[^"]*)"[^>]*>([^<]+)<\/a>/i)
+            || html.match(/href="(https?:\/\/www\.kitapyurdu\.com\/yayinevi\/[^"]*)"[^>]*>\s*([^<]+)<\/a>/i)
+        const publisher = publisherLinkMatch ? publisherLinkMatch[2].trim() : null
+        let publisherPageUrl = publisherLinkMatch ? publisherLinkMatch[1] : null
+        if (publisherPageUrl && !publisherPageUrl.startsWith("http")) {
+            publisherPageUrl = "https://www.kitapyurdu.com" + publisherPageUrl
+        }
 
         // ISBN çek - tablo hücresinden veya JSON-LD'den
         const isbnMatch = html.match(/<td>ISBN:<\/td>\s*<td>(\d{10,13})<\/td>/i)
@@ -101,14 +111,22 @@ export async function scrapeKitapyurdu(url: string): Promise<ScrapeResult> {
         const publishedDateMatch = html.match(/<td>Yayın Tarihi:<\/td>\s*<td>(\d{2}\.\d{2}\.\d{4})<\/td>/i)
         const publishedDate = publishedDateMatch ? publishedDateMatch[1].trim() : null
 
+        // Yazar ve yayınevi görsellerini paralel olarak çek
+        const [authorImageUrl, publisherImageUrl] = await Promise.all([
+            authorPageUrl ? fetchAuthorImage(authorPageUrl) : Promise.resolve(null),
+            publisherPageUrl ? fetchPublisherImage(publisherPageUrl) : Promise.resolve(null)
+        ])
+
         return {
             success: true,
             data: {
                 title,
                 author,
+                authorImageUrl,
                 pageCount,
                 coverUrl,
                 publisher,
+                publisherImageUrl,
                 isbn,
                 publishedDate
             }
@@ -116,6 +134,76 @@ export async function scrapeKitapyurdu(url: string): Promise<ScrapeResult> {
     } catch (error) {
         console.error("Kitapyurdu scraping error:", error)
         return { success: false, error: "Sayfa kazıma sırasında hata oluştu" }
+    }
+}
+
+// Yazar sayfasından görsel çek
+async function fetchAuthorImage(authorUrl: string): Promise<string | null> {
+    try {
+        const response = await fetch(authorUrl, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            },
+        })
+        if (!response.ok) return null
+
+        const html = await response.text()
+
+        // Yazar görseli - JSON-LD'den "image" alanı veya profil resmi
+        const jsonLdMatch = html.match(/"image":\s*"(https?:\/\/[^"]+)"/i)
+        const ogImageMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i)
+        const profileMatch = html.match(/<img[^>]*class="[^"]*(?:author|yazar|profile|profil)[^"]*"[^>]*src="([^"]+)"/i)
+
+        // Site logosu olmayan ilk görseli döndür
+        const imageMatch = jsonLdMatch || profileMatch || ogImageMatch
+
+        if (imageMatch) {
+            let imageUrl = imageMatch[1]
+            // Site logosunu atla
+            if (imageUrl.includes("fn:11250623") || imageUrl.includes("fn:11682842")) {
+                return null
+            }
+            if (imageUrl.startsWith("//")) imageUrl = "https:" + imageUrl
+            return imageUrl
+        }
+        return null
+    } catch {
+        return null
+    }
+}
+
+// Yayınevi sayfasından logo çek
+async function fetchPublisherImage(publisherUrl: string): Promise<string | null> {
+    try {
+        const response = await fetch(publisherUrl, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            },
+        })
+        if (!response.ok) return null
+
+        const html = await response.text()
+
+        // Yayınevi logosu - JSON-LD'den "image" alanı veya profil resmi
+        const jsonLdMatch = html.match(/"image":\s*"(https?:\/\/[^"]+)"/i)
+        const ogImageMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i)
+        const logoMatch = html.match(/<img[^>]*class="[^"]*(?:publisher|yayinevi|logo)[^"]*"[^>]*src="([^"]+)"/i)
+
+        // Site logosu olmayan ilk görseli döndür
+        const imageMatch = jsonLdMatch || logoMatch || ogImageMatch
+
+        if (imageMatch) {
+            let imageUrl = imageMatch[1]
+            // Site logosunu atla
+            if (imageUrl.includes("fn:11250623") || imageUrl.includes("fn:11682842")) {
+                return null
+            }
+            if (imageUrl.startsWith("//")) imageUrl = "https:" + imageUrl
+            return imageUrl
+        }
+        return null
+    } catch {
+        return null
     }
 }
 
@@ -149,7 +237,7 @@ export async function addBookFromKitapyurdu(bookData: ScrapedBookData): Promise<
             }
         }
 
-        // Yazarı bul veya oluştur
+        // Yazarı bul veya oluştur (görsel ile birlikte)
         let author = await prisma.author.findFirst({
             where: {
                 name: {
@@ -161,11 +249,20 @@ export async function addBookFromKitapyurdu(bookData: ScrapedBookData): Promise<
 
         if (!author) {
             author = await prisma.author.create({
-                data: { name: bookData.author }
+                data: {
+                    name: bookData.author,
+                    imageUrl: bookData.authorImageUrl
+                }
+            })
+        } else if (!author.imageUrl && bookData.authorImageUrl) {
+            // Mevcut yazarın görseli yoksa güncelle
+            author = await prisma.author.update({
+                where: { id: author.id },
+                data: { imageUrl: bookData.authorImageUrl }
             })
         }
 
-        // Yayıneviyi bul veya oluştur
+        // Yayıneviyi bul veya oluştur (görsel ile birlikte)
         let publisher = null
         if (bookData.publisher) {
             publisher = await prisma.publisher.findFirst({
@@ -179,7 +276,16 @@ export async function addBookFromKitapyurdu(bookData: ScrapedBookData): Promise<
 
             if (!publisher) {
                 publisher = await prisma.publisher.create({
-                    data: { name: bookData.publisher }
+                    data: {
+                        name: bookData.publisher,
+                        imageUrl: bookData.publisherImageUrl
+                    }
+                })
+            } else if (!publisher.imageUrl && bookData.publisherImageUrl) {
+                // Mevcut yayınevinin görseli yoksa güncelle
+                publisher = await prisma.publisher.update({
+                    where: { id: publisher.id },
+                    data: { imageUrl: bookData.publisherImageUrl }
                 })
             }
         }

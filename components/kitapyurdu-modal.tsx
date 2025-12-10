@@ -32,9 +32,11 @@ import { toast } from "sonner"
 interface ScrapedData {
     title: string
     author: string
+    authorImageUrl: string | null
     pageCount: number | null
     coverUrl: string | null
     publisher: string | null
+    publisherImageUrl: string | null
     isbn: string | null
     publishedDate: string | null
 }
