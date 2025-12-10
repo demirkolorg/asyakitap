@@ -35,7 +35,6 @@ import { toast } from "sonner"
 import { addQuote, deleteQuote, updateQuote } from "@/actions/quotes"
 import Link from "next/link"
 import Image from "next/image"
-import { Book } from "@prisma/client"
 import { cn } from "@/lib/utils"
 
 interface QuoteWithBook {
@@ -51,9 +50,14 @@ interface QuoteWithBook {
     }
 }
 
+interface BookForSelect {
+    id: string
+    title: string
+}
+
 interface QuotesClientProps {
     initialQuotes: QuoteWithBook[]
-    books: Book[]
+    books: BookForSelect[]
 }
 
 export default function QuotesClient({ initialQuotes, books }: QuotesClientProps) {

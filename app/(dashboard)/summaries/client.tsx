@@ -21,9 +21,16 @@ import { Book, BookStatus, Author } from "@prisma/client"
 
 type BookWithAuthor = Book & { author: Author | null }
 
+interface BookWithoutTortu {
+    id: string
+    title: string
+    coverUrl: string | null
+}
+
 interface SummariesClientProps {
     booksWithTortu: BookWithAuthor[]
-    allBooks: BookWithAuthor[]
+    totalBookCount: number
+    booksWithoutTortu: BookWithoutTortu[]
 }
 
 const statusConfig: Record<BookStatus, { label: string; color: string }> = {
@@ -33,7 +40,7 @@ const statusConfig: Record<BookStatus, { label: string; color: string }> = {
     DNF: { label: "Yarım Bırakıldı", color: "text-red-600" },
 }
 
-export default function SummariesClient({ booksWithTortu, allBooks }: SummariesClientProps) {
+export default function SummariesClient({ booksWithTortu, totalBookCount, booksWithoutTortu }: SummariesClientProps) {
     const [searchQuery, setSearchQuery] = useState("")
     const [filterStatus, setFilterStatus] = useState<"all" | BookStatus>("all")
 
@@ -71,11 +78,6 @@ export default function SummariesClient({ booksWithTortu, allBooks }: SummariesC
 
         return result
     }, [booksWithTortu, filterStatus, searchQuery])
-
-    // Books without tortu
-    const booksWithoutTortu = allBooks.filter(
-        book => !booksWithTortu.some(b => b.id === book.id)
-    )
 
     // Strip HTML for preview
     const stripHtml = (html: string) => {
@@ -174,17 +176,17 @@ export default function SummariesClient({ booksWithTortu, allBooks }: SummariesC
                                 <span className="text-muted-foreground">Toplam Kelime</span>
                                 <span className="font-medium">{stats.totalWords.toLocaleString()}</span>
                             </div>
-                            {allBooks.length > 0 && (
+                            {totalBookCount > 0 && (
                                 <div className="pt-2 border-t">
                                     <div className="flex justify-between mb-1">
                                         <span className="text-muted-foreground">Kapsam</span>
                                         <span className="font-medium">
-                                            {Math.round((stats.totalBooks / allBooks.length) * 100)}%
+                                            {Math.round((stats.totalBooks / totalBookCount) * 100)}%
                                         </span>
                                     </div>
-                                    <Progress value={(stats.totalBooks / allBooks.length) * 100} className="h-1.5" />
+                                    <Progress value={(stats.totalBooks / totalBookCount) * 100} className="h-1.5" />
                                     <p className="text-xs text-muted-foreground mt-1">
-                                        {allBooks.length - stats.totalBooks} kitapta tortu yok
+                                        {totalBookCount - stats.totalBooks} kitapta tortu yok
                                     </p>
                                 </div>
                             )}

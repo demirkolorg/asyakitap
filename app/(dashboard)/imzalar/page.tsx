@@ -1,8 +1,12 @@
-import { getBooksWithImza } from "@/actions/library"
+import { getImzalarPageData } from "@/actions/library"
 import ImzalarClient from "./client"
 
 export default async function ImzalarPage() {
-    const { booksWithImza, allBooks } = await getBooksWithImza()
+    const data = await getImzalarPageData()
 
-    return <ImzalarClient booksWithImza={booksWithImza} allBooks={allBooks} />
+    return <ImzalarClient
+        booksWithImza={data.booksWithImza}
+        totalBookCount={data.totalBookCount}
+        booksWithoutImza={data.booksWithoutImza}
+    />
 }

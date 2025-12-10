@@ -1,12 +1,12 @@
-import { getBooksWithSummaries } from "@/actions/summaries"
-import { getBooks } from "@/actions/library"
+import { getSummariesPageData } from "@/actions/summaries"
 import SummariesClient from "./client"
 
 export default async function SummariesPage() {
-    const [booksWithTortu, allBooks] = await Promise.all([
-        getBooksWithSummaries(),
-        getBooks()
-    ])
+    const data = await getSummariesPageData()
 
-    return <SummariesClient booksWithTortu={booksWithTortu} allBooks={allBooks} />
+    return <SummariesClient
+        booksWithTortu={data.booksWithTortu}
+        totalBookCount={data.totalBookCount}
+        booksWithoutTortu={data.booksWithoutTortu}
+    />
 }

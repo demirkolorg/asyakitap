@@ -45,6 +45,8 @@ export async function addBookToLibrary(bookData: {
 
         revalidatePath("/library")
         revalidatePath("/dashboard")
+        revalidatePath("/authors")
+        revalidatePath("/publishers")
         return { success: true, book: newBook }
     } catch (error) {
         console.error("Failed to add book:", error)
@@ -165,6 +167,9 @@ export async function deleteBook(id: string) {
         })
         revalidatePath("/library")
         revalidatePath("/dashboard")
+        revalidatePath("/summaries")
+        revalidatePath("/imzalar")
+        revalidatePath("/quotes")
         return { success: true }
     } catch (error) {
         console.error("Failed to delete book:", error)
@@ -172,50 +177,7 @@ export async function deleteBook(id: string) {
     }
 }
 
-export async function getBooksWithTortu() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) return { booksWithTortu: [], allBooks: [] }
-
-    try {
-        const allBooks = await prisma.book.findMany({
-            where: { userId: user.id },
-            include: { author: true },
-            orderBy: { updatedAt: 'desc' }
-        })
-
-        const booksWithTortu = allBooks.filter(b => b.tortu && b.tortu.trim() !== '')
-
-        return { booksWithTortu, allBooks }
-    } catch (error) {
-        console.error("Failed to fetch books with tortu:", error)
-        return { booksWithTortu: [], allBooks: [] }
-    }
-}
-
-export async function getBooksWithImza() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) return { booksWithImza: [], allBooks: [] }
-
-    try {
-        const allBooks = await prisma.book.findMany({
-            where: { userId: user.id },
-            include: { author: true },
-            orderBy: { updatedAt: 'desc' }
-        })
-
-        const booksWithImza = allBooks.filter(b => b.imza && b.imza.trim() !== '')
-
-        return { booksWithImza, allBooks }
-    } catch (error) {
-        console.error("Failed to fetch books with imza:", error)
-        return { booksWithImza: [], allBooks: [] }
-    }
-}
-
+// Header için şu an okunan kitaplar
 export async function getCurrentlyReadingBooks() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -236,5 +198,54 @@ export async function getCurrentlyReadingBooks() {
     } catch (error) {
         console.error("Failed to fetch currently reading books:", error)
         return []
+    }
+}
+
+// Imzalar sayfası için optimize edilmiş veri
+export async function getImzalarPageData() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return { booksWithImza: [], totalBookCount: 0, booksWithoutImza: [] }
+
+    try {
+        const [booksWithImza, totalBookCount, booksWithoutImza] = await Promise.all([
+            // İmzası olan kitaplar
+            prisma.book.findMany({
+                where: {
+                    userId: user.id,
+                    imza: { not: null },
+                    NOT: { imza: "" }
+                },
+                include: { author: true },
+                orderBy: { updatedAt: 'desc' }
+            }),
+            // Toplam kitap sayısı
+            prisma.book.count({
+                where: { userId: user.id }
+            }),
+            // İmza bekleyen kitaplar (max 10)
+            prisma.book.findMany({
+                where: {
+                    userId: user.id,
+                    OR: [
+                        { imza: null },
+                        { imza: "" }
+                    ]
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    coverUrl: true
+                },
+                orderBy: { updatedAt: 'desc' },
+                take: 10
+            })
+        ])
+
+        return { booksWithImza, totalBookCount, booksWithoutImza }
+    } catch (error) {
+        console.error("Failed to fetch imzalar page data:", error)
+        return { booksWithImza: [], totalBookCount: 0, booksWithoutImza: [] }
     }
 }

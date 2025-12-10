@@ -79,6 +79,8 @@ export async function addQuote(bookId: string, content: string, page?: number) {
             }
         })
         revalidatePath(`/book/${bookId}`)
+        revalidatePath('/quotes')
+        revalidatePath('/dashboard')
         return { success: true, quote }
     } catch (error) {
         console.error("Failed to add quote:", error)
@@ -107,8 +109,46 @@ export async function deleteQuote(quoteId: string, bookId: string) {
     try {
         await prisma.quote.delete({ where: { id: quoteId } })
         revalidatePath(`/book/${bookId}`)
+        revalidatePath('/quotes')
+        revalidatePath('/dashboard')
         return { success: true }
     } catch (error) {
         return { success: false, error: "Failed to delete" }
+    }
+}
+
+// Quotes sayfası için gerekli tüm veriler - optimize edilmiş
+export async function getQuotesPageData() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return { quotes: [], books: [] }
+
+    try {
+        const [quotes, books] = await Promise.all([
+            // Alıntılar (kitap bilgisiyle)
+            prisma.quote.findMany({
+                where: {
+                    book: { userId: user.id }
+                },
+                include: {
+                    book: {
+                        select: { id: true, title: true, coverUrl: true, author: { select: { name: true } } }
+                    }
+                },
+                orderBy: { createdAt: 'desc' }
+            }),
+            // Alıntı eklemek için kitap listesi (sadece id ve title)
+            prisma.book.findMany({
+                where: { userId: user.id },
+                select: { id: true, title: true },
+                orderBy: { title: 'asc' }
+            })
+        ])
+
+        return { quotes, books }
+    } catch (error) {
+        console.error("Failed to fetch quotes page data:", error)
+        return { quotes: [], books: [] }
     }
 }

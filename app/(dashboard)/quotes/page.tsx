@@ -1,12 +1,8 @@
-import { getAllQuotes } from "@/actions/quotes"
-import { getBooks } from "@/actions/library"
+import { getQuotesPageData } from "@/actions/quotes"
 import QuotesClient from "./client"
 
 export default async function QuotesPage() {
-    const [quotes, books] = await Promise.all([
-        getAllQuotes(),
-        getBooks()
-    ])
+    const data = await getQuotesPageData()
 
-    return <QuotesClient initialQuotes={quotes} books={books} />
+    return <QuotesClient initialQuotes={data.quotes} books={data.books} />
 }

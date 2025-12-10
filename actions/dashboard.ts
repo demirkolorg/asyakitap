@@ -10,7 +10,7 @@ export async function getDashboardData() {
     if (!user) return null
 
     try {
-        // Paralel sorgular - her biri sadece ihtiyacı olan veriyi çeker
+        // Tek paralel sorgu - tüm veriler bir seferde
         const [
             stats,
             currentlyReading,
@@ -18,7 +18,10 @@ export async function getDashboardData() {
             recentQuotes,
             booksWithTortu,
             booksWithImza,
-            uniqueAuthorsCount
+            uniqueAuthorsCount,
+            totalQuotes,
+            totalTortu,
+            totalImza
         ] = await Promise.all([
             // Stats - groupBy ile tek sorguda status sayıları
             prisma.book.groupBy({
@@ -31,7 +34,15 @@ export async function getDashboardData() {
             // Currently reading - sadece okunan kitaplar
             prisma.book.findMany({
                 where: { userId: user.id, status: 'READING' },
-                include: { author: true },
+                select: {
+                    id: true,
+                    title: true,
+                    coverUrl: true,
+                    currentPage: true,
+                    pageCount: true,
+                    updatedAt: true,
+                    author: { select: { id: true, name: true } }
+                },
                 orderBy: { updatedAt: 'desc' },
                 take: 10
             }),
@@ -39,7 +50,13 @@ export async function getDashboardData() {
             // Recently completed - sadece son 5 tamamlanan
             prisma.book.findMany({
                 where: { userId: user.id, status: 'COMPLETED' },
-                include: { author: true },
+                select: {
+                    id: true,
+                    title: true,
+                    coverUrl: true,
+                    endDate: true,
+                    author: { select: { id: true, name: true } }
+                },
                 orderBy: { endDate: 'desc' },
                 take: 5
             }),
@@ -47,7 +64,11 @@ export async function getDashboardData() {
             // Recent quotes - sadece son 5 alıntı
             prisma.quote.findMany({
                 where: { book: { userId: user.id } },
-                include: {
+                select: {
+                    id: true,
+                    content: true,
+                    page: true,
+                    createdAt: true,
                     book: {
                         select: { title: true, author: { select: { name: true } } }
                     }
@@ -56,26 +77,40 @@ export async function getDashboardData() {
                 take: 5
             }),
 
-            // Books with tortu - DB seviyesinde filtreleme
+            // Books with tortu - sadece son 5
             prisma.book.findMany({
                 where: {
                     userId: user.id,
                     tortu: { not: null },
                     NOT: { tortu: '' }
                 },
-                include: { author: true },
+                select: {
+                    id: true,
+                    title: true,
+                    coverUrl: true,
+                    updatedAt: true,
+                    tortu: true,
+                    author: { select: { id: true, name: true } }
+                },
                 orderBy: { updatedAt: 'desc' },
                 take: 5
             }),
 
-            // Books with imza - DB seviyesinde filtreleme
+            // Books with imza - sadece son 5
             prisma.book.findMany({
                 where: {
                     userId: user.id,
                     imza: { not: null },
                     NOT: { imza: '' }
                 },
-                include: { author: true },
+                select: {
+                    id: true,
+                    title: true,
+                    coverUrl: true,
+                    updatedAt: true,
+                    imza: true,
+                    author: { select: { id: true, name: true } }
+                },
                 orderBy: { updatedAt: 'desc' },
                 take: 5
             }),
@@ -85,14 +120,14 @@ export async function getDashboardData() {
                 where: {
                     books: { some: { userId: user.id } }
                 }
-            })
-        ])
+            }),
 
-        // Ek count sorguları (paralel)
-        const [totalQuotes, totalTortu, totalImza] = await Promise.all([
+            // Total quotes count
             prisma.quote.count({
                 where: { book: { userId: user.id } }
             }),
+
+            // Total tortu count
             prisma.book.count({
                 where: {
                     userId: user.id,
@@ -100,6 +135,8 @@ export async function getDashboardData() {
                     NOT: { tortu: '' }
                 }
             }),
+
+            // Total imza count
             prisma.book.count({
                 where: {
                     userId: user.id,
