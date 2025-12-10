@@ -9,6 +9,7 @@ import { BookStatus } from "@prisma/client"
 export async function addBookToLibrary(bookData: {
     title: string
     authorId: string
+    publisherId?: string
     coverUrl?: string
     pageCount?: number
     status?: BookStatus
@@ -26,12 +27,15 @@ export async function addBookToLibrary(bookData: {
                 userId: user.id,
                 title: bookData.title,
                 authorId: bookData.authorId,
+                publisherId: bookData.publisherId,
                 coverUrl: bookData.coverUrl,
                 pageCount: bookData.pageCount,
                 status: bookData.status || "TO_READ",
             },
             include: {
-                author: true
+                author: true,
+                publisher: true,
+                shelf: true
             }
         })
 
@@ -54,7 +58,9 @@ export async function getBooks() {
         const books = await prisma.book.findMany({
             where: { userId: user.id },
             include: {
-                author: true
+                author: true,
+                publisher: true,
+                shelf: true
             },
             orderBy: { updatedAt: 'desc' }
         })
@@ -76,8 +82,23 @@ export async function getBook(id: string) {
             where: { id, userId: user.id },
             include: {
                 author: true,
+                publisher: true,
+                shelf: true,
                 quotes: { orderBy: { createdAt: 'desc' } },
-                readingLogs: { orderBy: { createdAt: 'desc' } }
+                readingLogs: { orderBy: { createdAt: 'desc' } },
+                userReadingListBooks: {
+                    include: {
+                        readingListBook: {
+                            include: {
+                                level: {
+                                    include: {
+                                        readingList: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         })
         return book
@@ -90,6 +111,8 @@ export async function getBook(id: string) {
 export async function updateBook(id: string, data: {
     title?: string
     authorId?: string
+    publisherId?: string | null
+    shelfId?: string | null
     status?: BookStatus
     currentPage?: number
     pageCount?: number | null
@@ -109,7 +132,9 @@ export async function updateBook(id: string, data: {
             where: { id, userId: user.id },
             data,
             include: {
-                author: true
+                author: true,
+                publisher: true,
+                shelf: true
             }
         })
         revalidatePath(`/book/${id}`)

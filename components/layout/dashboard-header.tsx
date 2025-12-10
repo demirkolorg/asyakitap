@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { BookOpen, PlusCircle, TrendingUp, Loader2 } from 'lucide-react';
+import { BookOpen, PlusCircle, TrendingUp, Loader2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { UserNavMenu } from '@/components/layout/user-nav-menu';
 import { GlobalSearch } from '@/components/global-search';
+import { KitapyurduModal } from '@/components/kitapyurdu-modal';
 import {
   Dialog,
   DialogContent,
@@ -34,6 +35,7 @@ export function DashboardHeader() {
   const [readingBooks, setReadingBooks] = useState<BookWithAuthor[]>([]);
   const [showSelectBookDialog, setShowSelectBookDialog] = useState(false);
   const [showProgressDialog, setShowProgressDialog] = useState(false);
+  const [showKitapyurduModal, setShowKitapyurduModal] = useState(false);
   const [selectedBook, setSelectedBook] = useState<BookWithAuthor | null>(null);
   const [progressInput, setProgressInput] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
@@ -144,6 +146,16 @@ export function DashboardHeader() {
               <TrendingUp className="mr-2 h-4 w-4" />
             )}
             <span className="hidden sm:inline">İlerleme</span>
+          </Button>
+
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowKitapyurduModal(true)}
+            className="text-orange-600 border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-950"
+          >
+            <ExternalLink className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Kitapyurdu</span>
           </Button>
 
           <Button asChild size="sm" variant="outline">
@@ -259,6 +271,12 @@ export function DashboardHeader() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Kitapyurdu Modal */}
+      <KitapyurduModal
+        open={showKitapyurduModal}
+        onOpenChange={setShowKitapyurduModal}
+      />
     </>
   );
 }

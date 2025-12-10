@@ -35,6 +35,9 @@ import {
     Clock,
     Plus,
     PenLine,
+    Building2,
+    Map,
+    Layers,
 } from "lucide-react"
 import { addQuote, deleteQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -77,10 +80,25 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
 import { cn } from "@/lib/utils"
 
 // Types
-import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author } from "@prisma/client"
+import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, Shelf, UserReadingListBook, ReadingListBook, ReadingListLevel, ReadingList } from "@prisma/client"
+
+type UserReadingListBookWithDetails = UserReadingListBook & {
+    readingListBook: ReadingListBook & {
+        level: ReadingListLevel & {
+            readingList: ReadingList
+        }
+    }
+}
 
 interface BookDetailClientProps {
-    book: Book & { quotes: QuoteType[], readingLogs: ReadingLog[], author: Author | null }
+    book: Book & {
+        quotes: QuoteType[]
+        readingLogs: ReadingLog[]
+        author: Author | null
+        publisher: Publisher | null
+        shelf: Shelf | null
+        userReadingListBooks: UserReadingListBookWithDetails[]
+    }
 }
 
 export default function BookDetailClient({ book }: BookDetailClientProps) {
@@ -429,6 +447,42 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 <span className="text-muted-foreground">Bilinmiyor</span>
                             )}
                         </p>
+                    </div>
+
+                    {/* Publisher, Shelf & Reading List Info */}
+                    <div className="flex flex-wrap gap-3 mb-4">
+                        {book.publisher && (
+                            <Link
+                                href={`/publisher/${book.publisher.id}`}
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted hover:bg-muted/80 text-sm transition-colors"
+                            >
+                                <Building2 className="h-3.5 w-3.5" />
+                                {book.publisher.name}
+                            </Link>
+                        )}
+                        {book.shelf && (
+                            <Link
+                                href="/library"
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm transition-colors"
+                                style={{
+                                    backgroundColor: book.shelf.color ? `${book.shelf.color}20` : 'hsl(var(--muted))',
+                                    color: book.shelf.color || 'inherit'
+                                }}
+                            >
+                                <Layers className="h-3.5 w-3.5" />
+                                {book.shelf.name}
+                            </Link>
+                        )}
+                        {book.userReadingListBooks.length > 0 && book.userReadingListBooks.map((urlb) => (
+                            <Link
+                                key={urlb.id}
+                                href={`/reading-lists/${urlb.readingListBook.level.readingList.slug}`}
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900/50 text-sm transition-colors"
+                            >
+                                <Map className="h-3.5 w-3.5" />
+                                {urlb.readingListBook.level.readingList.name}
+                            </Link>
+                        ))}
                     </div>
 
                     {/* Progress Bar (when reading) */}

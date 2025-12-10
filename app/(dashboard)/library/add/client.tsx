@@ -9,6 +9,7 @@ import { searchGoogleBooks } from "@/actions/google-books"
 import { getBestCoverUrl } from "@/lib/book-utils"
 import { addBookToLibrary } from "@/actions/library"
 import { getOrCreateAuthor } from "@/actions/authors"
+import { getOrCreatePublisher } from "@/actions/publisher"
 import { linkBookToReadingList } from "@/actions/reading-lists"
 import {
     Card,
@@ -23,6 +24,8 @@ import Image from "next/image"
 import { toast } from "sonner"
 import { AuthorCombobox } from "@/components/author/author-combobox"
 import { AddAuthorModal } from "@/components/author/add-author-modal"
+import { PublisherCombobox } from "@/components/publisher/publisher-combobox"
+import { AddPublisherModal } from "@/components/publisher/add-publisher-modal"
 
 export function AddBookForm() {
     const searchParams = useSearchParams()
@@ -36,12 +39,15 @@ export function AddBookForm() {
     // Form state
     const [title, setTitle] = useState("")
     const [authorId, setAuthorId] = useState("")
+    const [publisherId, setPublisherId] = useState("")
     const [pageCount, setPageCount] = useState("")
     const [coverUrl, setCoverUrl] = useState("")
     const [isbn, setIsbn] = useState("")
 
     // Author modal
     const [authorModalOpen, setAuthorModalOpen] = useState(false)
+    // Publisher modal
+    const [publisherModalOpen, setPublisherModalOpen] = useState(false)
 
     const clearReadingListContext = () => {
         const url = new URL(window.location.href)
@@ -75,6 +81,15 @@ export function AddBookForm() {
                     }
                 }
 
+                // Yayınevi varsa otomatik ekle/seç
+                const publisherName = book.volumeInfo.publisher
+                if (publisherName) {
+                    const result = await getOrCreatePublisher(publisherName)
+                    if (result.success && result.publisher) {
+                        setPublisherId(result.publisher.id)
+                    }
+                }
+
                 toast.success("Kitap bilgileri dolduruldu")
             } else {
                 toast.error("Bu ISBN ile kitap bulunamadı")
@@ -100,6 +115,7 @@ export function AddBookForm() {
         const res = await addBookToLibrary({
             title: title.trim(),
             authorId,
+            publisherId: publisherId || undefined,
             coverUrl: coverUrl.trim() || undefined,
             pageCount: pageCount ? parseInt(pageCount) : undefined,
             status: "TO_READ",
@@ -115,6 +131,7 @@ export function AddBookForm() {
                 // Clear form
                 setTitle("")
                 setAuthorId("")
+                setPublisherId("")
                 setPageCount("")
                 setCoverUrl("")
                 setIsbn("")
@@ -127,6 +144,10 @@ export function AddBookForm() {
 
     const handleAuthorCreated = (author: { id: string; name: string }) => {
         setAuthorId(author.id)
+    }
+
+    const handlePublisherCreated = (publisher: { id: string; name: string }) => {
+        setPublisherId(publisher.id)
     }
 
     return (
@@ -226,6 +247,15 @@ export function AddBookForm() {
                         </div>
 
                         <div className="space-y-2">
+                            <Label>Yayınevi</Label>
+                            <PublisherCombobox
+                                value={publisherId}
+                                onValueChange={setPublisherId}
+                                onAddNew={() => setPublisherModalOpen(true)}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
                             <Label htmlFor="pageCount">Sayfa Sayısı</Label>
                             <Input
                                 id="pageCount"
@@ -278,6 +308,13 @@ export function AddBookForm() {
                 open={authorModalOpen}
                 onOpenChange={setAuthorModalOpen}
                 onAuthorCreated={handleAuthorCreated}
+            />
+
+            {/* Add Publisher Modal */}
+            <AddPublisherModal
+                open={publisherModalOpen}
+                onOpenChange={setPublisherModalOpen}
+                onPublisherCreated={handlePublisherCreated}
             />
         </div>
     )

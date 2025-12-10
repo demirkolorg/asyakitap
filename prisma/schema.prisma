@@ -10,6 +10,7 @@ model User {
   id                   String                @id @default(uuid())
   email                String                @unique
   books                Book[]
+  shelves              Shelf[]
   userReadingListBooks UserReadingListBook[]
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
@@ -38,6 +39,42 @@ model Author {
   @@index([name])
 }
 
+// ==========================================
+// Yayınevi Modeli
+// ==========================================
+
+model Publisher {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String?
+  website   String?
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}
+
+// ==========================================
+// Raf Modeli (Kullanıcı Rafları)
+// ==========================================
+
+model Shelf {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  color       String?  // Raf rengi (hex code)
+  sortOrder   Int      @default(0)
+  books       Book[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, sortOrder])
+}
+
 model Book {
   id                   String                @id @default(cuid())
   userId               String
@@ -45,6 +82,10 @@ model Book {
   title                String
   authorId             String?
   author               Author?               @relation(fields: [authorId], references: [id])
+  publisherId          String?
+  publisher            Publisher?            @relation(fields: [publisherId], references: [id])
+  shelfId              String?
+  shelf                Shelf?                @relation(fields: [shelfId], references: [id], onDelete: SetNull)
   coverUrl             String?
   pageCount            Int?
   status               BookStatus            @default(TO_READ)
@@ -61,6 +102,8 @@ model Book {
 
   @@index([userId])
   @@index([authorId])
+  @@index([publisherId])
+  @@index([shelfId])
   @@index([userId, status]) // Status bazlı sorgular için (reading, completed, etc.)
   @@index([userId, updatedAt]) // Son güncellenen kitaplar için
 }

@@ -24,6 +24,7 @@ import {
   Map,
   Users,
   Pen,
+  Building2,
 } from "lucide-react";
 
 // Ana Sayfa
@@ -46,6 +47,11 @@ const libraryItems = [
     title: "Yazarlar",
     href: "/authors",
     icon: Users,
+  },
+  {
+    title: "Yayınevleri",
+    href: "/publishers",
+    icon: Building2,
   },
   {
     title: "Okuma Listeleri",

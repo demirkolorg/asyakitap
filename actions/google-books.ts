@@ -5,6 +5,7 @@ export interface GoogleBook {
     volumeInfo: {
         title: string
         authors?: string[]
+        publisher?: string
         description?: string
         pageCount?: number
         imageLinks?: {
