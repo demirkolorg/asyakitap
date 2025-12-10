@@ -103,7 +103,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border px-6 py-5">
-        <Link href="/dashboard" className="flex items-center gap-3">
+        <Link href="/dashboard" prefetch={false} className="flex items-center gap-3">
           <Image
             src="/asyakitap.png"
             alt="AsyaKitap Logo"
@@ -133,7 +133,7 @@ export function AppSidebar() {
                     asChild
                     isActive={pathname === item.href}
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} prefetch={false}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>
@@ -155,7 +155,7 @@ export function AppSidebar() {
                     asChild
                     isActive={pathname === item.href || (item.href !== '/dashboard' && pathname?.startsWith(item.href))}
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} prefetch={false}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>
@@ -177,7 +177,7 @@ export function AppSidebar() {
                     asChild
                     isActive={pathname === item.href || pathname?.startsWith(item.href)}
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} prefetch={false}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>
@@ -199,7 +199,7 @@ export function AppSidebar() {
                     asChild
                     isActive={pathname === item.href}
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} prefetch={false}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>
@@ -221,7 +221,7 @@ export function AppSidebar() {
                     asChild
                     isActive={pathname === item.href}
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} prefetch={false}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>

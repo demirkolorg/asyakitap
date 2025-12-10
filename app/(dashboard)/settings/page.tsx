@@ -1,18 +1,27 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { useTheme } from "next-themes"
-import { Moon, Sun, Monitor, User, Bell, Palette } from "lucide-react"
+import { Moon, Sun, Monitor, User, Palette, Bug } from "lucide-react"
 import { toast } from "sonner"
+import { getDebugInfo } from "@/actions/debug"
 
 export default function SettingsPage() {
     const { theme, setTheme } = useTheme()
     const [readingGoal, setReadingGoal] = useState("12")
+    const [debugInfo, setDebugInfo] = useState<any>(null)
+    const [showDebug, setShowDebug] = useState(false)
+
+    useEffect(() => {
+        if (showDebug) {
+            getDebugInfo().then(setDebugInfo)
+        }
+    }, [showDebug])
 
     const handleSaveGoal = () => {
         // In real app, save to database
@@ -124,6 +133,53 @@ export default function SettingsPage() {
                             Hesabı Sil
                         </Button>
                     </div>
+                </CardContent>
+            </Card>
+
+            {/* Debug Info */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Bug className="h-5 w-5" />
+                        Debug Bilgisi
+                    </CardTitle>
+                    <CardDescription>Sistem durumu ve veri sayıları</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Button
+                        variant="outline"
+                        onClick={() => setShowDebug(!showDebug)}
+                    >
+                        {showDebug ? "Gizle" : "Debug Bilgisini Göster"}
+                    </Button>
+
+                    {showDebug && debugInfo && (
+                        <div className="mt-4 p-4 bg-muted rounded-lg font-mono text-sm space-y-2">
+                            <p><strong>Authenticated:</strong> {debugInfo.authenticated ? "Evet" : "Hayır"}</p>
+                            {debugInfo.authError && <p className="text-destructive"><strong>Auth Error:</strong> {debugInfo.authError}</p>}
+                            <p><strong>User ID:</strong> {debugInfo.userId || "N/A"}</p>
+                            <p><strong>Email:</strong> {debugInfo.email || "N/A"}</p>
+
+                            {debugInfo.counts && (
+                                <>
+                                    <Separator className="my-2" />
+                                    <p className="font-semibold">Kullanıcı Verileri:</p>
+                                    <p>- Kitaplar: {debugInfo.counts.userBooks}</p>
+                                    <p>- Yazarlar: {debugInfo.counts.userAuthors}</p>
+                                    <p>- Yayınevleri: {debugInfo.counts.userPublishers}</p>
+                                    <p>- Alıntılar: {debugInfo.counts.userQuotes}</p>
+
+                                    <Separator className="my-2" />
+                                    <p className="font-semibold">Toplam Veriler (Tüm Kullanıcılar):</p>
+                                    <p>- Kitaplar: {debugInfo.counts.totalBooks}</p>
+                                    <p>- Yazarlar: {debugInfo.counts.totalAuthors}</p>
+                                    <p>- Yayınevleri: {debugInfo.counts.totalPublishers}</p>
+                                </>
+                            )}
+
+                            {debugInfo.dbError && <p className="text-destructive"><strong>DB Error:</strong> {debugInfo.dbError}</p>}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
