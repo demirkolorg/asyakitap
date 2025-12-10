@@ -12,11 +12,31 @@
           "name": "\"Sayfa Çevirtenler\" (Yüksek Tempo)",
           "description": "Bilimsel açıklamalarla boğmayan, hayatta kalma ve macera odaklı, Hollywood filmi tadında kitaplar.",
           "books": [
-            { "title": "Marslı", "author": "Andy Weir", "neden": "Mars'ta mahsur kalan bir botanikçinin hayatta kalma mücadelesi. Müthiş zeki ve esprili." },
-            { "title": "Karanlık Madde", "author": "Blake Crouch", "neden": "Paralel evrenler arasında geçen, nefes nefese bir kaçış hikayesi. \"Diğer ben\" ile yüzleşmek." },
-            { "title": "Başlat (Ready Player One)", "author": "Ernest Cline", "neden": "80'ler kültürü ve oyun dünyasına aşk mektubu. Sanal gerçeklikte hazine avı." },
-            { "title": "Jurassic Park", "author": "Michael Crichton", "neden": "Filmini unut. Kitaptaki kaos teorisi ve genetik mühendisliği tartışmaları çok daha derin." },
-            { "title": "Kurtuluş Projesi (Project Hail Mary)", "author": "Andy Weir", "neden": "Uzayda tek başına uyanan bir adam ve insanlığı kurtarma görevi. Bilim ve dostluk üzerine." }
+            {
+              "title": "Marslı",
+              "author": "Andy Weir",
+              "neden": "Mars'ta mahsur kalan bir botanikçinin hayatta kalma mücadelesi. Müthiş zeki ve esprili."
+            },
+            {
+              "title": "Karanlık Madde",
+              "author": "Blake Crouch",
+              "neden": "Paralel evrenler arasında geçen, nefes nefese bir kaçış hikayesi. \"Diğer ben\" ile yüzleşmek."
+            },
+            {
+              "title": "Başlat (Ready Player One)",
+              "author": "Ernest Cline",
+              "neden": "80'ler kültürü ve oyun dünyasına aşk mektubu. Sanal gerçeklikte hazine avı."
+            },
+            {
+              "title": "Jurassic Park",
+              "author": "Michael Crichton",
+              "neden": "Filmini unut. Kitaptaki kaos teorisi ve genetik mühendisliği tartışmaları çok daha derin."
+            },
+            {
+              "title": "Kurtuluş Projesi (Project Hail Mary)",
+              "author": "Andy Weir",
+              "neden": "Uzayda tek başına uyanan bir adam ve insanlığı kurtarma görevi. Bilim ve dostluk üzerine."
+            }
           ]
         },
         {
@@ -24,11 +44,31 @@
           "name": "Mizah ve Absürtlük (Buzları Eritmek)",
           "description": "Bilim kurgunun her zaman ciddi olması gerekmez. Evrenin saçmalıklarına gülmek için ideal seviye.",
           "books": [
-            { "title": "Otostopçunun Galaksi Rehberi", "author": "Douglas Adams", "neden": "Evrenin en komik ve en saçma yolculuğu. İngiliz mizahının zirvesi." },
-            { "title": "Kedi Beşiği", "author": "Kurt Vonnegut", "neden": "Dünyayı dondurabilecek bir madde ve insanlığın deliliği üzerine kara mizah." },
-            { "title": "Kızıl Üniformalılar (Redshirts)", "author": "John Scalzi", "neden": "Star Trek gibi dizilerde sürekli ölen \"isimsiz mürettebatın\" isyanı. Çok eğlenceli." },
-            { "title": "Kıyamet Gösterisi (Good Omens)", "author": "Neil Gaiman & Terry Pratchett", "neden": "Bir melek ve bir şeytanın kıyameti durdurmak için işbirliği yapması." },
-            { "title": "Mezbaha 5", "author": "Kurt Vonnegut", "neden": "Zaman içinde savrulan bir askerin savaş karşıtı, yarı deli hikayesi." }
+            {
+              "title": "Otostopçunun Galaksi Rehberi",
+              "author": "Douglas Adams",
+              "neden": "Evrenin en komik ve en saçma yolculuğu. İngiliz mizahının zirvesi."
+            },
+            {
+              "title": "Kedi Beşiği",
+              "author": "Kurt Vonnegut",
+              "neden": "Dünyayı dondurabilecek bir madde ve insanlığın deliliği üzerine kara mizah."
+            },
+            {
+              "title": "Kızıl Üniformalılar (Redshirts)",
+              "author": "John Scalzi",
+              "neden": "Star Trek gibi dizilerde sürekli ölen \"isimsiz mürettebatın\" isyanı. Çok eğlenceli."
+            },
+            {
+              "title": "Kıyamet Gösterisi (Good Omens)",
+              "author": "Neil Gaiman & Terry Pratchett",
+              "neden": "Bir melek ve bir şeytanın kıyameti durdurmak için işbirliği yapması."
+            },
+            {
+              "title": "Mezbaha 5",
+              "author": "Kurt Vonnegut",
+              "neden": "Zaman içinde savrulan bir askerin savaş karşıtı, yarı deli hikayesi."
+            }
           ]
         },
         {
@@ -36,11 +76,31 @@
           "name": "Kısa Klasikler (Temelleri Atmak)",
           "description": "Türün \"Ata\"ları. Sayfa sayıları az (100-200 sayfa) ama vizyonları yüzyılları aşıyor.",
           "books": [
-            { "title": "Zaman Makinesi", "author": "H.G. Wells", "neden": "Geleceğe gidip insanlığın sınıfsal olarak iki farklı türe ayrıldığını görmek." },
-            { "title": "Fahrenheit 451", "author": "Ray Bradbury", "neden": "Kitapların yakıldığı, ekranların insanları uyuşturduğu bir gelecek." },
-            { "title": "Ben, Robot", "author": "Isaac Asimov", "neden": "Yapay zeka etiğinin ve 3 Robot Yasası'nın temeli. Robotların mantık hataları." },
-            { "title": "Dünyalar Savaşı", "author": "H.G. Wells", "neden": "Uzaylı istilası temasının kökeni. İnsanlığın çaresizliği." },
-            { "title": "Görünmez Adam", "author": "H.G. Wells", "neden": "Bilim etiği üzerine. Görünmezlik gücü insana neler yaptırır?" }
+            {
+              "title": "Zaman Makinesi",
+              "author": "H.G. Wells",
+              "neden": "Geleceğe gidip insanlığın sınıfsal olarak iki farklı türe ayrıldığını görmek."
+            },
+            {
+              "title": "Fahrenheit 451",
+              "author": "Ray Bradbury",
+              "neden": "Kitapların yakıldığı, ekranların insanları uyuşturduğu bir gelecek."
+            },
+            {
+              "title": "Ben, Robot",
+              "author": "Isaac Asimov",
+              "neden": "Yapay zeka etiğinin ve 3 Robot Yasası'nın temeli. Robotların mantık hataları."
+            },
+            {
+              "title": "Dünyalar Savaşı",
+              "author": "H.G. Wells",
+              "neden": "Uzaylı istilası temasının kökeni. İnsanlığın çaresizliği."
+            },
+            {
+              "title": "Görünmez Adam",
+              "author": "H.G. Wells",
+              "neden": "Bilim etiği üzerine. Görünmezlik gücü insana neler yaptırır?"
+            }
           ]
         },
         {
@@ -48,11 +108,31 @@
           "name": "Cyberpunk ve Sanal Gerçeklik (Yazılımcı Özel)",
           "description": "Kodlar, yapay zeka, hackerlar, şirketlerin yönettiği distopyalar.",
           "books": [
-            { "title": "Neuromancer", "author": "William Gibson", "neden": "Matrix'in atası. \"Siberuzay\" kelimesinin icat edildiği kitap. Biraz zor okunur ama kültdür." },
-            { "title": "Parazit (Snow Crash)", "author": "Neal Stephenson", "neden": "\"Metaverse\" kavramının çıktığı kitap. Sümer mitolojisi ile sanal gerçekliği birleştirir." },
-            { "title": "Değiştirilmiş Karbon (Altered Carbon)", "author": "Richard K. Morgan", "neden": "Bilincin dijitalleşip başka bedenlere yüklenebildiği bir ölümsüzlük ve dedektiflik hikayesi." },
-            { "title": "Androidler Elektrikli Koyun Düşler mi?", "author": "Philip K. Dick", "neden": "Blade Runner. İnsan ile yapay zeka arasındaki fark \"empati\" midir?" },
-            { "title": "Ubik", "author": "Philip K. Dick", "neden": "Gerçeklik nedir? Ölüler yarı-canlı tutulursa ne olur? Zihin büken bir kurgu." }
+            {
+              "title": "Neuromancer",
+              "author": "William Gibson",
+              "neden": "Matrix'in atası. \"Siberuzay\" kelimesinin icat edildiği kitap. Biraz zor okunur ama kültdür."
+            },
+            {
+              "title": "Parazit (Snow Crash)",
+              "author": "Neal Stephenson",
+              "neden": "\"Metaverse\" kavramının çıktığı kitap. Sümer mitolojisi ile sanal gerçekliği birleştirir."
+            },
+            {
+              "title": "Değiştirilmiş Karbon (Altered Carbon)",
+              "author": "Richard K. Morgan",
+              "neden": "Bilincin dijitalleşip başka bedenlere yüklenebildiği bir ölümsüzlük ve dedektiflik hikayesi."
+            },
+            {
+              "title": "Androidler Elektrikli Koyun Düşler mi?",
+              "author": "Philip K. Dick",
+              "neden": "Blade Runner. İnsan ile yapay zeka arasındaki fark \"empati\" midir?"
+            },
+            {
+              "title": "Ubik",
+              "author": "Philip K. Dick",
+              "neden": "Gerçeklik nedir? Ölüler yarı-canlı tutulursa ne olur? Zihin büken bir kurgu."
+            }
           ]
         },
         {
@@ -60,11 +140,31 @@
           "name": "Uzay Operası ve Askeri Strateji",
           "description": "Yıldızlararası savaşlar, filo yönetimi, siyaset ve strateji.",
           "books": [
-            { "title": "Ender'in Oyunu", "author": "Orson Scott Card", "neden": "Çocukların simülasyonlarla komutan olarak yetiştirilmesi. Liderlik ve strateji dersi." },
-            { "title": "Yaşlı Adamın Savaşı", "author": "John Scalzi", "neden": "75 yaşındaki insanların genç bedenlere aktarılıp uzayda savaştırılması." },
-            { "title": "Yıldız Gemisi Askerleri", "author": "Robert Heinlein", "neden": "Filmi sadece aksiyondu, kitap ise askerlik, vatandaşlık ve demokrasi üzerine felsefi bir tartışmadır." },
-            { "title": "Bitmeyen Savaş", "author": "Joe Haldeman", "neden": "Işık hızında seyahat yüzünden askerler için 1 yıl geçerken dünyada yüzyıllar geçmesi." },
-            { "title": "Leviathan Uyanıyor (Enginlik)", "author": "James S.A. Corey", "neden": "Güneş sistemindeki politik soğuk savaş. The Expanse dizisinin kaynağı." }
+            {
+              "title": "Ender'in Oyunu",
+              "author": "Orson Scott Card",
+              "neden": "Çocukların simülasyonlarla komutan olarak yetiştirilmesi. Liderlik ve strateji dersi."
+            },
+            {
+              "title": "Yaşlı Adamın Savaşı",
+              "author": "John Scalzi",
+              "neden": "75 yaşındaki insanların genç bedenlere aktarılıp uzayda savaştırılması."
+            },
+            {
+              "title": "Yıldız Gemisi Askerleri",
+              "author": "Robert Heinlein",
+              "neden": "Filmi sadece aksiyondu, kitap ise askerlik, vatandaşlık ve demokrasi üzerine felsefi bir tartışmadır."
+            },
+            {
+              "title": "Bitmeyen Savaş",
+              "author": "Joe Haldeman",
+              "neden": "Işık hızında seyahat yüzünden askerler için 1 yıl geçerken dünyada yüzyıllar geçmesi."
+            },
+            {
+              "title": "Leviathan Uyanıyor (Enginlik)",
+              "author": "James S.A. Corey",
+              "neden": "Güneş sistemindeki politik soğuk savaş. The Expanse dizisinin kaynağı."
+            }
           ]
         },
         {
@@ -72,13 +172,41 @@
           "name": "Post-Apokaliptik ve Hayatta Kalma",
           "description": "Medeniyet çöktükten sonra insan kalmak. Frostpunk seven taraf için.",
           "books": [
-            { "title": "Metro 2033", "author": "Dmitry Glukhovsky", "neden": "Nükleer savaş sonrası Moskova metrosunda kurulan yeni ve karanlık dünya." },
-            { "title": "Yol (The Road)", "author": "Cormac McCarthy", "neden": "Bir baba ve oğulun, kül olmuş dünyada güneye yürüyüşü. Çok sarsıcı ve gerçekçi." },
-            { "title": "Triffidlerin Günü", "author": "John Wyndham", "neden": "İnsanların kör olduğu ve yürüyen bitkilerin saldırdığı klasik bir felaket senaryosu." },
-            { "title": "İstasyon On Bir", "author": "Emily St. John Mandel", "neden": "Salgın sonrası dünyada tiyatro yaparak medeniyeti hatırlatmaya çalışan bir grup." },
-            { "title": "Leibowitz İçin Bir İlahi", "author": "Walter M. Miller", "neden": "Nükleer yıkımdan sonra bilimi korumaya çalışan rahipler. Din ve bilim döngüsü." },
-            { "title": "Kum", "author": "Hugh Howey", "neden": "Çöle gömülmüş bir medeniyetin hayatta kalma mücadelesi. Silo serisinin yazarından." },
-            { "title": "Salgın", "author": "Ling Ma", "neden": "Salgın sonrası distopya. Kapitalizm eleştirisi ve zombi metaforu." }
+            {
+              "title": "Metro 2033",
+              "author": "Dmitry Glukhovsky",
+              "neden": "Nükleer savaş sonrası Moskova metrosunda kurulan yeni ve karanlık dünya."
+            },
+            {
+              "title": "Yol (The Road)",
+              "author": "Cormac McCarthy",
+              "neden": "Bir baba ve oğulun, kül olmuş dünyada güneye yürüyüşü. Çok sarsıcı ve gerçekçi."
+            },
+            {
+              "title": "Triffidlerin Günü",
+              "author": "John Wyndham",
+              "neden": "İnsanların kör olduğu ve yürüyen bitkilerin saldırdığı klasik bir felaket senaryosu."
+            },
+            {
+              "title": "İstasyon On Bir",
+              "author": "Emily St. John Mandel",
+              "neden": "Salgın sonrası dünyada tiyatro yaparak medeniyeti hatırlatmaya çalışan bir grup."
+            },
+            {
+              "title": "Leibowitz İçin Bir İlahi",
+              "author": "Walter M. Miller",
+              "neden": "Nükleer yıkımdan sonra bilimi korumaya çalışan rahipler. Din ve bilim döngüsü."
+            },
+            {
+              "title": "Kum",
+              "author": "Hugh Howey",
+              "neden": "Çöle gömülmüş bir medeniyetin hayatta kalma mücadelesi. Silo serisinin yazarından."
+            },
+            {
+              "title": "Salgın",
+              "author": "Ling Ma",
+              "neden": "Salgın sonrası distopya. Kapitalizm eleştirisi ve zombi metaforu."
+            }
           ]
         },
         {
@@ -86,12 +214,36 @@
           "name": "İlk Temas ve Uzaylılar",
           "description": "Sadece \"Bizi vurmaya geldiler\" değil. \"Onlarla nasıl konuşuruz?\" sorusu.",
           "books": [
-            { "title": "Çocukluğun Sonu", "author": "Arthur C. Clarke", "neden": "Uzaylılar dünyaya barış getirirse bunun bedeli ne olur? İnsan evriminin sonu." },
-            { "title": "Mesaj (Contact)", "author": "Carl Sagan", "neden": "Bir gökbilimcinin dünya dışı sinyal alması. Bilim ve inanç çatışması." },
-            { "title": "Rama ile Buluşma", "author": "Arthur C. Clarke", "neden": "Güneş sistemine giren devasa bir silindir nesnenin keşfi. Mühendislik ve gizem." },
-            { "title": "Geliş (Hayatının Hikayesi)", "author": "Ted Chiang", "neden": "Uzaylıların dilini öğrenmek, zaman algımızı değiştirir mi? Dilbilimsel bilim kurgu." },
-            { "title": "Solaris", "author": "Stanislaw Lem", "neden": "İletişim kurulamayan, okyanus gezegen. İnsanın kendi bilinçaltıyla savaşı." },
-            { "title": "Kıyamete Bir Milyar Yıl", "author": "Arkadi ve Boris Strugatski", "neden": "Felsefi bilim kurgu ve bilinmezlik. İnsanlığın evrensel engelle karşılaşması." }
+            {
+              "title": "Çocukluğun Sonu",
+              "author": "Arthur C. Clarke",
+              "neden": "Uzaylılar dünyaya barış getirirse bunun bedeli ne olur? İnsan evriminin sonu."
+            },
+            {
+              "title": "Mesaj (Contact)",
+              "author": "Carl Sagan",
+              "neden": "Bir gökbilimcinin dünya dışı sinyal alması. Bilim ve inanç çatışması."
+            },
+            {
+              "title": "Rama ile Buluşma",
+              "author": "Arthur C. Clarke",
+              "neden": "Güneş sistemine giren devasa bir silindir nesnenin keşfi. Mühendislik ve gizem."
+            },
+            {
+              "title": "Geliş (Hayatının Hikayesi)",
+              "author": "Ted Chiang",
+              "neden": "Uzaylıların dilini öğrenmek, zaman algımızı değiştirir mi? Dilbilimsel bilim kurgu."
+            },
+            {
+              "title": "Solaris",
+              "author": "Stanislaw Lem",
+              "neden": "İletişim kurulamayan, okyanus gezegen. İnsanın kendi bilinçaltıyla savaşı."
+            },
+            {
+              "title": "Kıyamete Bir Milyar Yıl",
+              "author": "Arkadi ve Boris Strugatski",
+              "neden": "Felsefi bilim kurgu ve bilinmezlik. İnsanlığın evrensel engelle karşılaşması."
+            }
           ]
         },
         {
@@ -99,11 +251,31 @@
           "name": "Distopyalar ve Sosyoloji",
           "description": "Toplum mühendisliği. \"Böyle giderse sonumuz ne olur?\"",
           "books": [
-            { "title": "1984", "author": "George Orwell", "neden": "Gözetim toplumu, Büyük Birader ve gerçeğin yok edilmesi." },
-            { "title": "Cesur Yeni Dünya", "author": "Aldous Huxley", "neden": "Haz, uyuşturucu ve genetik mühendisliği ile uyuşturulmuş, \"mutlu\" köleler." },
-            { "title": "Damızlık Kızın Öyküsü", "author": "Margaret Atwood", "neden": "Kadın haklarının olmadığı teokratik bir rejim." },
-            { "title": "Biz", "author": "Yevgeni Zamyatin", "neden": "1984 ve Cesur Yeni Dünya'ya ilham veren, camdan evlerde yaşanan şeffaf distopya." },
-            { "title": "Mülksüzler", "author": "Ursula K. Le Guin", "neden": "Anarşist bir ütopya mümkün mü? Mülkiyet olmadan toplum nasıl yaşar?" }
+            {
+              "title": "1984",
+              "author": "George Orwell",
+              "neden": "Gözetim toplumu, Büyük Birader ve gerçeğin yok edilmesi."
+            },
+            {
+              "title": "Cesur Yeni Dünya",
+              "author": "Aldous Huxley",
+              "neden": "Haz, uyuşturucu ve genetik mühendisliği ile uyuşturulmuş, \"mutlu\" köleler."
+            },
+            {
+              "title": "Damızlık Kızın Öyküsü",
+              "author": "Margaret Atwood",
+              "neden": "Kadın haklarının olmadığı teokratik bir rejim."
+            },
+            {
+              "title": "Biz",
+              "author": "Yevgeni Zamyatin",
+              "neden": "1984 ve Cesur Yeni Dünya'ya ilham veren, camdan evlerde yaşanan şeffaf distopya."
+            },
+            {
+              "title": "Mülksüzler",
+              "author": "Ursula K. Le Guin",
+              "neden": "Anarşist bir ütopya mümkün mü? Mülkiyet olmadan toplum nasıl yaşar?"
+            }
           ]
         },
         {
@@ -111,11 +283,31 @@
           "name": "Alternatif Tarih ve Zaman",
           "description": "\"Tarihte bir şey değişseydi ne olurdu?\" ve zaman yolculuğunun paradoksları.",
           "books": [
-            { "title": "Yüksek Şatodaki Adam", "author": "Philip K. Dick", "neden": "2. Dünya Savaşı'nı Naziler ve Japonlar kazansaydı dünya nasıl olurdu?" },
-            { "title": "11/22/63", "author": "Stephen King", "neden": "Bir adam geçmişe gidip Kennedy suikastını önlemeye çalışır. Kelebek etkisi." },
-            { "title": "Sonsuzluğun Sonu", "author": "Isaac Asimov", "neden": "Zamanı bir mühendislik projesi gibi yöneten ve hataları düzelten bir kurum." },
-            { "title": "Zamanın Kıyısındaki Kadın", "author": "Marge Piercy", "neden": "Hem ütopik hem distopik geleceğe gidip gelen bir kadının hikayesi." },
-            { "title": "Kaplan! Kaplan!", "author": "Alfred Bester", "neden": "Işınlanmanın bulunduğu bir dünyada Monte Kristo Kontu vari bir intikam hikayesi." }
+            {
+              "title": "Yüksek Şatodaki Adam",
+              "author": "Philip K. Dick",
+              "neden": "2. Dünya Savaşı'nı Naziler ve Japonlar kazansaydı dünya nasıl olurdu?"
+            },
+            {
+              "title": "11/22/63",
+              "author": "Stephen King",
+              "neden": "Bir adam geçmişe gidip Kennedy suikastını önlemeye çalışır. Kelebek etkisi."
+            },
+            {
+              "title": "Sonsuzluğun Sonu",
+              "author": "Isaac Asimov",
+              "neden": "Zamanı bir mühendislik projesi gibi yöneten ve hataları düzelten bir kurum."
+            },
+            {
+              "title": "Zamanın Kıyısındaki Kadın",
+              "author": "Marge Piercy",
+              "neden": "Hem ütopik hem distopik geleceğe gidip gelen bir kadının hikayesi."
+            },
+            {
+              "title": "Kaplan! Kaplan!",
+              "author": "Alfred Bester",
+              "neden": "Işınlanmanın bulunduğu bir dünyada Monte Kristo Kontu vari bir intikam hikayesi."
+            }
           ]
         },
         {
@@ -123,16 +315,56 @@
           "name": "Hard Sci-Fi ve Başyapıtlar (Zirve)",
           "description": "Fizik, biyoloji, ekoloji ve felsefenin en yoğun olduğu, okuması emek isteyen dev eserler.",
           "books": [
-            { "title": "Dune", "author": "Frank Herbert", "neden": "Çöl gezegeni, siyaset, din ve ekoloji. Bilim kurgunun Yüzüklerin Efendisi." },
-            { "title": "Dune Mesihi", "author": "Frank Herbert", "neden": "Kahramanlık mitinin eleştirisi. Paul Atreides'in trajedisi." },
-            { "title": "Dune Çocukları", "author": "Frank Herbert", "neden": "Genetik hafıza ve gelecek vizyonu. Serinin en karmaşık kitabı." },
-            { "title": "Dune Tanrı İmparatoru", "author": "Frank Herbert", "neden": "3500 yıl sonra. İnsanlığın geleceği için yapılan en büyük fedakarlık." },
-            { "title": "Dune Sapkınları", "author": "Frank Herbert", "neden": "Dağılma sonrası yeni düzen. Bene Gesserit'in geri dönüşü." },
-            { "title": "Dune Rahibeler Meclisi", "author": "Frank Herbert", "neden": "Serinin finali. Herbert'ın son eseri." },
-            { "title": "Vakıf", "author": "Isaac Asimov", "neden": "Galaktik İmparatorluk çökerken, medeniyeti kurtarmak için kurulan matematiksel plan: Psikotarih." },
-            { "title": "Üç Cisim Problemi", "author": "Cixin Liu", "neden": "Fizik kurallarının silah olarak kullanıldığı, evrenin karanlık orman teorisi." },
-            { "title": "Karanlığın Sol Eli", "author": "Ursula K. Le Guin", "neden": "Cinsiyetin olmadığı bir gezegende diplomasi ve insanlık üzerine felsefi bir yolculuk." },
-            { "title": "Hyperion", "author": "Dan Simmons", "neden": "Farklı gezegenlerden gelen hacıların anlattığı hikayeler. Canterbury Hikayeleri'nin uzay versiyonu." }
+            {
+              "title": "Dune",
+              "author": "Frank Herbert",
+              "neden": "Çöl gezegeni, siyaset, din ve ekoloji. Bilim kurgunun Yüzüklerin Efendisi."
+            },
+            {
+              "title": "Dune Mesihi",
+              "author": "Frank Herbert",
+              "neden": "Kahramanlık mitinin eleştirisi. Paul Atreides'in trajedisi."
+            },
+            {
+              "title": "Dune Çocukları",
+              "author": "Frank Herbert",
+              "neden": "Genetik hafıza ve gelecek vizyonu. Serinin en karmaşık kitabı."
+            },
+            {
+              "title": "Dune Tanrı İmparatoru",
+              "author": "Frank Herbert",
+              "neden": "3500 yıl sonra. İnsanlığın geleceği için yapılan en büyük fedakarlık."
+            },
+            {
+              "title": "Dune Sapkınları",
+              "author": "Frank Herbert",
+              "neden": "Dağılma sonrası yeni düzen. Bene Gesserit'in geri dönüşü."
+            },
+            {
+              "title": "Dune Rahibeler Meclisi",
+              "author": "Frank Herbert",
+              "neden": "Serinin finali. Herbert'ın son eseri."
+            },
+            {
+              "title": "Vakıf",
+              "author": "Isaac Asimov",
+              "neden": "Galaktik İmparatorluk çökerken, medeniyeti kurtarmak için kurulan matematiksel plan: Psikotarih."
+            },
+            {
+              "title": "Üç Cisim Problemi",
+              "author": "Cixin Liu",
+              "neden": "Fizik kurallarının silah olarak kullanıldığı, evrenin karanlık orman teorisi."
+            },
+            {
+              "title": "Karanlığın Sol Eli",
+              "author": "Ursula K. Le Guin",
+              "neden": "Cinsiyetin olmadığı bir gezegende diplomasi ve insanlık üzerine felsefi bir yolculuk."
+            },
+            {
+              "title": "Hyperion",
+              "author": "Dan Simmons",
+              "neden": "Farklı gezegenlerden gelen hacıların anlattığı hikayeler. Canterbury Hikayeleri'nin uzay versiyonu."
+            }
           ]
         }
       ]
@@ -149,16 +381,56 @@
           "name": "Kalbi ve Zihni Isıtma (Akıcı Hikayeler)",
           "description": "Okuma kondisyonu kazanmak. Dili sade, mesajı net, kalbe dokunan eserler.",
           "books": [
-            { "title": "Minyeli Abdullah", "author": "Hekimoğlu İsmail", "neden": "İnanç çilesinin klasik romanı." },
-            { "title": "Yürek Dede ile Padişah", "author": "Cahit Zarifoğlu", "neden": "Masal tadında tasavvuf." },
-            { "title": "Uzun Hikaye", "author": "Mustafa Kutlu", "neden": "Anadolu irfanının en sıcak, en sinematografik hali." },
-            { "title": "Beyhude Ömrüm", "author": "Mustafa Kutlu", "neden": "Toprağa tutunma ve sabır öyküsü." },
-            { "title": "Sır", "author": "Mustafa Kutlu", "neden": "Mustafa Kutlu külliyatından. Anadolu hikayelerinin sıcaklığı." },
-            { "title": "Memleket Hikayeleri", "author": "Refik Halit Karay", "neden": "Türkçenin lezzetini damakta bırakan hikayeler." },
-            { "title": "Yollar Dönüşe Gider", "author": "Nurullah Genç", "neden": "Erzurum soğuğunda geçen sıcak bir hayat hikayesi." },
-            { "title": "Toprak Ana", "author": "Cengiz Aytmatov", "neden": "Savaş ve kıtlıkta insan kalabilmek." },
-            { "title": "Martin Eden", "author": "Jack London", "neden": "Kimlik inşası ve mücadele. Bir insanın kendini yetiştirme öyküsü." },
-            { "title": "Beyaz Diş", "author": "Jack London", "neden": "Doğa, hayatta kalma ve medeniyetle tanışma." }
+            {
+              "title": "Minyeli Abdullah",
+              "author": "Hekimoğlu İsmail",
+              "neden": "İnanç çilesinin klasik romanı."
+            },
+            {
+              "title": "Yürek Dede ile Padişah",
+              "author": "Cahit Zarifoğlu",
+              "neden": "Masal tadında tasavvuf."
+            },
+            {
+              "title": "Uzun Hikaye",
+              "author": "Mustafa Kutlu",
+              "neden": "Anadolu irfanının en sıcak, en sinematografik hali."
+            },
+            {
+              "title": "Beyhude Ömrüm",
+              "author": "Mustafa Kutlu",
+              "neden": "Toprağa tutunma ve sabır öyküsü."
+            },
+            {
+              "title": "Sır",
+              "author": "Mustafa Kutlu",
+              "neden": "Mustafa Kutlu külliyatından. Anadolu hikayelerinin sıcaklığı."
+            },
+            {
+              "title": "Memleket Hikayeleri",
+              "author": "Refik Halit Karay",
+              "neden": "Türkçenin lezzetini damakta bırakan hikayeler."
+            },
+            {
+              "title": "Yollar Dönüşe Gider",
+              "author": "Nurullah Genç",
+              "neden": "Erzurum soğuğunda geçen sıcak bir hayat hikayesi."
+            },
+            {
+              "title": "Toprak Ana",
+              "author": "Cengiz Aytmatov",
+              "neden": "Savaş ve kıtlıkta insan kalabilmek."
+            },
+            {
+              "title": "Martin Eden",
+              "author": "Jack London",
+              "neden": "Kimlik inşası ve mücadele. Bir insanın kendini yetiştirme öyküsü."
+            },
+            {
+              "title": "Beyaz Diş",
+              "author": "Jack London",
+              "neden": "Doğa, hayatta kalma ve medeniyetle tanışma."
+            }
           ]
         },
         {
@@ -166,13 +438,41 @@
           "name": "Kimlik, Hafıza ve Duygu (Romanlar)",
           "description": "Hikaye derinleşiyor. Tarihsel hafıza ve kimlik sorgulamaları başlıyor.",
           "books": [
-            { "title": "Gün Olur Asra Bedel", "author": "Cengiz Aytmatov", "neden": "Mankurtlaşmak ve toplumsal hafıza." },
-            { "title": "Osmancık", "author": "Tarık Buğra", "neden": "Devletin ve liderin kuruluş felsefesi." },
-            { "title": "Üsküp'ten Kosova'ya", "author": "Yavuz Bülent Bakiler", "neden": "Balkan coğrafyasına ve \"bize\" duygusal bir bakış." },
-            { "title": "Doğu'nun Limanları", "author": "Amin Maalouf", "neden": "Doğu-Batı arasında sıkışan hayatlar." },
-            { "title": "Gül Yetiştiren Adam", "author": "Rasim Özdenören", "neden": "Modernizme pasif direniş." },
-            { "title": "Çalıkuşu", "author": "Reşat Nuri Güntekin", "neden": "İdealizm ve Anadolu gerçeği." },
-            { "title": "Momo", "author": "Michael Ende", "neden": "Modern zaman hırsızlarına eleştiri." }
+            {
+              "title": "Gün Olur Asra Bedel",
+              "author": "Cengiz Aytmatov",
+              "neden": "Mankurtlaşmak ve toplumsal hafıza."
+            },
+            {
+              "title": "Osmancık",
+              "author": "Tarık Buğra",
+              "neden": "Devletin ve liderin kuruluş felsefesi."
+            },
+            {
+              "title": "Üsküp'ten Kosova'ya",
+              "author": "Yavuz Bülent Bakiler",
+              "neden": "Balkan coğrafyasına ve \"bize\" duygusal bir bakış."
+            },
+            {
+              "title": "Doğu'nun Limanları",
+              "author": "Amin Maalouf",
+              "neden": "Doğu-Batı arasında sıkışan hayatlar."
+            },
+            {
+              "title": "Gül Yetiştiren Adam",
+              "author": "Rasim Özdenören",
+              "neden": "Modernizme pasif direniş."
+            },
+            {
+              "title": "Çalıkuşu",
+              "author": "Reşat Nuri Güntekin",
+              "neden": "İdealizm ve Anadolu gerçeği."
+            },
+            {
+              "title": "Momo",
+              "author": "Michael Ende",
+              "neden": "Modern zaman hırsızlarına eleştiri."
+            }
           ]
         },
         {
@@ -180,13 +480,41 @@
           "name": "Dil Köprüsü ve Psikoloji (Peyami Safa Eşiği)",
           "description": "Kelime hazinesini geliştirmek (Sözlük kullanmaya başla) ve ruh tahlilleri.",
           "books": [
-            { "title": "Fatih-Harbiye", "author": "Peyami Safa", "neden": "Doğu-Batı çatışmasının ABC'si." },
-            { "title": "Dokuzuncu Hariciye Koğuşu", "author": "Peyami Safa", "neden": "Hastalık ve ruhun derinlikleri." },
-            { "title": "Yaban", "author": "Yakup Kadri Karaosmanoğlu", "neden": "Aydın ile halk arasındaki uçurum." },
-            { "title": "Kürk Mantolu Madonna", "author": "Sabahattin Ali", "neden": "Önyargıları yıkan bir iç dünya anlatısı." },
-            { "title": "Kapıların Ardında", "author": "Rasim Özdenören", "neden": "Yabancılaşma üzerine öyküler." },
-            { "title": "Türkçenin Sırları", "author": "Nihat Sami Banarlı", "neden": "Dil şuurunu kazanmak, kelimeleri sevmek." },
-            { "title": "Sözün Doğrusu 1", "author": "Yavuz Bülent Bakiler", "neden": "Türkçeyi doğru kullanma kılavuzu." }
+            {
+              "title": "Fatih-Harbiye",
+              "author": "Peyami Safa",
+              "neden": "Doğu-Batı çatışmasının ABC'si."
+            },
+            {
+              "title": "Dokuzuncu Hariciye Koğuşu",
+              "author": "Peyami Safa",
+              "neden": "Hastalık ve ruhun derinlikleri."
+            },
+            {
+              "title": "Yaban",
+              "author": "Yakup Kadri Karaosmanoğlu",
+              "neden": "Aydın ile halk arasındaki uçurum."
+            },
+            {
+              "title": "Kürk Mantolu Madonna",
+              "author": "Sabahattin Ali",
+              "neden": "Önyargıları yıkan bir iç dünya anlatısı."
+            },
+            {
+              "title": "Kapıların Ardında",
+              "author": "Rasim Özdenören",
+              "neden": "Yabancılaşma üzerine öyküler."
+            },
+            {
+              "title": "Türkçenin Sırları",
+              "author": "Nihat Sami Banarlı",
+              "neden": "Dil şuurunu kazanmak, kelimeleri sevmek."
+            },
+            {
+              "title": "Sözün Doğrusu 1",
+              "author": "Yavuz Bülent Bakiler",
+              "neden": "Türkçeyi doğru kullanma kılavuzu."
+            }
           ]
         },
         {
@@ -194,13 +522,41 @@
           "name": "Dava'nın Estetiği ve Şiirsel Duruş",
           "description": "Fikre geçmeden önce \"Tavır\" kazanmak. Şiir ve tiyatro.",
           "books": [
-            { "title": "Reis Bey", "author": "Necip Fazıl Kısakürek", "neden": "Merhamet ve adalet üzerine sarsıcı bir piyes." },
-            { "title": "İdeolocya Örgüsü", "author": "Necip Fazıl Kısakürek", "neden": "Necip Fazıl'ın düşünce sistemi. Teorik temel." },
-            { "title": "Anneler ve Kudüsler", "author": "Nuri Pakdil", "neden": "Kudüs bilinci ve \"Klas Duruş\"." },
-            { "title": "Yedi Güzel Adam", "author": "Cahit Zarifoğlu", "neden": "Müslüman şairin bakış açısı." },
-            { "title": "Yağmur", "author": "Nurullah Genç", "neden": "Peygamber sevgisi - Naat." },
-            { "title": "Bağlanma", "author": "Nuri Pakdil", "neden": "Yabancılaşmaya karşı yerli düşünceye tutunmak." },
-            { "title": "İnce Memed 1", "author": "Yaşar Kemal", "neden": "Başkaldırı kültürü." }
+            {
+              "title": "Reis Bey",
+              "author": "Necip Fazıl Kısakürek",
+              "neden": "Merhamet ve adalet üzerine sarsıcı bir piyes."
+            },
+            {
+              "title": "İdeolocya Örgüsü",
+              "author": "Necip Fazıl Kısakürek",
+              "neden": "Necip Fazıl'ın düşünce sistemi. Teorik temel."
+            },
+            {
+              "title": "Anneler ve Kudüsler",
+              "author": "Nuri Pakdil",
+              "neden": "Kudüs bilinci ve \"Klas Duruş\"."
+            },
+            {
+              "title": "Yedi Güzel Adam",
+              "author": "Cahit Zarifoğlu",
+              "neden": "Müslüman şairin bakış açısı."
+            },
+            {
+              "title": "Yağmur",
+              "author": "Nurullah Genç",
+              "neden": "Peygamber sevgisi - Naat."
+            },
+            {
+              "title": "Bağlanma",
+              "author": "Nuri Pakdil",
+              "neden": "Yabancılaşmaya karşı yerli düşünceye tutunmak."
+            },
+            {
+              "title": "İnce Memed 1",
+              "author": "Yaşar Kemal",
+              "neden": "Başkaldırı kültürü."
+            }
           ]
         },
         {
@@ -208,13 +564,41 @@
           "name": "Yaşanmışlıklar ve Rehberlik (Biyografi)",
           "description": "Gerçek hayatlar üzerinden \"Dava Adamı\"nı tanımak.",
           "books": [
-            { "title": "Suyu Arayan Adam", "author": "Şevket Süreyya Aydemir", "neden": "En kritik otobiyografi. Fikir çilesinin haritası." },
-            { "title": "Gençlerle Başbaşa", "author": "Ali Fuad Başgil", "neden": "İrade eğitimi ve çalışma disiplini." },
-            { "title": "Atomik Alışkanlıklar", "author": "James Clear", "neden": "Küçük alışkanlıkların büyük dönüşümleri. İrade eğitiminin modern versiyonu." },
-            { "title": "Savaşçı", "author": "Doğan Cüceloğlu", "neden": "Güçlü bir karakter inşası." },
-            { "title": "Malcolm X", "author": "Alex Haley", "neden": "Dönüşüm ve mücadele." },
-            { "title": "Zeytindağı", "author": "Falih Rıfkı Atay", "neden": "İmparatorluğun çöküşü." },
-            { "title": "O ve Ben", "author": "Necip Fazıl Kısakürek", "neden": "Manevi arayış ve buluş." }
+            {
+              "title": "Suyu Arayan Adam",
+              "author": "Şevket Süreyya Aydemir",
+              "neden": "En kritik otobiyografi. Fikir çilesinin haritası."
+            },
+            {
+              "title": "Gençlerle Başbaşa",
+              "author": "Ali Fuad Başgil",
+              "neden": "İrade eğitimi ve çalışma disiplini."
+            },
+            {
+              "title": "Atomik Alışkanlıklar",
+              "author": "James Clear",
+              "neden": "Küçük alışkanlıkların büyük dönüşümleri. İrade eğitiminin modern versiyonu."
+            },
+            {
+              "title": "Savaşçı",
+              "author": "Doğan Cüceloğlu",
+              "neden": "Güçlü bir karakter inşası."
+            },
+            {
+              "title": "Malcolm X",
+              "author": "Alex Haley",
+              "neden": "Dönüşüm ve mücadele."
+            },
+            {
+              "title": "Zeytindağı",
+              "author": "Falih Rıfkı Atay",
+              "neden": "İmparatorluğun çöküşü."
+            },
+            {
+              "title": "O ve Ben",
+              "author": "Necip Fazıl Kısakürek",
+              "neden": "Manevi arayış ve buluş."
+            }
           ]
         },
         {
@@ -222,13 +606,46 @@
           "name": "Fikre Giriş ve Zihniyet Haritası",
           "description": "Sistematik düşünmeye başlama.",
           "books": [
-            { "title": "Medeniyet Tasavvuru", "author": "Yusuf Kaplan", "neden": "Neyi kaybettik, nasıl buluruz? Yol haritası." },
-            { "title": "Dostluk Üzerine", "author": "Fethi Gemuhluoğlu", "neden": "İnsana ve eşyaya dost olmak." },
-            { "title": "Beş Şehir", "author": "Ahmet Hamdi Tanpınar", "neden": "Medeniyetin estetik boyutu." },
-            { "title": "Safsata Kılavuzu", "author": "Alev Alatlı", "neden": "Mantık hatalarını tespit etme rehberi." },
-            { "title": "Öyle Geçer ki Zaman", "author": "Teoman Duralı", "neden": "Bir filozofun hayat yolculuğu." },
-            { "title": "Waldo Sen Neden Buradasın?", "author": "İsmet Özel", "neden": "İsmet Özel'in insani tarafı." },
-            { "title": "Başarı Bedel İster", "author": "Nurullah Genç", "neden": "Ahlaklı kariyer ve başarı." }
+            {
+              "title": "Medeniyet Tasavvuru",
+              "author": "Yusuf Kaplan",
+              "neden": "Neyi kaybettik, nasıl buluruz? Yol haritası."
+            },
+            {
+              "title": "Dostluk Üzerine",
+              "author": "Fethi Gemuhluoğlu",
+              "neden": "İnsana ve eşyaya dost olmak."
+            },
+            {
+              "title": "Beş Şehir",
+              "author": "Ahmet Hamdi Tanpınar",
+              "neden": "Medeniyetin estetik boyutu."
+            },
+            {
+              "title": "Safsata Kılavuzu",
+              "author": "Alev Alatlı",
+              "neden": "Mantık hatalarını tespit etme rehberi."
+            },
+            {
+              "title": "Öyle Geçer ki Zaman",
+              "author": "Teoman Duralı",
+              "neden": "Bir filozofun hayat yolculuğu."
+            },
+            {
+              "title": "Waldo Sen Neden Buradasın?",
+              "author": "İsmet Özel",
+              "neden": "İsmet Özel'in insani tarafı."
+            },
+            {
+              "title": "Başarı Bedel İster",
+              "author": "Nurullah Genç",
+              "neden": "Ahlaklı kariyer ve başarı."
+            },
+            {
+              "title": "Üç Zor Mesele",
+              "author": "İsmet Özel",
+              "neden": "İsmet Özel'in temel meselelere dair sorgulayıcı düşünceleri."
+            }
           ]
         },
         {
@@ -236,12 +653,41 @@
           "name": "Cemil Meriç Modülü (Okyanusa Dalış)",
           "description": "Türkiye'nin en büyük düşünürünün mutfağı.",
           "books": [
-            { "title": "Jurnal 1. Cilt", "author": "Cemil Meriç", "neden": "Acıları ve yalnızlığı." },
-            { "title": "Jurnal 2. Cilt", "author": "Cemil Meriç", "neden": "Fikrin olgunlaşması." },
-            { "title": "Yalnızız", "author": "Peyami Safa", "neden": "Jurnallerle paralel okunacak ruhsal roman." },
-            { "title": "Bu Ülke", "author": "Cemil Meriç", "neden": "Zirve eser. Aforizmalar ve analizler." },
-            { "title": "Mağaradakiler", "author": "Cemil Meriç", "neden": "Aydınların analizi." },
-            { "title": "Umrandan Uygarlığa", "author": "Cemil Meriç", "neden": "Medeniyet tartışmaları." }
+            {
+              "title": "Jurnal 1. Cilt",
+              "author": "Cemil Meriç",
+              "neden": "Acıları ve yalnızlığı."
+            },
+            {
+              "title": "Jurnal 2. Cilt",
+              "author": "Cemil Meriç",
+              "neden": "Fikrin olgunlaşması."
+            },
+            {
+              "title": "Yalnızız",
+              "author": "Peyami Safa",
+              "neden": "Jurnallerle paralel okunacak ruhsal roman."
+            },
+            {
+              "title": "Bu Ülke",
+              "author": "Cemil Meriç",
+              "neden": "Zirve eser. Aforizmalar ve analizler."
+            },
+            {
+              "title": "Mağaradakiler",
+              "author": "Cemil Meriç",
+              "neden": "Aydınların analizi."
+            },
+            {
+              "title": "Umrandan Uygarlığa",
+              "author": "Cemil Meriç",
+              "neden": "Medeniyet tartışmaları."
+            },
+            {
+              "title": "İslamın Dirilişi",
+              "author": "Sezai Karakoç",
+              "neden": "Sezai Karakoç'un medeniyet tasavvuru ve diriliş fikri."
+            }
           ]
         },
         {
@@ -249,11 +695,36 @@
           "name": "Bilge Kral Aliya Modülü (Devlet ve Fikir)",
           "description": "Düşüncenin eyleme dönüşmesi.",
           "books": [
-            { "title": "Özgürlüğe Kaçış", "author": "Aliya İzzetbegoviç", "neden": "Hapishane notları." },
-            { "title": "Doğu Batı Arasında İslam", "author": "Aliya İzzetbegoviç", "neden": "En kapsamlı felsefi eser." },
-            { "title": "İslam Deklarasyonu", "author": "Aliya İzzetbegoviç", "neden": "Müslüman toplumların manifestosu." },
-            { "title": "İslami Yeniden Doğuşun Meseleleri", "author": "Aliya İzzetbegoviç", "neden": "Modern çağda İslami düşüncenin sorunları ve çözümleri." },
-            { "title": "Tarihe Tanıklığım", "author": "Aliya İzzetbegoviç", "neden": "Savaş ve devlet yönetimi." }
+            {
+              "title": "Özgürlüğe Kaçış",
+              "author": "Aliya İzzetbegoviç",
+              "neden": "Hapishane notları."
+            },
+            {
+              "title": "Doğu Batı Arasında İslam",
+              "author": "Aliya İzzetbegoviç",
+              "neden": "En kapsamlı felsefi eser."
+            },
+            {
+              "title": "İslam Deklarasyonu",
+              "author": "Aliya İzzetbegoviç",
+              "neden": "Müslüman toplumların manifestosu."
+            },
+            {
+              "title": "İslami Yeniden Doğuşun Meseleleri",
+              "author": "Aliya İzzetbegoviç",
+              "neden": "Modern çağda İslami düşüncenin sorunları ve çözümleri."
+            },
+            {
+              "title": "Tarihe Tanıklığım",
+              "author": "Aliya İzzetbegoviç",
+              "neden": "Savaş ve devlet yönetimi."
+            },
+            {
+              "title": "Hatıralar",
+              "author": "Ord. Prof. Dr. Ali Fuad Başgil",
+              "neden": "Ali Fuad Başgil'in anıları. Türk hukuk ve siyaset tarihi için önemli tanıklık."
+            }
           ]
         },
         {
@@ -261,10 +732,26 @@
           "name": "İsmet Özel Fırtınası (Sert Düşünce)",
           "description": "Zihni sarsmak ve konforu bozmak.",
           "books": [
-            { "title": "Erbain", "author": "İsmet Özel", "neden": "Şiirle düşünmek - Amentü, Evet İsyan." },
-            { "title": "Üç Mesele", "author": "İsmet Özel", "neden": "Teknik, Medeniyet, Yabancılaşma." },
-            { "title": "Taşları Yemek Yasak", "author": "İsmet Özel", "neden": "Türkiye analizleri." },
-            { "title": "Zor Zamanda Konuşmak", "author": "İsmet Özel", "neden": "Entelektüel sorumluluk." }
+            {
+              "title": "Erbain",
+              "author": "İsmet Özel",
+              "neden": "Şiirle düşünmek - Amentü, Evet İsyan."
+            },
+            {
+              "title": "Üç Mesele",
+              "author": "İsmet Özel",
+              "neden": "Teknik, Medeniyet, Yabancılaşma."
+            },
+            {
+              "title": "Taşları Yemek Yasak",
+              "author": "İsmet Özel",
+              "neden": "Türkiye analizleri."
+            },
+            {
+              "title": "Zor Zamanda Konuşmak",
+              "author": "İsmet Özel",
+              "neden": "Entelektüel sorumluluk."
+            }
           ]
         },
         {
@@ -272,12 +759,36 @@
           "name": "Diriliş Mimarı Sezai Karakoç",
           "description": "Teorik ve metafizik temel.",
           "books": [
-            { "title": "Diriliş Neslinin Amentüsü", "author": "Sezai Karakoç", "neden": "Gençliğin el kitabı." },
-            { "title": "Yitik Cennet", "author": "Sezai Karakoç", "neden": "Peygamberler tarihi ve medeniyet." },
-            { "title": "İslam'ın Dirilişi", "author": "Sezai Karakoç", "neden": "Kriz ve çıkış." },
-            { "title": "İnsanlığın Dirilişi", "author": "Sezai Karakoç", "neden": "Evrensel bir diriliş çağrısı." },
-            { "title": "Ruhun Dirilişi", "author": "Sezai Karakoç", "neden": "Kültür ve ruh cephesi." },
-            { "title": "Mehmet Akif", "author": "Sezai Karakoç", "neden": "Akif'i en iyi anlatan eser." }
+            {
+              "title": "Diriliş Neslinin Amentüsü",
+              "author": "Sezai Karakoç",
+              "neden": "Gençliğin el kitabı."
+            },
+            {
+              "title": "Yitik Cennet",
+              "author": "Sezai Karakoç",
+              "neden": "Peygamberler tarihi ve medeniyet."
+            },
+            {
+              "title": "İslam'ın Dirilişi",
+              "author": "Sezai Karakoç",
+              "neden": "Kriz ve çıkış."
+            },
+            {
+              "title": "İnsanlığın Dirilişi",
+              "author": "Sezai Karakoç",
+              "neden": "Evrensel bir diriliş çağrısı."
+            },
+            {
+              "title": "Ruhun Dirilişi",
+              "author": "Sezai Karakoç",
+              "neden": "Kültür ve ruh cephesi."
+            },
+            {
+              "title": "Mehmet Akif",
+              "author": "Sezai Karakoç",
+              "neden": "Akif'i en iyi anlatan eser."
+            }
           ]
         },
         {
@@ -285,12 +796,36 @@
           "name": "İleri Sistem Analizi ve Eleştiri",
           "description": "Dünyayı ve Türkiye'yi kodlarına kadar analiz etmek.",
           "books": [
-            { "title": "Bize Yön Veren Metinler", "author": "Alev Alatlı", "neden": "Batı'nın zihin kodları." },
-            { "title": "Sorun Nedir?", "author": "Teoman Duralı", "neden": "Küresel sorunların felsefi kökeni." },
-            { "title": "Batılaşma İhaneti", "author": "D. Mehmet Doğan", "neden": "Yakın tarih eleştirisi." },
-            { "title": "Kelimeler ve Kavramlar", "author": "Rasim Özdenören", "neden": "Zihni netleştirme." },
-            { "title": "Var Olmak", "author": "Nurettin Topçu", "neden": "Hareket felsefesi ve ahlak." },
-            { "title": "Hangi Batı", "author": "Attilâ İlhan", "neden": "Farklı bir perspektiften Batı eleştirisi." }
+            {
+              "title": "Bize Yön Veren Metinler",
+              "author": "Alev Alatlı",
+              "neden": "Batı'nın zihin kodları."
+            },
+            {
+              "title": "Sorun Nedir?",
+              "author": "Teoman Duralı",
+              "neden": "Küresel sorunların felsefi kökeni."
+            },
+            {
+              "title": "Batılaşma İhaneti",
+              "author": "D. Mehmet Doğan",
+              "neden": "Yakın tarih eleştirisi."
+            },
+            {
+              "title": "Kelimeler ve Kavramlar",
+              "author": "Rasim Özdenören",
+              "neden": "Zihni netleştirme."
+            },
+            {
+              "title": "Var Olmak",
+              "author": "Nurettin Topçu",
+              "neden": "Hareket felsefesi ve ahlak."
+            },
+            {
+              "title": "Hangi Batı",
+              "author": "Attilâ İlhan",
+              "neden": "Farklı bir perspektiften Batı eleştirisi."
+            }
           ]
         },
         {
@@ -298,16 +833,56 @@
           "name": "Zirve (Klasikler ve Büyük Sentez)",
           "description": "Bin yıllık bilgelik ve kapanış.",
           "books": [
-            { "title": "Yarınki Türkiye", "author": "Nurettin Topçu", "neden": "İdeal toplum tezi." },
-            { "title": "Biati", "author": "Nuri Pakdil", "neden": "Duruş odaklı denemeler." },
-            { "title": "Siyasetname", "author": "Nizamülmülk", "neden": "Devlet yönetimi." },
-            { "title": "Mukaddime (Seçkiler)", "author": "İbn Haldun", "neden": "Sosyolojinin temeli." },
-            { "title": "Kutadgu Bilig (Günümüz Türkçesi)", "author": "Yusuf Has Hacib", "neden": "Mutluluk bilgisi." },
-            { "title": "Bostan ve Gülistan", "author": "Sadi Şirazi", "neden": "Doğu hikmetleri." },
-            { "title": "Devlet", "author": "Platon", "neden": "Batı düşüncesinin kökü." },
-            { "title": "Ya Tahammül Ya Sefer", "author": "Mustafa Kutlu", "neden": "Final hikayesi - Dava yükü." },
-            { "title": "Kendi Gök Kubbemiz", "author": "Yahya Kemal Beyatlı", "neden": "Huzurlu bir şiirsel kapanış." },
-            { "title": "Modern Dünyanın Bunalımı", "author": "René Guénon", "neden": "Gelenekselci ekolün zirvesi." }
+            {
+              "title": "Yarınki Türkiye",
+              "author": "Nurettin Topçu",
+              "neden": "İdeal toplum tezi."
+            },
+            {
+              "title": "Biati",
+              "author": "Nuri Pakdil",
+              "neden": "Duruş odaklı denemeler."
+            },
+            {
+              "title": "Siyasetname",
+              "author": "Nizamülmülk",
+              "neden": "Devlet yönetimi."
+            },
+            {
+              "title": "Mukaddime (Seçkiler)",
+              "author": "İbn Haldun",
+              "neden": "Sosyolojinin temeli."
+            },
+            {
+              "title": "Kutadgu Bilig (Günümüz Türkçesi)",
+              "author": "Yusuf Has Hacib",
+              "neden": "Mutluluk bilgisi."
+            },
+            {
+              "title": "Bostan ve Gülistan",
+              "author": "Sadi Şirazi",
+              "neden": "Doğu hikmetleri."
+            },
+            {
+              "title": "Devlet",
+              "author": "Platon",
+              "neden": "Batı düşüncesinin kökü."
+            },
+            {
+              "title": "Ya Tahammül Ya Sefer",
+              "author": "Mustafa Kutlu",
+              "neden": "Final hikayesi - Dava yükü."
+            },
+            {
+              "title": "Kendi Gök Kubbemiz",
+              "author": "Yahya Kemal Beyatlı",
+              "neden": "Huzurlu bir şiirsel kapanış."
+            },
+            {
+              "title": "Modern Dünyanın Bunalımı",
+              "author": "René Guénon",
+              "neden": "Gelenekselci ekolün zirvesi."
+            }
           ]
         }
       ]
@@ -324,13 +899,41 @@
           "name": "Roman Kapısı (Tarihi Hissetmek)",
           "description": "Tarih dersi yok, macera var. Dönemlerin ruhunu, kokusunu ve atmosferini hissetmek için en iyi başlangıç tarihi romanlardır.",
           "books": [
-            { "title": "Şu Çılgın Türkler", "author": "Turgut Özakman", "neden": "Milli Mücadele'yi belgesel tadında ama roman akıcılığında anlatan, tüyleri diken diken eden bir modern klasik." },
-            { "title": "Devlet Ana", "author": "Kemal Tahir", "neden": "Osmanlı'nın kuruluşunu, Anadolu insanının yapısını ve söğüt ağacının gölgesini anlatan dev bir eser." },
-            { "title": "Semerkant", "author": "Amin Maalouf", "neden": "Orta Doğu, Selçuklular, Ömer Hayyam ve Hasan Sabbah... Doğu'nun gizemli tarihine büyülü bir giriş." },
-            { "title": "Bozkurtların Ölümü", "author": "Hüseyin Nihal Atsız", "neden": "Orta Asya Türk tarihi, Göktürkler ve Kürşad destanı. Mitoloji ile tarihin iç içe geçtiği heyecanlı bir roman." },
-            { "title": "Osmancık", "author": "Tarık Buğra", "neden": "Osman Gazi'nin bir \"alp\"ten bir \"devlet adamı\"na dönüşümünün psikolojik ve tarihi romanı." },
-            { "title": "Puslu Kıtalar Atlası", "author": "İhsan Oktay Anar", "neden": "Tarihi atmosferi ve Osmanlı İstanbul'unun gizemini hissettiren büyülü gerçekçi bir roman." },
-            { "title": "Ben Ayşe", "author": "Fikret Eroğlu", "neden": "Milli mücadele ve yakın tarih romanı. Anadolu kadınının gözünden kurtuluş." }
+            {
+              "title": "Şu Çılgın Türkler",
+              "author": "Turgut Özakman",
+              "neden": "Milli Mücadele'yi belgesel tadında ama roman akıcılığında anlatan, tüyleri diken diken eden bir modern klasik."
+            },
+            {
+              "title": "Devlet Ana",
+              "author": "Kemal Tahir",
+              "neden": "Osmanlı'nın kuruluşunu, Anadolu insanının yapısını ve söğüt ağacının gölgesini anlatan dev bir eser."
+            },
+            {
+              "title": "Semerkant",
+              "author": "Amin Maalouf",
+              "neden": "Orta Doğu, Selçuklular, Ömer Hayyam ve Hasan Sabbah... Doğu'nun gizemli tarihine büyülü bir giriş."
+            },
+            {
+              "title": "Bozkurtların Ölümü",
+              "author": "Hüseyin Nihal Atsız",
+              "neden": "Orta Asya Türk tarihi, Göktürkler ve Kürşad destanı. Mitoloji ile tarihin iç içe geçtiği heyecanlı bir roman."
+            },
+            {
+              "title": "Osmancık",
+              "author": "Tarık Buğra",
+              "neden": "Osman Gazi'nin bir \"alp\"ten bir \"devlet adamı\"na dönüşümünün psikolojik ve tarihi romanı."
+            },
+            {
+              "title": "Puslu Kıtalar Atlası",
+              "author": "İhsan Oktay Anar",
+              "neden": "Tarihi atmosferi ve Osmanlı İstanbul'unun gizemini hissettiren büyülü gerçekçi bir roman."
+            },
+            {
+              "title": "Ben Ayşe",
+              "author": "Fikret Eroğlu",
+              "neden": "Milli mücadele ve yakın tarih romanı. Anadolu kadınının gözünden kurtuluş."
+            }
           ]
         },
         {
@@ -338,14 +941,46 @@
           "name": "Popüler Tarih ve Merak (Soru-Cevap)",
           "description": "Romanlardan çıktık. Şimdi sıkıcı olmayan, sohbet havasında yazılmış, \"tarih magazini\" tadında ama öğretici kitaplar.",
           "books": [
-            { "title": "Tarihin Arka Odası", "author": "Murat Bardakçı", "neden": "Tarihin bilinmeyen, ilginç, tuhaf ve magazinel yönleri. Resmi tarihin asık suratını dağıtır." },
-            { "title": "Sorularla Osmanlı İmparatorluğu", "author": "Erhan Afyoncu", "neden": "Kronolojik sıkıcılık yok. \"Padişahlar içki içer miydi?\", \"Harem nasıldı?\" gibi merak edilen sorulara net cevaplar." },
-            { "title": "Sultanın Casusları", "author": "Emrah Safa Gürkan", "neden": "Akademik bilgiyi inanılmaz eğlenceli ve mizahi bir dille anlatır. 16. yüzyıl istihbarat savaşları." },
-            { "title": "Türklerin Tarihi (1. Cilt)", "author": "İlber Ortaylı", "neden": "Orta Asya'dan Anadolu'ya göçü İlber Hoca'nın sohbetiyle dinler gibi okursun." },
-            { "title": "Yavuz", "author": "Feridun Andaç", "neden": "Yavuz Sultan Selim dönemi ve Orta Doğu siyasetinin şekillenişi üzerine roman tadında anlatılar." },
-            { "title": "Türklerin Serüveni", "author": "Cansu Canan Özgen", "neden": "Popüler ve görsel tarih anlatımı. Orta Asya'dan Anadolu'ya." },
-            { "title": "İnsanlığın Medeniyet Destanı", "author": "Cansu Canan Özgen", "neden": "Dünya medeniyetlerinin hikayesi, akıcı ve öğretici." },
-            { "title": "Türklerin Büyükleri", "author": "Cansu Canan Özgen", "neden": "Türk tarihinin önemli isimleri, biyografik anlatım." }
+            {
+              "title": "Tarihin Arka Odası",
+              "author": "Murat Bardakçı",
+              "neden": "Tarihin bilinmeyen, ilginç, tuhaf ve magazinel yönleri. Resmi tarihin asık suratını dağıtır."
+            },
+            {
+              "title": "Sorularla Osmanlı İmparatorluğu",
+              "author": "Erhan Afyoncu",
+              "neden": "Kronolojik sıkıcılık yok. \"Padişahlar içki içer miydi?\", \"Harem nasıldı?\" gibi merak edilen sorulara net cevaplar."
+            },
+            {
+              "title": "Sultanın Casusları",
+              "author": "Emrah Safa Gürkan",
+              "neden": "Akademik bilgiyi inanılmaz eğlenceli ve mizahi bir dille anlatır. 16. yüzyıl istihbarat savaşları."
+            },
+            {
+              "title": "Türklerin Tarihi (1. Cilt)",
+              "author": "İlber Ortaylı",
+              "neden": "Orta Asya'dan Anadolu'ya göçü İlber Hoca'nın sohbetiyle dinler gibi okursun."
+            },
+            {
+              "title": "Yavuz",
+              "author": "Feridun Andaç",
+              "neden": "Yavuz Sultan Selim dönemi ve Orta Doğu siyasetinin şekillenişi üzerine roman tadında anlatılar."
+            },
+            {
+              "title": "Türklerin Serüveni",
+              "author": "Cansu Canan Özgen",
+              "neden": "Popüler ve görsel tarih anlatımı. Orta Asya'dan Anadolu'ya."
+            },
+            {
+              "title": "İnsanlığın Medeniyet Destanı",
+              "author": "Cansu Canan Özgen",
+              "neden": "Dünya medeniyetlerinin hikayesi, akıcı ve öğretici."
+            },
+            {
+              "title": "Türklerin Büyükleri",
+              "author": "Cansu Canan Özgen",
+              "neden": "Türk tarihinin önemli isimleri, biyografik anlatım."
+            }
           ]
         },
         {
@@ -353,11 +988,31 @@
           "name": "Biyografilerle Dönemleri Anlamak",
           "description": "Tarihi olaylar değil, o olayları yapan insanlar. Liderlerin hayatı üzerinden dönemi okumak.",
           "books": [
-            { "title": "Çankaya", "author": "Falih Rıfkı Atay", "neden": "Atatürk'ü ve Cumhuriyet'in kuruluşunu, sofranın başköşesindeki bir şahidin gözünden, mükemmel bir Türkçeyle okumak." },
-            { "title": "Fatih Sultan Mehemmed Han", "author": "Halil İnalcık", "neden": "İnalcık Hoca'nın en okunabilir, sadeleştirilmiş Fatih portresi. İstanbul'un fethi ve imparatorluk vizyonu." },
-            { "title": "Kösem Sultan", "author": "Reşat Ekrem Koçu", "neden": "Kadınlar Saltanatı dönemi. Saray entrikaları ve Osmanlı'nın duraklaması üzerine \"roman gibi\" bir tarih." },
-            { "title": "Suyu Arayan Adam", "author": "Şevket Süreyya Aydemir", "neden": "Enver Paşa'dan Cumhuriyet öğretmenine... Osmanlı'nın çöküşü ve Cumhuriyet'in kuruluşu bir insan ömründe nasıl yaşandı?" },
-            { "title": "Timur", "author": "Jean-Paul Roux", "neden": "Türk-Moğol dünyasının bu büyük ve acımasız liderini Batılı ama objektif bir tarihçiden okumak." }
+            {
+              "title": "Çankaya",
+              "author": "Falih Rıfkı Atay",
+              "neden": "Atatürk'ü ve Cumhuriyet'in kuruluşunu, sofranın başköşesindeki bir şahidin gözünden, mükemmel bir Türkçeyle okumak."
+            },
+            {
+              "title": "Fatih Sultan Mehemmed Han",
+              "author": "Halil İnalcık",
+              "neden": "İnalcık Hoca'nın en okunabilir, sadeleştirilmiş Fatih portresi. İstanbul'un fethi ve imparatorluk vizyonu."
+            },
+            {
+              "title": "Kösem Sultan",
+              "author": "Reşat Ekrem Koçu",
+              "neden": "Kadınlar Saltanatı dönemi. Saray entrikaları ve Osmanlı'nın duraklaması üzerine \"roman gibi\" bir tarih."
+            },
+            {
+              "title": "Suyu Arayan Adam",
+              "author": "Şevket Süreyya Aydemir",
+              "neden": "Enver Paşa'dan Cumhuriyet öğretmenine... Osmanlı'nın çöküşü ve Cumhuriyet'in kuruluşu bir insan ömründe nasıl yaşandı?"
+            },
+            {
+              "title": "Timur",
+              "author": "Jean-Paul Roux",
+              "neden": "Türk-Moğol dünyasının bu büyük ve acımasız liderini Batılı ama objektif bir tarihçiden okumak."
+            }
           ]
         },
         {
@@ -365,12 +1020,36 @@
           "name": "Orta Doğu'ya Giriş",
           "description": "Osmanlı ve Türk tarihini anlamak için Orta Doğu'yu bilmek şarttır. Bu seviye o coğrafyanın kodlarını verir.",
           "books": [
-            { "title": "Arapların Gözünden Haçlı Seferleri", "author": "Amin Maalouf", "neden": "Tarihi hep Batı'dan okuduk. Peki işgale uğrayanlar ne düşündü? Orta Doğu'nun bugünkü öfkesinin kökleri." },
-            { "title": "Kısa Orta Doğu Tarihi", "author": "Recep Boztemur", "neden": "Karmaşık Orta Doğu tarihini özetleyen, harita çizen bir rehber." },
-            { "title": "Petrol Fırtınası", "author": "Raif Karadağ", "neden": "Bölgenin kaderini değiştiren petrolün ve emperyalizmin tarihi." },
-            { "title": "Kudüs: Bir Şehrin Biyografisi", "author": "Simon Sebag Montefiore", "neden": "Kudüs'ü anlamadan Orta Doğu anlaşılmaz. Çok sürükleyici, çok katmanlı bir tarih anlatısı." },
-            { "title": "Alamut", "author": "Vladimir Bartol", "neden": "Hasan Sabbah ve fedaileri. Orta Doğu'da \"terör\" ve \"suikast\" geleneğinin tarihi kökleri - Roman kurgusunda." },
-            { "title": "Modern Ortadoğu Tarihi", "author": "William L. Cleveland", "neden": "Akademik temel. Orta Doğu'nun son 200 yılını anlatan kapsamlı bir ders kitabı." }
+            {
+              "title": "Arapların Gözünden Haçlı Seferleri",
+              "author": "Amin Maalouf",
+              "neden": "Tarihi hep Batı'dan okuduk. Peki işgale uğrayanlar ne düşündü? Orta Doğu'nun bugünkü öfkesinin kökleri."
+            },
+            {
+              "title": "Kısa Orta Doğu Tarihi",
+              "author": "Recep Boztemur",
+              "neden": "Karmaşık Orta Doğu tarihini özetleyen, harita çizen bir rehber."
+            },
+            {
+              "title": "Petrol Fırtınası",
+              "author": "Raif Karadağ",
+              "neden": "Bölgenin kaderini değiştiren petrolün ve emperyalizmin tarihi."
+            },
+            {
+              "title": "Kudüs: Bir Şehrin Biyografisi",
+              "author": "Simon Sebag Montefiore",
+              "neden": "Kudüs'ü anlamadan Orta Doğu anlaşılmaz. Çok sürükleyici, çok katmanlı bir tarih anlatısı."
+            },
+            {
+              "title": "Alamut",
+              "author": "Vladimir Bartol",
+              "neden": "Hasan Sabbah ve fedaileri. Orta Doğu'da \"terör\" ve \"suikast\" geleneğinin tarihi kökleri - Roman kurgusunda."
+            },
+            {
+              "title": "Modern Ortadoğu Tarihi",
+              "author": "William L. Cleveland",
+              "neden": "Akademik temel. Orta Doğu'nun son 200 yılını anlatan kapsamlı bir ders kitabı."
+            }
           ]
         },
         {
@@ -378,11 +1057,31 @@
           "name": "Osmanlı Klasik Çağı (Yükseliş ve Zirve)",
           "description": "Artık biraz daha ciddi tarihçilere geçiyoruz. Osmanlı'nın kurumsallaşması ve dünyaya hükmetmesi.",
           "books": [
-            { "title": "Devlet-i Aliyye (1. Cilt)", "author": "Halil İnalcık", "neden": "İnalcık Hoca'nın \"herkes okusun diye\" yazdığı başyapıt serisinin ilki. Klasik dönem." },
-            { "title": "Osmanlıyı Yeniden Keşfetmek", "author": "İlber Ortaylı", "neden": "Osmanlı kurumları, aile yapısı ve yaşam tarzı üzerine ufuk açıcı makaleler." },
-            { "title": "Kanuni ve Çağı", "author": "Feridun Emecen", "neden": "Muhteşem Yüzyıl'ın gerçeği. Dünyaya nizam veren bir imparatorluğun zirvesi." },
-            { "title": "Piri Reis ve Türk Denizciliği", "author": "İdris Bostan", "neden": "Osmanlı'nın Akdeniz hakimiyeti." },
-            { "title": "Osmanlı Gerileme Dönemi", "author": "Nicolae Jorga", "neden": "Dışarıdan bir gözle Osmanlı'nın nasıl algılandığı." }
+            {
+              "title": "Devlet-i Aliyye (1. Cilt)",
+              "author": "Halil İnalcık",
+              "neden": "İnalcık Hoca'nın \"herkes okusun diye\" yazdığı başyapıt serisinin ilki. Klasik dönem."
+            },
+            {
+              "title": "Osmanlıyı Yeniden Keşfetmek",
+              "author": "İlber Ortaylı",
+              "neden": "Osmanlı kurumları, aile yapısı ve yaşam tarzı üzerine ufuk açıcı makaleler."
+            },
+            {
+              "title": "Kanuni ve Çağı",
+              "author": "Feridun Emecen",
+              "neden": "Muhteşem Yüzyıl'ın gerçeği. Dünyaya nizam veren bir imparatorluğun zirvesi."
+            },
+            {
+              "title": "Piri Reis ve Türk Denizciliği",
+              "author": "İdris Bostan",
+              "neden": "Osmanlı'nın Akdeniz hakimiyeti."
+            },
+            {
+              "title": "Osmanlı Gerileme Dönemi",
+              "author": "Nicolae Jorga",
+              "neden": "Dışarıdan bir gözle Osmanlı'nın nasıl algılandığı."
+            }
           ]
         },
         {
@@ -390,11 +1089,31 @@
           "name": "Geç Dönem ve Hüzün (19. Yüzyıl)",
           "description": "\"İmparatorluğun En Uzun Yüzyılı\". Modernleşme, toprak kayıpları ve Cumhuriyet'in doğum sancıları.",
           "books": [
-            { "title": "İmparatorluğun En Uzun Yüzyılı", "author": "İlber Ortaylı", "neden": "Tanzimat, modernleşme ve Osmanlı'nın kabuk değiştirmesi. Mutlaka okunmalı." },
-            { "title": "Son İmparator Abdülhamid", "author": "Vahdettin Engin", "neden": "Çok tartışılan Abdülhamid dönemine belgelerle, sakin ve objektif bir bakış." },
-            { "title": "İttihat ve Terakki", "author": "Feroz Ahmad", "neden": "İmparatorluğu savaşa sokan, Cumhuriyeti kuran kadroyu anlamak. Batılı ama içeriden bir bakış." },
-            { "title": "Zeytindağı", "author": "Falih Rıfkı Atay", "neden": "Ortadoğu'nun elimizden kayıp gidişinin ağıtı. Suriye, Filistin ve çöl." },
-            { "title": "Milli Mücadele Başlarken", "author": "Tayyib Gökbilgin", "neden": "Kurtuluş Savaşı'nın siyasi ve askeri altyapısı." }
+            {
+              "title": "İmparatorluğun En Uzun Yüzyılı",
+              "author": "İlber Ortaylı",
+              "neden": "Tanzimat, modernleşme ve Osmanlı'nın kabuk değiştirmesi. Mutlaka okunmalı."
+            },
+            {
+              "title": "Son İmparator Abdülhamid",
+              "author": "Vahdettin Engin",
+              "neden": "Çok tartışılan Abdülhamid dönemine belgelerle, sakin ve objektif bir bakış."
+            },
+            {
+              "title": "İttihat ve Terakki",
+              "author": "Feroz Ahmad",
+              "neden": "İmparatorluğu savaşa sokan, Cumhuriyeti kuran kadroyu anlamak. Batılı ama içeriden bir bakış."
+            },
+            {
+              "title": "Zeytindağı",
+              "author": "Falih Rıfkı Atay",
+              "neden": "Ortadoğu'nun elimizden kayıp gidişinin ağıtı. Suriye, Filistin ve çöl."
+            },
+            {
+              "title": "Milli Mücadele Başlarken",
+              "author": "Tayyib Gökbilgin",
+              "neden": "Kurtuluş Savaşı'nın siyasi ve askeri altyapısı."
+            }
           ]
         },
         {
@@ -402,12 +1121,36 @@
           "name": "Modern Türkiye ve Yakın Tarih",
           "description": "Cumhuriyet dönemi, demokrasi denemeleri ve darbeler tarihi.",
           "books": [
-            { "title": "Modern Türkiye'nin Doğuşu", "author": "Bernard Lewis", "neden": "Türkiye'nin modernleşme serüvenini en iyi analiz eden klasiklerden biri." },
-            { "title": "Tek Adam (1. Cilt)", "author": "Şevket Süreyya Aydemir", "neden": "Atatürk biyografisinin zirvesi. Hem insan hem lider olarak Atatürk." },
-            { "title": "Demokrasinin İlk Yılları (1947-1951)", "author": "Taha Akyol", "neden": "Çok partili hayata geçiş sancıları. Siyasi tarih okuması." },
-            { "title": "Türkiye'nin Yakın Tarihi", "author": "İlber Ortaylı", "neden": "Yakın dönemin olaylarına eleştirel bir bakış." },
-            { "title": "Gölgedekiler", "author": "Murat Bardakçı", "neden": "Cumhuriyet kurulurken dışarıda kalan hanedan üyeleri ve sürgünlerin hüzünlü tarihi." },
-            { "title": "Darbeye Geçit Yok", "author": "Abdulkadir Selvi", "neden": "15 Temmuz ve yakın siyasi tarih. Güncel bir tanıklık." }
+            {
+              "title": "Modern Türkiye'nin Doğuşu",
+              "author": "Bernard Lewis",
+              "neden": "Türkiye'nin modernleşme serüvenini en iyi analiz eden klasiklerden biri."
+            },
+            {
+              "title": "Tek Adam (1. Cilt)",
+              "author": "Şevket Süreyya Aydemir",
+              "neden": "Atatürk biyografisinin zirvesi. Hem insan hem lider olarak Atatürk."
+            },
+            {
+              "title": "Demokrasinin İlk Yılları (1947-1951)",
+              "author": "Taha Akyol",
+              "neden": "Çok partili hayata geçiş sancıları. Siyasi tarih okuması."
+            },
+            {
+              "title": "Türkiye'nin Yakın Tarihi",
+              "author": "İlber Ortaylı",
+              "neden": "Yakın dönemin olaylarına eleştirel bir bakış."
+            },
+            {
+              "title": "Gölgedekiler",
+              "author": "Murat Bardakçı",
+              "neden": "Cumhuriyet kurulurken dışarıda kalan hanedan üyeleri ve sürgünlerin hüzünlü tarihi."
+            },
+            {
+              "title": "Darbeye Geçit Yok",
+              "author": "Abdulkadir Selvi",
+              "neden": "15 Temmuz ve yakın siyasi tarih. Güncel bir tanıklık."
+            }
           ]
         },
         {
@@ -415,11 +1158,31 @@
           "name": "Derinlemesine Orta Doğu (Büyük Oyun)",
           "description": "Bugünkü Orta Doğu haritası nasıl çizildi?",
           "books": [
-            { "title": "Barışa Son Veren Barış", "author": "David Fromkin", "neden": "Modern Orta Doğu'nun I. Dünya Savaşı'ndan sonra nasıl, kimler tarafından cetvelle çizildiğini anlatan başyapıt." },
-            { "title": "Ortadoğu", "author": "Bernard Lewis", "neden": "Bölgenin binlerce yıllık tarihini dini, sosyal ve kültürel açıdan özetleyen dev eser." },
-            { "title": "Çöl Kraliçesi (Gertrude Bell)", "author": "Janet Wallach", "neden": "İngiliz ajanlarının bölgeyi nasıl şekillendirdiğine dair biyografik bir okuma." },
-            { "title": "Osmanlı Barışı", "author": "İlber Ortaylı", "neden": "Osmanlı'nın Orta Doğu'yu nasıl yönettiğini, bugünkü kaosun neden Osmanlı gidince başladığını anlatır." },
-            { "title": "Petrol, Para ve Güç", "author": "Daniel Yergin", "neden": "Enerji savaşları tarihi." }
+            {
+              "title": "Barışa Son Veren Barış",
+              "author": "David Fromkin",
+              "neden": "Modern Orta Doğu'nun I. Dünya Savaşı'ndan sonra nasıl, kimler tarafından cetvelle çizildiğini anlatan başyapıt."
+            },
+            {
+              "title": "Ortadoğu",
+              "author": "Bernard Lewis",
+              "neden": "Bölgenin binlerce yıllık tarihini dini, sosyal ve kültürel açıdan özetleyen dev eser."
+            },
+            {
+              "title": "Çöl Kraliçesi (Gertrude Bell)",
+              "author": "Janet Wallach",
+              "neden": "İngiliz ajanlarının bölgeyi nasıl şekillendirdiğine dair biyografik bir okuma."
+            },
+            {
+              "title": "Osmanlı Barışı",
+              "author": "İlber Ortaylı",
+              "neden": "Osmanlı'nın Orta Doğu'yu nasıl yönettiğini, bugünkü kaosun neden Osmanlı gidince başladığını anlatır."
+            },
+            {
+              "title": "Petrol, Para ve Güç",
+              "author": "Daniel Yergin",
+              "neden": "Enerji savaşları tarihi."
+            }
           ]
         },
         {
@@ -427,11 +1190,31 @@
           "name": "Türk Kültürü ve Teşkilat Tarihi",
           "description": "Sadece olaylar değil; devlet nedir, töre nedir, kültür nedir? Zihniyet tarihi.",
           "books": [
-            { "title": "Türk Cihan Hakimiyeti Mefkuresi", "author": "Osman Turan", "neden": "Türklerin devlete ve dünyaya bakış açısı, \"Kızıl Elma\" felsefesi." },
-            { "title": "Türk Kültürü", "author": "Bahaeddin Ögel", "neden": "Orta Asya'dan gelen yaşam tarzımız, geleneklerimiz. Kültür tarihi." },
-            { "title": "Bunu Herkes Bilir", "author": "Emrah Safa Gürkan", "neden": "Tarihteki yanlış bilinen efsaneleri yıkan, metodoloji öğreten bir kitap." },
-            { "title": "Osmanlı'da Devlet, Hukuk, Adalet", "author": "Halil İnalcık", "neden": "Osmanlı sisteminin işleyiş mantığı. Ağır ama besleyici." },
-            { "title": "Oğuzlar", "author": "Faruk Sümer", "neden": "Anadolu'daki Türk boylarının kökeni. \"Benim köküm nereye dayanıyor?\" sorusunun cevabı." }
+            {
+              "title": "Türk Cihan Hakimiyeti Mefkuresi",
+              "author": "Osman Turan",
+              "neden": "Türklerin devlete ve dünyaya bakış açısı, \"Kızıl Elma\" felsefesi."
+            },
+            {
+              "title": "Türk Kültürü",
+              "author": "Bahaeddin Ögel",
+              "neden": "Orta Asya'dan gelen yaşam tarzımız, geleneklerimiz. Kültür tarihi."
+            },
+            {
+              "title": "Bunu Herkes Bilir",
+              "author": "Emrah Safa Gürkan",
+              "neden": "Tarihteki yanlış bilinen efsaneleri yıkan, metodoloji öğreten bir kitap."
+            },
+            {
+              "title": "Osmanlı'da Devlet, Hukuk, Adalet",
+              "author": "Halil İnalcık",
+              "neden": "Osmanlı sisteminin işleyiş mantığı. Ağır ama besleyici."
+            },
+            {
+              "title": "Oğuzlar",
+              "author": "Faruk Sümer",
+              "neden": "Anadolu'daki Türk boylarının kökeni. \"Benim köküm nereye dayanıyor?\" sorusunun cevabı."
+            }
           ]
         },
         {
@@ -439,11 +1222,31 @@
           "name": "Büyük Resim ve Metodoloji",
           "description": "Artık bir tarihçi gibi olaylara yukarıdan bakabilirsin.",
           "books": [
-            { "title": "Nutuk", "author": "Mustafa Kemal Atatürk", "neden": "Birinci elden kaynak. Cumhuriyet'in kuruluş belgesi. Sadeleştirilmiş değil, açıklamalı tam metin okunmalı." },
-            { "title": "Tarih Notları", "author": "Bernard Lewis", "neden": "Tarih nasıl yazılır, nasıl okunur? Bir tarihçinin laboratuvarı." },
-            { "title": "Medeniyetler Çatışması", "author": "Samuel Huntington", "neden": "Tarihi bitirip geleceği okumak için. Doğu-Batı geriliminin modern teorisi." },
-            { "title": "Devlet-i Aliyye (Diğer Ciltler)", "author": "Halil İnalcık", "neden": "Seriyi tamamlayarak Osmanlı tarihini akademik düzeyde kapatmak." },
-            { "title": "Türk Tarih Tezi", "author": "Afet İnan", "neden": "Erken Cumhuriyet döneminin tarih algısını anlamak için." }
+            {
+              "title": "Nutuk",
+              "author": "Mustafa Kemal Atatürk",
+              "neden": "Birinci elden kaynak. Cumhuriyet'in kuruluş belgesi. Sadeleştirilmiş değil, açıklamalı tam metin okunmalı."
+            },
+            {
+              "title": "Tarih Notları",
+              "author": "Bernard Lewis",
+              "neden": "Tarih nasıl yazılır, nasıl okunur? Bir tarihçinin laboratuvarı."
+            },
+            {
+              "title": "Medeniyetler Çatışması",
+              "author": "Samuel Huntington",
+              "neden": "Tarihi bitirip geleceği okumak için. Doğu-Batı geriliminin modern teorisi."
+            },
+            {
+              "title": "Devlet-i Aliyye (Diğer Ciltler)",
+              "author": "Halil İnalcık",
+              "neden": "Seriyi tamamlayarak Osmanlı tarihini akademik düzeyde kapatmak."
+            },
+            {
+              "title": "Türk Tarih Tezi",
+              "author": "Afet İnan",
+              "neden": "Erken Cumhuriyet döneminin tarih algısını anlamak için."
+            }
           ]
         }
       ]
@@ -460,11 +1263,31 @@
           "name": "Siyer ve Asr-ı Saadet (Roman Tadında)",
           "description": "Teorik bilgi yok. Peygamberin hayatı ve arkadaşlarının yaşantısı. Akıcı, edebi ve duygusal bir giriş.",
           "books": [
-            { "title": "Hz. Muhammed'in Hayatı", "author": "Martin Lings", "neden": "Batılı bir Müslüman'ın yazdığı, dünya çapında \"en iyi siyer\" kabul edilen, roman akıcılığında muazzam bir eser." },
-            { "title": "Çöl Deniz (Hz. Hatice)", "author": "Sibel Eraslan", "neden": "İslam'ın doğuşunu bir kadının, Peygamber eşinin gözünden anlatan çok naif bir roman." },
-            { "title": "Yaralı Kalplerin Baharı (Sahabe Hayatları)", "author": "Salih Suruç", "neden": "Sahabeleri kuru biyografi gibi değil, yaşadıkları olaylarla hikaye eden popüler bir eser." },
-            { "title": "Hz. Ali", "author": "Ahmet Lütfi Kazancı", "neden": "Dört halife döneminin en çalkantılı zamanlarını ve Hz. Ali'nin şahsiyetini anlatan, roman tadında tarih." },
-            { "title": "Aşkın Gözyaşları (Tebrizli Şems)", "author": "Sinan Yağmur", "neden": "Tasavvufun \"aşk\" boyutuna popüler bir giriş. Çok satan, çok okunan bir ısınma kitabı." }
+            {
+              "title": "Hz. Muhammed'in Hayatı",
+              "author": "Martin Lings",
+              "neden": "Batılı bir Müslüman'ın yazdığı, dünya çapında \"en iyi siyer\" kabul edilen, roman akıcılığında muazzam bir eser."
+            },
+            {
+              "title": "Çöl Deniz (Hz. Hatice)",
+              "author": "Sibel Eraslan",
+              "neden": "İslam'ın doğuşunu bir kadının, Peygamber eşinin gözünden anlatan çok naif bir roman."
+            },
+            {
+              "title": "Yaralı Kalplerin Baharı (Sahabe Hayatları)",
+              "author": "Salih Suruç",
+              "neden": "Sahabeleri kuru biyografi gibi değil, yaşadıkları olaylarla hikaye eden popüler bir eser."
+            },
+            {
+              "title": "Hz. Ali",
+              "author": "Ahmet Lütfi Kazancı",
+              "neden": "Dört halife döneminin en çalkantılı zamanlarını ve Hz. Ali'nin şahsiyetini anlatan, roman tadında tarih."
+            },
+            {
+              "title": "Aşkın Gözyaşları (Tebrizli Şems)",
+              "author": "Sinan Yağmur",
+              "neden": "Tasavvufun \"aşk\" boyutuna popüler bir giriş. Çok satan, çok okunan bir ısınma kitabı."
+            }
           ]
         },
         {
@@ -472,11 +1295,31 @@
           "name": "Dinler Tarihi (Büyük Resim)",
           "description": "İslam'ı anlamak için önceki dinleri (Yahudilik, Hristiyanlık) bilmek gerekir. Karşılaştırmalı okuma.",
           "books": [
-            { "title": "Tanrı'nın Tarihi", "author": "Karen Armstrong", "neden": "Üç büyük dinin nasıl ortaya çıktığını, Tanrı algısının nasıl değiştiğini anlatan, dünyaca ünlü bir popüler tarih kitabı." },
-            { "title": "Dinler Tarihi (Giriş)", "author": "Ekrem Sarıkçıoğlu", "neden": "Budizm'den Hristiyanlığa kadar dinler hakkında özet, ansiklopedik olmayan genel kültür bilgisi." },
-            { "title": "Hristiyanlık ve İslam", "author": "Müfit Selim Saruhan", "neden": "İki din arasındaki temel farklar ve benzerlikler. İsa peygamber algısı vs." },
-            { "title": "Kudüs Ey Kudüs", "author": "Dominique Lapierre", "neden": "Kudüs'ün dinler için neden bu kadar önemli olduğunu anlatan belgesel roman." },
-            { "title": "Mitoloji ve Din", "author": "Mircea Eliade", "neden": "Biraz daha felsefi. İnsan neden inanır? Kutsal nedir? Dinin kökenine dair bir zihin egzersizi." }
+            {
+              "title": "Tanrı'nın Tarihi",
+              "author": "Karen Armstrong",
+              "neden": "Üç büyük dinin nasıl ortaya çıktığını, Tanrı algısının nasıl değiştiğini anlatan, dünyaca ünlü bir popüler tarih kitabı."
+            },
+            {
+              "title": "Dinler Tarihi (Giriş)",
+              "author": "Ekrem Sarıkçıoğlu",
+              "neden": "Budizm'den Hristiyanlığa kadar dinler hakkında özet, ansiklopedik olmayan genel kültür bilgisi."
+            },
+            {
+              "title": "Hristiyanlık ve İslam",
+              "author": "Müfit Selim Saruhan",
+              "neden": "İki din arasındaki temel farklar ve benzerlikler. İsa peygamber algısı vs."
+            },
+            {
+              "title": "Kudüs Ey Kudüs",
+              "author": "Dominique Lapierre",
+              "neden": "Kudüs'ün dinler için neden bu kadar önemli olduğunu anlatan belgesel roman."
+            },
+            {
+              "title": "Mitoloji ve Din",
+              "author": "Mircea Eliade",
+              "neden": "Biraz daha felsefi. İnsan neden inanır? Kutsal nedir? Dinin kökenine dair bir zihin egzersizi."
+            }
           ]
         },
         {
@@ -484,11 +1327,31 @@
           "name": "İslam Tarihi 1 (Dört Halife ve Emeviler)",
           "description": "Peygamberden sonra ne oldu? Siyasi kavgalar, fetihler ve devletleşme.",
           "books": [
-            { "title": "Dört Halife Dönemi", "author": "Ahmet Cevdet Paşa", "neden": "İslam devletinin temellerinin atıldığı, adalet ve yönetim anlayışının şekillendiği dönem." },
-            { "title": "Kerbela", "author": "Ahmet Turgut", "neden": "Tarihin en acı olayını, mezhep ayrılıklarının kökünü roman diliyle anlatan, ağlatan bir kitap." },
-            { "title": "Siyasi ve Dini Mücadeleler Tarihi", "author": "Hasan Onat", "neden": "Emeviler döneminde Arap milliyetçiliği ve buna karşı gelişen tepkiler. Ayrışmaların kökeni." },
-            { "title": "İslam Tarihi (Emeviler-Abbasiler)", "author": "Philip Hitti", "neden": "Batılı bir gözle İslam imparatorluğunun yükselişini anlatan klasik bir özet." },
-            { "title": "Endülüs Tarihi", "author": "Ziya Paşa", "neden": "İslam'ın Avrupa'daki 800 yıllık macerası, bilim ve sanat zirvesi." }
+            {
+              "title": "Dört Halife Dönemi",
+              "author": "Ahmet Cevdet Paşa",
+              "neden": "İslam devletinin temellerinin atıldığı, adalet ve yönetim anlayışının şekillendiği dönem."
+            },
+            {
+              "title": "Kerbela",
+              "author": "Ahmet Turgut",
+              "neden": "Tarihin en acı olayını, mezhep ayrılıklarının kökünü roman diliyle anlatan, ağlatan bir kitap."
+            },
+            {
+              "title": "Siyasi ve Dini Mücadeleler Tarihi",
+              "author": "Hasan Onat",
+              "neden": "Emeviler döneminde Arap milliyetçiliği ve buna karşı gelişen tepkiler. Ayrışmaların kökeni."
+            },
+            {
+              "title": "İslam Tarihi (Emeviler-Abbasiler)",
+              "author": "Philip Hitti",
+              "neden": "Batılı bir gözle İslam imparatorluğunun yükselişini anlatan klasik bir özet."
+            },
+            {
+              "title": "Endülüs Tarihi",
+              "author": "Ziya Paşa",
+              "neden": "İslam'ın Avrupa'daki 800 yıllık macerası, bilim ve sanat zirvesi."
+            }
           ]
         },
         {
@@ -496,11 +1359,31 @@
           "name": "Mezhepler Tarihi (Ayrışmaların Mantığı)",
           "description": "Sünni, Şii, Selefi ne demek? Neden ayrıldılar? Teoloji ve Siyaset.",
           "books": [
-            { "title": "Mezhepler Tarihi", "author": "Muhammed Ebu Zehra", "neden": "Bu alanın en anlaşılır, en temel kitabıdır. Hangi mezhep ne diyor, neden çıktı? Başucu eseri." },
-            { "title": "Şiilik Kısa Tarihi", "author": "Halm Heinz", "neden": "Şiilik nedir, İmamet nedir? Sünnilikten farkı nedir? Objektif bir bakış." },
-            { "title": "Tarihsel Süreçte Mutezile", "author": "Sönmez Kutlu", "neden": "İslam'ın \"akılcı\" ekolü. Neden kaybettiler? Akıl-Vahiy tartışması." },
-            { "title": "Selefilik", "author": "Mehmet Ali Büyükkara", "neden": "Günümüz dünyasını anlamak için çok kritik. Selefilik nedir, radikalizm nereden doğar?" },
-            { "title": "İslam Düşünce Tarihi", "author": "Hilmi Ziya Ülken", "neden": "Fikirlerin ve ekollerin genel serüveni." }
+            {
+              "title": "Mezhepler Tarihi",
+              "author": "Muhammed Ebu Zehra",
+              "neden": "Bu alanın en anlaşılır, en temel kitabıdır. Hangi mezhep ne diyor, neden çıktı? Başucu eseri."
+            },
+            {
+              "title": "Şiilik Kısa Tarihi",
+              "author": "Halm Heinz",
+              "neden": "Şiilik nedir, İmamet nedir? Sünnilikten farkı nedir? Objektif bir bakış."
+            },
+            {
+              "title": "Tarihsel Süreçte Mutezile",
+              "author": "Sönmez Kutlu",
+              "neden": "İslam'ın \"akılcı\" ekolü. Neden kaybettiler? Akıl-Vahiy tartışması."
+            },
+            {
+              "title": "Selefilik",
+              "author": "Mehmet Ali Büyükkara",
+              "neden": "Günümüz dünyasını anlamak için çok kritik. Selefilik nedir, radikalizm nereden doğar?"
+            },
+            {
+              "title": "İslam Düşünce Tarihi",
+              "author": "Hilmi Ziya Ülken",
+              "neden": "Fikirlerin ve ekollerin genel serüveni."
+            }
           ]
         },
         {
@@ -508,11 +1391,31 @@
           "name": "Kur'an ve Hadis (Kaynakları Tanımak)",
           "description": "Ayet ve hadis okumaktan ziyade; \"Kur'an nasıl bir kitap?\", \"Hadisler nasıl toplandı?\" (Usul bilgisi).",
           "books": [
-            { "title": "Kur'an-ı Kerim'in Tarihi", "author": "Ömer Rıza Doğrul", "neden": "Vahiy nasıl geldi, nasıl kitap haline getirildi?" },
-            { "title": "Kur'an Nedir?", "author": "Mustafa İslamoğlu", "neden": "Kur'an'ın temel kavramları ve mesajı üzerine bir giriş." },
-            { "title": "Hadisleri Anlama Metodolojisi", "author": "Mehmet Görmez", "neden": "Hadis nedir? Uydurma hadis nasıl anlaşılır? Akılla hadis ilişkisi." },
-            { "title": "Sünneti Anlamak", "author": "Yaşar Kandemir", "neden": "Peygamberin örnekliği günümüze nasıl taşınır?" },
-            { "title": "Büyük Tefsir Tarihi (Giriş Bölümü)", "author": "Ömer Nasuhi Bilmen", "neden": "Tefsir nedir? Kur'an nasıl yorumlanır?" }
+            {
+              "title": "Kur'an-ı Kerim'in Tarihi",
+              "author": "Ömer Rıza Doğrul",
+              "neden": "Vahiy nasıl geldi, nasıl kitap haline getirildi?"
+            },
+            {
+              "title": "Kur'an Nedir?",
+              "author": "Mustafa İslamoğlu",
+              "neden": "Kur'an'ın temel kavramları ve mesajı üzerine bir giriş."
+            },
+            {
+              "title": "Hadisleri Anlama Metodolojisi",
+              "author": "Mehmet Görmez",
+              "neden": "Hadis nedir? Uydurma hadis nasıl anlaşılır? Akılla hadis ilişkisi."
+            },
+            {
+              "title": "Sünneti Anlamak",
+              "author": "Yaşar Kandemir",
+              "neden": "Peygamberin örnekliği günümüze nasıl taşınır?"
+            },
+            {
+              "title": "Büyük Tefsir Tarihi (Giriş Bölümü)",
+              "author": "Ömer Nasuhi Bilmen",
+              "neden": "Tefsir nedir? Kur'an nasıl yorumlanır?"
+            }
           ]
         },
         {
@@ -520,11 +1423,31 @@
           "name": "Fıkıh ve Hukuk (Sistemi Anlamak)",
           "description": "\"Abdest nasıl alınır?\"dan ziyade, \"İslam Hukuku nasıl çalışır? Kurallar nasıl türetilir?\"",
           "books": [
-            { "title": "İslam Hukuk Tarihi", "author": "Hayreddin Karaman", "neden": "Fıkhın doğuşu, mezheplerin hukuk sistemleri. Hukukçu olmayanlar için en anlaşılır giriş." },
-            { "title": "Ebu Hanife", "author": "Muhammed Ebu Zehra", "neden": "En büyük hukukçunun hayatı ve hukuk mantığı. Fıkhın babasını tanımak." },
-            { "title": "İslam Hukukuna Giriş", "author": "Abdülkadir Şener", "neden": "Temel kavramlar. Helal, haram, farz mantığı nedir?" },
-            { "title": "Mecelle (Kavâid-i Külliye)", "author": "Ahmet Cevdet Paşa", "neden": "Medeni kanunun girişindeki Genel Kaideler bölümü. Hukuk mantığı dersi gibidir." },
-            { "title": "Güncel Fıkıh Problemleri", "author": "Hayreddin Karaman", "neden": "Organ nakli, borsa, faiz gibi modern konulara fıkhın bakışı." }
+            {
+              "title": "İslam Hukuk Tarihi",
+              "author": "Hayreddin Karaman",
+              "neden": "Fıkhın doğuşu, mezheplerin hukuk sistemleri. Hukukçu olmayanlar için en anlaşılır giriş."
+            },
+            {
+              "title": "Ebu Hanife",
+              "author": "Muhammed Ebu Zehra",
+              "neden": "En büyük hukukçunun hayatı ve hukuk mantığı. Fıkhın babasını tanımak."
+            },
+            {
+              "title": "İslam Hukukuna Giriş",
+              "author": "Abdülkadir Şener",
+              "neden": "Temel kavramlar. Helal, haram, farz mantığı nedir?"
+            },
+            {
+              "title": "Mecelle (Kavâid-i Külliye)",
+              "author": "Ahmet Cevdet Paşa",
+              "neden": "Medeni kanunun girişindeki Genel Kaideler bölümü. Hukuk mantığı dersi gibidir."
+            },
+            {
+              "title": "Güncel Fıkıh Problemleri",
+              "author": "Hayreddin Karaman",
+              "neden": "Organ nakli, borsa, faiz gibi modern konulara fıkhın bakışı."
+            }
           ]
         },
         {
@@ -532,11 +1455,31 @@
           "name": "Tasavvuf ve İrfan (Kalbin Yolu)",
           "description": "Dinin manevi boyutu, tarikatların tarihi ve felsefesi.",
           "books": [
-            { "title": "İslam'ın Mistik Boyutları", "author": "Annemarie Schimmel", "neden": "Tasavvufu dışarıdan bir gözle, inanılmaz bir derinlikle anlatan dünya çapında bir eser." },
-            { "title": "Kuşların Dili (Mantıku't-Tayr)", "author": "Feridüddin Attar", "neden": "Tasavvufun 7 vadisini anlatan sembolik bir şaheser. Roman gibi okunur." },
-            { "title": "Mesnevi'den Seçmeler", "author": "Mevlana", "neden": "Tamamını okumak zordur, iyi bir şerhli seçki ile başlanmalı." },
-            { "title": "Kimya-yı Saadet", "author": "İmam Gazali", "neden": "İhyâ'nın özeti gibidir. Kalp hastalıkları, ahlak ve maneviyat rehberi." },
-            { "title": "Türklerin İslamlaşma Serüveni", "author": "Fuat Köprülü", "neden": "Türkler nasıl Müslüman oldu? Yesevilik ve Anadolu dervişleri." }
+            {
+              "title": "İslam'ın Mistik Boyutları",
+              "author": "Annemarie Schimmel",
+              "neden": "Tasavvufu dışarıdan bir gözle, inanılmaz bir derinlikle anlatan dünya çapında bir eser."
+            },
+            {
+              "title": "Kuşların Dili (Mantıku't-Tayr)",
+              "author": "Feridüddin Attar",
+              "neden": "Tasavvufun 7 vadisini anlatan sembolik bir şaheser. Roman gibi okunur."
+            },
+            {
+              "title": "Mesnevi'den Seçmeler",
+              "author": "Mevlana",
+              "neden": "Tamamını okumak zordur, iyi bir şerhli seçki ile başlanmalı."
+            },
+            {
+              "title": "Kimya-yı Saadet",
+              "author": "İmam Gazali",
+              "neden": "İhyâ'nın özeti gibidir. Kalp hastalıkları, ahlak ve maneviyat rehberi."
+            },
+            {
+              "title": "Türklerin İslamlaşma Serüveni",
+              "author": "Fuat Köprülü",
+              "neden": "Türkler nasıl Müslüman oldu? Yesevilik ve Anadolu dervişleri."
+            }
           ]
         },
         {
@@ -544,11 +1487,31 @@
           "name": "İslam Felsefesi ve Düşüncesi",
           "description": "Din ile Felsefenin ilişkisi. Farabi, İbn Sina, Gazali tartışmaları.",
           "books": [
-            { "title": "El-Munkız (Dalaletten Kurtuluş)", "author": "İmam Gazali", "neden": "Felsefe ile hesaplaşma ve hakikati arama yolculuğu. Otobiyografik." },
-            { "title": "Hayy Bin Yakzan", "author": "İbn Tufeyl", "neden": "Issız bir adada büyüyen bir çocuğun akıl yoluyla Allah'ı bulması. İlk felsefi roman." },
-            { "title": "İslam Felsefesi Tarihi", "author": "Macit Fahri", "neden": "Filozoflar geçidi. Kim ne dedi?" },
-            { "title": "Tehafüt'ül Felasife Hakkında Okumalar", "author": "İmam Gazali", "neden": "Gazali'nin felsefeye eleştirisini anlamak için analiz kitapları." },
-            { "title": "Üç Müceddid", "author": "Necip Fazıl Kısakürek", "neden": "İmam Rabbani, Gazali ve Halid-i Bağdadi üzerine portreler." }
+            {
+              "title": "El-Munkız (Dalaletten Kurtuluş)",
+              "author": "İmam Gazali",
+              "neden": "Felsefe ile hesaplaşma ve hakikati arama yolculuğu. Otobiyografik."
+            },
+            {
+              "title": "Hayy Bin Yakzan",
+              "author": "İbn Tufeyl",
+              "neden": "Issız bir adada büyüyen bir çocuğun akıl yoluyla Allah'ı bulması. İlk felsefi roman."
+            },
+            {
+              "title": "İslam Felsefesi Tarihi",
+              "author": "Macit Fahri",
+              "neden": "Filozoflar geçidi. Kim ne dedi?"
+            },
+            {
+              "title": "Tehafüt'ül Felasife Hakkında Okumalar",
+              "author": "İmam Gazali",
+              "neden": "Gazali'nin felsefeye eleştirisini anlamak için analiz kitapları."
+            },
+            {
+              "title": "Üç Müceddid",
+              "author": "Necip Fazıl Kısakürek",
+              "neden": "İmam Rabbani, Gazali ve Halid-i Bağdadi üzerine portreler."
+            }
           ]
         },
         {
@@ -556,11 +1519,31 @@
           "name": "Modern Dönem ve Sorunlar",
           "description": "İslam dünyasının son 200 yılı, modernizmle imtihanı.",
           "books": [
-            { "title": "İslam'da Yenilik Düşüncesi", "author": "Fazlur Rahman", "neden": "Modernist İslam düşüncesini anlamak için temel ama biraz ağır bir eser." },
-            { "title": "İslamın Bugünü", "author": "Edward Said", "neden": "Batı medyasında İslam algısı üzerine eleştirel bir medya okuması." },
-            { "title": "İslam Manifestosu", "author": "Aliya İzzetbegoviç", "neden": "Müslümanların modern dünyadaki yeri ve duruşu." },
-            { "title": "Din ve Laiklik", "author": "Ali Bulaç", "neden": "Türkiye özelinde din-devlet ilişkileri tartışmaları." },
-            { "title": "Sünnet Olmadan Ümmet Olmaz", "author": "Mehmet Görmez", "neden": "Güncel hadis ve sünnet tartışmalarına cevaplar." }
+            {
+              "title": "İslam'da Yenilik Düşüncesi",
+              "author": "Fazlur Rahman",
+              "neden": "Modernist İslam düşüncesini anlamak için temel ama biraz ağır bir eser."
+            },
+            {
+              "title": "İslamın Bugünü",
+              "author": "Edward Said",
+              "neden": "Batı medyasında İslam algısı üzerine eleştirel bir medya okuması."
+            },
+            {
+              "title": "İslam Manifestosu",
+              "author": "Aliya İzzetbegoviç",
+              "neden": "Müslümanların modern dünyadaki yeri ve duruşu."
+            },
+            {
+              "title": "Din ve Laiklik",
+              "author": "Ali Bulaç",
+              "neden": "Türkiye özelinde din-devlet ilişkileri tartışmaları."
+            },
+            {
+              "title": "Sünnet Olmadan Ümmet Olmaz",
+              "author": "Mehmet Görmez",
+              "neden": "Güncel hadis ve sünnet tartışmalarına cevaplar."
+            }
           ]
         },
         {
@@ -568,14 +1551,46 @@
           "name": "Klasikler ve Başvuru Eserleri",
           "description": "Kütüphanende durması gereken, arada açıp bakacağın temel kaynaklar.",
           "books": [
-            { "title": "Riyazü's Salihin", "author": "İmam Nevevi", "neden": "En temel hadis kitabı. Ahlak ve günlük yaşam hadisleri. Her evde olmalı." },
-            { "title": "İlmihal (2 Cilt)", "author": "Diyanet Vakfı", "neden": "Fıkıh kuralları için en güvenilir, en modern dilli başvuru kaynağı." },
-            { "title": "Hak Dini Kur'an Dili (Tefsir)", "author": "Elmalılı Hamdi Yazır", "neden": "Fatiha ve kısa surelerin tefsiri mutlaka okunmalı." },
-            { "title": "Şifa-i Şerif", "author": "Kadı İyaz", "neden": "Peygamber sevgisi ve ona saygı üzerine yazılmış klasik bir eser." },
-            { "title": "Veda Hutbesi", "author": "Hz. Muhammed", "neden": "Peygamberin son mesajı. İnsan hakları evrensel beyannamesi niteliğinde, tekrar tekrar okunmalı." },
-            { "title": "Sabredenler ve Şükredenler", "author": "İbn Kayyim el-Cevziyye", "neden": "Sabır ve şükür üzerine klasik bir maneviyat eseri." },
-            { "title": "Namaz Çağrısı", "author": "Ramazan Kayan", "neden": "İbadet bilinci ve namazın anlamı üzerine." },
-            { "title": "İslam'ın Vadettikleri", "author": "Roger Garaudy", "neden": "Batılı bir düşünürün İslam'a bakışı. Medeniyet perspektifi." }
+            {
+              "title": "Riyazü's Salihin",
+              "author": "İmam Nevevi",
+              "neden": "En temel hadis kitabı. Ahlak ve günlük yaşam hadisleri. Her evde olmalı."
+            },
+            {
+              "title": "İlmihal (2 Cilt)",
+              "author": "Diyanet Vakfı",
+              "neden": "Fıkıh kuralları için en güvenilir, en modern dilli başvuru kaynağı."
+            },
+            {
+              "title": "Hak Dini Kur'an Dili (Tefsir)",
+              "author": "Elmalılı Hamdi Yazır",
+              "neden": "Fatiha ve kısa surelerin tefsiri mutlaka okunmalı."
+            },
+            {
+              "title": "Şifa-i Şerif",
+              "author": "Kadı İyaz",
+              "neden": "Peygamber sevgisi ve ona saygı üzerine yazılmış klasik bir eser."
+            },
+            {
+              "title": "Veda Hutbesi",
+              "author": "Hz. Muhammed",
+              "neden": "Peygamberin son mesajı. İnsan hakları evrensel beyannamesi niteliğinde, tekrar tekrar okunmalı."
+            },
+            {
+              "title": "Sabredenler ve Şükredenler",
+              "author": "İbn Kayyim el-Cevziyye",
+              "neden": "Sabır ve şükür üzerine klasik bir maneviyat eseri."
+            },
+            {
+              "title": "Namaz Çağrısı",
+              "author": "Ramazan Kayan",
+              "neden": "İbadet bilinci ve namazın anlamı üzerine."
+            },
+            {
+              "title": "İslam'ın Vadettikleri",
+              "author": "Roger Garaudy",
+              "neden": "Batılı bir düşünürün İslam'a bakışı. Medeniyet perspektifi."
+            }
           ]
         }
       ]
@@ -592,15 +1607,51 @@
           "name": "İtiraflar ve Gerçek Yüzler (Isınma)",
           "description": "Dünyanın nasıl yönetildiğine dair sarsıcı, akıcı ve popüler kitaplar.",
           "books": [
-            { "title": "Bir Ekonomik Tetikçinin İtirafları", "author": "John Perkins", "neden": "Küresel sömürünün finansal istihbarat ayağı." },
-            { "title": "Sultanın Casusları", "author": "Emrah Safa Gürkan", "neden": "Osmanlı casusluk ağları. Eğlenceli ve öğretici." },
-            { "title": "Köstebek", "author": "John le Carré", "neden": "İstihbarat dünyasının \"bürokratik\" ve gerçekçi yüzü." },
-            { "title": "Teşkilat-ı Mahsusa", "author": "Abdullah Muradoğlu", "neden": "Türk istihbaratının kökleri ve fedai geleneği." },
-            { "title": "Araf'tan Kurtuluş", "author": "Cengiz Abdullayev", "neden": "Eski KGB ajanının yazdığı, Drongo serisinden bir casusluk romanı." },
-            { "title": "İstihbarat Savaşları", "author": "Hüseyin Aziz Akyürek", "neden": "İstihbarat dünyasının perde arkası ve gerçek operasyonlar." },
-            { "title": "Suç Ortakları", "author": "Agatha Christie", "neden": "Dedektiflik ve zeka oyunlarına klasik bir giriş." },
-            { "title": "Leyleklerin Uçuşu", "author": "J.C. Grangé", "neden": "Kurgusal suç analizi ve gerilim." },
-            { "title": "Sakkara'nın Kumları", "author": "Glenn Meade", "neden": "Soğuk Savaş dönemi casusluk romanı." }
+            {
+              "title": "Bir Ekonomik Tetikçinin İtirafları",
+              "author": "John Perkins",
+              "neden": "Küresel sömürünün finansal istihbarat ayağı."
+            },
+            {
+              "title": "Sultanın Casusları",
+              "author": "Emrah Safa Gürkan",
+              "neden": "Osmanlı casusluk ağları. Eğlenceli ve öğretici."
+            },
+            {
+              "title": "Köstebek",
+              "author": "John le Carré",
+              "neden": "İstihbarat dünyasının \"bürokratik\" ve gerçekçi yüzü."
+            },
+            {
+              "title": "Teşkilat-ı Mahsusa",
+              "author": "Abdullah Muradoğlu",
+              "neden": "Türk istihbaratının kökleri ve fedai geleneği."
+            },
+            {
+              "title": "Araf'tan Kurtuluş",
+              "author": "Cengiz Abdullayev",
+              "neden": "Eski KGB ajanının yazdığı, Drongo serisinden bir casusluk romanı."
+            },
+            {
+              "title": "İstihbarat Savaşları",
+              "author": "Hüseyin Aziz Akyürek",
+              "neden": "İstihbarat dünyasının perde arkası ve gerçek operasyonlar."
+            },
+            {
+              "title": "Suç Ortakları",
+              "author": "Agatha Christie",
+              "neden": "Dedektiflik ve zeka oyunlarına klasik bir giriş."
+            },
+            {
+              "title": "Leyleklerin Uçuşu",
+              "author": "J.C. Grangé",
+              "neden": "Kurgusal suç analizi ve gerilim."
+            },
+            {
+              "title": "Sakkara'nın Kumları",
+              "author": "Glenn Meade",
+              "neden": "Soğuk Savaş dönemi casusluk romanı."
+            }
           ]
         },
         {
@@ -608,11 +1659,31 @@
           "name": "Suç ve Kriminal Analiz (Adli Bilimler)",
           "description": "Bir dedektif gibi düşünmek. Kanıtlar ne söyler?",
           "books": [
-            { "title": "Kusursuz Cinayet Yoktur", "author": "Sevil Atasoy", "neden": "Türkiye'nin en iyi adli tıpçısından kanıt okuma dersleri." },
-            { "title": "Karanlığa Yolculuk", "author": "Sevil Atasoy", "neden": "Gerçek suç öyküleri ve profil çıkarma." },
-            { "title": "Sherlock Holmes: Akıl Oyunlarının Gölgesinde", "author": "Arthur Conan Doyle", "neden": "Tümdengelim mantığını oturtmak için." },
-            { "title": "Doğu Ekspresinde Cinayet", "author": "Agatha Christie", "neden": "Kurgusal suç çözümlemesi." },
-            { "title": "Yaratıcılık: Kusursuz Suç", "author": "Philippe Petit", "neden": "Suçun sanatsal ve planlama boyutuna farklı bir bakış." }
+            {
+              "title": "Kusursuz Cinayet Yoktur",
+              "author": "Sevil Atasoy",
+              "neden": "Türkiye'nin en iyi adli tıpçısından kanıt okuma dersleri."
+            },
+            {
+              "title": "Karanlığa Yolculuk",
+              "author": "Sevil Atasoy",
+              "neden": "Gerçek suç öyküleri ve profil çıkarma."
+            },
+            {
+              "title": "Sherlock Holmes: Akıl Oyunlarının Gölgesinde",
+              "author": "Arthur Conan Doyle",
+              "neden": "Tümdengelim mantığını oturtmak için."
+            },
+            {
+              "title": "Doğu Ekspresinde Cinayet",
+              "author": "Agatha Christie",
+              "neden": "Kurgusal suç çözümlemesi."
+            },
+            {
+              "title": "Yaratıcılık: Kusursuz Suç",
+              "author": "Philippe Petit",
+              "neden": "Suçun sanatsal ve planlama boyutuna farklı bir bakış."
+            }
           ]
         },
         {
@@ -620,11 +1691,36 @@
           "name": "İnsan Okuma ve Yalan Analizi (HUMINT)",
           "description": "Karşındakinin ne düşündüğünü bilmek. Mikro ifadeler ve beden dili.",
           "books": [
-            { "title": "Yalan Söylediğimi Nasıl Anladın?", "author": "Paul Ekman", "neden": "Mikro ifadeler ve beden diliyle yalan yakalama." },
-            { "title": "Yalan: İlişkilerde, İşte ve Yaşamda Yalanı Yakalamak", "author": "Paul Seager", "neden": "Yalanın psikolojisi." },
-            { "title": "Ne Düşündüğünü Biliyorum", "author": "Paul Ekman", "neden": "Duyguların yüze yansıması ve analizi." },
-            { "title": "İnsanların Oynadıkları Oyunlar", "author": "Eric Berne", "neden": "Transaksiyonel analiz. İnsan ilişkilerindeki gizli psikolojik oyunlar." },
-            { "title": "Beden Dili", "author": "Joe Navarro", "neden": "Eski bir FBI ajanından insan okuma rehberi." }
+            {
+              "title": "Yalan Söylediğimi Nasıl Anladın?",
+              "author": "Paul Ekman",
+              "neden": "Mikro ifadeler ve beden diliyle yalan yakalama."
+            },
+            {
+              "title": "Yalan: İlişkilerde, İşte ve Yaşamda Yalanı Yakalamak",
+              "author": "Paul Seager",
+              "neden": "Yalanın psikolojisi."
+            },
+            {
+              "title": "Ne Düşündüğünü Biliyorum",
+              "author": "Paul Ekman",
+              "neden": "Duyguların yüze yansıması ve analizi."
+            },
+            {
+              "title": "İnsanların Oynadıkları Oyunlar",
+              "author": "Eric Berne",
+              "neden": "Transaksiyonel analiz. İnsan ilişkilerindeki gizli psikolojik oyunlar."
+            },
+            {
+              "title": "Beden Dili",
+              "author": "Joe Navarro",
+              "neden": "Eski bir FBI ajanından insan okuma rehberi."
+            },
+            {
+              "title": "Sakkara'nın Kumları",
+              "author": "Glenn Meade",
+              "neden": "Mısır'da geçen bir casusluk gerilimi. Glenn Meade'in başarılı istihbarat romanı."
+            }
           ]
         },
         {
@@ -632,11 +1728,31 @@
           "name": "Suçlu Psikolojisi ve Profilleme",
           "description": "Suçlunun zihnine girmek.",
           "books": [
-            { "title": "Suç Psikolojisi", "author": "David Canter", "neden": "Suçlu profilleme ve suç analizi üzerine akademik bir temel." },
-            { "title": "Zihin Avcısı (Mindhunter)", "author": "John Douglas", "neden": "Seri katillerle yapılan görüşmeler ve profil çıkarma tekniğinin doğuşu." },
-            { "title": "Suçlu Psikolojisi", "author": "İzzet Durak", "neden": "Suçluyu suça iten psikolojik süreçler." },
-            { "title": "Adalet Psikolojisi", "author": "Faruk Erem", "neden": "Hukuk ve psikolojinin kesişimi." },
-            { "title": "Psikodrama", "author": "D. Altınay", "neden": "İnsan davranışlarını çözümlemede kullanılan bir teknik." }
+            {
+              "title": "Suç Psikolojisi",
+              "author": "David Canter",
+              "neden": "Suçlu profilleme ve suç analizi üzerine akademik bir temel."
+            },
+            {
+              "title": "Zihin Avcısı (Mindhunter)",
+              "author": "John Douglas",
+              "neden": "Seri katillerle yapılan görüşmeler ve profil çıkarma tekniğinin doğuşu."
+            },
+            {
+              "title": "Suçlu Psikolojisi",
+              "author": "İzzet Durak",
+              "neden": "Suçluyu suça iten psikolojik süreçler."
+            },
+            {
+              "title": "Adalet Psikolojisi",
+              "author": "Faruk Erem",
+              "neden": "Hukuk ve psikolojinin kesişimi."
+            },
+            {
+              "title": "Psikodrama",
+              "author": "D. Altınay",
+              "neden": "İnsan davranışlarını çözümlemede kullanılan bir teknik."
+            }
           ]
         },
         {
@@ -644,11 +1760,31 @@
           "name": "Tarihsel Strateji ve Savaş Sanatı",
           "description": "Değişmeyen kurallar. Bin yıllık stratejiler.",
           "books": [
-            { "title": "Savaş Sanatı", "author": "Sun Tzu", "neden": "Stratejinin kutsal kitabı." },
-            { "title": "Hükümdar (Prens)", "author": "Machiavelli", "neden": "Politik strateji ve güç kullanımı." },
-            { "title": "Siyasetname", "author": "Nizamülmülk", "neden": "Devlet yönetimi ve istihbaratın tarihsel kökleri." },
-            { "title": "Başımıza Gelenler", "author": "Mehmet Arif", "neden": "93 Harbi ve Osmanlı'nın askeri/istihbari hataları üzerine bir klasik." },
-            { "title": "Bitmeyen Savaş", "author": "Halil Paşa / Taylan Sorgun", "neden": "Kut'ül Amare kahramanının anıları ve stratejileri." }
+            {
+              "title": "Savaş Sanatı",
+              "author": "Sun Tzu",
+              "neden": "Stratejinin kutsal kitabı."
+            },
+            {
+              "title": "Hükümdar (Prens)",
+              "author": "Machiavelli",
+              "neden": "Politik strateji ve güç kullanımı."
+            },
+            {
+              "title": "Siyasetname",
+              "author": "Nizamülmülk",
+              "neden": "Devlet yönetimi ve istihbaratın tarihsel kökleri."
+            },
+            {
+              "title": "Başımıza Gelenler",
+              "author": "Mehmet Arif",
+              "neden": "93 Harbi ve Osmanlı'nın askeri/istihbari hataları üzerine bir klasik."
+            },
+            {
+              "title": "Bitmeyen Savaş",
+              "author": "Halil Paşa / Taylan Sorgun",
+              "neden": "Kut'ül Amare kahramanının anıları ve stratejileri."
+            }
           ]
         },
         {
@@ -656,11 +1792,31 @@
           "name": "Modern İstihbarat Teorisi",
           "description": "Günümüz dünyasında istihbarat nasıl çalışır?",
           "books": [
-            { "title": "İstihbarat Teorisi", "author": "Ümit Özdağ", "neden": "İstihbaratın akademik ve teorik altyapısı." },
-            { "title": "İşte İstihbarat", "author": "Nurullah Aydın", "neden": "İstihbarat teknikleri ve terimleri." },
-            { "title": "21. Yüzyılda Güvenlik ve İstihbarat", "author": "Sait Yılmaz", "neden": "Modern güvenlik konseptleri." },
-            { "title": "MİT'in Gizli Tarihi", "author": "Tuncay Özkan", "neden": "Kurumun tarihsel gelişimi." },
-            { "title": "Asimetrik Savaş ve İstihbarat", "author": "Serkan Yenal", "neden": "Terör ve gerilla taktikleriyle mücadelede istihbarat." }
+            {
+              "title": "İstihbarat Teorisi",
+              "author": "Ümit Özdağ",
+              "neden": "İstihbaratın akademik ve teorik altyapısı."
+            },
+            {
+              "title": "İşte İstihbarat",
+              "author": "Nurullah Aydın",
+              "neden": "İstihbarat teknikleri ve terimleri."
+            },
+            {
+              "title": "21. Yüzyılda Güvenlik ve İstihbarat",
+              "author": "Sait Yılmaz",
+              "neden": "Modern güvenlik konseptleri."
+            },
+            {
+              "title": "MİT'in Gizli Tarihi",
+              "author": "Tuncay Özkan",
+              "neden": "Kurumun tarihsel gelişimi."
+            },
+            {
+              "title": "Asimetrik Savaş ve İstihbarat",
+              "author": "Serkan Yenal",
+              "neden": "Terör ve gerilla taktikleriyle mücadelede istihbarat."
+            }
           ]
         },
         {
@@ -668,13 +1824,41 @@
           "name": "Algı Yönetimi ve Propaganda",
           "description": "Kitleleri yönetmek ve yönlendirmek.",
           "books": [
-            { "title": "Propaganda", "author": "Edward Bernays", "neden": "Halkla ilişkiler ve manipülasyonun babası." },
-            { "title": "Kitleler Psikolojisi", "author": "Gustave Le Bon", "neden": "Toplumların zihniyeti nasıl çalışır?" },
-            { "title": "İknanın Psikolojisi", "author": "Robert Cialdini", "neden": "İnsanlar neden \"evet\" der?" },
-            { "title": "Rol Yapmayın Lütfen", "author": "Eric Morris", "neden": "Maskeleme ve insan davranışı üzerine." },
-            { "title": "Soğuk Savaş", "author": "John Lewis Gaddis", "neden": "Casuslar Köprüsü döneminin tarihi." },
-            { "title": "Stratejik İletişim", "author": "Dr. Rıza Güler", "neden": "Algı yönetimi ve iletişim stratejileri." },
-            { "title": "Outliers (Çizginin Dışındakiler)", "author": "Malcolm Gladwell", "neden": "Başarının arka planındaki görünmeyen stratejiler ve toplumsal algı." }
+            {
+              "title": "Propaganda",
+              "author": "Edward Bernays",
+              "neden": "Halkla ilişkiler ve manipülasyonun babası."
+            },
+            {
+              "title": "Kitleler Psikolojisi",
+              "author": "Gustave Le Bon",
+              "neden": "Toplumların zihniyeti nasıl çalışır?"
+            },
+            {
+              "title": "İknanın Psikolojisi",
+              "author": "Robert Cialdini",
+              "neden": "İnsanlar neden \"evet\" der?"
+            },
+            {
+              "title": "Rol Yapmayın Lütfen",
+              "author": "Eric Morris",
+              "neden": "Maskeleme ve insan davranışı üzerine."
+            },
+            {
+              "title": "Soğuk Savaş",
+              "author": "John Lewis Gaddis",
+              "neden": "Casuslar Köprüsü döneminin tarihi."
+            },
+            {
+              "title": "Stratejik İletişim",
+              "author": "Dr. Rıza Güler",
+              "neden": "Algı yönetimi ve iletişim stratejileri."
+            },
+            {
+              "title": "Outliers (Çizginin Dışındakiler)",
+              "author": "Malcolm Gladwell",
+              "neden": "Başarının arka planındaki görünmeyen stratejiler ve toplumsal algı."
+            }
           ]
         },
         {
@@ -682,11 +1866,31 @@
           "name": "Küresel Strateji ve Jeopolitik",
           "description": "Dünya haritası üzerinde satranç oynamak.",
           "books": [
-            { "title": "Büyük Satranç Tahtası", "author": "Zbigniew Brzezinski", "neden": "Avrasya ve Orta Doğu stratejileri." },
-            { "title": "Stratejik Derinlik", "author": "Ahmet Davutoğlu", "neden": "Teorik jeopolitik okuması." },
-            { "title": "Petrol, Para ve Güç", "author": "Daniel Yergin", "neden": "Enerji istihbaratı." },
-            { "title": "Savaş Tertipleri", "author": "Judith Butler", "neden": "Savaşın çerçevelenmesi ve algılanması üzerine felsefi/politik bir bakış." },
-            { "title": "Uygarlıkların Çatışması", "author": "Samuel Huntington", "neden": "Kültürel fay hatları." }
+            {
+              "title": "Büyük Satranç Tahtası",
+              "author": "Zbigniew Brzezinski",
+              "neden": "Avrasya ve Orta Doğu stratejileri."
+            },
+            {
+              "title": "Stratejik Derinlik",
+              "author": "Ahmet Davutoğlu",
+              "neden": "Teorik jeopolitik okuması."
+            },
+            {
+              "title": "Petrol, Para ve Güç",
+              "author": "Daniel Yergin",
+              "neden": "Enerji istihbaratı."
+            },
+            {
+              "title": "Savaş Tertipleri",
+              "author": "Judith Butler",
+              "neden": "Savaşın çerçevelenmesi ve algılanması üzerine felsefi/politik bir bakış."
+            },
+            {
+              "title": "Uygarlıkların Çatışması",
+              "author": "Samuel Huntington",
+              "neden": "Kültürel fay hatları."
+            }
           ]
         },
         {
@@ -694,11 +1898,31 @@
           "name": "Derin Devlet ve Güç Mimarisi",
           "description": "Görünenin ardındaki yapılar.",
           "books": [
-            { "title": "Devletin Gizli Sahipleri", "author": "Ömer Lütfi Mete", "neden": "Türkiye'deki derin yapılar ve uluslararası bağlantılar." },
-            { "title": "Mahrem", "author": "Elif Şafak", "neden": "Görme ve görülme üzerine roman tadında." },
-            { "title": "Gülün Adı", "author": "Umberto Eco", "neden": "Bilgiye sahip olmanın gücü ve gizemi." },
-            { "title": "Kaos", "author": "James Gleick", "neden": "Karmaşık sistemlerin teorisi." },
-            { "title": "Panoptikon (Hapishanenin Doğuşu)", "author": "Michel Foucault", "neden": "Gözetim toplumu ve modern iktidarın \"izleme\" üzerine kurulu yapısı." }
+            {
+              "title": "Devletin Gizli Sahipleri",
+              "author": "Ömer Lütfi Mete",
+              "neden": "Türkiye'deki derin yapılar ve uluslararası bağlantılar."
+            },
+            {
+              "title": "Mahrem",
+              "author": "Elif Şafak",
+              "neden": "Görme ve görülme üzerine roman tadında."
+            },
+            {
+              "title": "Gülün Adı",
+              "author": "Umberto Eco",
+              "neden": "Bilgiye sahip olmanın gücü ve gizemi."
+            },
+            {
+              "title": "Kaos",
+              "author": "James Gleick",
+              "neden": "Karmaşık sistemlerin teorisi."
+            },
+            {
+              "title": "Panoptikon (Hapishanenin Doğuşu)",
+              "author": "Michel Foucault",
+              "neden": "Gözetim toplumu ve modern iktidarın \"izleme\" üzerine kurulu yapısı."
+            }
           ]
         },
         {
@@ -706,11 +1930,31 @@
           "name": "Büyük Sentez",
           "description": "Tüm parçaları birleştirmek.",
           "books": [
-            { "title": "Nutuk", "author": "Mustafa Kemal Atatürk", "neden": "Bir istihbarat, strateji ve kuruluş belgesi." },
-            { "title": "Süper Zeka", "author": "Nick Bostrom", "neden": "Geleceğin istihbaratı: Yapay Zeka." },
-            { "title": "Aldatma Sanatı", "author": "Kevin Mitnick", "neden": "Siber istihbaratın sosyal boyutu." },
-            { "title": "Snowden (Sistem Hatası)", "author": "Edward Snowden", "neden": "Dijital gözetim gerçeği." },
-            { "title": "Oyun ve Gerçeklik", "author": "D.W. Winnicott", "neden": "Oyun, yaratıcılık ve gerçeklik algısı üzerine derin bir psikanaliz." }
+            {
+              "title": "Nutuk",
+              "author": "Mustafa Kemal Atatürk",
+              "neden": "Bir istihbarat, strateji ve kuruluş belgesi."
+            },
+            {
+              "title": "Süper Zeka",
+              "author": "Nick Bostrom",
+              "neden": "Geleceğin istihbaratı: Yapay Zeka."
+            },
+            {
+              "title": "Aldatma Sanatı",
+              "author": "Kevin Mitnick",
+              "neden": "Siber istihbaratın sosyal boyutu."
+            },
+            {
+              "title": "Snowden (Sistem Hatası)",
+              "author": "Edward Snowden",
+              "neden": "Dijital gözetim gerçeği."
+            },
+            {
+              "title": "Oyun ve Gerçeklik",
+              "author": "D.W. Winnicott",
+              "neden": "Oyun, yaratıcılık ve gerçeklik algısı üzerine derin bir psikanaliz."
+            }
           ]
         }
       ]
@@ -727,11 +1971,31 @@
           "name": "Vizyonerlerin Ayak İzleri",
           "description": "Geleceği inşa eden zihinleri anlamak.",
           "books": [
-            { "title": "Steve Jobs", "author": "Walter Isaacson", "neden": "Teknoloji ile beşeri bilimlerin kesişimi." },
-            { "title": "Elon Musk", "author": "Walter Isaacson", "neden": "Mars vizyonu, yapay zeka ve risk alma." },
-            { "title": "Sıfırdan Bire (Zero to One)", "author": "Peter Thiel", "neden": "Geleceği inşa edecek girişimler kurmak." },
-            { "title": "İnovatörler", "author": "Walter Isaacson", "neden": "Ada Lovelace'tan Google'a dijital devrimin tarihi." },
-            { "title": "Yaratıcılar", "author": "Paul Johnson", "neden": "Tarihsel yaratıcılık örnekleri." }
+            {
+              "title": "Steve Jobs",
+              "author": "Walter Isaacson",
+              "neden": "Teknoloji ile beşeri bilimlerin kesişimi."
+            },
+            {
+              "title": "Elon Musk",
+              "author": "Walter Isaacson",
+              "neden": "Mars vizyonu, yapay zeka ve risk alma."
+            },
+            {
+              "title": "Sıfırdan Bire (Zero to One)",
+              "author": "Peter Thiel",
+              "neden": "Geleceği inşa edecek girişimler kurmak."
+            },
+            {
+              "title": "İnovatörler",
+              "author": "Walter Isaacson",
+              "neden": "Ada Lovelace'tan Google'a dijital devrimin tarihi."
+            },
+            {
+              "title": "Yaratıcılar",
+              "author": "Paul Johnson",
+              "neden": "Tarihsel yaratıcılık örnekleri."
+            }
           ]
         },
         {
@@ -739,11 +2003,36 @@
           "name": "Yapay Zeka Okuryazarlığı (Giriş)",
           "description": "YZ nedir, ne değildir? Temel kavramlar ve tarihçe.",
           "books": [
-            { "title": "Yapay Zeka", "author": "Cem Say", "neden": "Türkçe en iyi ve en anlaşılır giriş kitabı. YZ'nin mantığı." },
-            { "title": "Derin Düşünme (Deep Thinking)", "author": "Garry Kasparov", "neden": "Kasparov'un Deep Blue'ya yenilişi ve makine zekasıyla barışması." },
-            { "title": "Yapay Zeka: İnsanlığın En Büyük İcadı mı?", "author": "Toby Walsh", "neden": "YZ'nin toplum üzerindeki olası etkileri." },
-            { "title": "Algoritmalarla Yaşamak", "author": "Brian Christian", "neden": "Bilgisayar biliminin günlük hayata uygulanması." },
-            { "title": "Ben, Robot", "author": "Isaac Asimov", "neden": "Robot yasaları ve makine etiğinin temeli." }
+            {
+              "title": "Yapay Zeka",
+              "author": "Cem Say",
+              "neden": "Türkçe en iyi ve en anlaşılır giriş kitabı. YZ'nin mantığı."
+            },
+            {
+              "title": "Derin Düşünme (Deep Thinking)",
+              "author": "Garry Kasparov",
+              "neden": "Kasparov'un Deep Blue'ya yenilişi ve makine zekasıyla barışması."
+            },
+            {
+              "title": "Yapay Zeka: İnsanlığın En Büyük İcadı mı?",
+              "author": "Toby Walsh",
+              "neden": "YZ'nin toplum üzerindeki olası etkileri."
+            },
+            {
+              "title": "Algoritmalarla Yaşamak",
+              "author": "Brian Christian",
+              "neden": "Bilgisayar biliminin günlük hayata uygulanması."
+            },
+            {
+              "title": "Ben, Robot",
+              "author": "Isaac Asimov",
+              "neden": "Robot yasaları ve makine etiğinin temeli."
+            },
+            {
+              "title": "Hafıza Koçu",
+              "author": "Gareth Moore",
+              "neden": "Beyin kapasitesini geliştirme ve hafıza teknikleri. Bilişsel performans."
+            }
           ]
         },
         {
@@ -751,11 +2040,31 @@
           "name": "Hacker Kültürü ve Dijital Güvenlik",
           "description": "Geleceği kuranların (ve bozanların) kültürü.",
           "books": [
-            { "title": "Hacker Etiği", "author": "Pekka Himanen", "neden": "Kod yazmanın felsefesi: İş değil, tutku." },
-            { "title": "Aldatma Sanatı", "author": "Kevin Mitnick", "neden": "En büyük güvenlik açığı insandır." },
-            { "title": "Kripto", "author": "Steven Levy", "neden": "Şifrelemenin ve mahremiyetin tarihi." },
-            { "title": "Sızma Sanatı", "author": "Kevin Mitnick", "neden": "Ağlara ve sistemlere giriş yolları." },
-            { "title": "Sıfır", "author": "Tunca Öğüten", "neden": "Siber savaşlar üzerine yerli bir kurgu." }
+            {
+              "title": "Hacker Etiği",
+              "author": "Pekka Himanen",
+              "neden": "Kod yazmanın felsefesi: İş değil, tutku."
+            },
+            {
+              "title": "Aldatma Sanatı",
+              "author": "Kevin Mitnick",
+              "neden": "En büyük güvenlik açığı insandır."
+            },
+            {
+              "title": "Kripto",
+              "author": "Steven Levy",
+              "neden": "Şifrelemenin ve mahremiyetin tarihi."
+            },
+            {
+              "title": "Sızma Sanatı",
+              "author": "Kevin Mitnick",
+              "neden": "Ağlara ve sistemlere giriş yolları."
+            },
+            {
+              "title": "Sıfır",
+              "author": "Tunca Öğüten",
+              "neden": "Siber savaşlar üzerine yerli bir kurgu."
+            }
           ]
         },
         {
@@ -763,11 +2072,31 @@
           "name": "Yakın Gelecek ve YZ Senaryoları",
           "description": "Önümüzdeki 20-30 yılda bizi neler bekliyor?",
           "books": [
-            { "title": "Yapay Zeka 2041", "author": "Kai-Fu Lee", "neden": "Bilimsel gerçeklere dayanan 10 farklı gelecek hikayesi." },
-            { "title": "Yaklaşan Dalga (The Coming Wave)", "author": "Mustafa Suleyman", "neden": "DeepMind'ın kurucusundan YZ ve biyoteknolojinin getireceği devasa riskler/fırsatlar." },
-            { "title": "Geleceğin Fiziği", "author": "Michio Kaku", "neden": "Bilim, 2100 yılına kadar ekonomiyi ve hayatı nasıl şekillendirecek?" },
-            { "title": "İkinci Makine Çağı", "author": "Erik Brynjolfsson", "neden": "Dijital teknolojilerin ekonomiyi ve iş gücünü dönüştürmesi." },
-            { "title": "Robotların Yükselişi", "author": "Martin Ford", "neden": "Yapay zeka işsizliğe yol açacak mı?" }
+            {
+              "title": "Yapay Zeka 2041",
+              "author": "Kai-Fu Lee",
+              "neden": "Bilimsel gerçeklere dayanan 10 farklı gelecek hikayesi."
+            },
+            {
+              "title": "Yaklaşan Dalga (The Coming Wave)",
+              "author": "Mustafa Suleyman",
+              "neden": "DeepMind'ın kurucusundan YZ ve biyoteknolojinin getireceği devasa riskler/fırsatlar."
+            },
+            {
+              "title": "Geleceğin Fiziği",
+              "author": "Michio Kaku",
+              "neden": "Bilim, 2100 yılına kadar ekonomiyi ve hayatı nasıl şekillendirecek?"
+            },
+            {
+              "title": "İkinci Makine Çağı",
+              "author": "Erik Brynjolfsson",
+              "neden": "Dijital teknolojilerin ekonomiyi ve iş gücünü dönüştürmesi."
+            },
+            {
+              "title": "Robotların Yükselişi",
+              "author": "Martin Ford",
+              "neden": "Yapay zeka işsizliğe yol açacak mı?"
+            }
           ]
         },
         {
@@ -775,11 +2104,31 @@
           "name": "Algoritmik Toplum ve Veri",
           "description": "Veri, yeni petrol müdür? Algoritmalar bizi nasıl yönetiyor?",
           "books": [
-            { "title": "Matematiksel İmha Silahları", "author": "Cathy O'Neil", "neden": "Big Data ve algoritmaların eşitsizliği nasıl artırdığına dair bir yazılımcı eleştirisi." },
-            { "title": "Gözetim Kapitalizmi", "author": "Shoshana Zuboff", "neden": "İnsan deneyiminin veriye dönüştürülüp satılması." },
-            { "title": "Herkes Yalan Söyler", "author": "Seth Stephens-Davidowitz", "neden": "Google aramaları insan psikolojisi hakkında ne söylüyor?" },
-            { "title": "Enformasyon (Bilgi)", "author": "James Gleick", "neden": "Bilginin, selin ve bit'in tarihi." },
-            { "title": "Dijital Minimalizm", "author": "Cal Newport", "neden": "Gürültüden sıyrılıp odaklanma sanatı." }
+            {
+              "title": "Matematiksel İmha Silahları",
+              "author": "Cathy O'Neil",
+              "neden": "Big Data ve algoritmaların eşitsizliği nasıl artırdığına dair bir yazılımcı eleştirisi."
+            },
+            {
+              "title": "Gözetim Kapitalizmi",
+              "author": "Shoshana Zuboff",
+              "neden": "İnsan deneyiminin veriye dönüştürülüp satılması."
+            },
+            {
+              "title": "Herkes Yalan Söyler",
+              "author": "Seth Stephens-Davidowitz",
+              "neden": "Google aramaları insan psikolojisi hakkında ne söylüyor?"
+            },
+            {
+              "title": "Enformasyon (Bilgi)",
+              "author": "James Gleick",
+              "neden": "Bilginin, selin ve bit'in tarihi."
+            },
+            {
+              "title": "Dijital Minimalizm",
+              "author": "Cal Newport",
+              "neden": "Gürültüden sıyrılıp odaklanma sanatı."
+            }
           ]
         },
         {
@@ -787,11 +2136,31 @@
           "name": "Transhümanizm ve İnsanlık 2.0",
           "description": "İnsan biyolojisini aşmak. Ölümsüzlük ve siborglar.",
           "books": [
-            { "title": "İnsanlık 2.0 (The Singularity is Near)", "author": "Ray Kurzweil", "neden": "Teknolojik tekillik, nanoteknoloji ve insan beyninin dijitalleşmesi. Bu alanın incili." },
-            { "title": "Homo Deus", "author": "Yuval Noah Harari", "neden": "İnsanın tanrılaşma çabası: Ölümsüzlük, mutluluk ve tanrısallık." },
-            { "title": "Bir Makine Olmak", "author": "Mark O'Connell", "neden": "Transhümanistler, biyo-hackerlar ve ölümü yenmeye çalışanların dünyasına yolculuk." },
-            { "title": "Novacene", "author": "James Lovelock", "neden": "Yapay zekanın yöneteceği yeni jeolojik çağ." },
-            { "title": "Değiştirilmiş Karbon", "author": "Richard K. Morgan", "neden": "Bilincin başka bedenlere aktarıldığı bir gelecek kurgusu." }
+            {
+              "title": "İnsanlık 2.0 (The Singularity is Near)",
+              "author": "Ray Kurzweil",
+              "neden": "Teknolojik tekillik, nanoteknoloji ve insan beyninin dijitalleşmesi. Bu alanın incili."
+            },
+            {
+              "title": "Homo Deus",
+              "author": "Yuval Noah Harari",
+              "neden": "İnsanın tanrılaşma çabası: Ölümsüzlük, mutluluk ve tanrısallık."
+            },
+            {
+              "title": "Bir Makine Olmak",
+              "author": "Mark O'Connell",
+              "neden": "Transhümanistler, biyo-hackerlar ve ölümü yenmeye çalışanların dünyasına yolculuk."
+            },
+            {
+              "title": "Novacene",
+              "author": "James Lovelock",
+              "neden": "Yapay zekanın yöneteceği yeni jeolojik çağ."
+            },
+            {
+              "title": "Değiştirilmiş Karbon",
+              "author": "Richard K. Morgan",
+              "neden": "Bilincin başka bedenlere aktarıldığı bir gelecek kurgusu."
+            }
           ]
         },
         {
@@ -799,11 +2168,31 @@
           "name": "Yapay Zeka Felsefesi ve Etik",
           "description": "Makine düşünebilir mi? Bilinç nedir?",
           "books": [
-            { "title": "Süper Zeka", "author": "Nick Bostrom", "neden": "Yapay zeka insan zekasını geçtiğinde ne olacak? Kontrol sorunu." },
-            { "title": "Yaşam 3.0", "author": "Max Tegmark", "neden": "YZ çağında insan olmak ne anlama gelecek? Fizikçi gözüyle analiz." },
-            { "title": "Klara ve Güneş", "author": "Kazuo Ishiguro", "neden": "Yapay zekalı bir arkadaşın gözünden insan nedir? Çok naif ve derin bir roman." },
-            { "title": "Yapay Zeka Felsefesi", "author": "Ömer Belkıs", "neden": "YZ tartışmalarının felsefi temelleri." },
-            { "title": "Son İcat", "author": "James Barrat", "neden": "Yapay zeka insanlığın sonunu mu getirecek?" }
+            {
+              "title": "Süper Zeka",
+              "author": "Nick Bostrom",
+              "neden": "Yapay zeka insan zekasını geçtiğinde ne olacak? Kontrol sorunu."
+            },
+            {
+              "title": "Yaşam 3.0",
+              "author": "Max Tegmark",
+              "neden": "YZ çağında insan olmak ne anlama gelecek? Fizikçi gözüyle analiz."
+            },
+            {
+              "title": "Klara ve Güneş",
+              "author": "Kazuo Ishiguro",
+              "neden": "Yapay zekalı bir arkadaşın gözünden insan nedir? Çok naif ve derin bir roman."
+            },
+            {
+              "title": "Yapay Zeka Felsefesi",
+              "author": "Ömer Belkıs",
+              "neden": "YZ tartışmalarının felsefi temelleri."
+            },
+            {
+              "title": "Son İcat",
+              "author": "James Barrat",
+              "neden": "Yapay zeka insanlığın sonunu mu getirecek?"
+            }
           ]
         },
         {
@@ -811,11 +2200,31 @@
           "name": "Evrenin Kodları (Hard Science)",
           "description": "Yazılımın temeli fiziktir. Evreni anlamak.",
           "books": [
-            { "title": "Zamanın Kısa Tarihi", "author": "Stephen Hawking", "neden": "Kozmolojiye giriş." },
-            { "title": "Gen Bencildir", "author": "Richard Dawkins", "neden": "Biyolojik evrimin algoritması." },
-            { "title": "Kozmos", "author": "Carl Sagan", "neden": "Bilimin şiirsel anlatımı." },
-            { "title": "Kaos", "author": "James Gleick", "neden": "Kelebek etkisi ve karmaşık sistemler teorisi." },
-            { "title": "Tüfek, Mikrop ve Çelik", "author": "Jared Diamond", "neden": "Medeniyetlerin gelişim kodları." }
+            {
+              "title": "Zamanın Kısa Tarihi",
+              "author": "Stephen Hawking",
+              "neden": "Kozmolojiye giriş."
+            },
+            {
+              "title": "Gen Bencildir",
+              "author": "Richard Dawkins",
+              "neden": "Biyolojik evrimin algoritması."
+            },
+            {
+              "title": "Kozmos",
+              "author": "Carl Sagan",
+              "neden": "Bilimin şiirsel anlatımı."
+            },
+            {
+              "title": "Kaos",
+              "author": "James Gleick",
+              "neden": "Kelebek etkisi ve karmaşık sistemler teorisi."
+            },
+            {
+              "title": "Tüfek, Mikrop ve Çelik",
+              "author": "Jared Diamond",
+              "neden": "Medeniyetlerin gelişim kodları."
+            }
           ]
         },
         {
@@ -823,11 +2232,31 @@
           "name": "Uzay Kolonizasyonu ve Gelecek",
           "description": "Dünyadan çıkış.",
           "books": [
-            { "title": "Marslı", "author": "Andy Weir", "neden": "Bilimsel temelli hayatta kalma ve mühendislik." },
-            { "title": "Soluk Mavi Nokta", "author": "Carl Sagan", "neden": "İnsanın uzaydaki geleceği." },
-            { "title": "Gelecek 100 Yıl", "author": "George Friedman", "neden": "21. yüzyılın jeopolitik ve teknolojik tahminleri." },
-            { "title": "Üç Cisim Problemi", "author": "Cixin Liu", "neden": "Evrensel sosyoloji, fizik ve uzaylılarla temasın en sert hali." },
-            { "title": "Cesur Yeni Dünya", "author": "Aldous Huxley", "neden": "Genetik mühendisliği ile tasarlanmış toplum." }
+            {
+              "title": "Marslı",
+              "author": "Andy Weir",
+              "neden": "Bilimsel temelli hayatta kalma ve mühendislik."
+            },
+            {
+              "title": "Soluk Mavi Nokta",
+              "author": "Carl Sagan",
+              "neden": "İnsanın uzaydaki geleceği."
+            },
+            {
+              "title": "Gelecek 100 Yıl",
+              "author": "George Friedman",
+              "neden": "21. yüzyılın jeopolitik ve teknolojik tahminleri."
+            },
+            {
+              "title": "Üç Cisim Problemi",
+              "author": "Cixin Liu",
+              "neden": "Evrensel sosyoloji, fizik ve uzaylılarla temasın en sert hali."
+            },
+            {
+              "title": "Cesur Yeni Dünya",
+              "author": "Aldous Huxley",
+              "neden": "Genetik mühendisliği ile tasarlanmış toplum."
+            }
           ]
         },
         {
@@ -835,11 +2264,31 @@
           "name": "Nihai Sentez (Master Algoritma)",
           "description": "Tüm parçaları birleştiren başyapıtlar.",
           "books": [
-            { "title": "Master Algoritma", "author": "Pedro Domingos", "neden": "Tüm bilgiyi öğrenebilecek nihai öğrenme makinesi arayışı. Makine öğrenmesi türleri." },
-            { "title": "Vakıf", "author": "Isaac Asimov", "neden": "Geleceği matematiksel olarak öngörmek: Psikotarih." },
-            { "title": "Dune", "author": "Frank Herbert", "neden": "İnsan zihni vs Yapay Zeka (Butleryan Cihadı) sonrası evren." },
-            { "title": "Olasılıksız", "author": "Adam Fawer", "neden": "Bilgi, determinizm ve özgür irade." },
-            { "title": "Başlangıç (Origin)", "author": "Dan Brown", "neden": "Yapay zeka, din ve insanlığın geleceği." }
+            {
+              "title": "Master Algoritma",
+              "author": "Pedro Domingos",
+              "neden": "Tüm bilgiyi öğrenebilecek nihai öğrenme makinesi arayışı. Makine öğrenmesi türleri."
+            },
+            {
+              "title": "Vakıf",
+              "author": "Isaac Asimov",
+              "neden": "Geleceği matematiksel olarak öngörmek: Psikotarih."
+            },
+            {
+              "title": "Dune",
+              "author": "Frank Herbert",
+              "neden": "İnsan zihni vs Yapay Zeka (Butleryan Cihadı) sonrası evren."
+            },
+            {
+              "title": "Olasılıksız",
+              "author": "Adam Fawer",
+              "neden": "Bilgi, determinizm ve özgür irade."
+            },
+            {
+              "title": "Başlangıç (Origin)",
+              "author": "Dan Brown",
+              "neden": "Yapay zeka, din ve insanlığın geleceği."
+            }
           ]
         }
       ]
@@ -850,12 +2299,36 @@
     "totalLevels": 62,
     "totalBooks": 367,
     "lists": [
-      { "name": "Bilim Kurgu Okumaları", "levels": 10, "books": 58 },
-      { "name": "Düşünce ve Dava Okumaları", "levels": 12, "books": 83 },
-      { "name": "Tarih ve Medeniyet Okumaları", "levels": 10, "books": 57 },
-      { "name": "Din ve İslam Okumaları", "levels": 10, "books": 53 },
-      { "name": "İstihbarat ve Strateji Okumaları", "levels": 10, "books": 56 },
-      { "name": "Teknoloji ve Yapay Zeka Okumaları", "levels": 10, "books": 50 }
+      {
+        "name": "Bilim Kurgu Okumaları",
+        "levels": 10,
+        "books": 58
+      },
+      {
+        "name": "Düşünce ve Dava Okumaları",
+        "levels": 12,
+        "books": 83
+      },
+      {
+        "name": "Tarih ve Medeniyet Okumaları",
+        "levels": 10,
+        "books": 57
+      },
+      {
+        "name": "Din ve İslam Okumaları",
+        "levels": 10,
+        "books": 53
+      },
+      {
+        "name": "İstihbarat ve Strateji Okumaları",
+        "levels": 10,
+        "books": 56
+      },
+      {
+        "name": "Teknoloji ve Yapay Zeka Okumaları",
+        "levels": 10,
+        "books": 50
+      }
     ]
   }
 }

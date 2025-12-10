@@ -93,7 +93,7 @@ const shelfColors = [
 
 export default function LibraryClient({ books, shelves }: LibraryClientProps) {
     const router = useRouter()
-    const [activeTab, setActiveTab] = useState<"cards" | "shelves">("cards")
+    const [activeTab, setActiveTab] = useState<"cards" | "shelves">("shelves")
     const [activeStatus, setActiveStatus] = useState<StatusFilter>("ALL")
     const [viewMode, setViewMode] = useState<ViewMode>("grid")
     const [searchQuery, setSearchQuery] = useState("")
