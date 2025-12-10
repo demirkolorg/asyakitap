@@ -9,33 +9,47 @@ export async function GET(request: Request) {
     const next = searchParams.get('next') ?? '/dashboard'
 
     if (code) {
-        const supabase = await createClient()
-        const { error, data: { user } } = await supabase.auth.exchangeCodeForSession(code)
+        try {
+            const supabase = await createClient()
+            const { error, data: { user } } = await supabase.auth.exchangeCodeForSession(code)
 
-        if (!error && user && user.email) {
-            // Sync user to Prisma
-            await prisma.user.upsert({
-                where: { email: user.email },
-                update: { updatedAt: new Date() }, // Just touch updated_at
-                create: {
-                    id: user.id, // Use Supabase ID as Prisma User ID for consistency
-                    email: user.email,
-                },
-            })
-
-            const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
-            const isLocalEnv = process.env.NODE_ENV === 'development'
-            if (isLocalEnv) {
-                // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-                return NextResponse.redirect(`${origin}${next}`)
-            } else if (forwardedHost) {
-                return NextResponse.redirect(`https://${forwardedHost}${next}`)
-            } else {
-                return NextResponse.redirect(`${origin}${next}`)
+            if (error) {
+                console.error("Auth exchange error:", error)
+                return NextResponse.redirect(`${origin}/auth/auth-code-error?error=exchange_failed`)
             }
+
+            if (user && user.email) {
+                // Sync user to Prisma - wrap in try-catch to not block login
+                try {
+                    await prisma.user.upsert({
+                        where: { email: user.email },
+                        update: { updatedAt: new Date() },
+                        create: {
+                            id: user.id,
+                            email: user.email,
+                        },
+                    })
+                } catch (dbError) {
+                    // Log but don't block - user can still use the app
+                    console.error("Failed to sync user to Prisma:", dbError)
+                }
+
+                const forwardedHost = request.headers.get('x-forwarded-host')
+                const isLocalEnv = process.env.NODE_ENV === 'development'
+
+                if (isLocalEnv) {
+                    return NextResponse.redirect(`${origin}${next}`)
+                } else if (forwardedHost) {
+                    return NextResponse.redirect(`https://${forwardedHost}${next}`)
+                } else {
+                    return NextResponse.redirect(`${origin}${next}`)
+                }
+            }
+        } catch (err) {
+            console.error("Auth callback error:", err)
+            return NextResponse.redirect(`${origin}/auth/auth-code-error?error=unknown`)
         }
     }
 
-    // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    return NextResponse.redirect(`${origin}/auth/auth-code-error?error=no_code`)
 }
