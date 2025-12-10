@@ -56,28 +56,28 @@ export async function scrapeKitapyurdu(url: string): Promise<ScrapeResult> {
 
         const html = await response.text()
 
-        // Kitap adını çek - basit h1 tag'i
-        const titleMatch = html.match(/<h1[^>]*>([^<]+)<\/h1>/i)
+        // Kitap adını çek - pr_header__heading class'lı h1
+        const titleMatch = html.match(/<h1[^>]*class="pr_header__heading"[^>]*>([^<]+)/i)
+            || html.match(/<h1[^>]*>([^<]+)/i)
         const title = titleMatch ? titleMatch[1].trim() : null
 
         if (!title) {
             return { success: false, error: "Kitap adı bulunamadı" }
         }
 
-        // Yazar adını çek - kitapyurdu.com/yazar/ linkinden
-        const authorMatch = html.match(/kitapyurdu\.com\/yazar\/[^"]*"[^>]*>\s*([^<]+)<\/a>/i)
-            || html.match(/<a[^>]*class="pr_producers__link"[^>]*>([^<]+)<\/a>/i)
-            || html.match(/itemprop="author"[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>/i)
+        // Yazar adını çek - pr_producers__link class'lı linkten
+        const authorMatch = html.match(/<a[^>]*class="pr_producers__link"[^>]*href="[^"]*\/yazar\/[^"]*"[^>]*>\s*([^<]+)<\/a>/i)
+            || html.match(/kitapyurdu\.com\/yazar\/[^"]*"[^>]*>\s*([^<]+)<\/a>/i)
         const author = authorMatch ? authorMatch[1].trim() : "Bilinmeyen Yazar"
 
-        // Sayfa sayısını çek
-        const pageMatch = html.match(/Sayfa\s*Sayısı[^<]*<\/[^>]+>\s*<[^>]+>\s*(\d+)/i)
-            || html.match(/>(\d+)\s*Sayfa</i)
+        // Sayfa sayısını çek - tablo hücresinden
+        const pageMatch = html.match(/<td>Sayfa Sayısı:<\/td>\s*<td>(\d+)<\/td>/i)
+            || html.match(/"numberOfPages":\s*"(\d+)"/i)
         const pageCount = pageMatch ? parseInt(pageMatch[1]) : null
 
-        // Kapak görselini çek - img.kitapyurdu.com URL'si
-        const coverMatch = html.match(/https:\/\/img\.kitapyurdu\.com\/v1\/getImage\/[^"'\s]+/i)
-            || html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i)
+        // Kapak görselini çek - og:image meta tag'inden
+        const coverMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i)
+            || html.match(/https:\/\/img\.kitapyurdu\.com\/v1\/getImage\/[^"'\s]+/i)
         let coverUrl = coverMatch ? (coverMatch[1] || coverMatch[0]).trim() : null
 
         // URL'yi düzelt
@@ -87,16 +87,18 @@ export async function scrapeKitapyurdu(url: string): Promise<ScrapeResult> {
             coverUrl = "https://www.kitapyurdu.com" + coverUrl
         }
 
-        // Yayınevini çek - kitapyurdu.com/yayinevi/ linkinden
-        const publisherMatch = html.match(/kitapyurdu\.com\/yayinevi\/[^"]*"[^>]*>\s*([^<]+)<\/a>/i)
+        // Yayınevini çek - pr_producers__link class'lı linkten
+        const publisherMatch = html.match(/<a[^>]*class="pr_producers__link"[^>]*href="[^"]*\/yayinevi\/[^"]*"[^>]*>([^<]+)<\/a>/i)
+            || html.match(/kitapyurdu\.com\/yayinevi\/[^"]*"[^>]*>\s*([^<]+)<\/a>/i)
         const publisher = publisherMatch ? publisherMatch[1].trim() : null
 
-        // ISBN çek
-        const isbnMatch = html.match(/ISBN[^<]*<\/[^>]+>\s*<[^>]+>\s*(\d{10,13})/i)
+        // ISBN çek - tablo hücresinden veya JSON-LD'den
+        const isbnMatch = html.match(/<td>ISBN:<\/td>\s*<td>(\d{10,13})<\/td>/i)
+            || html.match(/"isbn":\s*"(\d{10,13})"/i)
         const isbn = isbnMatch ? isbnMatch[1].trim() : null
 
-        // Yayın Tarihi çek (format: 12.09.2019)
-        const publishedDateMatch = html.match(/Yayın\s*Tarihi[^<]*<\/[^>]+>\s*<[^>]+>\s*(\d{2}\.\d{2}\.\d{4})/i)
+        // Yayın Tarihi çek - tablo hücresinden
+        const publishedDateMatch = html.match(/<td>Yayın Tarihi:<\/td>\s*<td>(\d{2}\.\d{2}\.\d{4})<\/td>/i)
         const publishedDate = publishedDateMatch ? publishedDateMatch[1].trim() : null
 
         return {
