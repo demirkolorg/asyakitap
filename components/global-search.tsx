@@ -32,6 +32,7 @@ export function GlobalSearch() {
         books: [],
         authors: [],
         readingLists: [],
+        readingListBooks: [],
         quotes: [],
     })
 
@@ -54,7 +55,7 @@ export function GlobalSearch() {
     React.useEffect(() => {
         async function search() {
             if (debouncedQuery.length < 2) {
-                setResults({ books: [], authors: [], readingLists: [], quotes: [] })
+                setResults({ books: [], authors: [], readingLists: [], readingListBooks: [], quotes: [] })
                 return
             }
 
@@ -71,7 +72,7 @@ export function GlobalSearch() {
     React.useEffect(() => {
         if (!open) {
             setQuery("")
-            setResults({ books: [], authors: [], readingLists: [], quotes: [] })
+            setResults({ books: [], authors: [], readingLists: [], readingListBooks: [], quotes: [] })
         }
     }, [open])
 
@@ -84,6 +85,7 @@ export function GlobalSearch() {
         results.books.length > 0 ||
         results.authors.length > 0 ||
         results.readingLists.length > 0 ||
+        results.readingListBooks.length > 0 ||
         results.quotes.length > 0
 
     const showEmpty = debouncedQuery.length >= 2 && !loading && !hasResults
@@ -235,6 +237,36 @@ export function GlobalSearch() {
                                             <div className="flex items-center gap-3 w-full">
                                                 <div className="flex h-8 w-8 items-center justify-center rounded bg-muted">
                                                     <Map className="h-4 w-4 text-muted-foreground" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium truncate">
+                                                        {item.title}
+                                                    </p>
+                                                    {item.subtitle && (
+                                                        <p className="text-xs text-muted-foreground truncate">
+                                                            {item.subtitle}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            )}
+
+                            {/* Reading List Books */}
+                            {results.readingListBooks.length > 0 && (
+                                <CommandGroup heading="Okuma Listesi Kitapları">
+                                    {results.readingListBooks.map((item) => (
+                                        <CommandItem
+                                            key={item.id}
+                                            value={`rlbook-${item.id}-${item.title}`}
+                                            onSelect={() => handleSelect(item.href)}
+                                            className="cursor-pointer"
+                                        >
+                                            <div className="flex items-center gap-3 w-full">
+                                                <div className="flex h-8 w-8 items-center justify-center rounded bg-muted">
+                                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-medium truncate">

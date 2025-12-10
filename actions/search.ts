@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 
 export interface SearchResult {
     id: string
-    type: "book" | "author" | "reading-list" | "quote"
+    type: "book" | "author" | "reading-list" | "reading-list-book" | "quote"
     title: string
     subtitle?: string
     imageUrl?: string | null
@@ -16,25 +16,26 @@ export interface GroupedSearchResults {
     books: SearchResult[]
     authors: SearchResult[]
     readingLists: SearchResult[]
+    readingListBooks: SearchResult[]
     quotes: SearchResult[]
 }
 
 export async function globalSearch(query: string): Promise<GroupedSearchResults> {
     if (!query || query.trim().length < 2) {
-        return { books: [], authors: [], readingLists: [], quotes: [] }
+        return { books: [], authors: [], readingLists: [], readingListBooks: [], quotes: [] }
     }
 
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-        return { books: [], authors: [], readingLists: [], quotes: [] }
+        return { books: [], authors: [], readingLists: [], readingListBooks: [], quotes: [] }
     }
 
     const searchTerm = query.trim().toLowerCase()
 
     // Parallel search across all content types
-    const [books, authors, readingLists, quotes] = await Promise.all([
+    const [books, authors, readingLists, readingListBooks, quotes] = await Promise.all([
         // Search books
         prisma.book.findMany({
             where: {
@@ -87,6 +88,25 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
             orderBy: { sortOrder: "asc" },
         }),
 
+        // Search reading list books
+        prisma.readingListBook.findMany({
+            where: {
+                OR: [
+                    { title: { contains: searchTerm, mode: "insensitive" } },
+                    { author: { contains: searchTerm, mode: "insensitive" } },
+                ],
+            },
+            include: {
+                level: {
+                    include: {
+                        readingList: true,
+                    },
+                },
+            },
+            take: 8,
+            orderBy: { title: "asc" },
+        }),
+
         // Search quotes
         prisma.quote.findMany({
             where: {
@@ -131,6 +151,14 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
             subtitle: list.description?.slice(0, 50) || undefined,
             imageUrl: list.coverUrl,
             href: `/reading-lists/${list.slug}`,
+        })),
+        readingListBooks: readingListBooks.map((book) => ({
+            id: book.id,
+            type: "reading-list-book" as const,
+            title: book.title,
+            subtitle: `${book.author} • ${book.level.readingList.name}`,
+            imageUrl: book.coverUrl,
+            href: `/reading-lists/${book.level.readingList.slug}`,
         })),
         quotes: quotes.map((quote) => ({
             id: quote.id,
