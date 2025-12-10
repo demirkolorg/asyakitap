@@ -135,10 +135,51 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
         return result
     }, [books, activeStatus, searchQuery])
 
-    // Books not in any shelf
+    // Books not in any shelf (with filters applied)
     const unshelfedBooks = useMemo(() => {
-        return books.filter(b => !b.shelfId)
-    }, [books])
+        let result = books.filter(b => !b.shelfId)
+
+        if (activeStatus !== "ALL") {
+            result = result.filter(b => b.status === activeStatus)
+        }
+
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase()
+            result = result.filter(
+                b => b.title.toLowerCase().includes(query) ||
+                     (b.author?.name || "").toLowerCase().includes(query)
+            )
+        }
+
+        return result
+    }, [books, activeStatus, searchQuery])
+
+    // Filter books in shelves based on status and search
+    const getFilteredShelfBooks = (shelfBooks: BookWithRelations[]) => {
+        let result = shelfBooks
+
+        if (activeStatus !== "ALL") {
+            result = result.filter(b => b.status === activeStatus)
+        }
+
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase()
+            result = result.filter(
+                b => b.title.toLowerCase().includes(query) ||
+                     (b.author?.name || "").toLowerCase().includes(query)
+            )
+        }
+
+        return result
+    }
+
+    // Filtered shelves (only show shelves that have matching books)
+    const filteredShelves = useMemo(() => {
+        return shelves.map(shelf => ({
+            ...shelf,
+            filteredBooks: getFilteredShelfBooks(shelf.books)
+        })).filter(shelf => shelf.filteredBooks.length > 0 || (activeStatus === "ALL" && !searchQuery))
+    }, [shelves, activeStatus, searchQuery])
 
     const getStatusCount = (status: StatusFilter): number => {
         if (status === "ALL") return stats.total
@@ -400,7 +441,7 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                         </h1>
                         <p className="text-muted-foreground text-sm">
                             {activeTab === "shelves"
-                                ? `${shelves.length} raf, ${books.length} kitap`
+                                ? `${filteredShelves.length} raf, ${filteredShelves.reduce((acc, s) => acc + s.filteredBooks.length, 0) + unshelfedBooks.length} kitap${(activeStatus !== "ALL" || searchQuery) ? ` (filtrelenmiş)` : ""}`
                                 : `${filteredBooks.length} kitap`
                             }
                         </p>
@@ -479,7 +520,7 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                 {/* Shelf View */}
                 {activeTab === "shelves" && (
                     <div className="space-y-8">
-                        {shelves.map((shelf) => (
+                        {filteredShelves.map((shelf) => (
                             <div key={shelf.id} className="border rounded-lg p-4">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
@@ -489,7 +530,7 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                                         />
                                         <h2 className="text-lg font-semibold">{shelf.name}</h2>
                                         <span className="text-sm text-muted-foreground">
-                                            ({shelf.books.length} kitap)
+                                            ({shelf.filteredBooks.length}{(activeStatus !== "ALL" || searchQuery) && `/${shelf.books.length}`} kitap)
                                         </span>
                                     </div>
                                     <DropdownMenu>
@@ -513,9 +554,9 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                                {shelf.books.length > 0 ? (
+                                {shelf.filteredBooks.length > 0 ? (
                                     <div className="grid gap-3 grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
-                                        {shelf.books.map((book) => (
+                                        {shelf.filteredBooks.map((book) => (
                                             <BookCard key={book.id} book={book} showShelfButton />
                                         ))}
                                     </div>
@@ -549,14 +590,28 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                             </div>
                         )}
 
-                        {shelves.length === 0 && unshelfedBooks.length === 0 && (
+                        {filteredShelves.length === 0 && unshelfedBooks.length === 0 && (
                             <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-lg bg-muted/40">
                                 <Layers className="h-12 w-12 text-muted-foreground mb-4" />
-                                <p className="text-muted-foreground mb-4">Henüz raf oluşturmadınız</p>
-                                <Button onClick={openNewShelf}>
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    İlk Rafı Oluştur
-                                </Button>
+                                {(activeStatus !== "ALL" || searchQuery) ? (
+                                    <>
+                                        <p className="text-muted-foreground mb-2">Arama sonucu bulunamadı</p>
+                                        <Button variant="outline" onClick={() => {
+                                            setActiveStatus("ALL")
+                                            setSearchQuery("")
+                                        }}>
+                                            Filtreleri Temizle
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="text-muted-foreground mb-4">Henüz raf oluşturmadınız</p>
+                                        <Button onClick={openNewShelf}>
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            İlk Rafı Oluştur
+                                        </Button>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
