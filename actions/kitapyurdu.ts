@@ -14,6 +14,7 @@ interface ScrapedBookData {
     publisherImageUrl: string | null
     isbn: string | null
     publishedDate: string | null
+    description: string | null
 }
 
 interface ScrapeResult {
@@ -111,6 +112,30 @@ export async function scrapeKitapyurdu(url: string): Promise<ScrapeResult> {
         const publishedDateMatch = html.match(/<td>Yayın Tarihi:<\/td>\s*<td>(\d{2}\.\d{2}\.\d{4})<\/td>/i)
         const publishedDate = publishedDateMatch ? publishedDateMatch[1].trim() : null
 
+        // Açıklama çek - JSON-LD veya meta description'dan
+        const descriptionMatch = html.match(/"description":\s*"([^"]+)"/i)
+            || html.match(/<meta[^>]*itemprop="description"[^>]*content="([^"]+)"/i)
+            || html.match(/<meta[^>]*name="description"[^>]*content="([^"]+)"/i)
+        let description = descriptionMatch ? descriptionMatch[1].trim() : null
+        // HTML entity'leri decode et
+        if (description) {
+            description = description
+                .replace(/&uuml;/g, 'ü')
+                .replace(/&ouml;/g, 'ö')
+                .replace(/&ccedil;/g, 'ç')
+                .replace(/&Uuml;/g, 'Ü')
+                .replace(/&Ouml;/g, 'Ö')
+                .replace(/&Ccedil;/g, 'Ç')
+                .replace(/&#039;/g, "'")
+                .replace(/&quot;/g, '"')
+                .replace(/&amp;/g, '&')
+                .replace(/&acirc;/g, 'â')
+                .replace(/&icirc;/g, 'î')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+        }
+
         // Yazar ve yayınevi görsellerini paralel olarak çek
         const [authorImageUrl, publisherImageUrl] = await Promise.all([
             authorPageUrl ? fetchAuthorImage(authorPageUrl) : Promise.resolve(null),
@@ -128,7 +153,8 @@ export async function scrapeKitapyurdu(url: string): Promise<ScrapeResult> {
                 publisher,
                 publisherImageUrl,
                 isbn,
-                publishedDate
+                publishedDate,
+                description
             }
         }
     } catch (error) {
@@ -301,6 +327,7 @@ export async function addBookFromKitapyurdu(bookData: ScrapedBookData): Promise<
                 pageCount: bookData.pageCount,
                 isbn: bookData.isbn,
                 publishedDate: bookData.publishedDate,
+                description: bookData.description,
                 status: "TO_READ"
             }
         })

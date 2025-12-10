@@ -126,6 +126,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [editPageCount, setEditPageCount] = useState(book.pageCount?.toString() || "")
     const [editIsbn, setEditIsbn] = useState(book.isbn || "")
     const [editPublishedDate, setEditPublishedDate] = useState(book.publishedDate || "")
+    const [editDescription, setEditDescription] = useState(book.description || "")
     const [editCoverUrl, setEditCoverUrl] = useState(book.coverUrl || "")
     const [isSavingEdit, setIsSavingEdit] = useState(false)
     const [showAddAuthorModal, setShowAddAuthorModal] = useState(false)
@@ -166,6 +167,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             pageCount: editPageCount ? parseInt(editPageCount) : null,
             isbn: editIsbn.trim() || null,
             publishedDate: editPublishedDate.trim() || null,
+            description: editDescription.trim() || null,
             coverUrl: editCoverUrl.trim() || null,
         })
         if (result.success) {
@@ -530,6 +532,13 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 </span>
                             </div>
                         )}
+                        {book.description && (
+                            <div className="mt-3 pt-3 border-t">
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    {book.description}
+                                </p>
+                            </div>
+                        )}
                         {book.startDate && (
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -785,6 +794,16 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 placeholder="Örn: 9786253695033"
                                 value={editIsbn}
                                 onChange={(e) => setEditIsbn(e.target.value)}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Açıklama</Label>
+                            <Textarea
+                                id="description"
+                                placeholder="Kitap açıklaması..."
+                                value={editDescription}
+                                onChange={(e) => setEditDescription(e.target.value)}
+                                rows={3}
                             />
                         </div>
                         <div className="space-y-2">

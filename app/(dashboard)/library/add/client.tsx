@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { searchGoogleBooks } from "@/actions/google-books"
@@ -19,7 +20,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Loader2, Map, X, Barcode, BookOpen } from "lucide-react"
+import { Loader2, Map, X, Barcode, BookOpen, FileText } from "lucide-react"
 import Image from "next/image"
 import { toast } from "sonner"
 import { AuthorCombobox } from "@/components/author/author-combobox"
@@ -44,6 +45,7 @@ export function AddBookForm() {
     const [coverUrl, setCoverUrl] = useState("")
     const [isbn, setIsbn] = useState("")
     const [publishedDate, setPublishedDate] = useState("")
+    const [description, setDescription] = useState("")
 
     // Author modal
     const [authorModalOpen, setAuthorModalOpen] = useState(false)
@@ -121,6 +123,7 @@ export function AddBookForm() {
             pageCount: pageCount ? parseInt(pageCount) : undefined,
             isbn: isbn.trim() || undefined,
             publishedDate: publishedDate.trim() || undefined,
+            description: description.trim() || undefined,
             status: "TO_READ",
         })
 
@@ -139,6 +142,7 @@ export function AddBookForm() {
                 setCoverUrl("")
                 setIsbn("")
                 setPublishedDate("")
+                setDescription("")
             }
         } else {
             toast.error("Kitap eklenirken bir hata oluştu")
@@ -320,6 +324,23 @@ export function AddBookForm() {
                             </div>
                             <p className="text-xs text-muted-foreground">
                                 Kitapyurdu veya başka bir siteden kapak görselinin URL'ini yapıştırabilirsiniz.
+                            </p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="description" className="flex items-center gap-2">
+                                <FileText className="h-4 w-4" />
+                                Kitap Açıklaması
+                            </Label>
+                            <Textarea
+                                id="description"
+                                placeholder="Kitap hakkında kısa bir açıklama..."
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                rows={4}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Kitabın konusu veya özeti hakkında bilgi ekleyebilirsiniz.
                             </p>
                         </div>
                     </CardContent>

@@ -14,6 +14,7 @@ export async function addBookToLibrary(bookData: {
     pageCount?: number
     isbn?: string
     publishedDate?: string
+    description?: string
     status?: BookStatus
 }) {
     const supabase = await createClient()
@@ -34,6 +35,7 @@ export async function addBookToLibrary(bookData: {
                 pageCount: bookData.pageCount,
                 isbn: bookData.isbn,
                 publishedDate: bookData.publishedDate,
+                description: bookData.description,
                 status: bookData.status || "TO_READ",
             },
             include: {
@@ -124,6 +126,7 @@ export async function updateBook(id: string, data: {
     pageCount?: number | null
     isbn?: string | null
     publishedDate?: string | null
+    description?: string | null
     tortu?: string
     imza?: string
     startDate?: Date | null

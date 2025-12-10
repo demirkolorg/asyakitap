@@ -90,6 +90,7 @@ model Book {
   pageCount            Int?
   isbn                 String?
   publishedDate        String?               // Yayın tarihi (örn: "29.10.2025")
+  description          String?               @db.Text // Kitap açıklaması
   status               BookStatus            @default(TO_READ)
   currentPage          Int                   @default(0)
   tortu                String?               @db.Text // Kitaptan aklında kalanlar

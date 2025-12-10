@@ -24,7 +24,8 @@ import {
     FileText,
     Building2,
     Barcode,
-    Calendar
+    Calendar,
+    AlignLeft
 } from "lucide-react"
 import { scrapeKitapyurdu, addBookFromKitapyurdu } from "@/actions/kitapyurdu"
 import { toast } from "sonner"
@@ -39,6 +40,7 @@ interface ScrapedData {
     publisherImageUrl: string | null
     isbn: string | null
     publishedDate: string | null
+    description: string | null
 }
 
 type ModalStep = "input" | "loading" | "preview" | "success" | "error"
@@ -121,7 +123,7 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                 {/* Input Step */}
                 {step === "input" && (
                     <>
@@ -234,6 +236,16 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
                                     )}
                                 </div>
                             </div>
+                            {scrapedData.description && (
+                                <div className="mt-4 pt-4 border-t">
+                                    <div className="flex items-start gap-2 text-sm">
+                                        <AlignLeft className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
+                                        <p className="text-muted-foreground line-clamp-4">
+                                            {scrapedData.description}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setStep("input")}>
