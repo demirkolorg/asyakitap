@@ -105,7 +105,7 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-sidebar-border px-6 py-5">
         <Link href="/dashboard" prefetch={false} className="flex items-center gap-3">
           <Image
-            src="/asyakitap.png"
+            src="/favicon-96x96.png"
             alt="AsyaKitap Logo"
             width={36}
             height={36}

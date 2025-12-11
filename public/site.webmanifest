@@ -6,29 +6,29 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#7c3aed",
+  "theme_color": "#FF364E",
   "background_color": "#ffffff",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png",
+      "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/android-chrome-192x192.png",
+      "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/android-chrome-512x512.png",
+      "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/android-chrome-512x512.png",
+      "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -49,19 +49,19 @@
       "name": "Kütüphane",
       "short_name": "Kütüphane",
       "url": "/library",
-      "icons": [{"src": "/android-chrome-192x192.png", "sizes": "192x192"}]
+      "icons": [{"src": "/web-app-manifest-192x192.png", "sizes": "192x192"}]
     },
     {
       "name": "Kitap Ekle",
       "short_name": "Ekle",
       "url": "/library/add",
-      "icons": [{"src": "/android-chrome-192x192.png", "sizes": "192x192"}]
+      "icons": [{"src": "/web-app-manifest-192x192.png", "sizes": "192x192"}]
     },
     {
       "name": "Okuma Listeleri",
       "short_name": "Listeler",
       "url": "/reading-lists",
-      "icons": [{"src": "/android-chrome-192x192.png", "sizes": "192x192"}]
+      "icons": [{"src": "/web-app-manifest-192x192.png", "sizes": "192x192"}]
     }
   ]
 }

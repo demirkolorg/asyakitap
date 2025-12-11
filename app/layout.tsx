@@ -18,14 +18,15 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
   icons: {
     icon: [
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
     other: [
-      { rel: "mask-icon", url: "/asyakitap.png", color: "#7c3aed" },
+      { rel: "mask-icon", url: "/favicon.svg", color: "#FF364E" },
     ],
   },
   appleWebApp: {
@@ -66,19 +67,9 @@ export default function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
-        {/* Dark mode favicon support */}
-        <link
-          rel="icon"
-          href="/favicon-32x32.png"
-          type="image/png"
-          media="(prefers-color-scheme: light)"
-        />
-        <link
-          rel="icon"
-          href="/favicon-32x32-dark.png"
-          type="image/png"
-          media="(prefers-color-scheme: dark)"
-        />
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" sizes="48x48" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body className={`${inter.className} antialiased`}>
         <ThemeProvider
