@@ -356,10 +356,10 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
     )
 
     return (
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 overflow-hidden">
             {/* Mobile Status Filter - Horizontal scrollable */}
-            <div className="lg:hidden">
-                <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+            <div className="lg:hidden overflow-hidden">
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                     {(Object.keys(statusConfig) as StatusFilter[]).map((status) => (
                         <button
                             key={status}
