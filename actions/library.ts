@@ -2,9 +2,18 @@
 
 import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { BookStatus } from "@prisma/client"
+import { CACHE_TAGS } from "@/lib/cache"
+
+// Helper to invalidate user-related caches
+function invalidateUserCaches(userId: string) {
+    revalidateTag(CACHE_TAGS.userBooks(userId))
+    revalidateTag(CACHE_TAGS.userStats(userId))
+    revalidateTag(CACHE_TAGS.userQuotes(userId))
+    revalidateTag(CACHE_TAGS.userAuthors(userId))
+}
 
 export async function addBookToLibrary(bookData: {
     title: string
@@ -38,17 +47,22 @@ export async function addBookToLibrary(bookData: {
                 description: bookData.description,
                 status: bookData.status || "TO_READ",
             },
-            include: {
-                author: true,
-                publisher: true,
-                shelf: true
+            select: {
+                id: true,
+                title: true,
+                coverUrl: true,
+                status: true,
+                author: { select: { id: true, name: true } },
+                publisher: { select: { id: true, name: true } },
+                shelf: { select: { id: true, name: true } }
             }
         })
 
+        // Invalidate caches
+        invalidateUserCaches(user.id)
         revalidatePath("/library")
         revalidatePath("/dashboard")
-        revalidatePath("/authors")
-        revalidatePath("/publishers")
+
         return { success: true, book: newBook }
     } catch (error) {
         console.error("Failed to add book:", error)
@@ -63,12 +77,28 @@ export async function getBooks() {
     if (!user) return []
 
     try {
+        // Optimized query with select instead of include
         const books = await prisma.book.findMany({
             where: { userId: user.id },
-            include: {
-                author: true,
-                publisher: true,
-                shelf: true
+            select: {
+                id: true,
+                title: true,
+                coverUrl: true,
+                pageCount: true,
+                currentPage: true,
+                status: true,
+                isbn: true,
+                publishedDate: true,
+                description: true,
+                tortu: true,
+                imza: true,
+                startDate: true,
+                endDate: true,
+                createdAt: true,
+                updatedAt: true,
+                author: { select: { id: true, name: true, imageUrl: true } },
+                publisher: { select: { id: true, name: true } },
+                shelf: { select: { id: true, name: true, color: true } }
             },
             orderBy: { updatedAt: 'desc' }
         })
@@ -92,15 +122,28 @@ export async function getBook(id: string) {
                 author: true,
                 publisher: true,
                 shelf: true,
-                quotes: { orderBy: { createdAt: 'desc' } },
-                readingLogs: { orderBy: { createdAt: 'desc' } },
+                quotes: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 50 // Limit quotes for performance
+                },
+                readingLogs: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 20 // Limit logs
+                },
                 userReadingListBooks: {
                     include: {
                         readingListBook: {
-                            include: {
+                            select: {
+                                id: true,
+                                title: true,
                                 level: {
-                                    include: {
-                                        readingList: true
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        levelNumber: true,
+                                        readingList: {
+                                            select: { id: true, name: true, slug: true }
+                                        }
                                     }
                                 }
                             }
@@ -142,15 +185,26 @@ export async function updateBook(id: string, data: {
         const updatedBook = await prisma.book.update({
             where: { id, userId: user.id },
             data,
-            include: {
-                author: true,
-                publisher: true,
-                shelf: true
+            select: {
+                id: true,
+                title: true,
+                coverUrl: true,
+                status: true,
+                currentPage: true,
+                pageCount: true,
+                author: { select: { id: true, name: true } },
+                publisher: { select: { id: true, name: true } },
+                shelf: { select: { id: true, name: true } }
             }
         })
+
+        // Invalidate caches
+        invalidateUserCaches(user.id)
+        revalidateTag(CACHE_TAGS.book(id))
         revalidatePath(`/book/${id}`)
         revalidatePath("/library")
         revalidatePath("/dashboard")
+
         return { success: true, book: updatedBook }
     } catch (error) {
         console.error("Failed to update book:", error)
@@ -168,11 +222,13 @@ export async function deleteBook(id: string) {
         await prisma.book.delete({
             where: { id, userId: user.id },
         })
+
+        // Invalidate caches
+        invalidateUserCaches(user.id)
+        revalidateTag(CACHE_TAGS.book(id))
         revalidatePath("/library")
         revalidatePath("/dashboard")
-        revalidatePath("/summaries")
-        revalidatePath("/imzalar")
-        revalidatePath("/quotes")
+
         return { success: true }
     } catch (error) {
         console.error("Failed to delete book:", error)

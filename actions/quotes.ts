@@ -2,7 +2,8 @@
 
 import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
+import { CACHE_TAGS } from "@/lib/cache"
 
 export async function getAllQuotes() {
     const supabase = await createClient()
@@ -15,12 +16,18 @@ export async function getAllQuotes() {
             where: {
                 book: { userId: user.id }
             },
-            include: {
+            select: {
+                id: true,
+                content: true,
+                page: true,
+                createdAt: true,
+                updatedAt: true,
                 book: {
                     select: { id: true, title: true, coverUrl: true, author: { select: { name: true } } }
                 }
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            take: 200 // Limit for performance
         })
         return quotes
     } catch (error) {
@@ -65,7 +72,8 @@ export async function addQuote(bookId: string, content: string, page?: number) {
 
     // Verify ownership of the book
     const book = await prisma.book.findUnique({
-        where: { id: bookId, userId: user.id }
+        where: { id: bookId, userId: user.id },
+        select: { id: true }
     })
 
     if (!book) throw new Error("Book not found")
@@ -78,9 +86,14 @@ export async function addQuote(bookId: string, content: string, page?: number) {
                 page,
             }
         })
+
+        // Invalidate caches
+        revalidateTag(CACHE_TAGS.userQuotes(user.id))
+        revalidateTag(CACHE_TAGS.userStats(user.id))
         revalidatePath(`/book/${bookId}`)
         revalidatePath('/quotes')
         revalidatePath('/dashboard')
+
         return { success: true, quote }
     } catch (error) {
         console.error("Failed to add quote:", error)
@@ -95,22 +108,26 @@ export async function deleteQuote(quoteId: string, bookId: string) {
     if (!user) throw new Error("Unauthorized")
 
     // Verify ownership via book
-    // Theoretically we should join or check, but simpler:
-    // find quote where book.userId = user.id
     const quote = await prisma.quote.findFirst({
         where: {
             id: quoteId,
             book: { userId: user.id }
-        }
+        },
+        select: { id: true }
     })
 
     if (!quote) throw new Error("Quote not found")
 
     try {
         await prisma.quote.delete({ where: { id: quoteId } })
+
+        // Invalidate caches
+        revalidateTag(CACHE_TAGS.userQuotes(user.id))
+        revalidateTag(CACHE_TAGS.userStats(user.id))
         revalidatePath(`/book/${bookId}`)
         revalidatePath('/quotes')
         revalidatePath('/dashboard')
+
         return { success: true }
     } catch (error) {
         return { success: false, error: "Failed to delete" }

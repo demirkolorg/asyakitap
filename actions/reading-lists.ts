@@ -2,19 +2,30 @@
 
 import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
+import { unstable_cache } from "next/cache"
+import { CACHE_TAGS, CACHE_DURATION } from "@/lib/cache"
 
-// Get all reading lists with counts
-export async function getReadingLists() {
-    try {
+// Cached reading lists (static data - long cache)
+const getCachedReadingLists = unstable_cache(
+    async () => {
         const lists = await prisma.readingList.findMany({
             orderBy: { sortOrder: "asc" },
-            include: {
+            select: {
+                id: true,
+                slug: true,
+                name: true,
+                description: true,
+                coverUrl: true,
+                sortOrder: true,
                 levels: {
                     orderBy: { levelNumber: "asc" },
-                    include: {
-                        books: {
-                            orderBy: { sortOrder: "asc" }
+                    select: {
+                        id: true,
+                        levelNumber: true,
+                        name: true,
+                        _count: {
+                            select: { books: true }
                         }
                     }
                 }
@@ -23,33 +34,56 @@ export async function getReadingLists() {
 
         return lists.map(list => ({
             ...list,
-            totalBooks: list.levels.reduce((acc, level) => acc + level.books.length, 0),
+            totalBooks: list.levels.reduce((acc, level) => acc + level._count.books, 0),
             levelCount: list.levels.length
         }))
+    },
+    ['reading-lists-all'],
+    {
+        tags: [CACHE_TAGS.readingLists],
+        revalidate: CACHE_DURATION.STATIC, // 24 hours - rarely changes
+    }
+)
+
+// Get all reading lists with counts
+export async function getReadingLists() {
+    try {
+        return await getCachedReadingLists()
     } catch (error) {
         console.error("Failed to fetch reading lists:", error)
         return []
     }
 }
 
-// Get single reading list with all details
-export async function getReadingList(slug: string) {
-    try {
-        const list = await prisma.readingList.findUnique({
-            where: { slug },
-            include: {
-                levels: {
-                    orderBy: { levelNumber: "asc" },
-                    include: {
-                        books: {
-                            orderBy: { sortOrder: "asc" }
+// Cached single reading list
+const getCachedReadingList = (slug: string) =>
+    unstable_cache(
+        async () => {
+            return prisma.readingList.findUnique({
+                where: { slug },
+                include: {
+                    levels: {
+                        orderBy: { levelNumber: "asc" },
+                        include: {
+                            books: {
+                                orderBy: { sortOrder: "asc" }
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
+        },
+        [`reading-list-${slug}`],
+        {
+            tags: [CACHE_TAGS.readingList(slug), CACHE_TAGS.readingLists],
+            revalidate: CACHE_DURATION.STATIC,
+        }
+    )()
 
-        return list
+// Get single reading list with all details
+export async function getReadingList(slug: string) {
+    try {
+        return await getCachedReadingList(slug)
     } catch (error) {
         console.error("Failed to fetch reading list:", error)
         return null
