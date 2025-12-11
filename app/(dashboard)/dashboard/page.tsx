@@ -30,39 +30,37 @@ export default async function DashboardPage() {
                 </Button>
             </div>
 
-            {/* Stats Grid - Mobile: Compact horizontal scroll, Desktop: Grid */}
-            <div className="block md:hidden">
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                    <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg">
-                        <BookOpen className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-bold">{stats.totalBooks}</span>
-                        <span className="text-xs text-muted-foreground">kitap</span>
-                    </div>
-                    <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg">
-                        <BookCheck className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-bold">{stats.completed}</span>
-                        <span className="text-xs text-muted-foreground">bitti</span>
-                    </div>
-                    <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg">
-                        <Users className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-bold">{stats.uniqueAuthors}</span>
-                        <span className="text-xs text-muted-foreground">yazar</span>
-                    </div>
-                    <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg">
-                        <Quote className="h-4 w-4 text-orange-600" />
-                        <span className="text-sm font-bold">{stats.totalQuotes}</span>
-                        <span className="text-xs text-muted-foreground">alıntı</span>
-                    </div>
-                    <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg">
-                        <FileText className="h-4 w-4 text-purple-600" />
-                        <span className="text-sm font-bold">{stats.totalTortu}</span>
-                        <span className="text-xs text-muted-foreground">tortu</span>
-                    </div>
-                    <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg">
-                        <Pen className="h-4 w-4 text-pink-600" />
-                        <span className="text-sm font-bold">{stats.totalImza}</span>
-                        <span className="text-xs text-muted-foreground">imza</span>
-                    </div>
+            {/* Stats Grid - Mobile: 3x2 Grid, Desktop: 6 columns */}
+            <div className="grid grid-cols-3 gap-2 md:hidden">
+                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
+                    <BookOpen className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-bold">{stats.totalBooks}</span>
+                    <span className="text-[10px] text-muted-foreground">kitap</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
+                    <BookCheck className="h-4 w-4 text-green-600" />
+                    <span className="text-sm font-bold">{stats.completed}</span>
+                    <span className="text-[10px] text-muted-foreground">bitti</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
+                    <Users className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm font-bold">{stats.uniqueAuthors}</span>
+                    <span className="text-[10px] text-muted-foreground">yazar</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
+                    <Quote className="h-4 w-4 text-orange-600" />
+                    <span className="text-sm font-bold">{stats.totalQuotes}</span>
+                    <span className="text-[10px] text-muted-foreground">alıntı</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
+                    <FileText className="h-4 w-4 text-purple-600" />
+                    <span className="text-sm font-bold">{stats.totalTortu}</span>
+                    <span className="text-[10px] text-muted-foreground">tortu</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
+                    <Pen className="h-4 w-4 text-pink-600" />
+                    <span className="text-sm font-bold">{stats.totalImza}</span>
+                    <span className="text-[10px] text-muted-foreground">imza</span>
                 </div>
             </div>
 
