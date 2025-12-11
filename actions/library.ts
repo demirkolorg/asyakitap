@@ -77,28 +77,12 @@ export async function getBooks() {
     if (!user) return []
 
     try {
-        // Optimized query with select instead of include
         const books = await prisma.book.findMany({
             where: { userId: user.id },
-            select: {
-                id: true,
-                title: true,
-                coverUrl: true,
-                pageCount: true,
-                currentPage: true,
-                status: true,
-                isbn: true,
-                publishedDate: true,
-                description: true,
-                tortu: true,
-                imza: true,
-                startDate: true,
-                endDate: true,
-                createdAt: true,
-                updatedAt: true,
-                author: { select: { id: true, name: true, imageUrl: true } },
-                publisher: { select: { id: true, name: true } },
-                shelf: { select: { id: true, name: true, color: true } }
+            include: {
+                author: true,
+                publisher: true,
+                shelf: true
             },
             orderBy: { updatedAt: 'desc' }
         })
