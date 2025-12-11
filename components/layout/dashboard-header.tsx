@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { BookOpen, PlusCircle, TrendingUp, Loader2, ExternalLink } from 'lucide-react';
+import { BookOpen, PlusCircle, TrendingUp, Loader2, ExternalLink, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
@@ -22,6 +22,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { getCurrentlyReadingBooks, updateBook } from '@/actions/library';
 import { toast } from 'sonner';
 import { Book, Author } from '@prisma/client';
@@ -55,12 +62,10 @@ export function DashboardHeader() {
     }
 
     if (books.length === 1) {
-      // Tek kitap varsa direkt ilerleme modalını aç
       setSelectedBook(books[0]);
       setProgressInput(books[0].currentPage.toString());
       setShowProgressDialog(true);
     } else {
-      // Birden fazla kitap varsa önce seçim modalını aç
       setShowSelectBookDialog(true);
     }
   };
@@ -106,76 +111,109 @@ export function DashboardHeader() {
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center border-b bg-background px-4">
+      <header className="flex h-14 shrink-0 items-center border-b bg-background px-3 md:px-4 gap-2">
         {/* Left - Logo (when collapsed) + Sidebar Toggle */}
-        <div className="flex items-center gap-3">
-          {/* Logo and brand - only show when sidebar is collapsed */}
+        <div className="flex items-center gap-2 md:gap-3">
           {isCollapsed && (
             <>
               <Link href="/dashboard" className="flex items-center gap-2">
-                <BookOpen className="h-7 w-7 text-primary" />
-                <span className="font-semibold text-sm text-primary">
+                <BookOpen className="h-6 w-6 md:h-7 md:w-7 text-primary" />
+                <span className="font-semibold text-sm text-primary hidden sm:inline">
                   AsyaKitap
                 </span>
               </Link>
-              <Separator orientation="vertical" className="h-4" />
+              <Separator orientation="vertical" className="h-4 hidden sm:block" />
             </>
           )}
 
           <SidebarTrigger className="-ml-1" />
 
           {!isCollapsed && (
-            <Separator orientation="vertical" className="h-4" />
+            <Separator orientation="vertical" className="h-4 hidden sm:block" />
           )}
         </div>
 
         {/* Center - Global Search */}
-        <div className="flex-1 flex justify-center px-4">
+        <div className="flex-1 flex justify-center px-2 md:px-4">
           <GlobalSearch />
         </div>
 
         {/* Right - Actions */}
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleOpenProgressUpdate}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <TrendingUp className="mr-2 h-4 w-4" />
-            )}
-            <span className="hidden sm:inline">İlerleme</span>
-          </Button>
+        <div className="flex items-center gap-1 md:gap-2">
+          {/* Desktop buttons */}
+          <div className="hidden md:flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleOpenProgressUpdate}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <TrendingUp className="mr-2 h-4 w-4" />
+              )}
+              <span className="hidden lg:inline">İlerleme</span>
+            </Button>
 
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setShowKitapyurduModal(true)}
-            className="text-orange-600 border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-950"
-          >
-            <ExternalLink className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Kitapyurdu</span>
-          </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowKitapyurduModal(true)}
+              className="text-orange-600 border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-950"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              <span className="hidden lg:inline">Kitapyurdu</span>
+            </Button>
 
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setShowGoodreadsModal(true)}
-            className="text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-800 dark:hover:bg-amber-950"
-          >
-            <ExternalLink className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Goodreads</span>
-          </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowGoodreadsModal(true)}
+              className="text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-800 dark:hover:bg-amber-950"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              <span className="hidden lg:inline">Goodreads</span>
+            </Button>
 
-          <Button asChild size="sm" variant="outline">
-            <Link href="/library/add">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Kitap Ekle</span>
-            </Link>
-          </Button>
+            <Button asChild size="sm">
+              <Link href="/library/add">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                <span className="hidden lg:inline">Kitap Ekle</span>
+              </Link>
+            </Button>
+          </div>
+
+          {/* Mobile dropdown menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className="md:hidden">
+              <Button variant="outline" size="icon" className="h-9 w-9">
+                <Menu className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={handleOpenProgressUpdate} disabled={isLoading}>
+                <TrendingUp className="mr-2 h-4 w-4" />
+                İlerleme Güncelle
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setShowKitapyurduModal(true)}>
+                <ExternalLink className="mr-2 h-4 w-4 text-orange-600" />
+                Kitapyurdu'ndan Ekle
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowGoodreadsModal(true)}>
+                <ExternalLink className="mr-2 h-4 w-4 text-amber-600" />
+                Goodreads'ten Ekle
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/library/add">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Manuel Kitap Ekle
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <ThemeToggle />
           <UserNavMenu />
@@ -184,14 +222,14 @@ export function DashboardHeader() {
 
       {/* Select Book Dialog */}
       <Dialog open={showSelectBookDialog} onOpenChange={setShowSelectBookDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle>Kitap Seç</DialogTitle>
             <DialogDescription>
               Hangi kitabın ilerlemesini güncellemek istiyorsun?
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 py-4 max-h-[400px] overflow-y-auto">
+          <div className="space-y-2 py-4 overflow-y-auto flex-1">
             {readingBooks.map((book) => (
               <button
                 key={book.id}
@@ -273,7 +311,7 @@ export function DashboardHeader() {
               </>
             )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setShowProgressDialog(false)}>
               Vazgeç
             </Button>

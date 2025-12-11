@@ -356,9 +356,38 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
     )
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left Sidebar */}
-            <aside className="lg:w-64 flex-shrink-0">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+            {/* Mobile Status Filter - Horizontal scrollable */}
+            <div className="lg:hidden">
+                <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                    {(Object.keys(statusConfig) as StatusFilter[]).map((status) => (
+                        <button
+                            key={status}
+                            onClick={() => setActiveStatus(status)}
+                            className={cn(
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0",
+                                activeStatus === status
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-muted text-muted-foreground"
+                            )}
+                        >
+                            {statusConfig[status].icon}
+                            {statusConfig[status].label}
+                            <span className={cn(
+                                "px-1.5 py-0.5 rounded-full text-[10px]",
+                                activeStatus === status
+                                    ? "bg-primary-foreground/20"
+                                    : "bg-muted-foreground/20"
+                            )}>
+                                {getStatusCount(status)}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Left Sidebar - Desktop only */}
+            <aside className="hidden lg:block lg:w-64 flex-shrink-0">
                 <div className="sticky top-6">
                     <Button asChild className="w-full mb-6">
                         <Link href="/library/add">
@@ -434,54 +463,56 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
             {/* Main Content */}
             <main className="flex-1 min-w-0">
                 {/* Unified Header */}
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-                    <div>
-                        <h1 className="text-2xl font-bold">
-                            {activeTab === "shelves" ? "Raflarım" : statusConfig[activeStatus].label}
-                        </h1>
-                        <p className="text-muted-foreground text-sm">
-                            {activeTab === "shelves"
-                                ? `${filteredShelves.length} raf, ${filteredShelves.reduce((acc, s) => acc + s.filteredBooks.length, 0) + unshelfedBooks.length} kitap${(activeStatus !== "ALL" || searchQuery) ? ` (filtrelenmiş)` : ""}`
-                                : `${filteredBooks.length} kitap`
-                            }
-                        </p>
+                <div className="flex flex-col gap-3 mb-4 md:mb-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h1 className="text-lg md:text-2xl font-bold">
+                                {activeTab === "shelves" ? "Raflarım" : statusConfig[activeStatus].label}
+                            </h1>
+                            <p className="text-muted-foreground text-xs md:text-sm">
+                                {activeTab === "shelves"
+                                    ? `${filteredShelves.length} raf, ${filteredShelves.reduce((acc, s) => acc + s.filteredBooks.length, 0) + unshelfedBooks.length} kitap${(activeStatus !== "ALL" || searchQuery) ? ` (filtrelenmiş)` : ""}`
+                                    : `${filteredBooks.length} kitap`
+                                }
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-1 md:gap-2">
+                            <Button variant="outline" size="icon" onClick={openNewShelf} title="Raf Ekle" className="h-8 w-8 md:h-9 md:w-9">
+                                <FolderPlus className="h-4 w-4" />
+                            </Button>
+
+                            <div className="flex border rounded-lg">
+                                <Button
+                                    variant={activeTab === "cards" ? "secondary" : "ghost"}
+                                    size="icon"
+                                    className="rounded-r-none h-8 w-8 md:h-9 md:w-9"
+                                    onClick={() => setActiveTab("cards")}
+                                    title="Kart Görünümü"
+                                >
+                                    <Grid3X3 className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant={activeTab === "shelves" ? "secondary" : "ghost"}
+                                    size="icon"
+                                    className="rounded-l-none h-8 w-8 md:h-9 md:w-9"
+                                    onClick={() => setActiveTab("shelves")}
+                                    title="Raf Görünümü"
+                                >
+                                    <Layers className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <div className="relative flex-1 sm:w-64">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Kitap veya yazar ara..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9"
-                            />
-                        </div>
-
-                        <Button variant="outline" size="icon" onClick={openNewShelf} title="Raf Ekle">
-                            <FolderPlus className="h-4 w-4" />
-                        </Button>
-
-                        <div className="flex border rounded-lg">
-                            <Button
-                                variant={activeTab === "cards" ? "secondary" : "ghost"}
-                                size="icon"
-                                className="rounded-r-none"
-                                onClick={() => setActiveTab("cards")}
-                                title="Kart Görünümü"
-                            >
-                                <Grid3X3 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                variant={activeTab === "shelves" ? "secondary" : "ghost"}
-                                size="icon"
-                                className="rounded-l-none"
-                                onClick={() => setActiveTab("shelves")}
-                                title="Raf Görünümü"
-                            >
-                                <Layers className="h-4 w-4" />
-                            </Button>
-                        </div>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Kitap veya yazar ara..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-9 h-9"
+                        />
                     </div>
                 </div>
 
@@ -508,7 +539,7 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                                 )}
                             </div>
                         ) : (
-                            <div className="grid gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
+                            <div className="grid gap-2 md:gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
                                 {filteredBooks.map((book) => (
                                     <BookCard key={book.id} book={book} showShelfButton />
                                 ))}
@@ -519,18 +550,18 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
 
                 {/* Shelf View */}
                 {activeTab === "shelves" && (
-                    <div className="space-y-8">
+                    <div className="space-y-4 md:space-y-8">
                         {filteredShelves.map((shelf) => (
-                            <div key={shelf.id} className="border rounded-lg p-4">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-3">
+                            <div key={shelf.id} className="border rounded-lg p-3 md:p-4">
+                                <div className="flex items-center justify-between mb-3 md:mb-4">
+                                    <div className="flex items-center gap-2 md:gap-3 min-w-0">
                                         <div
-                                            className="w-4 h-4 rounded-full"
+                                            className="w-3 h-3 md:w-4 md:h-4 rounded-full flex-shrink-0"
                                             style={{ backgroundColor: shelf.color || '#6b7280' }}
                                         />
-                                        <h2 className="text-lg font-semibold">{shelf.name}</h2>
-                                        <span className="text-sm text-muted-foreground">
-                                            ({shelf.filteredBooks.length}{(activeStatus !== "ALL" || searchQuery) && `/${shelf.books.length}`} kitap)
+                                        <h2 className="text-sm md:text-lg font-semibold truncate">{shelf.name}</h2>
+                                        <span className="text-xs md:text-sm text-muted-foreground flex-shrink-0">
+                                            ({shelf.filteredBooks.length}{(activeStatus !== "ALL" || searchQuery) && `/${shelf.books.length}`})
                                         </span>
                                     </div>
                                     <DropdownMenu>
@@ -555,14 +586,14 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                                     </DropdownMenu>
                                 </div>
                                 {shelf.filteredBooks.length > 0 ? (
-                                    <div className="grid gap-3 grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+                                    <div className="grid gap-2 md:gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9">
                                         {shelf.filteredBooks.map((book) => (
                                             <BookCard key={book.id} book={book} showShelfButton />
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-center py-8 border-2 border-dashed rounded-lg bg-muted/20">
-                                        <p className="text-sm text-muted-foreground">
+                                    <div className="flex items-center justify-center py-6 md:py-8 border-2 border-dashed rounded-lg bg-muted/20">
+                                        <p className="text-xs md:text-sm text-muted-foreground">
                                             Bu rafta henüz kitap yok
                                         </p>
                                     </div>
@@ -572,17 +603,17 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
 
                         {/* Unshelved Books */}
                         {unshelfedBooks.length > 0 && (
-                            <div className="border rounded-lg p-4 border-dashed">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-4 h-4 rounded-full bg-gray-400" />
-                                    <h2 className="text-lg font-semibold text-muted-foreground">
+                            <div className="border rounded-lg p-3 md:p-4 border-dashed">
+                                <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                                    <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-gray-400" />
+                                    <h2 className="text-sm md:text-lg font-semibold text-muted-foreground">
                                         Rafsız Kitaplar
                                     </h2>
-                                    <span className="text-sm text-muted-foreground">
-                                        ({unshelfedBooks.length} kitap)
+                                    <span className="text-xs md:text-sm text-muted-foreground">
+                                        ({unshelfedBooks.length})
                                     </span>
                                 </div>
-                                <div className="grid gap-3 grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+                                <div className="grid gap-2 md:gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9">
                                     {unshelfedBooks.map((book) => (
                                         <BookCard key={book.id} book={book} showShelfButton />
                                     ))}

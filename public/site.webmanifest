@@ -1,24 +1,67 @@
 {
-  "name": "AsyaKitap",
+  "name": "AsyaKitap - Kişisel Kütüphane",
   "short_name": "AsyaKitap",
-  "description": "Kişisel Kütüphane Yönetimi - Kitaplarını yönet, tortularını sakla",
+  "description": "Kitaplarını yönet, tortularını sakla. Kişisel kütüphane yönetimi ve okuma takibi.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#7c3aed",
+  "background_color": "#ffffff",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "theme_color": "#7c3aed",
-  "background_color": "#ffffff",
-  "display": "standalone",
-  "start_url": "/",
-  "scope": "/"
+  "categories": ["books", "education", "productivity"],
+  "lang": "tr",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Kütüphane",
+      "short_name": "Kütüphane",
+      "url": "/library",
+      "icons": [{"src": "/android-chrome-192x192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Kitap Ekle",
+      "short_name": "Ekle",
+      "url": "/library/add",
+      "icons": [{"src": "/android-chrome-192x192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Okuma Listeleri",
+      "short_name": "Listeler",
+      "url": "/reading-lists",
+      "icons": [{"src": "/android-chrome-192x192.png", "sizes": "192x192"}]
+    }
+  ]
 }

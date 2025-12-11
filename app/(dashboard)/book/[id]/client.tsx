@@ -307,13 +307,13 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     }
 
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto px-0 md:px-0">
             {/* Main Book Section - Goodreads Style */}
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-8">
                 {/* Left Column - Cover & Actions */}
-                <div className="lg:w-[240px] flex-shrink-0">
+                <div className="md:w-[200px] lg:w-[240px] flex-shrink-0">
                     {/* Book Cover */}
-                    <div className="relative aspect-[2/3] w-full max-w-[240px] mx-auto lg:mx-0 bg-muted rounded-lg overflow-hidden shadow-lg">
+                    <div className="relative aspect-[2/3] w-32 md:w-full max-w-[240px] mx-auto md:mx-0 bg-muted rounded-lg overflow-hidden shadow-lg">
                         {book.coverUrl ? (
                             <Image
                                 src={book.coverUrl.replace("http:", "https:")}
@@ -440,11 +440,11 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                 {/* Right Column - Book Details */}
                 <div className="flex-1 min-w-0">
                     {/* Title & Author */}
-                    <div className="mb-4">
-                        <h1 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+                    <div className="mb-4 text-center md:text-left">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                             {book.title}
                         </h1>
-                        <p className="text-xl text-muted-foreground mt-1">
+                        <p className="text-base md:text-xl text-muted-foreground mt-1">
                             <span className="text-muted-foreground/70">yazan </span>
                             {book.author ? (
                                 <Link href={`/author/${book.author.id}`} className="text-foreground hover:underline">
@@ -457,7 +457,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                     </div>
 
                     {/* Publisher, Shelf & Reading List Info */}
-                    <div className="flex flex-wrap gap-3 mb-4">
+                    <div className="flex flex-wrap gap-2 md:gap-3 mb-4 justify-center md:justify-start">
                         {book.publisher && (
                             <Link
                                 href={`/publisher/${book.publisher.id}`}
@@ -507,7 +507,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                     )}
 
                     {/* Book Stats */}
-                    <div className="flex flex-wrap gap-6 py-4 border-y">
+                    <div className="flex flex-wrap gap-3 md:gap-6 py-4 border-y text-sm justify-center md:justify-start">
                         {book.pageCount && (
                             <div className="flex items-center gap-2">
                                 <BookOpen className="h-4 w-4 text-muted-foreground" />
@@ -564,54 +564,54 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                     </div>
 
                     {/* Tabs/Sections */}
-                    <div className="mt-6">
-                        <div className="flex gap-1 border-b">
+                    <div className="mt-4 md:mt-6">
+                        <div className="flex gap-0.5 md:gap-1 border-b overflow-x-auto">
                             <button
                                 onClick={() => setActiveSection("tortu")}
                                 className={cn(
-                                    "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+                                    "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
                                     activeSection === "tortu"
                                         ? "border-primary text-primary"
                                         : "border-transparent text-muted-foreground hover:text-foreground"
                                 )}
                             >
-                                <FileText className="h-4 w-4 inline mr-2" />
+                                <FileText className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
                                 Tortu
                             </button>
                             <button
                                 onClick={() => setActiveSection("imza")}
                                 className={cn(
-                                    "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+                                    "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
                                     activeSection === "imza"
                                         ? "border-primary text-primary"
                                         : "border-transparent text-muted-foreground hover:text-foreground"
                                 )}
                             >
-                                <PenLine className="h-4 w-4 inline mr-2" />
+                                <PenLine className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
                                 İmza
                             </button>
                             <button
                                 onClick={() => setActiveSection("quotes")}
                                 className={cn(
-                                    "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+                                    "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
                                     activeSection === "quotes"
                                         ? "border-primary text-primary"
                                         : "border-transparent text-muted-foreground hover:text-foreground"
                                 )}
                             >
-                                <Quote className="h-4 w-4 inline mr-2" />
-                                Alıntılar ({book.quotes.length})
+                                <Quote className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
+                                Alıntı ({book.quotes.length})
                             </button>
                             <button
                                 onClick={() => setActiveSection("history")}
                                 className={cn(
-                                    "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+                                    "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
                                     activeSection === "history"
                                         ? "border-primary text-primary"
                                         : "border-transparent text-muted-foreground hover:text-foreground"
                                 )}
                             >
-                                <Clock className="h-4 w-4 inline mr-2" />
+                                <Clock className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
                                 Geçmiş
                             </button>
                         </div>
