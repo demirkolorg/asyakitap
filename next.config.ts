@@ -66,6 +66,8 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
+  // Empty turbopack config to allow webpack config from next-pwa
+  turbopack: {},
   images: {
     remotePatterns: [
       {
