@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { PWAInstallPrompt } from "@/components/pwa/pwa-install-prompt";
+import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -88,6 +90,8 @@ export default function RootLayout({
         >
           {children}
           <Toaster position="top-right" richColors />
+          <PWAInstallPrompt />
+          <ServiceWorkerRegister />
         </ThemeProvider>
       </body>
     </html>

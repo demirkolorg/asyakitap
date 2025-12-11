@@ -11,37 +11,37 @@ export default async function ReadingListsPage() {
     return (
         <div className="max-w-5xl mx-auto">
             {/* Header */}
-            <div className="flex items-start justify-between mb-8">
+            <div className="flex items-start justify-between gap-4 mb-4 lg:mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold flex items-center gap-3">
-                        <Map className="h-8 w-8 text-primary" />
+                    <h1 className="text-2xl lg:text-3xl font-bold flex items-center gap-2 lg:gap-3">
+                        <Map className="h-6 w-6 lg:h-8 lg:w-8 text-primary" />
                         Okuma Listeleri
                     </h1>
-                    <p className="text-muted-foreground mt-2">
-                        Tematik okuma yol haritaları ile okuma deneyimini zenginleştir
+                    <p className="text-sm lg:text-base text-muted-foreground mt-1 lg:mt-2">
+                        Tematik okuma yol haritaları
                     </p>
                 </div>
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" size="sm" className="shrink-0">
                     <Link href="/reading-lists/manage">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Yönet
+                        <Settings className="h-4 w-4 lg:mr-2" />
+                        <span className="hidden lg:inline">Yönet</span>
                     </Link>
                 </Button>
             </div>
 
             {/* Lists Grid */}
             {lists.length === 0 ? (
-                <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-lg bg-muted/40">
-                    <Map className="h-12 w-12 text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground mb-2">Henüz okuma listesi eklenmemiş</p>
-                    <Button asChild variant="outline">
+                <div className="flex flex-col items-center justify-center min-h-[300px] lg:min-h-[400px] border border-dashed rounded-lg bg-muted/40 p-4">
+                    <Map className="h-10 w-10 lg:h-12 lg:w-12 text-muted-foreground mb-4" />
+                    <p className="text-sm text-muted-foreground mb-2 text-center">Henüz okuma listesi eklenmemiş</p>
+                    <Button asChild variant="outline" size="sm">
                         <Link href="/reading-lists/manage">
                             İlk listeyi oluştur
                         </Link>
                     </Button>
                 </div>
             ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {lists.map((list) => {
                         const progressPercent = list.progress.total > 0
                             ? Math.round((list.progress.completed / list.progress.total) * 100)
@@ -136,20 +136,20 @@ export default async function ReadingListsPage() {
             )}
 
             {/* Info Section */}
-            <div className="mt-12 p-6 bg-muted/30 rounded-xl">
-                <h3 className="font-semibold mb-2">Nasıl Çalışır?</h3>
-                <div className="grid gap-4 md:grid-cols-3 text-sm text-muted-foreground">
-                    <div className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">1</span>
-                        <p>Bir okuma listesi seç ve seviyeleri incele</p>
+            <div className="mt-8 lg:mt-12 p-4 lg:p-6 bg-muted/30 rounded-xl">
+                <h3 className="font-semibold mb-3 text-sm lg:text-base">Nasıl Çalışır?</h3>
+                <div className="grid gap-3 lg:gap-4 sm:grid-cols-3 text-xs lg:text-sm text-muted-foreground">
+                    <div className="flex gap-2 lg:gap-3">
+                        <span className="flex-shrink-0 w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] lg:text-xs font-bold">1</span>
+                        <p>Okuma listesi seç ve incele</p>
                     </div>
-                    <div className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">2</span>
-                        <p>Beğendiğin kitabı kütüphanene ekle</p>
+                    <div className="flex gap-2 lg:gap-3">
+                        <span className="flex-shrink-0 w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] lg:text-xs font-bold">2</span>
+                        <p>Kitabı kütüphanene ekle</p>
                     </div>
-                    <div className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">3</span>
-                        <p>Okudukça ilerlemeni takip et</p>
+                    <div className="flex gap-2 lg:gap-3">
+                        <span className="flex-shrink-0 w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] lg:text-xs font-bold">3</span>
+                        <p>İlerlemeni takip et</p>
                     </div>
                 </div>
             </div>

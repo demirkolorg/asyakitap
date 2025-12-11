@@ -1,24 +1,96 @@
 {
-  "name": "AsyaKitap",
+  "name": "AsyaKitap - Kişisel Kütüphane",
   "short_name": "AsyaKitap",
-  "description": "Kişisel Kütüphane Yönetimi - Kitaplarını yönet, tortularını sakla",
+  "description": "Kitaplarını yönet, tortularını sakla. Kişisel kütüphane yönetimi ve okuma takibi.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0a0a",
+  "theme_color": "#7c3aed",
+  "categories": ["books", "education", "productivity"],
+  "lang": "tr",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "theme_color": "#7c3aed",
-  "background_color": "#ffffff",
-  "display": "standalone",
-  "start_url": "/",
-  "scope": "/"
+  "screenshots": [
+    {
+      "src": "/screenshots/dashboard.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard görünümü"
+    },
+    {
+      "src": "/screenshots/library-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Kütüphane mobil görünümü"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Kitap Ekle",
+      "short_name": "Ekle",
+      "description": "Kütüphaneye yeni kitap ekle",
+      "url": "/library/add",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Kütüphanem",
+      "short_name": "Kütüphane",
+      "description": "Kitaplarımı görüntüle",
+      "url": "/library",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Okuma Listeleri",
+      "short_name": "Listeler",
+      "description": "Okuma listelerini görüntüle",
+      "url": "/reading-lists",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
