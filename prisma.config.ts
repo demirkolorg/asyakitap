@@ -1,17 +1,14 @@
-import { defineConfig, env } from "prisma/config";
-import * as dotenv from 'dotenv';
-import path from 'path';
+import { defineConfig } from "prisma/config";
 
-// Ensure we are loading from the project root
-const envPath = path.resolve(process.cwd(), '.env');
-dotenv.config({ path: envPath });
+// Use process.env directly - Vercel provides env vars during build
+const databaseUrl = process.env.DATABASE_URL;
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
-  datasource: {
-    url: env("DATABASE_URL"),
-  },
+  // Only set datasource if DATABASE_URL is available
+  // For prisma generate, the client can work without the actual URL
+  ...(databaseUrl ? { datasource: { url: databaseUrl } } : {}),
 });
