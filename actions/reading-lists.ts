@@ -23,9 +23,9 @@ const getCachedReadingLists = unstable_cache(
             }
         })
 
-        return lists.map(list => ({
+        return lists.map((list: typeof lists[number]) => ({
             ...list,
-            totalBooks: list.levels.reduce((acc, level) => acc + level.books.length, 0),
+            totalBooks: list.levels.reduce((acc: number, level: typeof list.levels[number]) => acc + level.books.length, 0),
             levelCount: list.levels.length
         }))
     },
@@ -124,11 +124,11 @@ export async function getReadingListWithProgress(slug: string) {
         let addedBooks = 0
         let completedBooks = 0
 
-        const levelsWithProgress = list.levels.map(level => {
+        const levelsWithProgress = list.levels.map((level: typeof list.levels[number]) => {
             let levelAdded = 0
             let levelCompleted = 0
 
-            const booksWithStatus = level.books.map(book => {
+            const booksWithStatus = level.books.map((book: typeof level.books[number]) => {
                 totalBooks++
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const userLink = (book as any).userLinks?.[0]
@@ -185,14 +185,24 @@ export async function getReadingListWithProgress(slug: string) {
     }
 }
 
-// Link a book to reading list when user adds from the list
-export async function linkBookToReadingList(bookId: string, readingListBookId: string) {
+// Link a book from user's library to reading list
+export async function linkBookToReadingList(bookId: string, readingListBookId: string, listSlug: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) throw new Error("Unauthorized")
 
     try {
+        // Verify book belongs to user
+        const book = await prisma.book.findFirst({
+            where: { id: bookId, userId: user.id },
+            select: { id: true }
+        })
+
+        if (!book) {
+            return { success: false, error: "Kitap bulunamadı" }
+        }
+
         // Check if link already exists
         const existingLink = await prisma.userReadingListBook.findUnique({
             where: {
@@ -220,16 +230,57 @@ export async function linkBookToReadingList(bookId: string, readingListBookId: s
             })
         }
 
-        revalidatePath("/reading-lists")
+        revalidatePath(`/reading-lists/${listSlug}`)
         return { success: true }
     } catch (error) {
         console.error("Failed to link book:", error)
-        return { success: false, error: "Failed to link book" }
+        return { success: false, error: "Kitap bağlanamadı" }
+    }
+}
+
+// Unlink a book from reading list
+export async function unlinkBookFromReadingList(readingListBookId: string, listSlug: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) throw new Error("Unauthorized")
+
+    try {
+        await prisma.userReadingListBook.delete({
+            where: {
+                userId_readingListBookId: {
+                    userId: user.id,
+                    readingListBookId
+                }
+            }
+        })
+
+        revalidatePath(`/reading-lists/${listSlug}`)
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to unlink book:", error)
+        return { success: false, error: "Bağlantı kaldırılamadı" }
+    }
+}
+
+// Return type for reading lists with progress
+export interface ReadingListWithProgress {
+    id: string
+    slug: string
+    name: string
+    description: string | null
+    coverUrl: string | null
+    levelCount: number
+    totalBooks: number
+    progress: {
+        added: number
+        completed: number
+        total: number
     }
 }
 
 // Get reading lists with user progress for browse page
-export async function getReadingListsWithProgress() {
+export async function getReadingListsWithProgress(): Promise<ReadingListWithProgress[]> {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -256,13 +307,13 @@ export async function getReadingListsWithProgress() {
             }
         })
 
-        return lists.map(list => {
+        return lists.map((list: typeof lists[number]) => {
             let totalBooks = 0
             let addedBooks = 0
             let completedBooks = 0
 
-            list.levels.forEach(level => {
-                level.books.forEach(book => {
+            list.levels.forEach((level: typeof list.levels[number]) => {
+                level.books.forEach((book: typeof level.books[number]) => {
                     totalBooks++
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const userLink = (book as any).userLinks?.[0]

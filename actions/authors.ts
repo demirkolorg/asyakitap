@@ -146,13 +146,13 @@ export async function getAuthorsWithBooks() {
         })
 
         // İmza sayısını hesapla
-        return authors.map(author => ({
+        return authors.map((author: typeof authors[number]) => ({
             id: author.id,
             name: author.name,
             imageUrl: author.imageUrl,
             bio: author.bio,
             _count: author._count,
-            booksWithImza: author.books.filter(b => b.imza && b.imza.trim() !== '').length
+            booksWithImza: author.books.filter((b: typeof author.books[number]) => b.imza && b.imza.trim() !== '').length
         }))
     } catch (error) {
         console.error("Failed to fetch authors with books:", error)

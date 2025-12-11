@@ -128,7 +128,7 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
     ])
 
     return {
-        books: books.map((book) => ({
+        books: books.map((book: typeof books[number]) => ({
             id: book.id,
             type: "book" as const,
             title: book.title,
@@ -136,7 +136,7 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
             imageUrl: book.coverUrl,
             href: `/book/${book.id}`,
         })),
-        authors: authors.map((author) => ({
+        authors: authors.map((author: typeof authors[number]) => ({
             id: author.id,
             type: "author" as const,
             title: author.name,
@@ -144,7 +144,7 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
             imageUrl: author.imageUrl,
             href: `/author/${author.id}`,
         })),
-        readingLists: readingLists.map((list) => ({
+        readingLists: readingLists.map((list: typeof readingLists[number]) => ({
             id: list.id,
             type: "reading-list" as const,
             title: list.name,
@@ -152,7 +152,7 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
             imageUrl: list.coverUrl,
             href: `/reading-lists/${list.slug}`,
         })),
-        readingListBooks: readingListBooks.map((book) => ({
+        readingListBooks: readingListBooks.map((book: typeof readingListBooks[number]) => ({
             id: book.id,
             type: "reading-list-book" as const,
             title: book.title,
@@ -160,7 +160,7 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
             imageUrl: book.coverUrl,
             href: `/reading-lists/${book.level.readingList.slug}`,
         })),
-        quotes: quotes.map((quote) => ({
+        quotes: quotes.map((quote: typeof quotes[number]) => ({
             id: quote.id,
             type: "quote" as const,
             title: quote.content.slice(0, 80) + (quote.content.length > 80 ? "..." : ""),

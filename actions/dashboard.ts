@@ -5,10 +5,70 @@ import { createClient } from "@/lib/supabase/server"
 import { unstable_cache } from "next/cache"
 import { CACHE_TAGS, CACHE_DURATION } from "@/lib/cache"
 
+// Type definitions
+interface DashboardStats {
+    totalBooks: number
+    reading: number
+    completed: number
+    toRead: number
+    dnf: number
+    totalQuotes: number
+    totalPages: number
+    pagesRead: number
+    uniqueAuthors: number
+    totalTortu: number
+    totalImza: number
+}
+
+interface BookWithAuthor {
+    id: string
+    title: string
+    coverUrl: string | null
+    author: { id: string; name: string } | null
+}
+
+interface CurrentlyReadingBook extends BookWithAuthor {
+    currentPage: number
+    pageCount: number | null
+    updatedAt: Date
+}
+
+interface RecentlyCompletedBook extends BookWithAuthor {
+    endDate: Date | null
+}
+
+interface BookWithTortu extends BookWithAuthor {
+    tortu: string | null
+    updatedAt: Date
+}
+
+interface BookWithImza extends BookWithAuthor {
+    imza: string | null
+    updatedAt: Date
+}
+
+interface FormattedQuote {
+    id: string
+    content: string
+    page: number | null
+    createdAt: Date
+    bookTitle: string
+    bookAuthor: string
+}
+
+export interface DashboardData {
+    currentlyReading: CurrentlyReadingBook[]
+    recentlyCompleted: RecentlyCompletedBook[]
+    recentQuotes: FormattedQuote[]
+    booksWithTortu: BookWithTortu[]
+    booksWithImza: BookWithImza[]
+    stats: DashboardStats
+}
+
 // Cached dashboard data fetcher
 const getCachedDashboardData = (userId: string) =>
     unstable_cache(
-        async () => {
+        async (): Promise<DashboardData> => {
             // Tek bir Promise.all ile tüm sorguları paralel çalıştır
             const [
                 stats,
@@ -120,7 +180,8 @@ const getCachedDashboardData = (userId: string) =>
 
             // Stats'ı işle
             type StatusCount = { count: number; pages: number }
-            const statusCounts = stats.reduce<Record<string, StatusCount>>((acc, item) => {
+            type StatsItem = { status: string; _count: { _all: number }; _sum: { pageCount: number | null } }
+            const statusCounts = (stats as StatsItem[]).reduce<Record<string, StatusCount>>((acc, item) => {
                 acc[item.status] = {
                     count: item._count._all,
                     pages: item._sum.pageCount || 0
@@ -173,7 +234,7 @@ const getCachedDashboardData = (userId: string) =>
         }
     )()
 
-export async function getDashboardData() {
+export async function getDashboardData(): Promise<DashboardData | null> {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 

@@ -1,4 +1,5 @@
 import { getReadingListWithProgress } from "@/actions/reading-lists"
+import { getBooks } from "@/actions/library"
 import { notFound } from "next/navigation"
 import ReadingListClient from "./client"
 
@@ -8,11 +9,16 @@ interface PageProps {
 
 export default async function ReadingListPage({ params }: PageProps) {
     const { slug } = await params
-    const list = await getReadingListWithProgress(slug)
+
+    // Paralel olarak hem okuma listesini hem kullanıcı kitaplarını çek
+    const [list, userBooks] = await Promise.all([
+        getReadingListWithProgress(slug),
+        getBooks()
+    ])
 
     if (!list) {
         notFound()
     }
 
-    return <ReadingListClient list={list} />
+    return <ReadingListClient list={list} userBooks={userBooks} />
 }

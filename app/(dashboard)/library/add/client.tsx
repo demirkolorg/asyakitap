@@ -33,6 +33,7 @@ export function AddBookForm() {
     const router = useRouter()
 
     const readingListBookId = searchParams.get("rlBookId")
+    const readingListSlug = searchParams.get("rlSlug")
 
     const [addingBook, setAddingBook] = useState(false)
     const [fetchingISBN, setFetchingISBN] = useState(false)
@@ -128,8 +129,8 @@ export function AddBookForm() {
         })
 
         if (res.success && res.book) {
-            if (readingListBookId) {
-                await linkBookToReadingList(res.book.id, readingListBookId)
+            if (readingListBookId && readingListSlug) {
+                await linkBookToReadingList(res.book.id, readingListBookId, readingListSlug)
                 toast.success("Kitap kütüphanene ve okuma listesine eklendi!")
                 router.back()
             } else {

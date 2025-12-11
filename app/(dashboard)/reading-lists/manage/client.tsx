@@ -350,7 +350,7 @@ export function ManageClient({ initialLists }: ManageClientProps) {
         if (data) {
             const updatedList = {
                 ...data,
-                totalBooks: data.levels.reduce((acc, l) => acc + l.books.length, 0),
+                totalBooks: data.levels.reduce((acc: number, l: typeof data.levels[number]) => acc + l.books.length, 0),
                 levelCount: data.levels.length,
             }
             setSelectedList(updatedList)

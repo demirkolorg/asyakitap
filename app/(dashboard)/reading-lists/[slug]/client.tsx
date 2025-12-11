@@ -1,26 +1,44 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useTransition } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Progress } from "@/components/ui/progress"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import {
     Map,
     BookOpen,
     ChevronDown,
     ChevronUp,
-    Plus,
     Check,
     ArrowLeft,
     CheckCircle2,
     BookMarked,
     Search,
     X,
+    Loader2,
+    Unlink,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { linkBookToReadingList, unlinkBookFromReadingList } from "@/actions/reading-lists"
+import { toast } from "sonner"
 
 type BookStatus = "not_added" | "added" | "reading" | "completed"
+
+interface UserBook {
+    id: string
+    title: string
+    coverUrl: string | null
+    status: string
+    author: { name: string } | null
+}
 
 interface ReadingListBook {
     id: string
@@ -67,14 +85,18 @@ interface ReadingListData {
 
 interface ReadingListClientProps {
     list: ReadingListData
+    userBooks: UserBook[]
 }
 
-
-export default function ReadingListClient({ list }: ReadingListClientProps) {
+export default function ReadingListClient({ list, userBooks }: ReadingListClientProps) {
     const [expandedLevels, setExpandedLevels] = useState<Set<string>>(
         new Set(list.levels.map(l => l.id))
     )
     const [searchQuery, setSearchQuery] = useState("")
+    const [modalOpen, setModalOpen] = useState(false)
+    const [selectedReadingListBook, setSelectedReadingListBook] = useState<ReadingListBook | null>(null)
+    const [modalSearch, setModalSearch] = useState("")
+    const [isPending, startTransition] = useTransition()
 
     const toggleLevel = (levelId: string) => {
         setExpandedLevels(prev => {
@@ -106,9 +128,58 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
         return filteredLevels.reduce((sum, level) => sum + level.books.length, 0)
     }, [filteredLevels])
 
+    // Modal içindeki kitap filtreleme
+    const filteredUserBooks = useMemo(() => {
+        if (!modalSearch.trim()) return userBooks
+
+        const query = modalSearch.toLowerCase().trim()
+        return userBooks.filter(book =>
+            book.title.toLowerCase().includes(query) ||
+            book.author?.name.toLowerCase().includes(query)
+        )
+    }, [userBooks, modalSearch])
+
     const overallProgress = list.progress.total > 0
         ? Math.round((list.progress.completed / list.progress.total) * 100)
         : 0
+
+    const openSelectModal = (book: ReadingListBook) => {
+        setSelectedReadingListBook(book)
+        setModalSearch("")
+        setModalOpen(true)
+    }
+
+    const handleSelectBook = (userBook: UserBook) => {
+        if (!selectedReadingListBook) return
+
+        startTransition(async () => {
+            const result = await linkBookToReadingList(
+                userBook.id,
+                selectedReadingListBook.id,
+                list.slug
+            )
+
+            if (result.success) {
+                toast.success(`"${userBook.title}" okuma listesine bağlandı`)
+                setModalOpen(false)
+                setSelectedReadingListBook(null)
+            } else {
+                toast.error(result.error || "Bir hata oluştu")
+            }
+        })
+    }
+
+    const handleUnlink = (book: ReadingListBook) => {
+        startTransition(async () => {
+            const result = await unlinkBookFromReadingList(book.id, list.slug)
+
+            if (result.success) {
+                toast.success("Bağlantı kaldırıldı")
+            } else {
+                toast.error(result.error || "Bir hata oluştu")
+            }
+        })
+    }
 
     return (
         <div className="max-w-5xl mx-auto">
@@ -251,7 +322,7 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
 
                                     <div className="divide-y">
                                         {level.books.map((book) => {
-                                            const isInLibrary = book.userStatus !== "not_added"
+                                            const isLinked = book.userStatus !== "not_added"
                                             const coverUrl = book.userBook?.coverUrl || book.coverUrl
 
                                             return (
@@ -263,8 +334,8 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
                                                     )}
                                                 >
                                                     <div className="flex items-start gap-4">
-                                                        {/* Book Cover veya Ekle Butonu */}
-                                                        {isInLibrary ? (
+                                                        {/* Book Cover */}
+                                                        {isLinked ? (
                                                             <Link href={`/book/${book.userBook?.id}`} className="flex-shrink-0 group">
                                                                 <div className="relative h-20 w-14 overflow-hidden rounded-md border shadow-sm group-hover:shadow-md group-hover:ring-2 ring-primary transition-all">
                                                                     {coverUrl ? (
@@ -293,15 +364,9 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
                                                                 </div>
                                                             </Link>
                                                         ) : (
-                                                            <Link
-                                                                href={`/library/add?q=${encodeURIComponent(book.title + " " + book.author)}&rlBookId=${book.id}`}
-                                                                className="flex-shrink-0"
-                                                            >
-                                                                <div className="h-20 w-14 rounded-md border-2 border-dashed border-muted-foreground/30 bg-muted/50 flex flex-col items-center justify-center gap-1 hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer">
-                                                                    <Plus className="h-5 w-5 text-muted-foreground" />
-                                                                    <span className="text-[10px] text-muted-foreground font-medium">Ekle</span>
-                                                                </div>
-                                                            </Link>
+                                                            <div className="flex-shrink-0 h-20 w-14 rounded-md border bg-muted/50 flex items-center justify-center">
+                                                                <BookOpen className="h-6 w-6 text-muted-foreground/50" />
+                                                            </div>
                                                         )}
 
                                                         {/* Book Info */}
@@ -309,7 +374,7 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
                                                             <div className="flex items-start justify-between gap-4">
                                                                 <div>
                                                                     <h3 className="font-medium">
-                                                                        {isInLibrary ? (
+                                                                        {isLinked ? (
                                                                             <Link href={`/book/${book.userBook?.id}`} className="hover:underline hover:text-primary transition-colors">
                                                                                 {book.title}
                                                                             </Link>
@@ -321,6 +386,30 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
                                                                         {book.author}
                                                                         {book.pageCount && ` • ${book.pageCount} sayfa`}
                                                                     </p>
+                                                                </div>
+
+                                                                {/* Action Buttons */}
+                                                                <div className="flex items-center gap-2">
+                                                                    {isLinked ? (
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            onClick={() => handleUnlink(book)}
+                                                                            disabled={isPending}
+                                                                            className="text-muted-foreground hover:text-destructive"
+                                                                        >
+                                                                            <Unlink className="h-4 w-4" />
+                                                                        </Button>
+                                                                    ) : (
+                                                                        <Button
+                                                                            variant="outline"
+                                                                            size="sm"
+                                                                            onClick={() => openSelectModal(book)}
+                                                                            disabled={isPending}
+                                                                        >
+                                                                            Seç
+                                                                        </Button>
+                                                                    )}
                                                                 </div>
                                                             </div>
 
@@ -356,6 +445,105 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
                     )
                 })}
             </div>
+
+            {/* Book Selection Modal */}
+            <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>
+                            Kütüphaneden Kitap Seç
+                        </DialogTitle>
+                        {selectedReadingListBook && (
+                            <p className="text-sm text-muted-foreground">
+                                &quot;{selectedReadingListBook.title}&quot; için kütüphanenizden bir kitap seçin
+                            </p>
+                        )}
+                    </DialogHeader>
+
+                    {/* Search in Modal */}
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="text"
+                            placeholder="Kitap ara..."
+                            value={modalSearch}
+                            onChange={(e) => setModalSearch(e.target.value)}
+                            className="pl-10"
+                        />
+                    </div>
+
+                    {/* Book List */}
+                    <div className="flex-1 overflow-y-auto -mx-6 px-6">
+                        {userBooks.length === 0 ? (
+                            <div className="text-center py-12 text-muted-foreground">
+                                <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                <p className="text-lg font-medium">Kütüphaneniz boş</p>
+                                <p className="text-sm mt-1">Önce kütüphanenize kitap ekleyin</p>
+                                <Button asChild className="mt-4">
+                                    <Link href="/library/add">Kitap Ekle</Link>
+                                </Button>
+                            </div>
+                        ) : filteredUserBooks.length === 0 ? (
+                            <div className="text-center py-12 text-muted-foreground">
+                                <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                <p className="text-lg font-medium">Kitap bulunamadı</p>
+                                <p className="text-sm mt-1">&quot;{modalSearch}&quot; ile eşleşen kitap yok</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-2 py-2">
+                                {filteredUserBooks.map((book) => (
+                                    <button
+                                        key={book.id}
+                                        onClick={() => handleSelectBook(book)}
+                                        disabled={isPending}
+                                        className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 hover:border-primary transition-colors text-left disabled:opacity-50"
+                                    >
+                                        {/* Cover */}
+                                        <div className="relative h-16 w-11 flex-shrink-0 overflow-hidden rounded bg-muted">
+                                            {book.coverUrl ? (
+                                                <Image
+                                                    src={book.coverUrl}
+                                                    alt={book.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                <div className="h-full w-full flex items-center justify-center">
+                                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-medium truncate">{book.title}</p>
+                                            <p className="text-sm text-muted-foreground truncate">
+                                                {book.author?.name || "Bilinmeyen Yazar"}
+                                            </p>
+                                        </div>
+
+                                        {/* Status Badge */}
+                                        <span className={cn(
+                                            "text-xs px-2 py-1 rounded-full font-medium flex-shrink-0",
+                                            book.status === "COMPLETED" && "bg-green-100 text-green-700",
+                                            book.status === "READING" && "bg-yellow-100 text-yellow-700",
+                                            book.status === "TO_READ" && "bg-blue-100 text-blue-700",
+                                            book.status === "DNF" && "bg-gray-100 text-gray-700"
+                                        )}>
+                                            {book.status === "COMPLETED" && "Okundu"}
+                                            {book.status === "READING" && "Okunuyor"}
+                                            {book.status === "TO_READ" && "Okunacak"}
+                                            {book.status === "DNF" && "Bırakıldı"}
+                                        </span>
+
+                                        {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
