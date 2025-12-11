@@ -27,7 +27,12 @@
       "Bash(magick convert:*)",
       "Bash(node scripts/create-dark-favicon.mjs:*)",
       "Bash(git config:*)",
-      "Bash(timeout /t 5 /nobreak)"
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(dir:*)",
+      "Bash(npx next build)",
+      "Bash(node -e:*)",
+      "Bash(node node_modules/typescript/bin/tsc:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

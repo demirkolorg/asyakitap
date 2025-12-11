@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Input } from "@/components/ui/input"
 import {
@@ -13,7 +12,6 @@ import {
     ChevronUp,
     Plus,
     Check,
-    Clock,
     ArrowLeft,
     CheckCircle2,
     BookMarked,
@@ -71,12 +69,6 @@ interface ReadingListClientProps {
     list: ReadingListData
 }
 
-const statusConfig: Record<BookStatus, { label: string; icon: React.ReactNode; color: string; bgColor: string }> = {
-    not_added: { label: "Ekle", icon: <Plus className="h-4 w-4" />, color: "text-muted-foreground", bgColor: "bg-muted" },
-    added: { label: "Eklendi", icon: <BookMarked className="h-4 w-4" />, color: "text-blue-600", bgColor: "bg-blue-100" },
-    reading: { label: "Okunuyor", icon: <Clock className="h-4 w-4" />, color: "text-yellow-600", bgColor: "bg-yellow-100" },
-    completed: { label: "Okundu", icon: <Check className="h-4 w-4" />, color: "text-green-600", bgColor: "bg-green-100" },
-}
 
 export default function ReadingListClient({ list }: ReadingListClientProps) {
     const [expandedLevels, setExpandedLevels] = useState<Set<string>>(
@@ -258,104 +250,105 @@ export default function ReadingListClient({ list }: ReadingListClientProps) {
                                     )}
 
                                     <div className="divide-y">
-                                        {level.books.map((book) => (
-                                            <div
-                                                key={book.id}
-                                                className={cn(
-                                                    "p-4 hover:bg-muted/30 transition-colors",
-                                                    book.userStatus === "completed" && "bg-green-50/50 dark:bg-green-900/5"
-                                                )}
-                                            >
-                                                <div className="flex items-start gap-4">
-                                                    {/* Book Cover */}
-                                                    {book.userBook?.coverUrl ? (
-                                                        <Link href={`/book/${book.userBook.id}`} className="flex-shrink-0">
-                                                            <div className="relative h-20 w-14 overflow-hidden rounded-md border shadow-sm hover:shadow-md transition-shadow">
-                                                                <Image
-                                                                    src={book.userBook.coverUrl}
-                                                                    alt={book.title}
-                                                                    fill
-                                                                    className="object-cover"
-                                                                />
-                                                            </div>
-                                                        </Link>
-                                                    ) : book.userStatus !== "not_added" ? (
-                                                        <div className="flex-shrink-0 h-20 w-14 rounded-md border bg-muted flex items-center justify-center">
-                                                            <BookOpen className="h-6 w-6 text-muted-foreground" />
-                                                        </div>
-                                                    ) : null}
+                                        {level.books.map((book) => {
+                                            const isInLibrary = book.userStatus !== "not_added"
+                                            const coverUrl = book.userBook?.coverUrl || book.coverUrl
 
-                                                    {/* Book Info */}
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-start justify-between gap-4">
-                                                            <div>
-                                                                <h3 className="font-medium">
-                                                                    {book.userBook ? (
-                                                                        <Link href={`/book/${book.userBook.id}`} className="hover:underline">
-                                                                            {book.title}
-                                                                        </Link>
+                                            return (
+                                                <div
+                                                    key={book.id}
+                                                    className={cn(
+                                                        "p-4 hover:bg-muted/30 transition-colors",
+                                                        book.userStatus === "completed" && "bg-green-50/50 dark:bg-green-900/5"
+                                                    )}
+                                                >
+                                                    <div className="flex items-start gap-4">
+                                                        {/* Book Cover veya Ekle Butonu */}
+                                                        {isInLibrary ? (
+                                                            <Link href={`/book/${book.userBook?.id}`} className="flex-shrink-0 group">
+                                                                <div className="relative h-20 w-14 overflow-hidden rounded-md border shadow-sm group-hover:shadow-md group-hover:ring-2 ring-primary transition-all">
+                                                                    {coverUrl ? (
+                                                                        <Image
+                                                                            src={coverUrl}
+                                                                            alt={book.title}
+                                                                            fill
+                                                                            className="object-cover"
+                                                                        />
                                                                     ) : (
-                                                                        book.title
+                                                                        <div className="h-full w-full bg-muted flex items-center justify-center">
+                                                                            <BookOpen className="h-6 w-6 text-muted-foreground" />
+                                                                        </div>
                                                                     )}
-                                                                </h3>
-                                                                <p className="text-sm text-muted-foreground">
-                                                                    {book.author}
-                                                                    {book.pageCount && ` • ${book.pageCount} sayfa`}
-                                                                </p>
+                                                                    {/* Status indicator */}
+                                                                    <div className={cn(
+                                                                        "absolute bottom-0 left-0 right-0 py-0.5 text-center text-[10px] font-medium",
+                                                                        book.userStatus === "completed" && "bg-green-500 text-white",
+                                                                        book.userStatus === "reading" && "bg-yellow-500 text-white",
+                                                                        book.userStatus === "added" && "bg-blue-500 text-white"
+                                                                    )}>
+                                                                        {book.userStatus === "completed" && "Okundu"}
+                                                                        {book.userStatus === "reading" && "Okunuyor"}
+                                                                        {book.userStatus === "added" && "Eklendi"}
+                                                                    </div>
+                                                                </div>
+                                                            </Link>
+                                                        ) : (
+                                                            <Link
+                                                                href={`/library/add?q=${encodeURIComponent(book.title + " " + book.author)}&rlBookId=${book.id}`}
+                                                                className="flex-shrink-0"
+                                                            >
+                                                                <div className="h-20 w-14 rounded-md border-2 border-dashed border-muted-foreground/30 bg-muted/50 flex flex-col items-center justify-center gap-1 hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer">
+                                                                    <Plus className="h-5 w-5 text-muted-foreground" />
+                                                                    <span className="text-[10px] text-muted-foreground font-medium">Ekle</span>
+                                                                </div>
+                                                            </Link>
+                                                        )}
+
+                                                        {/* Book Info */}
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-start justify-between gap-4">
+                                                                <div>
+                                                                    <h3 className="font-medium">
+                                                                        {isInLibrary ? (
+                                                                            <Link href={`/book/${book.userBook?.id}`} className="hover:underline hover:text-primary transition-colors">
+                                                                                {book.title}
+                                                                            </Link>
+                                                                        ) : (
+                                                                            book.title
+                                                                        )}
+                                                                    </h3>
+                                                                    <p className="text-sm text-muted-foreground">
+                                                                        {book.author}
+                                                                        {book.pageCount && ` • ${book.pageCount} sayfa`}
+                                                                    </p>
+                                                                </div>
                                                             </div>
 
-                                                            {/* Status Badge / Add Button */}
-                                                            {book.userStatus === "not_added" ? (
-                                                                <Button
-                                                                    asChild
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                >
-                                                                    <Link
-                                                                        href={`/library/add?q=${encodeURIComponent(book.title + " " + book.author)}&rlBookId=${book.id}`}
-                                                                    >
-                                                                        <Plus className="h-4 w-4 mr-1" />
-                                                                        Ekle
-                                                                    </Link>
-                                                                </Button>
-                                                            ) : (
-                                                                <Link href={book.userBook ? `/book/${book.userBook.id}` : "#"}>
-                                                                    <span className={cn(
-                                                                        "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium",
-                                                                        statusConfig[book.userStatus].bgColor,
-                                                                        statusConfig[book.userStatus].color
-                                                                    )}>
-                                                                        {statusConfig[book.userStatus].icon}
-                                                                        {statusConfig[book.userStatus].label}
+                                                            {/* Neden (Why) */}
+                                                            {book.neden && (
+                                                                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                                                                    <span className="font-medium text-foreground">Neden: </span>
+                                                                    {book.neden}
+                                                                </p>
+                                                            )}
+
+                                                            {/* Reading Progress */}
+                                                            {book.userStatus === "reading" && book.userBook && book.userBook.pageCount && (
+                                                                <div className="mt-2 flex items-center gap-2">
+                                                                    <Progress
+                                                                        value={(book.userBook.currentPage / book.userBook.pageCount) * 100}
+                                                                        className="h-1 flex-1 max-w-32"
+                                                                    />
+                                                                    <span className="text-xs text-muted-foreground">
+                                                                        {book.userBook.currentPage}/{book.userBook.pageCount}
                                                                     </span>
-                                                                </Link>
+                                                                </div>
                                                             )}
                                                         </div>
-
-                                                        {/* Neden (Why) */}
-                                                        {book.neden && (
-                                                            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                                                                <span className="font-medium text-foreground">Neden: </span>
-                                                                {book.neden}
-                                                            </p>
-                                                        )}
-
-                                                        {/* Reading Progress */}
-                                                        {book.userStatus === "reading" && book.userBook && book.userBook.pageCount && (
-                                                            <div className="mt-2 flex items-center gap-2">
-                                                                <Progress
-                                                                    value={(book.userBook.currentPage / book.userBook.pageCount) * 100}
-                                                                    className="h-1 flex-1 max-w-32"
-                                                                />
-                                                                <span className="text-xs text-muted-foreground">
-                                                                    {book.userBook.currentPage}/{book.userBook.pageCount}
-                                                                </span>
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            )
+                                        })}
                                     </div>
                                 </div>
                             )}
