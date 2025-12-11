@@ -11,21 +11,12 @@ const getCachedReadingLists = unstable_cache(
     async () => {
         const lists = await prisma.readingList.findMany({
             orderBy: { sortOrder: "asc" },
-            select: {
-                id: true,
-                slug: true,
-                name: true,
-                description: true,
-                coverUrl: true,
-                sortOrder: true,
+            include: {
                 levels: {
                     orderBy: { levelNumber: "asc" },
-                    select: {
-                        id: true,
-                        levelNumber: true,
-                        name: true,
-                        _count: {
-                            select: { books: true }
+                    include: {
+                        books: {
+                            orderBy: { sortOrder: "asc" }
                         }
                     }
                 }
@@ -34,7 +25,7 @@ const getCachedReadingLists = unstable_cache(
 
         return lists.map(list => ({
             ...list,
-            totalBooks: list.levels.reduce((acc, level) => acc + level._count.books, 0),
+            totalBooks: list.levels.reduce((acc, level) => acc + level.books.length, 0),
             levelCount: list.levels.length
         }))
     },
