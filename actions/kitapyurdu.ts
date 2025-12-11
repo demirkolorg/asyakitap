@@ -252,17 +252,24 @@ export async function addBookFromKitapyurdu(bookData: ScrapedBookData): Promise<
     }
 
     try {
-        // Aynı kitap var mı kontrol et (aynı başlık ve yazar)
-        const existingBook = await prisma.book.findFirst({
-            where: {
-                userId: user.id,
-                title: {
-                    equals: bookData.title,
-                    mode: "insensitive"
-                }
-            },
-            include: { author: true }
-        })
+        // Paralel sorgu: Kitap var mı + Yazar var mı + Yayınevi var mı
+        const [existingBook, existingAuthor, existingPublisher] = await Promise.all([
+            prisma.book.findFirst({
+                where: {
+                    userId: user.id,
+                    title: { equals: bookData.title, mode: "insensitive" }
+                },
+                select: { id: true }
+            }),
+            prisma.author.findFirst({
+                where: { name: { equals: bookData.author, mode: "insensitive" } }
+            }),
+            bookData.publisher
+                ? prisma.publisher.findFirst({
+                    where: { name: { equals: bookData.publisher, mode: "insensitive" } }
+                })
+                : Promise.resolve(null)
+        ])
 
         if (existingBook) {
             return {
@@ -273,58 +280,33 @@ export async function addBookFromKitapyurdu(bookData: ScrapedBookData): Promise<
             }
         }
 
-        // Yazarı bul veya oluştur (görsel ile birlikte)
-        let author = await prisma.author.findFirst({
-            where: {
-                name: {
-                    equals: bookData.author,
-                    mode: "insensitive"
-                }
-            }
-        })
-
-        if (!author) {
-            author = await prisma.author.create({
-                data: {
-                    name: bookData.author,
-                    imageUrl: bookData.authorImageUrl
-                }
-            })
-        } else if (!author.imageUrl && bookData.authorImageUrl) {
-            // Mevcut yazarın görseli yoksa güncelle
-            author = await prisma.author.update({
-                where: { id: author.id },
-                data: { imageUrl: bookData.authorImageUrl }
-            })
-        }
-
-        // Yayıneviyi bul veya oluştur (görsel ile birlikte)
-        let publisher = null
-        if (bookData.publisher) {
-            publisher = await prisma.publisher.findFirst({
-                where: {
-                    name: {
-                        equals: bookData.publisher,
-                        mode: "insensitive"
-                    }
-                }
-            })
-
-            if (!publisher) {
-                publisher = await prisma.publisher.create({
-                    data: {
-                        name: bookData.publisher,
-                        imageUrl: bookData.publisherImageUrl
-                    }
-                })
-            } else if (!publisher.imageUrl && bookData.publisherImageUrl) {
-                // Mevcut yayınevinin görseli yoksa güncelle
-                publisher = await prisma.publisher.update({
-                    where: { id: publisher.id },
-                    data: { imageUrl: bookData.publisherImageUrl }
-                })
-            }
-        }
+        // Yazar ve yayınevi işlemleri paralel
+        const [author, publisher] = await Promise.all([
+            // Yazar: yoksa oluştur, varsa ve görseli yoksa güncelle
+            existingAuthor
+                ? (!existingAuthor.imageUrl && bookData.authorImageUrl
+                    ? prisma.author.update({
+                        where: { id: existingAuthor.id },
+                        data: { imageUrl: bookData.authorImageUrl }
+                    })
+                    : Promise.resolve(existingAuthor))
+                : prisma.author.create({
+                    data: { name: bookData.author, imageUrl: bookData.authorImageUrl }
+                }),
+            // Yayınevi: yoksa oluştur, varsa ve görseli yoksa güncelle
+            bookData.publisher
+                ? (existingPublisher
+                    ? (!existingPublisher.imageUrl && bookData.publisherImageUrl
+                        ? prisma.publisher.update({
+                            where: { id: existingPublisher.id },
+                            data: { imageUrl: bookData.publisherImageUrl }
+                        })
+                        : Promise.resolve(existingPublisher))
+                    : prisma.publisher.create({
+                        data: { name: bookData.publisher, imageUrl: bookData.publisherImageUrl }
+                    }))
+                : Promise.resolve(null)
+        ])
 
         // Kitabı oluştur
         const newBook = await prisma.book.create({

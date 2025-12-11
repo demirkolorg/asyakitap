@@ -231,16 +231,24 @@ export async function addBookFromGoodreads(bookData: ScrapedBookData): Promise<A
     }
 
     try {
-        // Kitap zaten var mı kontrol et
-        const existingBook = await prisma.book.findFirst({
-            where: {
-                userId: user.id,
-                title: {
-                    equals: bookData.title,
-                    mode: "insensitive"
-                }
-            }
-        })
+        // Paralel sorgu: Kitap var mı + Yazar var mı + Yayınevi var mı
+        const [existingBook, existingAuthor, existingPublisher] = await Promise.all([
+            prisma.book.findFirst({
+                where: {
+                    userId: user.id,
+                    title: { equals: bookData.title, mode: "insensitive" }
+                },
+                select: { id: true }
+            }),
+            prisma.author.findFirst({
+                where: { name: { equals: bookData.author, mode: "insensitive" } }
+            }),
+            bookData.publisher
+                ? prisma.publisher.findFirst({
+                    where: { name: { equals: bookData.publisher, mode: "insensitive" } }
+                })
+                : Promise.resolve(null)
+        ])
 
         if (existingBook) {
             return {
@@ -251,40 +259,13 @@ export async function addBookFromGoodreads(bookData: ScrapedBookData): Promise<A
             }
         }
 
-        // Yazarı bul veya oluştur
-        let author = await prisma.author.findFirst({
-            where: {
-                name: {
-                    equals: bookData.author,
-                    mode: "insensitive"
-                }
-            }
-        })
-
-        if (!author) {
-            author = await prisma.author.create({
-                data: { name: bookData.author }
-            })
-        }
-
-        // Yayıneviyi bul veya oluştur
-        let publisher = null
-        if (bookData.publisher) {
-            publisher = await prisma.publisher.findFirst({
-                where: {
-                    name: {
-                        equals: bookData.publisher,
-                        mode: "insensitive"
-                    }
-                }
-            })
-
-            if (!publisher) {
-                publisher = await prisma.publisher.create({
-                    data: { name: bookData.publisher }
-                })
-            }
-        }
+        // Yazar ve yayınevi yoksa paralel oluştur
+        const [author, publisher] = await Promise.all([
+            existingAuthor ?? prisma.author.create({ data: { name: bookData.author } }),
+            bookData.publisher && !existingPublisher
+                ? prisma.publisher.create({ data: { name: bookData.publisher } })
+                : Promise.resolve(existingPublisher)
+        ])
 
         // Kitabı oluştur
         const newBook = await prisma.book.create({
@@ -304,8 +285,6 @@ export async function addBookFromGoodreads(bookData: ScrapedBookData): Promise<A
 
         revalidatePath("/library")
         revalidatePath("/dashboard")
-        revalidatePath("/authors")
-        revalidatePath("/publishers")
 
         return {
             success: true,

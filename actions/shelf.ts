@@ -134,16 +134,16 @@ export async function deleteShelf(id: string) {
     }
 
     try {
-        // First, remove books from this shelf (set shelfId to null)
-        await prisma.book.updateMany({
-            where: { shelfId: id },
-            data: { shelfId: null }
-        })
-
-        // Then delete the shelf
-        await prisma.shelf.delete({
-            where: { id }
-        })
+        // Transaction ile atomik işlem: kitapları güncelle + rafı sil
+        await prisma.$transaction([
+            prisma.book.updateMany({
+                where: { shelfId: id },
+                data: { shelfId: null }
+            }),
+            prisma.shelf.delete({
+                where: { id }
+            })
+        ])
 
         revalidatePath("/library")
         return { success: true }
@@ -162,19 +162,21 @@ export async function addBookToShelf(bookId: string, shelfId: string) {
     }
 
     try {
-        // Verify book belongs to user
-        const book = await prisma.book.findFirst({
-            where: { id: bookId, userId: user.id }
-        })
+        // Paralel sorgu: Kitap ve raf doğrulama
+        const [book, shelf] = await Promise.all([
+            prisma.book.findFirst({
+                where: { id: bookId, userId: user.id },
+                select: { id: true }
+            }),
+            prisma.shelf.findFirst({
+                where: { id: shelfId, userId: user.id },
+                select: { id: true }
+            })
+        ])
 
         if (!book) {
             return { success: false, error: "Kitap bulunamadı" }
         }
-
-        // Verify shelf belongs to user
-        const shelf = await prisma.shelf.findFirst({
-            where: { id: shelfId, userId: user.id }
-        })
 
         if (!shelf) {
             return { success: false, error: "Raf bulunamadı" }
