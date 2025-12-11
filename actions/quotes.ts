@@ -88,8 +88,8 @@ export async function addQuote(bookId: string, content: string, page?: number) {
         })
 
         // Invalidate caches
-        revalidateTag(CACHE_TAGS.userQuotes(user.id))
-        revalidateTag(CACHE_TAGS.userStats(user.id))
+        revalidateTag(CACHE_TAGS.userQuotes(user.id), 'max')
+        revalidateTag(CACHE_TAGS.userStats(user.id), 'max')
         revalidatePath(`/book/${bookId}`)
         revalidatePath('/quotes')
         revalidatePath('/dashboard')
@@ -122,8 +122,8 @@ export async function deleteQuote(quoteId: string, bookId: string) {
         await prisma.quote.delete({ where: { id: quoteId } })
 
         // Invalidate caches
-        revalidateTag(CACHE_TAGS.userQuotes(user.id))
-        revalidateTag(CACHE_TAGS.userStats(user.id))
+        revalidateTag(CACHE_TAGS.userQuotes(user.id), 'max')
+        revalidateTag(CACHE_TAGS.userStats(user.id), 'max')
         revalidatePath(`/book/${bookId}`)
         revalidatePath('/quotes')
         revalidatePath('/dashboard')

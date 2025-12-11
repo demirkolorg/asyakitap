@@ -9,10 +9,10 @@ import { CACHE_TAGS } from "@/lib/cache"
 
 // Helper to invalidate user-related caches
 function invalidateUserCaches(userId: string) {
-    revalidateTag(CACHE_TAGS.userBooks(userId))
-    revalidateTag(CACHE_TAGS.userStats(userId))
-    revalidateTag(CACHE_TAGS.userQuotes(userId))
-    revalidateTag(CACHE_TAGS.userAuthors(userId))
+    revalidateTag(CACHE_TAGS.userBooks(userId), 'max')
+    revalidateTag(CACHE_TAGS.userStats(userId), 'max')
+    revalidateTag(CACHE_TAGS.userQuotes(userId), 'max')
+    revalidateTag(CACHE_TAGS.userAuthors(userId), 'max')
 }
 
 export async function addBookToLibrary(bookData: {
@@ -200,7 +200,7 @@ export async function updateBook(id: string, data: {
 
         // Invalidate caches
         invalidateUserCaches(user.id)
-        revalidateTag(CACHE_TAGS.book(id))
+        revalidateTag(CACHE_TAGS.book(id), 'max')
         revalidatePath(`/book/${id}`)
         revalidatePath("/library")
         revalidatePath("/dashboard")
@@ -225,7 +225,7 @@ export async function deleteBook(id: string) {
 
         // Invalidate caches
         invalidateUserCaches(user.id)
-        revalidateTag(CACHE_TAGS.book(id))
+        revalidateTag(CACHE_TAGS.book(id), 'max')
         revalidatePath("/library")
         revalidatePath("/dashboard")
 
