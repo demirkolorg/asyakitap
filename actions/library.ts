@@ -133,17 +133,10 @@ export async function getBook(id: string) {
                 userReadingListBooks: {
                     include: {
                         readingListBook: {
-                            select: {
-                                id: true,
-                                title: true,
+                            include: {
                                 level: {
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                        levelNumber: true,
-                                        readingList: {
-                                            select: { id: true, name: true, slug: true }
-                                        }
+                                    include: {
+                                        readingList: true
                                     }
                                 }
                             }
