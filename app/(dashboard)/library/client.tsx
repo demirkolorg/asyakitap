@@ -356,76 +356,103 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
     )
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left Sidebar */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+            {/* Left Sidebar - Collapsible on mobile */}
             <aside className="lg:w-64 flex-shrink-0">
-                <div className="sticky top-6">
-                    <Button asChild className="w-full mb-6">
-                        <Link href="/library/add">
-                            <Plus className="mr-2 h-4 w-4" />
-                            Kitap Ekle
-                        </Link>
-                    </Button>
-
-                    {/* Status Filters */}
-                    <div className="space-y-1">
-                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                            Durum
-                        </h3>
-                        {(Object.keys(statusConfig) as StatusFilter[]).map((status) => (
-                            <button
-                                key={status}
-                                onClick={() => setActiveStatus(status)}
-                                className={cn(
-                                    "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
-                                    activeStatus === status
-                                        ? "bg-primary text-primary-foreground"
-                                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <span className="flex items-center gap-2">
+                <div className="lg:sticky lg:top-6">
+                    {/* Mobile: Horizontal scroll status filter */}
+                    <div className="lg:hidden">
+                        <div className="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4 scrollbar-hide">
+                            {(Object.keys(statusConfig) as StatusFilter[]).map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => setActiveStatus(status)}
+                                    className={cn(
+                                        "flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap",
+                                        activeStatus === status
+                                            ? "bg-primary text-primary-foreground"
+                                            : "bg-muted text-muted-foreground"
+                                    )}
+                                >
                                     {statusConfig[status].icon}
                                     {statusConfig[status].label}
-                                </span>
-                                <span className={cn(
-                                    "text-xs font-medium px-2 py-0.5 rounded-full",
-                                    activeStatus === status
-                                        ? "bg-primary-foreground/20"
-                                        : "bg-muted-foreground/20"
-                                )}>
-                                    {getStatusCount(status)}
-                                </span>
-                            </button>
-                        ))}
+                                    <span className="text-[10px] opacity-70">
+                                        ({getStatusCount(status)})
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Quick Stats */}
-                    <div className="mt-8 p-4 bg-muted/50 rounded-lg">
-                        <h3 className="text-sm font-semibold mb-3">İstatistikler</h3>
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Toplam Kitap</span>
-                                <span className="font-medium">{stats.total}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Okunan</span>
-                                <span className="font-medium">{stats.completed}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Raf Sayısı</span>
-                                <span className="font-medium">{shelves.length}</span>
-                            </div>
-                            {stats.total > 0 && (
-                                <div className="pt-2 border-t">
-                                    <div className="flex justify-between mb-1">
-                                        <span className="text-muted-foreground">Tamamlama</span>
-                                        <span className="font-medium">
-                                            {Math.round((stats.completed / stats.total) * 100)}%
-                                        </span>
-                                    </div>
-                                    <Progress value={(stats.completed / stats.total) * 100} className="h-1.5" />
+                    {/* Desktop: Full sidebar */}
+                    <div className="hidden lg:block">
+                        <Button asChild className="w-full mb-6">
+                            <Link href="/library/add">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Kitap Ekle
+                            </Link>
+                        </Button>
+
+                        {/* Status Filters */}
+                        <div className="space-y-1">
+                            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                                Durum
+                            </h3>
+                            {(Object.keys(statusConfig) as StatusFilter[]).map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => setActiveStatus(status)}
+                                    className={cn(
+                                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
+                                        activeStatus === status
+                                            ? "bg-primary text-primary-foreground"
+                                            : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                                    )}
+                                >
+                                    <span className="flex items-center gap-2">
+                                        {statusConfig[status].icon}
+                                        {statusConfig[status].label}
+                                    </span>
+                                    <span className={cn(
+                                        "text-xs font-medium px-2 py-0.5 rounded-full",
+                                        activeStatus === status
+                                            ? "bg-primary-foreground/20"
+                                            : "bg-muted-foreground/20"
+                                    )}>
+                                        {getStatusCount(status)}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Quick Stats */}
+                        <div className="mt-8 p-4 bg-muted/50 rounded-lg">
+                            <h3 className="text-sm font-semibold mb-3">İstatistikler</h3>
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Toplam Kitap</span>
+                                    <span className="font-medium">{stats.total}</span>
                                 </div>
-                            )}
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Okunan</span>
+                                    <span className="font-medium">{stats.completed}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Raf Sayısı</span>
+                                    <span className="font-medium">{shelves.length}</span>
+                                </div>
+                                {stats.total > 0 && (
+                                    <div className="pt-2 border-t">
+                                        <div className="flex justify-between mb-1">
+                                            <span className="text-muted-foreground">Tamamlama</span>
+                                            <span className="font-medium">
+                                                {Math.round((stats.completed / stats.total) * 100)}%
+                                            </span>
+                                        </div>
+                                        <Progress value={(stats.completed / stats.total) * 100} className="h-1.5" />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -434,39 +461,43 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
             {/* Main Content */}
             <main className="flex-1 min-w-0">
                 {/* Unified Header */}
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-                    <div>
-                        <h1 className="text-2xl font-bold">
-                            {activeTab === "shelves" ? "Raflarım" : statusConfig[activeStatus].label}
-                        </h1>
-                        <p className="text-muted-foreground text-sm">
-                            {activeTab === "shelves"
-                                ? `${filteredShelves.length} raf, ${filteredShelves.reduce((acc, s) => acc + s.filteredBooks.length, 0) + unshelfedBooks.length} kitap${(activeStatus !== "ALL" || searchQuery) ? ` (filtrelenmiş)` : ""}`
-                                : `${filteredBooks.length} kitap`
-                            }
-                        </p>
+                <div className="flex flex-col gap-3 mb-4 lg:mb-6">
+                    {/* Title Row - Hidden on mobile, shown on lg */}
+                    <div className="hidden lg:flex lg:items-center lg:justify-between">
+                        <div>
+                            <h1 className="text-2xl font-bold">
+                                {activeTab === "shelves" ? "Raflarım" : statusConfig[activeStatus].label}
+                            </h1>
+                            <p className="text-muted-foreground text-sm">
+                                {activeTab === "shelves"
+                                    ? `${filteredShelves.length} raf, ${filteredShelves.reduce((acc, s) => acc + s.filteredBooks.length, 0) + unshelfedBooks.length} kitap${(activeStatus !== "ALL" || searchQuery) ? ` (filtrelenmiş)` : ""}`
+                                    : `${filteredBooks.length} kitap`
+                                }
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <div className="relative flex-1 sm:w-64">
+                    {/* Search and Actions Row */}
+                    <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Kitap veya yazar ara..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9"
+                                className="pl-9 h-9"
                             />
                         </div>
 
-                        <Button variant="outline" size="icon" onClick={openNewShelf} title="Raf Ekle">
+                        <Button variant="outline" size="icon" onClick={openNewShelf} title="Raf Ekle" className="h-9 w-9 shrink-0">
                             <FolderPlus className="h-4 w-4" />
                         </Button>
 
-                        <div className="flex border rounded-lg">
+                        <div className="flex border rounded-lg shrink-0">
                             <Button
                                 variant={activeTab === "cards" ? "secondary" : "ghost"}
                                 size="icon"
-                                className="rounded-r-none"
+                                className="rounded-r-none h-9 w-9"
                                 onClick={() => setActiveTab("cards")}
                                 title="Kart Görünümü"
                             >
@@ -475,13 +506,24 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                             <Button
                                 variant={activeTab === "shelves" ? "secondary" : "ghost"}
                                 size="icon"
-                                className="rounded-l-none"
+                                className="rounded-l-none h-9 w-9"
                                 onClick={() => setActiveTab("shelves")}
                                 title="Raf Görünümü"
                             >
                                 <Layers className="h-4 w-4" />
                             </Button>
                         </div>
+                    </div>
+
+                    {/* Mobile Stats Row */}
+                    <div className="flex lg:hidden items-center justify-between text-xs text-muted-foreground">
+                        <span>
+                            {activeTab === "shelves"
+                                ? `${filteredShelves.reduce((acc, s) => acc + s.filteredBooks.length, 0) + unshelfedBooks.length} kitap`
+                                : `${filteredBooks.length} kitap`
+                            }
+                        </span>
+                        <span>{stats.completed}/{stats.total} okudum</span>
                     </div>
                 </div>
 
@@ -519,23 +561,23 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
 
                 {/* Shelf View */}
                 {activeTab === "shelves" && (
-                    <div className="space-y-8">
+                    <div className="space-y-4 lg:space-y-8">
                         {filteredShelves.map((shelf) => (
-                            <div key={shelf.id} className="border rounded-lg p-4">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-3">
+                            <div key={shelf.id} className="border rounded-lg p-3 lg:p-4">
+                                <div className="flex items-center justify-between mb-3 lg:mb-4">
+                                    <div className="flex items-center gap-2 lg:gap-3 min-w-0">
                                         <div
-                                            className="w-4 h-4 rounded-full"
+                                            className="w-3 h-3 lg:w-4 lg:h-4 rounded-full shrink-0"
                                             style={{ backgroundColor: shelf.color || '#6b7280' }}
                                         />
-                                        <h2 className="text-lg font-semibold">{shelf.name}</h2>
-                                        <span className="text-sm text-muted-foreground">
-                                            ({shelf.filteredBooks.length}{(activeStatus !== "ALL" || searchQuery) && `/${shelf.books.length}`} kitap)
+                                        <h2 className="text-sm lg:text-lg font-semibold truncate">{shelf.name}</h2>
+                                        <span className="text-xs lg:text-sm text-muted-foreground shrink-0">
+                                            ({shelf.filteredBooks.length}{(activeStatus !== "ALL" || searchQuery) && `/${shelf.books.length}`})
                                         </span>
                                     </div>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 lg:h-9 lg:w-9 shrink-0">
                                                 <MoreVertical className="h-4 w-4" />
                                             </Button>
                                         </DropdownMenuTrigger>
@@ -555,14 +597,14 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
                                     </DropdownMenu>
                                 </div>
                                 {shelf.filteredBooks.length > 0 ? (
-                                    <div className="grid gap-3 grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+                                    <div className="grid gap-2 lg:gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9">
                                         {shelf.filteredBooks.map((book) => (
                                             <BookCard key={book.id} book={book} showShelfButton />
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-center py-8 border-2 border-dashed rounded-lg bg-muted/20">
-                                        <p className="text-sm text-muted-foreground">
+                                    <div className="flex items-center justify-center py-6 lg:py-8 border-2 border-dashed rounded-lg bg-muted/20">
+                                        <p className="text-xs lg:text-sm text-muted-foreground">
                                             Bu rafta henüz kitap yok
                                         </p>
                                     </div>
@@ -572,17 +614,17 @@ export default function LibraryClient({ books, shelves }: LibraryClientProps) {
 
                         {/* Unshelved Books */}
                         {unshelfedBooks.length > 0 && (
-                            <div className="border rounded-lg p-4 border-dashed">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-4 h-4 rounded-full bg-gray-400" />
-                                    <h2 className="text-lg font-semibold text-muted-foreground">
+                            <div className="border rounded-lg p-3 lg:p-4 border-dashed">
+                                <div className="flex items-center gap-2 lg:gap-3 mb-3 lg:mb-4">
+                                    <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-gray-400" />
+                                    <h2 className="text-sm lg:text-lg font-semibold text-muted-foreground">
                                         Rafsız Kitaplar
                                     </h2>
-                                    <span className="text-sm text-muted-foreground">
-                                        ({unshelfedBooks.length} kitap)
+                                    <span className="text-xs lg:text-sm text-muted-foreground">
+                                        ({unshelfedBooks.length})
                                     </span>
                                 </div>
-                                <div className="grid gap-3 grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+                                <div className="grid gap-2 lg:gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9">
                                     {unshelfedBooks.map((book) => (
                                         <BookCard key={book.id} book={book} showShelfButton />
                                     ))}

@@ -159,16 +159,16 @@ export function AddBookForm() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto space-y-8">
+        <div className="max-w-2xl mx-auto space-y-4 lg:space-y-8">
             {/* Reading List Context Banner */}
             {readingListBookId && (
-                <div className="flex items-center justify-between gap-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
-                    <div className="flex items-center gap-3">
-                        <Map className="h-5 w-5 text-primary" />
+                <div className="flex items-center justify-between gap-3 p-3 lg:p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                    <div className="flex items-center gap-2 lg:gap-3">
+                        <Map className="h-4 w-4 lg:h-5 lg:w-5 text-primary shrink-0" />
                         <div>
-                            <p className="font-medium">Okuma Listesinden Ekliyorsun</p>
-                            <p className="text-sm text-muted-foreground">
-                                Bu kitap otomatik olarak okuma listesine bağlanacak
+                            <p className="font-medium text-sm lg:text-base">Okuma Listesinden Ekliyorsun</p>
+                            <p className="text-xs lg:text-sm text-muted-foreground">
+                                Otomatik listeye bağlanacak
                             </p>
                         </div>
                     </div>
@@ -176,35 +176,36 @@ export function AddBookForm() {
                         variant="ghost"
                         size="icon"
                         onClick={clearReadingListContext}
+                        className="h-8 w-8"
                     >
                         <X className="h-4 w-4" />
                     </Button>
                 </div>
             )}
 
-            <div className="space-y-2">
-                <h1 className="text-3xl font-bold flex items-center gap-3">
-                    <BookOpen className="h-8 w-8" />
+            <div className="space-y-1 lg:space-y-2">
+                <h1 className="text-2xl lg:text-3xl font-bold flex items-center gap-2 lg:gap-3">
+                    <BookOpen className="h-6 w-6 lg:h-8 lg:w-8" />
                     Kitap Ekle
                 </h1>
-                <p className="text-muted-foreground">
-                    ISBN ile kitap bilgilerini otomatik doldurabilir veya manuel girebilirsiniz.
+                <p className="text-sm lg:text-base text-muted-foreground">
+                    ISBN ile doldur veya manuel gir.
                 </p>
             </div>
 
             {/* ISBN ile Doldurma */}
             <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                        <Barcode className="h-5 w-5" />
+                <CardHeader className="p-4 lg:p-6">
+                    <CardTitle className="text-base lg:text-lg flex items-center gap-2">
+                        <Barcode className="h-4 w-4 lg:h-5 lg:w-5" />
                         ISBN ile Doldur
                     </CardTitle>
-                    <CardDescription>
-                        Kitabın ISBN numarasını girerek bilgileri otomatik doldurun.
+                    <CardDescription className="text-xs lg:text-sm">
+                        ISBN ile kitap bilgilerini otomatik doldur.
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div className="flex gap-3">
+                <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                         <Input
                             placeholder="ISBN (örn: 9789750719387)"
                             value={isbn}
@@ -216,9 +217,10 @@ export function AddBookForm() {
                             variant="secondary"
                             onClick={handleFetchFromISBN}
                             disabled={fetchingISBN}
+                            className="shrink-0"
                         >
                             {fetchingISBN && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {fetchingISBN ? "Aranıyor..." : "Bilgileri Getir"}
+                            {fetchingISBN ? "Aranıyor..." : "Getir"}
                         </Button>
                     </div>
                 </CardContent>

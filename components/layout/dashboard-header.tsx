@@ -106,74 +106,75 @@ export function DashboardHeader() {
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center border-b bg-background px-4">
-        {/* Left - Logo (when collapsed) + Sidebar Toggle */}
-        <div className="flex items-center gap-3">
+      <header className="flex h-14 shrink-0 items-center border-b bg-background px-2 sm:px-4 gap-2">
+        {/* Left - Sidebar Toggle + Logo (when collapsed) */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <SidebarTrigger className="shrink-0" />
+
           {/* Logo and brand - only show when sidebar is collapsed */}
           {isCollapsed && (
             <>
+              <Separator orientation="vertical" className="h-4 hidden sm:block" />
               <Link href="/dashboard" className="flex items-center gap-2">
-                <BookOpen className="h-7 w-7 text-primary" />
-                <span className="font-semibold text-sm text-primary">
+                <BookOpen className="h-6 w-6 text-primary" />
+                <span className="font-semibold text-sm text-primary hidden sm:inline">
                   AsyaKitap
                 </span>
               </Link>
-              <Separator orientation="vertical" className="h-4" />
             </>
-          )}
-
-          <SidebarTrigger className="-ml-1" />
-
-          {!isCollapsed && (
-            <Separator orientation="vertical" className="h-4" />
           )}
         </div>
 
         {/* Center - Global Search */}
-        <div className="flex-1 flex justify-center px-4">
+        <div className="flex-1 flex justify-center min-w-0 px-1 sm:px-4">
           <GlobalSearch />
         </div>
 
         {/* Right - Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Progress Button */}
           <Button
             size="sm"
             variant="outline"
             onClick={handleOpenProgressUpdate}
             disabled={isLoading}
+            className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
           >
             {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <TrendingUp className="mr-2 h-4 w-4" />
+              <TrendingUp className="h-4 w-4" />
             )}
-            <span className="hidden sm:inline">İlerleme</span>
+            <span className="hidden sm:inline sm:ml-2">İlerleme</span>
           </Button>
 
+          {/* Kitapyurdu - Hidden on mobile */}
           <Button
             size="sm"
             variant="outline"
             onClick={() => setShowKitapyurduModal(true)}
-            className="text-orange-600 border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-950"
+            className="hidden md:flex text-orange-600 border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-950"
           >
-            <ExternalLink className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Kitapyurdu</span>
+            <ExternalLink className="h-4 w-4 md:mr-2" />
+            <span className="hidden lg:inline">Kitapyurdu</span>
           </Button>
 
+          {/* Goodreads - Hidden on mobile */}
           <Button
             size="sm"
             variant="outline"
             onClick={() => setShowGoodreadsModal(true)}
-            className="text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-800 dark:hover:bg-amber-950"
+            className="hidden md:flex text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-800 dark:hover:bg-amber-950"
           >
-            <ExternalLink className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Goodreads</span>
+            <ExternalLink className="h-4 w-4 md:mr-2" />
+            <span className="hidden lg:inline">Goodreads</span>
           </Button>
 
-          <Button asChild size="sm" variant="outline">
+          {/* Add Book - Icon only on mobile */}
+          <Button asChild size="sm" variant="outline" className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3">
             <Link href="/library/add">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Kitap Ekle</span>
+              <PlusCircle className="h-4 w-4" />
+              <span className="hidden sm:inline sm:ml-2">Ekle</span>
             </Link>
           </Button>
 

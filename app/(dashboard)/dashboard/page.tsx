@@ -15,96 +15,96 @@ export default async function DashboardPage() {
     const { currentlyReading, recentlyCompleted, recentQuotes, booksWithTortu, booksWithImza, stats } = data
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 lg:space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold">Genel Bakış</h1>
-                    <p className="text-muted-foreground">Okuma istatistiklerin ve son aktiviteler</p>
+                    <h1 className="text-2xl lg:text-3xl font-bold">Genel Bakış</h1>
+                    <p className="text-sm lg:text-base text-muted-foreground">Okuma istatistiklerin</p>
                 </div>
-                <Button asChild>
+                <Button asChild size="sm" className="lg:size-default">
                     <Link href="/library/add">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Kitap Ekle
+                        <Plus className="h-4 w-4 lg:mr-2" />
+                        <span className="hidden lg:inline">Kitap Ekle</span>
                     </Link>
                 </Button>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+            {/* Stats Grid - Horizontal scroll on mobile */}
+            <div className="grid gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Toplam Kitap</CardTitle>
-                        <BookOpen className="h-4 w-4 text-muted-foreground" />
+                    <CardHeader className="flex flex-row items-center justify-between pb-1 lg:pb-2 space-y-0 p-3 lg:p-6">
+                        <CardTitle className="text-xs lg:text-sm font-medium">Toplam Kitap</CardTitle>
+                        <BookOpen className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalBooks}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {stats.toRead} okunacak, {stats.reading} okunuyor
+                    <CardContent className="p-3 pt-0 lg:p-6 lg:pt-0">
+                        <div className="text-xl lg:text-2xl font-bold">{stats.totalBooks}</div>
+                        <p className="text-[10px] lg:text-xs text-muted-foreground">
+                            {stats.toRead} okunacak
                         </p>
                     </CardContent>
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Tamamlanan</CardTitle>
-                        <BookCheck className="h-4 w-4 text-muted-foreground" />
+                    <CardHeader className="flex flex-row items-center justify-between pb-1 lg:pb-2 space-y-0 p-3 lg:p-6">
+                        <CardTitle className="text-xs lg:text-sm font-medium">Tamamlanan</CardTitle>
+                        <BookCheck className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.completed}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {stats.pagesRead.toLocaleString()} sayfa okundu
+                    <CardContent className="p-3 pt-0 lg:p-6 lg:pt-0">
+                        <div className="text-xl lg:text-2xl font-bold">{stats.completed}</div>
+                        <p className="text-[10px] lg:text-xs text-muted-foreground">
+                            {stats.pagesRead.toLocaleString()} sayfa
                         </p>
                     </CardContent>
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Yazarlar</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
+                    <CardHeader className="flex flex-row items-center justify-between pb-1 lg:pb-2 space-y-0 p-3 lg:p-6">
+                        <CardTitle className="text-xs lg:text-sm font-medium">Yazarlar</CardTitle>
+                        <Users className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.uniqueAuthors}</div>
-                        <p className="text-xs text-muted-foreground">
+                    <CardContent className="p-3 pt-0 lg:p-6 lg:pt-0">
+                        <div className="text-xl lg:text-2xl font-bold">{stats.uniqueAuthors}</div>
+                        <p className="text-[10px] lg:text-xs text-muted-foreground">
                             Farklı yazar
                         </p>
                     </CardContent>
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Alıntılar</CardTitle>
-                        <Quote className="h-4 w-4 text-muted-foreground" />
+                    <CardHeader className="flex flex-row items-center justify-between pb-1 lg:pb-2 space-y-0 p-3 lg:p-6">
+                        <CardTitle className="text-xs lg:text-sm font-medium">Alıntılar</CardTitle>
+                        <Quote className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalQuotes}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Kaydedilen alıntı
+                    <CardContent className="p-3 pt-0 lg:p-6 lg:pt-0">
+                        <div className="text-xl lg:text-2xl font-bold">{stats.totalQuotes}</div>
+                        <p className="text-[10px] lg:text-xs text-muted-foreground">
+                            Kaydedilen
                         </p>
                     </CardContent>
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Tortular</CardTitle>
-                        <FileText className="h-4 w-4 text-muted-foreground" />
+                    <CardHeader className="flex flex-row items-center justify-between pb-1 lg:pb-2 space-y-0 p-3 lg:p-6">
+                        <CardTitle className="text-xs lg:text-sm font-medium">Tortular</CardTitle>
+                        <FileText className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalTortu}</div>
-                        <p className="text-xs text-muted-foreground">
+                    <CardContent className="p-3 pt-0 lg:p-6 lg:pt-0">
+                        <div className="text-xl lg:text-2xl font-bold">{stats.totalTortu}</div>
+                        <p className="text-[10px] lg:text-xs text-muted-foreground">
                             Kitap tortusu
                         </p>
                     </CardContent>
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">İmzalar</CardTitle>
-                        <Pen className="h-4 w-4 text-muted-foreground" />
+                    <CardHeader className="flex flex-row items-center justify-between pb-1 lg:pb-2 space-y-0 p-3 lg:p-6">
+                        <CardTitle className="text-xs lg:text-sm font-medium">İmzalar</CardTitle>
+                        <Pen className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalImza}</div>
-                        <p className="text-xs text-muted-foreground">
+                    <CardContent className="p-3 pt-0 lg:p-6 lg:pt-0">
+                        <div className="text-xl lg:text-2xl font-bold">{stats.totalImza}</div>
+                        <p className="text-[10px] lg:text-xs text-muted-foreground">
                             Yazar imzası
                         </p>
                     </CardContent>
@@ -113,30 +113,30 @@ export default async function DashboardPage() {
 
             {/* Currently Reading */}
             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <BookMarked className="h-5 w-5" />
+                <CardHeader className="p-4 lg:p-6">
+                    <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
+                        <BookMarked className="h-4 w-4 lg:h-5 lg:w-5" />
                         Şu An Okunan
                     </CardTitle>
-                    <CardDescription>Okumaya devam ettiğin kitaplar</CardDescription>
+                    <CardDescription className="text-xs lg:text-sm">Okumaya devam ettiğin kitaplar</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
                     {currentlyReading.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
-                            <p>Şu an okunan kitap yok</p>
-                            <Button variant="outline" className="mt-4" asChild>
+                        <div className="text-center py-6 lg:py-8 text-muted-foreground">
+                            <p className="text-sm">Şu an okunan kitap yok</p>
+                            <Button variant="outline" className="mt-3" size="sm" asChild>
                                 <Link href="/library">Kitap Seç</Link>
                             </Button>
                         </div>
                     ) : (
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-3 lg:gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {currentlyReading.map((book) => (
                                 <Link
                                     key={book.id}
                                     href={`/book/${book.id}`}
-                                    className="flex gap-4 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                                    className="flex gap-3 p-2 lg:p-3 rounded-lg border hover:bg-muted/50 transition-colors"
                                 >
-                                    <div className="relative h-20 w-14 flex-shrink-0 overflow-hidden rounded bg-muted">
+                                    <div className="relative h-16 w-11 lg:h-20 lg:w-14 flex-shrink-0 overflow-hidden rounded bg-muted">
                                         {book.coverUrl ? (
                                             <Image
                                                 src={book.coverUrl.replace("http:", "https:")}
@@ -145,21 +145,21 @@ export default async function DashboardPage() {
                                                 className="object-cover"
                                             />
                                         ) : (
-                                            <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
+                                            <div className="flex h-full items-center justify-center text-[10px] text-muted-foreground">
                                                 Kapak
                                             </div>
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium truncate">{book.title}</p>
-                                        <p className="text-sm text-muted-foreground truncate">{book.author?.name || "Bilinmiyor"}</p>
+                                        <p className="font-medium text-sm truncate">{book.title}</p>
+                                        <p className="text-xs text-muted-foreground truncate">{book.author?.name || "Bilinmiyor"}</p>
                                         {book.pageCount && (
-                                            <div className="mt-2">
-                                                <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                                            <div className="mt-1.5 lg:mt-2">
+                                                <div className="flex justify-between text-[10px] lg:text-xs text-muted-foreground mb-1">
                                                     <span>{book.currentPage} / {book.pageCount}</span>
                                                     <span>{Math.round((book.currentPage / book.pageCount) * 100)}%</span>
                                                 </div>
-                                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                                                <div className="h-1 lg:h-1.5 w-full bg-muted rounded-full overflow-hidden">
                                                     <div
                                                         className="h-full bg-primary"
                                                         style={{ width: `${Math.min(100, (book.currentPage / book.pageCount) * 100)}%` }}
@@ -175,8 +175,8 @@ export default async function DashboardPage() {
                 </CardContent>
             </Card>
 
-            {/* Three Column Layout */}
-            <div className="grid gap-6 lg:grid-cols-3">
+            {/* Three Column Layout - Stack on mobile */}
+            <div className="grid gap-4 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {/* Recent Quotes */}
                 <Card>
                     <CardHeader>
