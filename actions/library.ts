@@ -6,6 +6,7 @@ import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { BookStatus } from "@prisma/client"
 import { CACHE_TAGS } from "@/lib/cache"
+import { autoLinkBookToReadingLists } from "./reading-lists"
 
 // Helper to invalidate user-related caches
 function invalidateUserCaches(userId: string) {
@@ -57,12 +58,26 @@ export async function addBookToLibrary(bookData: {
             }
         })
 
+        // Otomatik okuma listesi eşleştirmesi
+        let linkedToList: string | undefined
+        if (newBook.author?.name) {
+            const linkResult = await autoLinkBookToReadingLists(
+                user.id,
+                newBook.id,
+                bookData.title,
+                newBook.author.name
+            )
+            if (linkResult.linked && linkResult.listName) {
+                linkedToList = linkResult.listName
+            }
+        }
+
         // Invalidate caches
         invalidateUserCaches(user.id)
         revalidatePath("/library")
         revalidatePath("/dashboard")
 
-        return { success: true, book: newBook }
+        return { success: true, book: newBook, linkedToList }
     } catch (error) {
         console.error("Failed to add book:", error)
         return { success: false, error: "Failed to add book" }
