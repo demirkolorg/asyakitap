@@ -33,14 +33,29 @@ interface AddBookResult {
 
 function decodeHtmlEntities(text: string): string {
     return text
-        .replace(/&uuml;/g, 'ü')
-        .replace(/&ouml;/g, 'ö')
-        .replace(/&ccedil;/g, 'ç')
-        .replace(/&Uuml;/g, 'Ü')
-        .replace(/&Ouml;/g, 'Ö')
-        .replace(/&Ccedil;/g, 'Ç')
+        // Türkçe karakterler
+        .replace(/&uuml;/gi, 'ü')
+        .replace(/&ouml;/gi, 'ö')
+        .replace(/&ccedil;/gi, 'ç')
+        .replace(/&#252;/g, 'ü')
+        .replace(/&#246;/g, 'ö')
+        .replace(/&#231;/g, 'ç')
+        .replace(/&#220;/g, 'Ü')
+        .replace(/&#214;/g, 'Ö')
+        .replace(/&#199;/g, 'Ç')
+        .replace(/&#305;/g, 'ı')
+        .replace(/&#304;/g, 'İ')
+        .replace(/&#351;/g, 'ş')
+        .replace(/&#350;/g, 'Ş')
+        .replace(/&#287;/g, 'ğ')
+        .replace(/&#286;/g, 'Ğ')
+        // Genel HTML entities
         .replace(/&#039;/g, "'")
+        .replace(/&#39;/g, "'")
+        .replace(/&#x27;/g, "'")
+        .replace(/&apos;/g, "'")
         .replace(/&quot;/g, '"')
+        .replace(/&#34;/g, '"')
         .replace(/&amp;/g, '&')
         .replace(/&acirc;/g, 'â')
         .replace(/&icirc;/g, 'î')
@@ -55,7 +70,8 @@ function decodeHtmlEntities(text: string): string {
         .replace(/&eacute;/g, 'é')
         .replace(/&agrave;/g, 'à')
         .replace(/&egrave;/g, 'è')
-        .replace(/&#x27;/g, "'")
+        // Numeric entities genel
+        .replace(/&#(\d+);/g, (_, num) => String.fromCharCode(parseInt(num)))
         .replace(/\s+/g, ' ')
         .trim()
 }
@@ -176,12 +192,37 @@ export async function scrapeGoodreads(url: string): Promise<ScrapeResult> {
             publishedDate = decodeHtmlEntities(dateMatch[1].trim())
         }
 
-        // Açıklama - og:description veya meta description
+        // Açıklama - JSON-LD description veya kitap açıklaması
         let description: string | null = null
-        const descMatch = html.match(/<meta name="description" content="([^"]+)"/i)
-            || html.match(/<meta property="og:description" content="([^"]+)"/i)
-        if (descMatch) {
-            description = decodeHtmlEntities(descMatch[1])
+
+        // Önce JSON-LD'den dene
+        if (jsonLdData && typeof jsonLdData.description === 'string') {
+            description = decodeHtmlEntities(jsonLdData.description)
+        }
+
+        // Fallback: Kitap açıklaması HTML'den (daha temiz)
+        if (!description) {
+            // BookPageTitleSection içindeki description
+            const bookDescMatch = html.match(/data-testid="description"[^>]*>([^<]+(?:<[^>]+>[^<]*)*)<\/span>/i)
+            if (bookDescMatch) {
+                description = decodeHtmlEntities(bookDescMatch[1].replace(/<[^>]+>/g, ' '))
+            }
+        }
+
+        // Son fallback: meta description (JSON içerebilir, temizle)
+        if (!description) {
+            const descMatch = html.match(/<meta name="description" content="([^"]+)"/i)
+                || html.match(/<meta property="og:description" content="([^"]+)"/i)
+            if (descMatch) {
+                let rawDesc = descMatch[1]
+                // JSON formatında gelen veriyi temizle
+                if (rawDesc.includes('"_typename"') || rawDesc.includes('"webUrl"')) {
+                    // JSON içeriyor, kullanma
+                    description = null
+                } else {
+                    description = decodeHtmlEntities(rawDesc)
+                }
+            }
         }
 
         // Dil - JSON-LD'den
@@ -222,7 +263,10 @@ export async function scrapeGoodreads(url: string): Promise<ScrapeResult> {
     }
 }
 
-export async function addBookFromGoodreads(bookData: ScrapedBookData): Promise<AddBookResult> {
+export async function addBookFromGoodreads(
+    bookData: ScrapedBookData,
+    readingListBookId?: string
+): Promise<AddBookResult> {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -283,13 +327,35 @@ export async function addBookFromGoodreads(bookData: ScrapedBookData): Promise<A
             }
         })
 
+        // Okuma listesine bağla (varsa)
+        let linkedToList: string | undefined
+        if (readingListBookId) {
+            const rlBook = await prisma.readingListBook.findUnique({
+                where: { id: readingListBookId },
+                include: { level: { include: { readingList: true } } }
+            })
+
+            if (rlBook) {
+                await prisma.userReadingListBook.create({
+                    data: {
+                        userId: user.id,
+                        readingListBookId: readingListBookId,
+                        bookId: newBook.id
+                    }
+                })
+                linkedToList = rlBook.level.readingList.name
+            }
+        }
+
         revalidatePath("/library")
         revalidatePath("/dashboard")
 
         return {
             success: true,
             bookId: newBook.id,
-            message: `"${bookData.title}" kütüphanenize eklendi`
+            message: linkedToList
+                ? `"${bookData.title}" "${linkedToList}" listesine eklendi`
+                : `"${bookData.title}" kütüphanenize eklendi`
         }
     } catch (error) {
         console.error("Add book from Goodreads error:", error)
