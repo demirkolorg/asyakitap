@@ -160,7 +160,11 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
             )
 
             if (result.success) {
-                toast.success(`"${userBook.title}" okuma listesine bağlandı`)
+                if (result.shelfAssigned) {
+                    toast.success(`"${userBook.title}" okuma listesine ve rafa eklendi`)
+                } else {
+                    toast.success(`"${userBook.title}" okuma listesine bağlandı`)
+                }
                 setModalOpen(false)
                 setSelectedReadingListBook(null)
             } else {

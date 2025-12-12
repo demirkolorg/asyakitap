@@ -149,15 +149,16 @@ model Quote {
 // ==========================================
 
 model ReadingList {
-  id          String             @id @default(cuid())
-  slug        String             @unique
-  name        String
-  description String?            @db.Text
-  coverUrl    String?
-  sortOrder   Int                @default(0)
-  levels      ReadingListLevel[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  id               String             @id @default(cuid())
+  slug             String             @unique
+  name             String
+  description      String?            @db.Text
+  coverUrl         String?
+  sortOrder        Int                @default(0)
+  defaultShelfName String?            // Varsayılan raf adı - kitap eklendiğinde bu rafa atanır
+  levels           ReadingListLevel[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 }
 
 model ReadingListLevel {
