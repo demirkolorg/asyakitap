@@ -25,6 +25,7 @@ import {
     X,
     Loader2,
     Unlink,
+    Copy,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { linkBookToReadingList, unlinkBookFromReadingList } from "@/actions/reading-lists"
@@ -169,6 +170,32 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
         })
     }
 
+    // JSON olarak kopyala
+    const handleCopyAsJson = () => {
+        const jsonData = {
+            list: {
+                name: list.name,
+                slug: list.slug,
+                description: list.description
+            },
+            levels: list.levels.map(level => ({
+                levelNumber: level.levelNumber,
+                name: level.name,
+                description: level.description,
+                books: level.books.map(book => ({
+                    title: book.title,
+                    author: book.author,
+                    neden: book.neden,
+                    pageCount: book.pageCount
+                }))
+            }))
+        }
+
+        navigator.clipboard.writeText(JSON.stringify(jsonData, null, 2))
+            .then(() => toast.success("JSON panoya kopyalandı"))
+            .catch(() => toast.error("Kopyalama başarısız"))
+    }
+
     const handleUnlink = (book: ReadingListBook) => {
         startTransition(async () => {
             const result = await unlinkBookFromReadingList(book.id, list.slug)
@@ -183,14 +210,25 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
 
     return (
         <div className="max-w-5xl mx-auto">
-            {/* Back Link */}
-            <Link
-                href="/reading-lists"
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
-            >
-                <ArrowLeft className="h-4 w-4" />
-                Tüm Listeler
-            </Link>
+            {/* Top Bar */}
+            <div className="flex items-center justify-between mb-6">
+                <Link
+                    href="/reading-lists"
+                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Tüm Listeler
+                </Link>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopyAsJson}
+                    className="gap-2"
+                >
+                    <Copy className="h-4 w-4" />
+                    JSON Kopyala
+                </Button>
+            </div>
 
             {/* Header */}
             <div className="mb-8">
