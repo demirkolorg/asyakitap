@@ -38,7 +38,8 @@
       "Bash(git stash:*)",
       "Bash(npx tsx:*)",
       "Bash(del \"D:\\projects\\asyakitap\\actions\\shelf.ts\")",
-      "Bash(if exist \".next\" rmdir /s /q \".next\")"
+      "Bash(if exist \".next\" rmdir /s /q \".next\")",
+      "Bash(del \"D:\\projects\\asyakitap\\actions\\goodreads.ts\")"
     ],
     "deny": [],
     "ask": []

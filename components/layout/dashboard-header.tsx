@@ -13,7 +13,6 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { UserNavMenu } from '@/components/layout/user-nav-menu';
 import { GlobalSearch } from '@/components/global-search';
 import { KitapyurduModal } from '@/components/kitapyurdu-modal';
-import { GoodreadsModal } from '@/components/goodreads-modal';
 import {
   Dialog,
   DialogContent,
@@ -44,7 +43,6 @@ export function DashboardHeader() {
   const [showSelectBookDialog, setShowSelectBookDialog] = useState(false);
   const [showProgressDialog, setShowProgressDialog] = useState(false);
   const [showKitapyurduModal, setShowKitapyurduModal] = useState(false);
-  const [showGoodreadsModal, setShowGoodreadsModal] = useState(false);
   const [selectedBook, setSelectedBook] = useState<BookWithAuthor | null>(null);
   const [progressInput, setProgressInput] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
@@ -166,16 +164,6 @@ export function DashboardHeader() {
               <span className="hidden lg:inline">Kitapyurdu</span>
             </Button>
 
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowGoodreadsModal(true)}
-              className="text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-800 dark:hover:bg-amber-950"
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              <span className="hidden lg:inline">Goodreads</span>
-            </Button>
-
             <Button asChild size="sm">
               <Link href="/library/add">
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -200,10 +188,6 @@ export function DashboardHeader() {
               <DropdownMenuItem onClick={() => setShowKitapyurduModal(true)}>
                 <ExternalLink className="mr-2 h-4 w-4 text-orange-600" />
                 Kitapyurdu'ndan Ekle
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowGoodreadsModal(true)}>
-                <ExternalLink className="mr-2 h-4 w-4 text-amber-600" />
-                Goodreads'ten Ekle
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
@@ -326,12 +310,6 @@ export function DashboardHeader() {
       <KitapyurduModal
         open={showKitapyurduModal}
         onOpenChange={setShowKitapyurduModal}
-      />
-
-      {/* Goodreads Modal */}
-      <GoodreadsModal
-        open={showGoodreadsModal}
-        onOpenChange={setShowGoodreadsModal}
       />
     </>
   );
