@@ -38,6 +38,8 @@ import {
     Building2,
     Map,
     Barcode,
+    Sparkles,
+    Layers,
 } from "lucide-react"
 import { addQuote, deleteQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -78,6 +80,7 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
     ),
 })
 import { cn } from "@/lib/utils"
+import { getReadingListColor } from "@/lib/reading-list-colors"
 
 // Types
 import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, UserReadingListBook, ReadingListBook, ReadingListLevel, ReadingList } from "@prisma/client"
@@ -454,9 +457,9 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         </p>
                     </div>
 
-                    {/* Publisher, Shelf & Reading List Info */}
-                    <div className="flex flex-wrap gap-2 md:gap-3 mb-4 justify-center md:justify-start">
-                        {book.publisher && (
+                    {/* Publisher Badge */}
+                    {book.publisher && (
+                        <div className="flex flex-wrap gap-2 md:gap-3 mb-4 justify-center md:justify-start">
                             <Link
                                 href={`/publisher/${book.publisher.id}`}
                                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted hover:bg-muted/80 text-sm transition-colors"
@@ -464,18 +467,94 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 <Building2 className="h-3.5 w-3.5" />
                                 {book.publisher.name}
                             </Link>
-                        )}
-                        {book.userReadingListBooks.length > 0 && book.userReadingListBooks.map((urlb) => (
-                            <Link
-                                key={urlb.id}
-                                href={`/reading-lists/${urlb.readingListBook.level.readingList.slug}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900/50 text-sm transition-colors"
-                            >
-                                <Map className="h-3.5 w-3.5" />
-                                {urlb.readingListBook.level.readingList.name}
-                            </Link>
-                        ))}
-                    </div>
+                        </div>
+                    )}
+
+                    {/* Reading List Motivation Card */}
+                    {book.userReadingListBooks.length > 0 && (
+                        <div className="mb-6">
+                            {book.userReadingListBooks.map((urlb) => {
+                                const listSlug = urlb.readingListBook.level.readingList.slug
+                                const listColor = getReadingListColor(listSlug) || "#8b5cf6"
+                                const listName = urlb.readingListBook.level.readingList.name
+                                const levelName = urlb.readingListBook.level.name
+                                const levelNumber = urlb.readingListBook.level.levelNumber
+                                const neden = urlb.readingListBook.neden
+
+                                return (
+                                    <div
+                                        key={urlb.id}
+                                        className="relative overflow-hidden rounded-xl border"
+                                        style={{
+                                            background: `linear-gradient(135deg, ${listColor}08 0%, ${listColor}15 100%)`,
+                                            borderColor: `${listColor}30`
+                                        }}
+                                    >
+                                        {/* Decorative accent */}
+                                        <div
+                                            className="absolute top-0 left-0 w-1.5 h-full"
+                                            style={{ backgroundColor: listColor }}
+                                        />
+
+                                        <div className="p-4 pl-5">
+                                            {/* Header */}
+                                            <div className="flex items-start justify-between gap-3 mb-3">
+                                                <div className="flex items-center gap-2">
+                                                    <div
+                                                        className="p-1.5 rounded-lg"
+                                                        style={{ backgroundColor: `${listColor}20` }}
+                                                    >
+                                                        <Map className="h-4 w-4" style={{ color: listColor }} />
+                                                    </div>
+                                                    <div>
+                                                        <Link
+                                                            href={`/reading-lists/${listSlug}`}
+                                                            className="font-semibold text-sm hover:underline"
+                                                            style={{ color: listColor }}
+                                                        >
+                                                            {listName}
+                                                        </Link>
+                                                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                            <Layers className="h-3 w-3" />
+                                                            <span>Seviye {levelNumber}: {levelName}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Level Badge */}
+                                                <div
+                                                    className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-white"
+                                                    style={{ backgroundColor: listColor }}
+                                                >
+                                                    <Sparkles className="h-3 w-3" />
+                                                    Seviye {levelNumber}
+                                                </div>
+                                            </div>
+
+                                            {/* Neden (Why) - Motivation Text */}
+                                            {neden && (
+                                                <div className="mt-3 pt-3 border-t" style={{ borderColor: `${listColor}20` }}>
+                                                    <div className="flex gap-2">
+                                                        <div className="flex-shrink-0 mt-0.5">
+                                                            <Sparkles className="h-4 w-4" style={{ color: listColor }} />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs font-medium text-muted-foreground mb-1">
+                                                                Bu kitap neden bu listede?
+                                                            </p>
+                                                            <p className="text-sm leading-relaxed">
+                                                                {neden}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
 
                     {/* Progress Bar (when reading) */}
                     {currentStatus === "READING" && book.pageCount && (
