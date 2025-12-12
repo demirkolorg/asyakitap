@@ -32,7 +32,12 @@
       "Bash(npx next build)",
       "Bash(node -e:*)",
       "Bash(node node_modules/typescript/bin/tsc:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(set DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(npx tsx:*)",
+      "Bash(del \"D:\\projects\\asyakitap\\actions\\shelf.ts\")"
     ],
     "deny": [],
     "ask": []

@@ -110,12 +110,14 @@ async function main() {
                         books: {
                             create: [
                                 { title: "Metro 2033", author: "Dmitry Glukhovsky", neden: "Nükleer savaş sonrası Moskova metrosunda kurulan yeni ve karanlık dünya.", sortOrder: 0 },
-                                { title: "Yol (The Road)", author: "Cormac McCarthy", neden: "Bir baba ve oğulun, kül olmuş dünyada güneye yürüyüşü. Çok sarsıcı ve gerçekçi.", sortOrder: 1 },
-                                { title: "Triffidlerin Günü", author: "John Wyndham", neden: "İnsanların kör olduğu ve yürüyen bitkilerin saldırdığı klasik bir felaket senaryosu.", sortOrder: 2 },
-                                { title: "İstasyon On Bir", author: "Emily St. John Mandel", neden: "Salgın sonrası dünyada tiyatro yaparak medeniyeti hatırlatmaya çalışan bir grup.", sortOrder: 3 },
-                                { title: "Leibowitz İçin Bir İlahi", author: "Walter M. Miller", neden: "Nükleer yıkımdan sonra bilimi korumaya çalışan rahipler. Din ve bilim döngüsü.", sortOrder: 4 },
-                                { title: "Kum", author: "Hugh Howey", neden: "Çöle gömülmüş bir medeniyetin hayatta kalma mücadelesi. Silo serisinin yazarından.", sortOrder: 5 },
-                                { title: "Salgın", author: "Ling Ma", neden: "Salgın sonrası distopya. Kapitalizm eleştirisi ve zombi metaforu.", sortOrder: 6 }
+                                { title: "Metro 2034", author: "Dmitry Glukhovsky", neden: "Serinin ikinci kitabı. Metrodaki hayata derin bir bakış ve farklı karakterler.", sortOrder: 1 },
+                                { title: "Metro 2035", author: "Dmitry Glukhovsky", neden: "Serinin finali. Artyom'un gerçeği arama yolculuğu.", sortOrder: 2 },
+                                { title: "Yol (The Road)", author: "Cormac McCarthy", neden: "Bir baba ve oğulun, kül olmuş dünyada güneye yürüyüşü. Çok sarsıcı ve gerçekçi.", sortOrder: 3 },
+                                { title: "Triffidlerin Günü", author: "John Wyndham", neden: "İnsanların kör olduğu ve yürüyen bitkilerin saldırdığı klasik bir felaket senaryosu.", sortOrder: 4 },
+                                { title: "İstasyon On Bir", author: "Emily St. John Mandel", neden: "Salgın sonrası dünyada tiyatro yaparak medeniyeti hatırlatmaya çalışan bir grup.", sortOrder: 5 },
+                                { title: "Leibowitz İçin Bir İlahi", author: "Walter M. Miller", neden: "Nükleer yıkımdan sonra bilimi korumaya çalışan rahipler. Din ve bilim döngüsü.", sortOrder: 6 },
+                                { title: "Kum", author: "Hugh Howey", neden: "Çöle gömülmüş bir medeniyetin hayatta kalma mücadelesi. Silo serisinin yazarından.", sortOrder: 7 },
+                                { title: "Salgın", author: "Ling Ma", neden: "Salgın sonrası distopya. Kapitalizm eleştirisi ve zombi metaforu.", sortOrder: 8 }
                             ]
                         }
                     },
@@ -143,10 +145,11 @@ async function main() {
                         books: {
                             create: [
                                 { title: "1984", author: "George Orwell", neden: "Gözetim toplumu, Büyük Birader ve gerçeğin yok edilmesi.", sortOrder: 0 },
-                                { title: "Cesur Yeni Dünya", author: "Aldous Huxley", neden: "Haz, uyuşturucu ve genetik mühendisliği ile uyuşturulmuş, \"mutlu\" köleler.", sortOrder: 1 },
-                                { title: "Damızlık Kızın Öyküsü", author: "Margaret Atwood", neden: "Kadın haklarının olmadığı teokratik bir rejim.", sortOrder: 2 },
-                                { title: "Biz", author: "Yevgeni Zamyatin", neden: "1984 ve Cesur Yeni Dünya'ya ilham veren, camdan evlerde yaşanan şeffaf distopya.", sortOrder: 3 },
-                                { title: "Mülksüzler", author: "Ursula K. Le Guin", neden: "Anarşist bir ütopya mümkün mü? Mülkiyet olmadan toplum nasıl yaşar?", sortOrder: 4 }
+                                { title: "Hayvan Çiftliği", author: "George Orwell", neden: "Totalitarizmin alegorisi. Devrimlerin nasıl yozlaştığının hikayesi.", sortOrder: 1 },
+                                { title: "Cesur Yeni Dünya", author: "Aldous Huxley", neden: "Haz, uyuşturucu ve genetik mühendisliği ile uyuşturulmuş, \"mutlu\" köleler.", sortOrder: 2 },
+                                { title: "Damızlık Kızın Öyküsü", author: "Margaret Atwood", neden: "Kadın haklarının olmadığı teokratik bir rejim.", sortOrder: 3 },
+                                { title: "Biz", author: "Yevgeni Zamyatin", neden: "1984 ve Cesur Yeni Dünya'ya ilham veren, camdan evlerde yaşanan şeffaf distopya.", sortOrder: 4 },
+                                { title: "Mülksüzler", author: "Ursula K. Le Guin", neden: "Anarşist bir ütopya mümkün mü? Mülkiyet olmadan toplum nasıl yaşar?", sortOrder: 5 }
                             ]
                         }
                     },
@@ -219,7 +222,19 @@ async function main() {
                                 { title: "Yollar Dönüşe Gider", author: "Nurullah Genç", neden: "Erzurum soğuğunda geçen sıcak bir hayat hikayesi.", sortOrder: 6 },
                                 { title: "Toprak Ana", author: "Cengiz Aytmatov", neden: "Savaş ve kıtlıkta insan kalabilmek.", sortOrder: 7 },
                                 { title: "Martin Eden", author: "Jack London", neden: "Kimlik inşası ve mücadele. Bir insanın kendini yetiştirme öyküsü.", sortOrder: 8 },
-                                { title: "Beyaz Diş", author: "Jack London", neden: "Doğa, hayatta kalma ve medeniyetle tanışma.", sortOrder: 9 }
+                                { title: "Beyaz Diş", author: "Jack London", neden: "Doğa, hayatta kalma ve medeniyetle tanışma.", sortOrder: 9 },
+                                { title: "Babamın Şarkısı", author: "İsmail Özen", neden: "Sıcak bir aile hikayesi ve baba-oğul ilişkisi.", sortOrder: 10 },
+                                { title: "Bangır Bangır Ferdi Çalıyor Evde...", author: "Mahir Ünsal Eriş", neden: "Nostaljik ve eğlenceli bir çocukluk hikayesi.", sortOrder: 11 },
+                                { title: "Beyaz Gemi", author: "Cengiz Aytmatov", neden: "Masumiyet ve hayal kırıklığı üzerine dokunaklı bir hikaye.", sortOrder: 12 },
+                                { title: "Bir Çift Yürek", author: "Marlo Morgan", neden: "Manevi bir yolculuk ve Aborijin bilgeliği.", sortOrder: 13 },
+                                { title: "Bu Böyledir", author: "Mustafa Kutlu", neden: "Anadolu insanının hikayesi ve kabullenme.", sortOrder: 14 },
+                                { title: "Fabrika Ayarı", author: "Hayati İnanç", neden: "Sohbet tadında, düşündüren yazılar.", sortOrder: 15 },
+                                { title: "Martı Jonathan Livingston", author: "Richard Bach", neden: "Özgürlük ve kendini aşma hikayesi.", sortOrder: 16 },
+                                { title: "Selam Olsun", author: "Mustafa Kutlu", neden: "Anadolu'dan selamlar ve hikayeler.", sortOrder: 17 },
+                                { title: "Şeker Portakalı", author: "Jose Mauro De Vasconcelos", neden: "Çocuk gözünden hayatın acı tatlı gerçekleri.", sortOrder: 18 },
+                                { title: "Sevmek Bu Kadar Güzelken", author: "Sema Maraşlı", neden: "Aile ve sevgi üzerine.", sortOrder: 19 },
+                                { title: "Yoksulluk İçimizde", author: "Mustafa Kutlu", neden: "Modern insanın iç yoksulluğu.", sortOrder: 20 },
+                                { title: "Yoksulluk Kitabı", author: "Mustafa Kutlu", neden: "Yoksulluk ve zenginlik üzerine düşünceler.", sortOrder: 21 }
                             ]
                         }
                     },
@@ -236,7 +251,12 @@ async function main() {
                                 { title: "Doğu'nun Limanları", author: "Amin Maalouf", neden: "Doğu-Batı arasında sıkışan hayatlar.", sortOrder: 3 },
                                 { title: "Gül Yetiştiren Adam", author: "Rasim Özdenören", neden: "Modernizme pasif direniş.", sortOrder: 4 },
                                 { title: "Çalıkuşu", author: "Reşat Nuri Güntekin", neden: "İdealizm ve Anadolu gerçeği.", sortOrder: 5 },
-                                { title: "Momo", author: "Michael Ende", neden: "Modern zaman hırsızlarına eleştiri.", sortOrder: 6 }
+                                { title: "Momo", author: "Michael Ende", neden: "Modern zaman hırsızlarına eleştiri.", sortOrder: 6 },
+                                { title: "Bin Muhteşem Güneş", author: "Khaled Hosseini", neden: "Afganistan'da iki kadının hayat hikayesi. Savaş ve umut.", sortOrder: 7 },
+                                { title: "Doppler", author: "Erlend Loe", neden: "Modern hayattan kaçış ve kendini bulma.", sortOrder: 8 },
+                                { title: "Uçurtma Avcısı", author: "Khaled Hosseini", neden: "Dostluk, ihanet ve kefaret hikayesi.", sortOrder: 9 },
+                                { title: "Ve Dağlar Yankılandı", author: "Khaled Hosseini", neden: "Aile bağları ve fedakarlık üzerine.", sortOrder: 10 },
+                                { title: "Yaşamak", author: "Yu Hua", neden: "Çin'de bir ailenin nesiller boyu hayatta kalma mücadelesi.", sortOrder: 11 }
                             ]
                         }
                     },
@@ -253,7 +273,12 @@ async function main() {
                                 { title: "Kürk Mantolu Madonna", author: "Sabahattin Ali", neden: "Önyargıları yıkan bir iç dünya anlatısı.", sortOrder: 3 },
                                 { title: "Kapıların Ardında", author: "Rasim Özdenören", neden: "Yabancılaşma üzerine öyküler.", sortOrder: 4 },
                                 { title: "Türkçenin Sırları", author: "Nihat Sami Banarlı", neden: "Dil şuurunu kazanmak, kelimeleri sevmek.", sortOrder: 5 },
-                                { title: "Sözün Doğrusu 1", author: "Yavuz Bülent Bakiler", neden: "Türkçeyi doğru kullanma kılavuzu.", sortOrder: 6 }
+                                { title: "Sözün Doğrusu 1", author: "Yavuz Bülent Bakiler", neden: "Türkçeyi doğru kullanma kılavuzu.", sortOrder: 6 },
+                                { title: "Dönüşüm", author: "Franz Kafka", neden: "Yabancılaşma ve modern insanın bunalımı.", sortOrder: 7 },
+                                { title: "Gulyabani", author: "Hüseyin Rahmi Gürpınar", neden: "Klasik Türk romanı ve toplum eleştirisi.", sortOrder: 8 },
+                                { title: "İçimizdeki Şeytan", author: "Sabahattin Ali", neden: "İnsan ruhunun karanlık köşeleri.", sortOrder: 9 },
+                                { title: "Kendine Ait Bir Oda", author: "Virginia Woolf", neden: "Kadın yazarlık ve özgürlük üzerine.", sortOrder: 10 },
+                                { title: "Kuyucaklı Yusuf", author: "Sabahattin Ali", neden: "Anadolu'da adalet arayışı ve trajedisi.", sortOrder: 11 }
                             ]
                         }
                     },
@@ -287,7 +312,12 @@ async function main() {
                                 { title: "Savaşçı", author: "Doğan Cüceloğlu", neden: "Güçlü bir karakter inşası.", sortOrder: 3 },
                                 { title: "Malcolm X", author: "Alex Haley", neden: "Dönüşüm ve mücadele.", sortOrder: 4 },
                                 { title: "Zeytindağı", author: "Falih Rıfkı Atay", neden: "İmparatorluğun çöküşü.", sortOrder: 5 },
-                                { title: "O ve Ben", author: "Necip Fazıl Kısakürek", neden: "Manevi arayış ve buluş.", sortOrder: 6 }
+                                { title: "O ve Ben", author: "Necip Fazıl Kısakürek", neden: "Manevi arayış ve buluş.", sortOrder: 6 },
+                                { title: "Bir Ömür Nasıl Yaşanır?", author: "İlber Ortaylı", neden: "Yaşam deneyimleri ve tavsiyeler.", sortOrder: 7 },
+                                { title: "Ferrari'sini Satan Bilge", author: "Robin Sharma", neden: "Kişisel gelişim ve hayatın anlamı.", sortOrder: 8 },
+                                { title: "Küçük Ağaç'ın Eğitimi", author: "Forrest Carter", neden: "Doğa ile iç içe yaşam ve bilgelik.", sortOrder: 9 },
+                                { title: "Yoldaki Mühendis", author: "Abdullah Galib Bergusi", neden: "Manevi yolculuk ve keşif.", sortOrder: 10 },
+                                { title: "Yoldaki Mühendis 2", author: "Abdullah Galib Bergusi", neden: "Manevi yolculuğun devamı.", sortOrder: 11 }
                             ]
                         }
                     },

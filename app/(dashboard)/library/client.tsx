@@ -46,9 +46,16 @@ type BookWithRelations = Book & {
     publisher: Publisher | null
 }
 
+interface BookLevel {
+    levelNumber: number
+    levelName: string
+    books: BookWithRelations[]
+}
+
 interface BookGroup {
     id: string
     name: string
+    levels?: BookLevel[]
     books: BookWithRelations[]
 }
 
@@ -166,12 +173,21 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
         return result
     }
 
-    // Filtered groups (only show groups that have matching books)
+    // Filtered groups with levels (only show groups/levels that have matching books)
     const filteredGroups = useMemo(() => {
-        return groupedBooks.groups.map(group => ({
-            ...group,
-            filteredBooks: getFilteredGroupBooks(group.books)
-        })).filter(group => group.filteredBooks.length > 0 || (activeStatus === "ALL" && !searchQuery))
+        return groupedBooks.groups.map(group => {
+            // Her seviyedeki kitapları filtrele
+            const filteredLevels = (group.levels || []).map(level => ({
+                ...level,
+                filteredBooks: getFilteredGroupBooks(level.books)
+            })).filter(level => level.filteredBooks.length > 0)
+
+            return {
+                ...group,
+                filteredLevels,
+                filteredBooks: getFilteredGroupBooks(group.books)
+            }
+        }).filter(group => group.filteredBooks.length > 0 || (activeStatus === "ALL" && !searchQuery))
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupedBooks, activeStatus, searchQuery])
 
@@ -506,7 +522,7 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                                 )}
                             </div>
                         ) : (
-                            <div className="grid gap-2 md:gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
+                            <div className="grid gap-2 md:gap-3 grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-9 2xl:grid-cols-11">
                                 {filteredBooks.map((book) => (
                                     <BookCard key={book.id} book={book} />
                                 ))}
@@ -515,7 +531,7 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                     </>
                 )}
 
-                {/* Shelf View (Reading List Groups) */}
+                {/* Shelf View (Reading List Groups with Levels) */}
                 {activeTab === "shelves" && (
                     <div className="space-y-4 md:space-y-8">
                         {filteredGroups.map((group) => {
@@ -524,6 +540,7 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
 
                             return (
                                 <div key={group.id} className={cn("border rounded-lg p-3 md:p-4", isRafsiz && "border-dashed")}>
+                                    {/* Liste Başlığı */}
                                     <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
                                         <div
                                             className="w-3 h-3 md:w-4 md:h-4 rounded-full flex-shrink-0"
@@ -547,8 +564,34 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                                             </Link>
                                         )}
                                     </div>
-                                    {group.filteredBooks.length > 0 ? (
-                                        <div className="grid gap-2 md:gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9">
+
+                                    {/* Seviyeler */}
+                                    {group.filteredLevels && group.filteredLevels.length > 0 ? (
+                                        <div className="space-y-3 md:space-y-4">
+                                            {group.filteredLevels.map((level) => (
+                                                <div key={level.levelNumber} className="pl-2 md:pl-4 border-l-2" style={{ borderColor: color }}>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="text-xs md:text-sm font-medium text-muted-foreground">
+                                                            Seviye {level.levelNumber}
+                                                        </span>
+                                                        <span className="text-[10px] md:text-xs text-muted-foreground/70 truncate hidden sm:inline">
+                                                            {level.levelName}
+                                                        </span>
+                                                        <span className="text-[10px] md:text-xs text-muted-foreground">
+                                                            ({level.filteredBooks.length})
+                                                        </span>
+                                                    </div>
+                                                    <div className="grid gap-2 md:gap-3 grid-cols-4 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
+                                                        {level.filteredBooks.map((book) => (
+                                                            <BookCard key={book.id} book={book} />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : group.filteredBooks.length > 0 ? (
+                                        // Seviye bilgisi yoksa (eski format) düz liste göster
+                                        <div className="grid gap-2 md:gap-3 grid-cols-4 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
                                             {group.filteredBooks.map((book) => (
                                                 <BookCard key={book.id} book={book} />
                                             ))}

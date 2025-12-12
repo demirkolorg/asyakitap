@@ -313,26 +313,36 @@ export async function getBooksGroupedByReadingList() {
             orderBy: { updatedAt: 'desc' }
         })
 
-        // Okuma listelerini getir (sıralı)
+        // Okuma listelerini seviyeleriyle birlikte getir (sıralı)
         const readingLists = await prisma.readingList.findMany({
-            orderBy: { sortOrder: 'asc' }
+            orderBy: { sortOrder: 'asc' },
+            include: {
+                levels: {
+                    orderBy: { levelNumber: 'asc' }
+                }
+            }
         })
 
-        // Gruplandırma için map
-        const groupMap = new Map<string, typeof books>()
+        // Gruplandırma için map: listSlug -> levelNumber -> books
+        const groupMap = new Map<string, Map<number, typeof books>>()
         const assignedBookIds = new Set<string>()
 
-        // Her kitabı ilk bağlı olduğu listeye ekle
+        // Her kitabı ilk bağlı olduğu listeye ve seviyeye ekle
         for (const book of books) {
             if (book.userReadingListBooks.length > 0) {
                 // İlk bağlandığı liste
                 const firstLink = book.userReadingListBooks[0]
                 const listSlug = firstLink.readingListBook.level.readingList.slug
+                const levelNumber = firstLink.readingListBook.level.levelNumber
 
                 if (!groupMap.has(listSlug)) {
-                    groupMap.set(listSlug, [])
+                    groupMap.set(listSlug, new Map())
                 }
-                groupMap.get(listSlug)!.push(book)
+                const levelMap = groupMap.get(listSlug)!
+                if (!levelMap.has(levelNumber)) {
+                    levelMap.set(levelNumber, [])
+                }
+                levelMap.get(levelNumber)!.push(book)
                 assignedBookIds.add(book.id)
             }
         }
@@ -340,20 +350,38 @@ export async function getBooksGroupedByReadingList() {
         // Rafsız kitaplar (hiçbir listeye bağlı olmayan)
         const unassignedBooks = books.filter(b => !assignedBookIds.has(b.id))
 
-        // Grupları oluştur
+        // Grupları oluştur (seviye bilgisiyle)
         const groups = readingLists
             .filter(list => groupMap.has(list.slug))
-            .map(list => ({
-                id: list.slug,
-                name: list.name,
-                books: groupMap.get(list.slug) || []
-            }))
+            .map(list => {
+                const levelMap = groupMap.get(list.slug)!
+                const levels = list.levels
+                    .filter(level => levelMap.has(level.levelNumber))
+                    .map(level => ({
+                        levelNumber: level.levelNumber,
+                        levelName: level.name,
+                        books: levelMap.get(level.levelNumber) || []
+                    }))
+
+                return {
+                    id: list.slug,
+                    name: list.name,
+                    levels,
+                    // Tüm kitapları düz liste olarak da tut (geriye uyumluluk)
+                    books: levels.flatMap(l => l.books)
+                }
+            })
 
         // Rafsız grubu ekle (varsa)
         if (unassignedBooks.length > 0) {
             groups.push({
                 id: "rafsiz",
                 name: "Rafsız",
+                levels: [{
+                    levelNumber: 0,
+                    levelName: "Listelenmemiş Kitaplar",
+                    books: unassignedBooks
+                }],
                 books: unassignedBooks
             })
         }
