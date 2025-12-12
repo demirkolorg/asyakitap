@@ -163,7 +163,7 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-visible">
                 {/* Input Step */}
                 {step === "input" && (
                     <>
@@ -366,7 +366,7 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
                                         </div>
 
                                         {rlSearchResults.length > 0 && (
-                                            <div className="absolute z-10 w-full mt-1 bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                            <div className="absolute z-[100] w-full mt-1 bg-background border rounded-lg shadow-xl max-h-48 overflow-y-auto">
                                                 {rlSearchResults.map((book) => (
                                                     <button
                                                         key={book.id}
