@@ -12,13 +12,13 @@ export async function GET(request: NextRequest) {
     try {
         if (all === "true") {
             // Tüm reading list cache'lerini temizle
-            revalidateTag("reading-lists")
-            revalidateTag("reading-list-bilim-kurgu")
-            revalidateTag("reading-list-dusunce-dava")
-            revalidateTag("reading-list-tarih-medeniyet")
-            revalidateTag("reading-list-ilahiyat-medeniyet")
-            revalidateTag("reading-list-istihbarat-strateji")
-            revalidateTag("reading-list-teknoloji-yapay-zeka")
+            revalidateTag("reading-lists", "max")
+            revalidateTag("reading-list-bilim-kurgu", "max")
+            revalidateTag("reading-list-dusunce-dava", "max")
+            revalidateTag("reading-list-tarih-medeniyet", "max")
+            revalidateTag("reading-list-ilahiyat-medeniyet", "max")
+            revalidateTag("reading-list-istihbarat-strateji", "max")
+            revalidateTag("reading-list-teknoloji-yapay-zeka", "max")
 
             return NextResponse.json({
                 success: true,
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         }
 
         if (tag) {
-            revalidateTag(tag)
+            revalidateTag(tag, "max")
             return NextResponse.json({
                 success: true,
                 message: `'${tag}' cache'i temizlendi`,
