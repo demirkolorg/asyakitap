@@ -1,11 +1,26 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useTransition } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuSeparator,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import {
     Plus,
     Search,
@@ -16,10 +31,15 @@ import {
     XCircle,
     Library,
     Layers,
+    Map,
+    ExternalLink,
+    Loader2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Book, BookStatus, Author, Publisher } from "@prisma/client"
 import { getReadingListColor } from "@/lib/reading-list-colors"
+import { getReadingLists, linkBookToReadingList } from "@/actions/reading-lists"
+import { toast } from "sonner"
 
 type BookWithRelations = Book & {
     author: Author | null
@@ -54,10 +74,47 @@ const statusBadgeConfig: Record<BookStatus, { label: string; bgColor: string }> 
     DNF: { label: "Yarım Bırakıldı", bgColor: "bg-red-600" },
 }
 
+// Types for reading list data
+interface ReadingListBook {
+    id: string
+    title: string
+    author: string
+    neden: string | null
+    pageCount: number | null
+    sortOrder: number
+}
+
+interface ReadingListLevel {
+    id: string
+    levelNumber: number
+    name: string
+    description: string | null
+    books: ReadingListBook[]
+}
+
+interface ReadingList {
+    id: string
+    slug: string
+    name: string
+    description: string | null
+    levels: ReadingListLevel[]
+    totalBooks: number
+    levelCount: number
+}
+
 export default function LibraryClient({ books, groupedBooks }: LibraryClientProps) {
+    const router = useRouter()
+    const [isPending, startTransition] = useTransition()
     const [activeTab, setActiveTab] = useState<"cards" | "shelves">("shelves")
     const [activeStatus, setActiveStatus] = useState<StatusFilter>("ALL")
     const [searchQuery, setSearchQuery] = useState("")
+
+    // Reading list link modal state
+    const [linkModalOpen, setLinkModalOpen] = useState(false)
+    const [selectedBookForLink, setSelectedBookForLink] = useState<BookWithRelations | null>(null)
+    const [readingLists, setReadingLists] = useState<ReadingList[]>([])
+    const [linkSearchQuery, setLinkSearchQuery] = useState("")
+    const [loadingLists, setLoadingLists] = useState(false)
 
     // Calculate stats
     const stats = useMemo(() => {
@@ -127,53 +184,146 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
         return 0
     }
 
-    // Book Card Component
+    // Open link modal and fetch reading lists
+    const openLinkModal = async (book: BookWithRelations) => {
+        setSelectedBookForLink(book)
+        setLinkModalOpen(true)
+        setLinkSearchQuery("")
+        setLoadingLists(true)
+
+        try {
+            const lists = await getReadingLists()
+            setReadingLists(lists)
+        } catch {
+            toast.error("Okuma listeleri yüklenemedi")
+        } finally {
+            setLoadingLists(false)
+        }
+    }
+
+    // Filter reading list books based on search
+    const filteredReadingListBooks = useMemo(() => {
+        if (!linkSearchQuery) {
+            // Return all books grouped by list/level
+            return readingLists.flatMap(list =>
+                list.levels.flatMap(level =>
+                    level.books.map(book => ({
+                        ...book,
+                        listName: list.name,
+                        listSlug: list.slug,
+                        levelName: level.name,
+                        levelNumber: level.levelNumber
+                    }))
+                )
+            )
+        }
+
+        const query = linkSearchQuery.toLowerCase()
+        return readingLists.flatMap(list =>
+            list.levels.flatMap(level =>
+                level.books
+                    .filter(book =>
+                        book.title.toLowerCase().includes(query) ||
+                        book.author.toLowerCase().includes(query) ||
+                        list.name.toLowerCase().includes(query)
+                    )
+                    .map(book => ({
+                        ...book,
+                        listName: list.name,
+                        listSlug: list.slug,
+                        levelName: level.name,
+                        levelNumber: level.levelNumber
+                    }))
+            )
+        )
+    }, [readingLists, linkSearchQuery])
+
+    // Handle linking book to reading list
+    const handleLinkToReadingList = (readingListBook: typeof filteredReadingListBooks[0]) => {
+        if (!selectedBookForLink) return
+
+        startTransition(async () => {
+            const result = await linkBookToReadingList(
+                selectedBookForLink.id,
+                readingListBook.id,
+                readingListBook.listSlug
+            )
+
+            if (result.success) {
+                toast.success(`"${selectedBookForLink.title}" → "${readingListBook.title}" bağlandı`)
+                setLinkModalOpen(false)
+                setSelectedBookForLink(null)
+                router.refresh()
+            } else {
+                toast.error(result.error || "Bir hata oluştu")
+            }
+        })
+    }
+
+    // Book Card Component with Context Menu
     const BookCard = ({ book }: { book: BookWithRelations }) => (
-        <div className="group relative">
-            <Link href={`/book/${book.id}`}>
-                <div className="relative aspect-[2/3] rounded overflow-hidden bg-muted shadow group-hover:shadow-lg transition-shadow">
-                    {book.coverUrl ? (
-                        <Image
-                            src={book.coverUrl.replace("http:", "https:")}
-                            alt={book.title}
-                            fill
-                            className="object-cover"
-                        />
-                    ) : (
-                        <div className="flex items-center justify-center h-full text-muted-foreground">
-                            <BookOpen className="h-6 w-6" />
-                        </div>
-                    )}
-                    <div className={cn(
-                        "absolute top-1 right-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-white",
-                        statusBadgeConfig[book.status].bgColor
-                    )}>
-                        {statusBadgeConfig[book.status].label}
-                    </div>
-                    {book.status === "READING" && book.pageCount && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                            <div className="text-white text-[10px] text-center mb-0.5">
-                                {Math.round((book.currentPage / book.pageCount) * 100)}%
-                            </div>
-                            <div className="h-0.5 bg-white/30 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-white rounded-full"
-                                    style={{ width: `${(book.currentPage / book.pageCount) * 100}%` }}
+        <ContextMenu>
+            <ContextMenuTrigger asChild>
+                <div className="group relative">
+                    <Link href={`/book/${book.id}`}>
+                        <div className="relative aspect-[2/3] rounded overflow-hidden bg-muted shadow group-hover:shadow-lg transition-shadow">
+                            {book.coverUrl ? (
+                                <Image
+                                    src={book.coverUrl.replace("http:", "https:")}
+                                    alt={book.title}
+                                    fill
+                                    className="object-cover"
                                 />
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-muted-foreground">
+                                    <BookOpen className="h-6 w-6" />
+                                </div>
+                            )}
+                            <div className={cn(
+                                "absolute top-1 right-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-white",
+                                statusBadgeConfig[book.status].bgColor
+                            )}>
+                                {statusBadgeConfig[book.status].label}
                             </div>
+                            {book.status === "READING" && book.pageCount && (
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                                    <div className="text-white text-[10px] text-center mb-0.5">
+                                        {Math.round((book.currentPage / book.pageCount) * 100)}%
+                                    </div>
+                                    <div className="h-0.5 bg-white/30 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-white rounded-full"
+                                            style={{ width: `${(book.currentPage / book.pageCount) * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    )}
+                        <div className="mt-1.5">
+                            <h3 className="text-xs font-medium line-clamp-1 group-hover:text-primary transition-colors">
+                                {book.title}
+                            </h3>
+                            <p className="text-[11px] text-muted-foreground line-clamp-1">
+                                {book.author?.name || "Bilinmiyor"}
+                            </p>
+                        </div>
+                    </Link>
                 </div>
-                <div className="mt-1.5">
-                    <h3 className="text-xs font-medium line-clamp-1 group-hover:text-primary transition-colors">
-                        {book.title}
-                    </h3>
-                    <p className="text-[11px] text-muted-foreground line-clamp-1">
-                        {book.author?.name || "Bilinmiyor"}
-                    </p>
-                </div>
-            </Link>
-        </div>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="w-48">
+                <ContextMenuItem asChild>
+                    <Link href={`/book/${book.id}`} className="flex items-center">
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Kitap Detayı
+                    </Link>
+                </ContextMenuItem>
+                <ContextMenuSeparator />
+                <ContextMenuItem onClick={() => openLinkModal(book)}>
+                    <Map className="h-4 w-4 mr-2" />
+                    Okuma Listesine Bağla
+                </ContextMenuItem>
+            </ContextMenuContent>
+        </ContextMenu>
     )
 
     return (
@@ -442,6 +592,73 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                     </div>
                 )}
             </main>
+
+            {/* Reading List Link Modal */}
+            <Dialog open={linkModalOpen} onOpenChange={setLinkModalOpen}>
+                <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>Okuma Listesine Bağla</DialogTitle>
+                        <DialogDescription>
+                            {selectedBookForLink && (
+                                <>
+                                    <span className="font-medium text-foreground">{selectedBookForLink.title}</span>
+                                    {" "}kitabını hangi okuma listesi kitabına bağlamak istiyorsunuz?
+                                </>
+                            )}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="relative mb-4">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Kitap, yazar veya liste adı ara..."
+                            value={linkSearchQuery}
+                            onChange={(e) => setLinkSearchQuery(e.target.value)}
+                            className="pl-9"
+                        />
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto min-h-0">
+                        {loadingLists ? (
+                            <div className="flex items-center justify-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                            </div>
+                        ) : filteredReadingListBooks.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                                <BookOpen className="h-12 w-12 mb-4" />
+                                <p>Arama sonucu bulunamadı</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {filteredReadingListBooks.map((book) => (
+                                    <button
+                                        key={book.id}
+                                        onClick={() => handleLinkToReadingList(book)}
+                                        disabled={isPending}
+                                        className="w-full flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors text-left disabled:opacity-50"
+                                    >
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-sm line-clamp-1">{book.title}</p>
+                                            <p className="text-xs text-muted-foreground line-clamp-1">{book.author}</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                                                    {book.listName}
+                                                </span>
+                                                <span className="text-xs text-muted-foreground">
+                                                    Seviye {book.levelNumber}: {book.levelName}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {isPending && (
+                                            <Loader2 className="h-4 w-4 animate-spin flex-shrink-0" />
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
