@@ -32,48 +32,58 @@ interface AddBookResult {
 }
 
 function decodeHtmlEntities(text: string): string {
-    return text
-        // Türkçe karakterler
-        .replace(/&uuml;/gi, 'ü')
-        .replace(/&ouml;/gi, 'ö')
-        .replace(/&ccedil;/gi, 'ç')
-        .replace(/&#252;/g, 'ü')
-        .replace(/&#246;/g, 'ö')
-        .replace(/&#231;/g, 'ç')
-        .replace(/&#220;/g, 'Ü')
-        .replace(/&#214;/g, 'Ö')
-        .replace(/&#199;/g, 'Ç')
-        .replace(/&#305;/g, 'ı')
-        .replace(/&#304;/g, 'İ')
-        .replace(/&#351;/g, 'ş')
-        .replace(/&#350;/g, 'Ş')
-        .replace(/&#287;/g, 'ğ')
-        .replace(/&#286;/g, 'Ğ')
-        // Genel HTML entities
+    if (!text) return ""
+
+    let result = text
+        // Önce &amp; decode et (diğer entity'lerin içinde olabilir)
+        .replace(/&amp;/g, '&')
+        // Apostrophe variations - EN ÖNEMLİ
+        .replace(/&apos;/gi, "'")
         .replace(/&#039;/g, "'")
         .replace(/&#39;/g, "'")
-        .replace(/&#x27;/g, "'")
-        .replace(/&apos;/g, "'")
-        .replace(/&quot;/g, '"')
-        .replace(/&#34;/g, '"')
-        .replace(/&amp;/g, '&')
-        .replace(/&acirc;/g, 'â')
-        .replace(/&icirc;/g, 'î')
-        .replace(/&nbsp;/g, ' ')
+        .replace(/&#x27;/gi, "'")
         .replace(/&rsquo;/g, "'")
         .replace(/&lsquo;/g, "'")
+        .replace(/'/g, "'")
+        .replace(/'/g, "'")
+        // Quotes
+        .replace(/&quot;/g, '"')
+        .replace(/&#34;/g, '"')
         .replace(/&rdquo;/g, '"')
         .replace(/&ldquo;/g, '"')
+        .replace(/"/g, '"')
+        .replace(/"/g, '"')
+        // Türkçe named entities
+        .replace(/&uuml;/gi, 'ü')
+        .replace(/&Uuml;/gi, 'Ü')
+        .replace(/&ouml;/gi, 'ö')
+        .replace(/&Ouml;/gi, 'Ö')
+        .replace(/&ccedil;/gi, 'ç')
+        .replace(/&Ccedil;/gi, 'Ç')
+        // Diğer entities
+        .replace(/&nbsp;/g, ' ')
         .replace(/&mdash;/g, '—')
         .replace(/&ndash;/g, '–')
         .replace(/&hellip;/g, '...')
         .replace(/&eacute;/g, 'é')
         .replace(/&agrave;/g, 'à')
         .replace(/&egrave;/g, 'è')
-        // Numeric entities genel
-        .replace(/&#(\d+);/g, (_, num) => String.fromCharCode(parseInt(num)))
-        .replace(/\s+/g, ' ')
-        .trim()
+        .replace(/&acirc;/g, 'â')
+        .replace(/&icirc;/g, 'î')
+
+    // Numeric entities (&#xxx;)
+    result = result.replace(/&#(\d+);/g, (_, num) => {
+        const code = parseInt(num)
+        return String.fromCharCode(code)
+    })
+
+    // Hex entities (&#xXX;)
+    result = result.replace(/&#x([0-9a-fA-F]+);/gi, (_, hex) => {
+        const code = parseInt(hex, 16)
+        return String.fromCharCode(code)
+    })
+
+    return result.replace(/\s+/g, ' ').trim()
 }
 
 export async function scrapeGoodreads(url: string): Promise<ScrapeResult> {
@@ -192,34 +202,43 @@ export async function scrapeGoodreads(url: string): Promise<ScrapeResult> {
             publishedDate = decodeHtmlEntities(dateMatch[1].trim())
         }
 
-        // Açıklama - JSON-LD description veya kitap açıklaması
+        // Açıklama - Temiz kaynaklardan al
         let description: string | null = null
 
-        // Önce JSON-LD'den dene
+        // JSON-LD description genelde temiz
         if (jsonLdData && typeof jsonLdData.description === 'string') {
-            description = decodeHtmlEntities(jsonLdData.description)
-        }
-
-        // Fallback: Kitap açıklaması HTML'den (daha temiz)
-        if (!description) {
-            // BookPageTitleSection içindeki description
-            const bookDescMatch = html.match(/data-testid="description"[^>]*>([^<]+(?:<[^>]+>[^<]*)*)<\/span>/i)
-            if (bookDescMatch) {
-                description = decodeHtmlEntities(bookDescMatch[1].replace(/<[^>]+>/g, ' '))
+            const desc = jsonLdData.description
+            // JSON verisi içermiyorsa kullan
+            if (!desc.includes('"_typename"') && !desc.includes('"webUrl"') && !desc.includes('{"')) {
+                description = decodeHtmlEntities(desc)
             }
         }
 
-        // Son fallback: meta description (JSON içerebilir, temizle)
+        // Fallback: meta description (dikkatli kontrol)
         if (!description) {
             const descMatch = html.match(/<meta name="description" content="([^"]+)"/i)
-                || html.match(/<meta property="og:description" content="([^"]+)"/i)
             if (descMatch) {
-                let rawDesc = descMatch[1]
-                // JSON formatında gelen veriyi temizle
-                if (rawDesc.includes('"_typename"') || rawDesc.includes('"webUrl"')) {
-                    // JSON içeriyor, kullanma
-                    description = null
-                } else {
+                const rawDesc = descMatch[1]
+                // JSON veya garip veri içermiyorsa kullan
+                if (!rawDesc.includes('"_typename"') &&
+                    !rawDesc.includes('"webUrl"') &&
+                    !rawDesc.includes('{"') &&
+                    !rawDesc.includes('null,') &&
+                    !rawDesc.includes('"rating"') &&
+                    rawDesc.length < 2000) {
+                    description = decodeHtmlEntities(rawDesc)
+                }
+            }
+        }
+
+        // Hala yoksa og:description dene
+        if (!description) {
+            const ogDescMatch = html.match(/<meta property="og:description" content="([^"]+)"/i)
+            if (ogDescMatch) {
+                const rawDesc = ogDescMatch[1]
+                if (!rawDesc.includes('"_typename"') &&
+                    !rawDesc.includes('{"') &&
+                    rawDesc.length < 2000) {
                     description = decodeHtmlEntities(rawDesc)
                 }
             }
