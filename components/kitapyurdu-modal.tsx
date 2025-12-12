@@ -25,7 +25,8 @@ import {
     Building2,
     Barcode,
     Calendar,
-    AlignLeft
+    AlignLeft,
+    ClipboardPaste
 } from "lucide-react"
 import { scrapeKitapyurdu, addBookFromKitapyurdu } from "@/actions/kitapyurdu"
 import { toast } from "sonner"
@@ -139,16 +140,36 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
                                 <Label htmlFor="url">Kitapyurdu Linki</Label>
-                                <Input
-                                    id="url"
-                                    placeholder="https://www.kitapyurdu.com/kitap/..."
-                                    value={url}
-                                    onChange={(e) => {
-                                        setUrl(e.target.value)
-                                        setError("")
-                                    }}
-                                    onKeyDown={(e) => e.key === "Enter" && handleScrape()}
-                                />
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="url"
+                                        placeholder="https://www.kitapyurdu.com/kitap/..."
+                                        value={url}
+                                        onChange={(e) => {
+                                            setUrl(e.target.value)
+                                            setError("")
+                                        }}
+                                        onKeyDown={(e) => e.key === "Enter" && handleScrape()}
+                                        className="flex-1"
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={async () => {
+                                            try {
+                                                const text = await navigator.clipboard.readText()
+                                                setUrl(text)
+                                                setError("")
+                                            } catch {
+                                                toast.error("Pano erişimi reddedildi")
+                                            }
+                                        }}
+                                        title="Yapıştır"
+                                    >
+                                        <ClipboardPaste className="h-4 w-4" />
+                                    </Button>
+                                </div>
                                 {error && (
                                     <p className="text-sm text-destructive">{error}</p>
                                 )}

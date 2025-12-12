@@ -27,7 +27,8 @@ import {
     Calendar,
     AlignLeft,
     Star,
-    Globe
+    Globe,
+    ClipboardPaste
 } from "lucide-react"
 import { scrapeGoodreads, addBookFromGoodreads } from "@/actions/goodreads"
 import { toast } from "sonner"
@@ -141,16 +142,36 @@ export function GoodreadsModal({ open, onOpenChange }: GoodreadsModalProps) {
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
                                 <Label htmlFor="url">Goodreads Linki</Label>
-                                <Input
-                                    id="url"
-                                    placeholder="https://www.goodreads.com/book/show/..."
-                                    value={url}
-                                    onChange={(e) => {
-                                        setUrl(e.target.value)
-                                        setError("")
-                                    }}
-                                    onKeyDown={(e) => e.key === "Enter" && handleScrape()}
-                                />
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="url"
+                                        placeholder="https://www.goodreads.com/book/show/..."
+                                        value={url}
+                                        onChange={(e) => {
+                                            setUrl(e.target.value)
+                                            setError("")
+                                        }}
+                                        onKeyDown={(e) => e.key === "Enter" && handleScrape()}
+                                        className="flex-1"
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={async () => {
+                                            try {
+                                                const text = await navigator.clipboard.readText()
+                                                setUrl(text)
+                                                setError("")
+                                            } catch {
+                                                toast.error("Pano erişimi reddedildi")
+                                            }
+                                        }}
+                                        title="Yapıştır"
+                                    >
+                                        <ClipboardPaste className="h-4 w-4" />
+                                    </Button>
+                                </div>
                                 {error && (
                                     <p className="text-sm text-destructive">{error}</p>
                                 )}
