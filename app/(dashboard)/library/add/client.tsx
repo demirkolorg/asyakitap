@@ -133,6 +133,18 @@ export function AddBookForm() {
                 await linkBookToReadingList(res.book.id, readingListBookId, readingListSlug)
                 toast.success("Kitap kütüphanene ve okuma listesine eklendi!")
                 router.back()
+            } else if (res.linkedToList) {
+                // Otomatik eşleşme bulundu
+                toast.success(`Kitap "${res.linkedToList}" listesine eklendi!`)
+                // Clear form
+                setTitle("")
+                setAuthorId("")
+                setPublisherId("")
+                setPageCount("")
+                setCoverUrl("")
+                setIsbn("")
+                setPublishedDate("")
+                setDescription("")
             } else {
                 toast.success("Kitap kütüphanenize eklendi")
                 // Clear form

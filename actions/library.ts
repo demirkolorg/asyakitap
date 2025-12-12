@@ -61,15 +61,24 @@ export async function addBookToLibrary(bookData: {
         // Otomatik okuma listesi eşleştirmesi
         let linkedToList: string | undefined
         if (newBook.author?.name) {
+            console.log("[AUTO-LINK] Trying to link:", {
+                userId: user.id,
+                bookId: newBook.id,
+                title: bookData.title,
+                author: newBook.author.name
+            })
             const linkResult = await autoLinkBookToReadingLists(
                 user.id,
                 newBook.id,
                 bookData.title,
                 newBook.author.name
             )
+            console.log("[AUTO-LINK] Result:", linkResult)
             if (linkResult.linked && linkResult.listName) {
                 linkedToList = linkResult.listName
             }
+        } else {
+            console.log("[AUTO-LINK] Skipped - no author name")
         }
 
         // Invalidate caches
