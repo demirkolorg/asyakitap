@@ -277,12 +277,20 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
     }
 
     // Book Card Component with Context Menu
-    const BookCard = ({ book }: { book: BookWithRelations }) => (
+    const BookCard = ({ book, isShelfView = false }: { book: BookWithRelations; isShelfView?: boolean }) => (
         <ContextMenu>
             <ContextMenuTrigger asChild>
-                <div className="group relative">
+                <div className={cn(
+                    "group relative",
+                    isShelfView && "transform transition-all duration-300 ease-out hover:-translate-y-2 hover:z-10"
+                )}>
                     <Link href={`/book/${book.id}`}>
-                        <div className="relative aspect-[2/3] rounded overflow-hidden bg-muted shadow group-hover:shadow-lg transition-shadow">
+                        <div className={cn(
+                            "relative aspect-[2/3] rounded-sm overflow-hidden bg-muted",
+                            isShelfView
+                                ? "shadow-md group-hover:shadow-xl transition-all duration-300 ring-1 ring-black/5 dark:ring-white/10"
+                                : "shadow group-hover:shadow-lg transition-shadow"
+                        )}>
                             {book.coverUrl ? (
                                 <Image
                                     src={book.coverUrl.replace("http:", "https:")}
@@ -291,16 +299,18 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                                     className="object-cover"
                                 />
                             ) : (
-                                <div className="flex items-center justify-center h-full text-muted-foreground">
+                                <div className="flex items-center justify-center h-full bg-gradient-to-br from-muted to-muted-foreground/20 text-muted-foreground">
                                     <BookOpen className="h-6 w-6" />
                                 </div>
                             )}
+                            {/* Status badge */}
                             <div className={cn(
-                                "absolute top-1 right-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-white",
+                                "absolute top-1 right-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-white shadow-sm",
                                 statusBadgeConfig[book.status].bgColor
                             )}>
                                 {statusBadgeConfig[book.status].label}
                             </div>
+                            {/* Reading progress */}
                             {book.status === "READING" && book.pageCount && (
                                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
                                     <div className="text-white text-[10px] text-center mb-0.5">
@@ -308,11 +318,15 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                                     </div>
                                     <div className="h-0.5 bg-white/30 rounded-full overflow-hidden">
                                         <div
-                                            className="h-full bg-white rounded-full"
+                                            className="h-full bg-white rounded-full transition-all"
                                             style={{ width: `${(book.currentPage / book.pageCount) * 100}%` }}
                                         />
                                     </div>
                                 </div>
+                            )}
+                            {/* Book spine effect for shelf view */}
+                            {isShelfView && (
+                                <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-r from-black/20 to-transparent" />
                             )}
                         </div>
                         <div className="mt-1.5">
@@ -533,74 +547,117 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
 
                 {/* Shelf View (Reading List Groups with Levels) */}
                 {activeTab === "shelves" && (
-                    <div className="space-y-4 md:space-y-8">
+                    <div className="space-y-6 md:space-y-10">
                         {filteredGroups.map((group) => {
                             const color = group.id === "rafsiz" ? "#6b7280" : (getReadingListColor(group.id) || "#6b7280")
                             const isRafsiz = group.id === "rafsiz"
 
                             return (
-                                <div key={group.id} className={cn("border rounded-lg p-3 md:p-4", isRafsiz && "border-dashed")}>
-                                    {/* Liste Başlığı */}
-                                    <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                                <div key={group.id} className="relative">
+                                    {/* Liste Başlığı - Modern Header */}
+                                    <div className="flex items-center gap-3 mb-4 md:mb-5">
                                         <div
-                                            className="w-3 h-3 md:w-4 md:h-4 rounded-full flex-shrink-0"
+                                            className="w-1 h-8 rounded-full"
                                             style={{ backgroundColor: color }}
                                         />
-                                        <h2 className={cn(
-                                            "text-sm md:text-lg font-semibold truncate",
-                                            isRafsiz && "text-muted-foreground"
-                                        )}>
-                                            {group.name}
-                                        </h2>
-                                        <span className="text-xs md:text-sm text-muted-foreground flex-shrink-0">
-                                            ({group.filteredBooks.length}{(activeStatus !== "ALL" || searchQuery) && `/${group.books.length}`})
-                                        </span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <h2 className={cn(
+                                                    "text-base md:text-xl font-bold truncate",
+                                                    isRafsiz && "text-muted-foreground"
+                                                )}>
+                                                    {group.name}
+                                                </h2>
+                                                <span className="text-xs md:text-sm text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                                                    {group.filteredBooks.length} kitap
+                                                </span>
+                                            </div>
+                                        </div>
                                         {!isRafsiz && (
                                             <Link
                                                 href={`/reading-lists/${group.id}`}
-                                                className="ml-auto text-xs text-primary hover:underline"
+                                                className="text-xs text-primary hover:text-primary/80 font-medium transition-colors flex items-center gap-1"
                                             >
-                                                Listeye Git →
+                                                Listeye Git
+                                                <ExternalLink className="h-3 w-3" />
                                             </Link>
                                         )}
                                     </div>
 
-                                    {/* Seviyeler */}
+                                    {/* Seviyeler - Bookshelf Style */}
                                     {group.filteredLevels && group.filteredLevels.length > 0 ? (
-                                        <div className="space-y-3 md:space-y-4">
+                                        <div className="space-y-6">
                                             {group.filteredLevels.map((level) => (
-                                                <div key={level.levelNumber} className="pl-2 md:pl-4 border-l-2" style={{ borderColor: color }}>
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <span className="text-xs md:text-sm font-medium text-muted-foreground">
-                                                            Seviye {level.levelNumber}
-                                                        </span>
-                                                        <span className="text-[10px] md:text-xs text-muted-foreground/70 truncate hidden sm:inline">
+                                                <div key={level.levelNumber} className="relative">
+                                                    {/* Level Header */}
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <div
+                                                            className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold text-white shadow-sm"
+                                                            style={{ backgroundColor: color }}
+                                                        >
+                                                            {level.levelNumber}
+                                                        </div>
+                                                        <span className="text-sm font-medium">
                                                             {level.levelName}
                                                         </span>
-                                                        <span className="text-[10px] md:text-xs text-muted-foreground">
+                                                        <span className="text-xs text-muted-foreground">
                                                             ({level.filteredBooks.length})
                                                         </span>
                                                     </div>
-                                                    <div className="grid gap-2 md:gap-3 grid-cols-4 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
-                                                        {level.filteredBooks.map((book) => (
-                                                            <BookCard key={book.id} book={book} />
-                                                        ))}
+
+                                                    {/* Books on Shelf */}
+                                                    <div className="relative">
+                                                        {/* Shelf background */}
+                                                        <div
+                                                            className="absolute -bottom-3 left-0 right-0 h-3 rounded-b-lg shadow-inner"
+                                                            style={{
+                                                                background: `linear-gradient(to bottom, ${color}15, ${color}25)`,
+                                                                boxShadow: `inset 0 2px 4px ${color}20`
+                                                            }}
+                                                        />
+                                                        {/* Shelf edge */}
+                                                        <div
+                                                            className="absolute -bottom-3 left-0 right-0 h-1 rounded-b-lg"
+                                                            style={{ backgroundColor: color, opacity: 0.3 }}
+                                                        />
+
+                                                        {/* Books Grid */}
+                                                        <div className="grid gap-3 md:gap-4 grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 pb-4">
+                                                            {level.filteredBooks.map((book) => (
+                                                                <BookCard key={book.id} book={book} isShelfView />
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
                                     ) : group.filteredBooks.length > 0 ? (
-                                        // Seviye bilgisi yoksa (eski format) düz liste göster
-                                        <div className="grid gap-2 md:gap-3 grid-cols-4 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
-                                            {group.filteredBooks.map((book) => (
-                                                <BookCard key={book.id} book={book} />
-                                            ))}
+                                        // Seviye bilgisi yoksa (Rafsız) düz liste göster
+                                        <div className={cn(
+                                            "relative rounded-xl p-4 md:p-5",
+                                            isRafsiz ? "bg-muted/30 border-2 border-dashed" : "bg-gradient-to-br from-muted/50 to-muted/20"
+                                        )}>
+                                            {/* Shelf background for non-leveled groups */}
+                                            <div
+                                                className="absolute bottom-0 left-0 right-0 h-2 rounded-b-xl"
+                                                style={{
+                                                    background: `linear-gradient(to bottom, transparent, ${color}20)`
+                                                }}
+                                            />
+                                            <div className="grid gap-3 md:gap-4 grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
+                                                {group.filteredBooks.map((book) => (
+                                                    <BookCard key={book.id} book={book} isShelfView />
+                                                ))}
+                                            </div>
                                         </div>
                                     ) : (
-                                        <div className="flex items-center justify-center py-6 md:py-8 border-2 border-dashed rounded-lg bg-muted/20">
-                                            <p className="text-xs md:text-sm text-muted-foreground">
-                                                Bu listede henüz kitap yok
-                                            </p>
+                                        <div className="flex items-center justify-center py-8 md:py-12 border-2 border-dashed rounded-xl bg-muted/10">
+                                            <div className="text-center">
+                                                <BookOpen className="h-10 w-10 text-muted-foreground/50 mx-auto mb-2" />
+                                                <p className="text-sm text-muted-foreground">
+                                                    Bu listede henüz kitap yok
+                                                </p>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -608,12 +665,12 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                         })}
 
                         {filteredGroups.length === 0 && (
-                            <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-lg bg-muted/40">
-                                <Layers className="h-12 w-12 text-muted-foreground mb-4" />
+                            <div className="flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed rounded-xl bg-muted/20">
+                                <Layers className="h-16 w-16 text-muted-foreground/40 mb-4" />
                                 {(activeStatus !== "ALL" || searchQuery) ? (
                                     <>
-                                        <p className="text-muted-foreground mb-2">Arama sonucu bulunamadı</p>
-                                        <Button variant="outline" onClick={() => {
+                                        <p className="text-muted-foreground mb-3">Arama sonucu bulunamadı</p>
+                                        <Button variant="outline" size="sm" onClick={() => {
                                             setActiveStatus("ALL")
                                             setSearchQuery("")
                                         }}>
@@ -623,7 +680,7 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                                 ) : (
                                     <>
                                         <p className="text-muted-foreground mb-4">Henüz okuma listesine bağlı kitap yok</p>
-                                        <Button asChild>
+                                        <Button asChild size="sm">
                                             <Link href="/reading-lists">
                                                 Okuma Listelerini Gör
                                             </Link>
