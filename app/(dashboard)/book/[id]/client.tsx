@@ -472,13 +472,11 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
 
                     {/* Reading List Motivation Card */}
                     {book.userReadingListBooks.length > 0 && (
-                        <div className="mb-6">
+                        <div className="mb-6 space-y-3">
                             {book.userReadingListBooks.map((urlb) => {
-                                const listSlug = urlb.readingListBook.level.readingList.slug
-                                const listColor = getReadingListColor(listSlug) || "#8b5cf6"
-                                const listName = urlb.readingListBook.level.readingList.name
-                                const levelName = urlb.readingListBook.level.name
-                                const levelNumber = urlb.readingListBook.level.levelNumber
+                                const list = urlb.readingListBook.level.readingList
+                                const level = urlb.readingListBook.level
+                                const listColor = getReadingListColor(list.slug) || "#8b5cf6"
                                 const neden = urlb.readingListBook.neden
 
                                 return (
@@ -486,61 +484,76 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         key={urlb.id}
                                         className="relative overflow-hidden rounded-xl border"
                                         style={{
-                                            background: `linear-gradient(135deg, ${listColor}08 0%, ${listColor}15 100%)`,
-                                            borderColor: `${listColor}30`
+                                            background: `linear-gradient(135deg, ${listColor}05 0%, ${listColor}12 100%)`,
+                                            borderColor: `${listColor}25`
                                         }}
                                     >
-                                        {/* Decorative accent */}
+                                        {/* Sol kenar accent */}
                                         <div
-                                            className="absolute top-0 left-0 w-1.5 h-full"
+                                            className="absolute top-0 left-0 w-1 h-full"
                                             style={{ backgroundColor: listColor }}
                                         />
 
                                         <div className="p-4 pl-5">
-                                            {/* Header */}
-                                            <div className="flex items-start justify-between gap-3 mb-3">
-                                                <div className="flex items-center gap-2">
-                                                    <div
-                                                        className="p-1.5 rounded-lg"
-                                                        style={{ backgroundColor: `${listColor}20` }}
+                                            {/* Liste Başlığı */}
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="flex-1 min-w-0">
+                                                    <Link
+                                                        href={`/reading-lists/${list.slug}`}
+                                                        className="inline-flex items-center gap-2 font-semibold hover:underline"
+                                                        style={{ color: listColor }}
                                                     >
-                                                        <Map className="h-4 w-4" style={{ color: listColor }} />
-                                                    </div>
-                                                    <div>
-                                                        <Link
-                                                            href={`/reading-lists/${listSlug}`}
-                                                            className="font-semibold text-sm hover:underline"
-                                                            style={{ color: listColor }}
-                                                        >
-                                                            {listName}
-                                                        </Link>
-                                                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                                            <Layers className="h-3 w-3" />
-                                                            <span>Seviye {levelNumber}: {levelName}</span>
-                                                        </div>
-                                                    </div>
+                                                        <Map className="h-4 w-4 flex-shrink-0" />
+                                                        {list.name}
+                                                    </Link>
+                                                    {/* Liste Açıklaması */}
+                                                    {list.description && (
+                                                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                                            {list.description}
+                                                        </p>
+                                                    )}
                                                 </div>
-
-                                                {/* Level Badge */}
+                                                {/* Seviye Badge */}
                                                 <div
-                                                    className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-white"
+                                                    className="flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium text-white"
                                                     style={{ backgroundColor: listColor }}
                                                 >
-                                                    <Sparkles className="h-3 w-3" />
-                                                    Seviye {levelNumber}
+                                                    Seviye {level.levelNumber}
                                                 </div>
                                             </div>
 
-                                            {/* Neden (Why) - Motivation Text */}
+                                            {/* Seviye Bilgisi */}
+                                            <div
+                                                className="mt-3 pt-3 border-t"
+                                                style={{ borderColor: `${listColor}15` }}
+                                            >
+                                                <div className="flex items-start gap-2">
+                                                    <Layers className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: listColor }} />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium">
+                                                            {level.name}
+                                                        </p>
+                                                        {/* Seviye Açıklaması */}
+                                                        {level.description && (
+                                                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                                                                {level.description}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Neden (Kitap Motivasyonu) */}
                                             {neden && (
-                                                <div className="mt-3 pt-3 border-t" style={{ borderColor: `${listColor}20` }}>
-                                                    <div className="flex gap-2">
-                                                        <div className="flex-shrink-0 mt-0.5">
-                                                            <Sparkles className="h-4 w-4" style={{ color: listColor }} />
-                                                        </div>
-                                                        <div>
+                                                <div
+                                                    className="mt-3 pt-3 border-t"
+                                                    style={{ borderColor: `${listColor}15` }}
+                                                >
+                                                    <div className="flex items-start gap-2">
+                                                        <Sparkles className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: listColor }} />
+                                                        <div className="flex-1">
                                                             <p className="text-xs font-medium text-muted-foreground mb-1">
-                                                                Bu kitap neden bu listede?
+                                                                Bu kitap neden okunmalı?
                                                             </p>
                                                             <p className="text-sm leading-relaxed">
                                                                 {neden}
