@@ -53,8 +53,7 @@ export async function addBookToLibrary(bookData: {
                 coverUrl: true,
                 status: true,
                 author: { select: { id: true, name: true } },
-                publisher: { select: { id: true, name: true } },
-                shelf: { select: { id: true, name: true } }
+                publisher: { select: { id: true, name: true } }
             }
         })
 
@@ -81,8 +80,7 @@ export async function getBooks() {
             where: { userId: user.id },
             include: {
                 author: true,
-                publisher: true,
-                shelf: true
+                publisher: true
             },
             orderBy: { updatedAt: 'desc' }
         })
@@ -105,7 +103,6 @@ export async function getBook(id: string) {
             include: {
                 author: true,
                 publisher: true,
-                shelf: true,
                 quotes: {
                     orderBy: { createdAt: 'desc' },
                     take: 50 // Limit quotes for performance
@@ -140,7 +137,6 @@ export async function updateBook(id: string, data: {
     title?: string
     authorId?: string
     publisherId?: string | null
-    shelfId?: string | null
     status?: BookStatus
     currentPage?: number
     pageCount?: number | null
@@ -170,8 +166,7 @@ export async function updateBook(id: string, data: {
                 currentPage: true,
                 pageCount: true,
                 author: { select: { id: true, name: true } },
-                publisher: { select: { id: true, name: true } },
-                shelf: { select: { id: true, name: true } }
+                publisher: { select: { id: true, name: true } }
             }
         })
 
@@ -283,5 +278,89 @@ export async function getImzalarPageData() {
     } catch (error) {
         console.error("Failed to fetch imzalar page data:", error)
         return { booksWithImza: [], totalBookCount: 0, booksWithoutImza: [] }
+    }
+}
+
+// Kitapları okuma listelerine göre grupla
+export async function getBooksGroupedByReadingList() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return { groups: [] }
+
+    try {
+        // Tüm kitapları ve okuma listesi bağlantılarını getir
+        const books = await prisma.book.findMany({
+            where: { userId: user.id },
+            include: {
+                author: true,
+                publisher: true,
+                userReadingListBooks: {
+                    include: {
+                        readingListBook: {
+                            include: {
+                                level: {
+                                    include: {
+                                        readingList: true
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    orderBy: { createdAt: 'asc' } // İlk eklenen liste öncelikli
+                }
+            },
+            orderBy: { updatedAt: 'desc' }
+        })
+
+        // Okuma listelerini getir (sıralı)
+        const readingLists = await prisma.readingList.findMany({
+            orderBy: { sortOrder: 'asc' }
+        })
+
+        // Gruplandırma için map
+        const groupMap = new Map<string, typeof books>()
+        const assignedBookIds = new Set<string>()
+
+        // Her kitabı ilk bağlı olduğu listeye ekle
+        for (const book of books) {
+            if (book.userReadingListBooks.length > 0) {
+                // İlk bağlandığı liste
+                const firstLink = book.userReadingListBooks[0]
+                const listSlug = firstLink.readingListBook.level.readingList.slug
+
+                if (!groupMap.has(listSlug)) {
+                    groupMap.set(listSlug, [])
+                }
+                groupMap.get(listSlug)!.push(book)
+                assignedBookIds.add(book.id)
+            }
+        }
+
+        // Rafsız kitaplar (hiçbir listeye bağlı olmayan)
+        const unassignedBooks = books.filter(b => !assignedBookIds.has(b.id))
+
+        // Grupları oluştur
+        const groups = readingLists
+            .filter(list => groupMap.has(list.slug))
+            .map(list => ({
+                id: list.slug,
+                name: list.name,
+                books: groupMap.get(list.slug) || []
+            }))
+
+        // Rafsız grubu ekle (varsa)
+        if (unassignedBooks.length > 0) {
+            groups.push({
+                id: "rafsiz",
+                name: "Rafsız",
+                books: unassignedBooks
+            })
+        }
+
+        return { groups }
+    } catch (error) {
+        console.error("Failed to fetch grouped books:", error)
+        return { groups: [] }
     }
 }

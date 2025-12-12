@@ -1,12 +1,11 @@
-import { getBooks } from "@/actions/library"
-import { getShelves } from "@/actions/shelf"
+import { getBooks, getBooksGroupedByReadingList } from "@/actions/library"
 import LibraryClient from "./client"
 
 export default async function LibraryPage() {
-    const [books, shelves] = await Promise.all([
+    const [books, groupedBooks] = await Promise.all([
         getBooks(),
-        getShelves()
+        getBooksGroupedByReadingList()
     ])
 
-    return <LibraryClient books={books} shelves={shelves} />
+    return <LibraryClient books={books} groupedBooks={groupedBooks} />
 }

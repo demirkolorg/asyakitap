@@ -94,7 +94,6 @@ interface ReadingList {
     slug: string
     name: string
     description: string | null
-    defaultShelfName: string | null
     levels: ReadingListLevel[]
     totalBooks: number
     levelCount: number
@@ -329,7 +328,7 @@ export function ManageClient({ initialLists }: ManageClientProps) {
     } | null>(null)
 
     // Form states
-    const [listForm, setListForm] = useState({ name: "", slug: "", description: "", defaultShelfName: "" })
+    const [listForm, setListForm] = useState({ name: "", slug: "", description: "" })
     const [levelForm, setLevelForm] = useState({ name: "", description: "" })
     const [bookForm, setBookForm] = useState({
         title: "",
@@ -369,11 +368,10 @@ export function ManageClient({ initialLists }: ManageClientProps) {
                 name: list.name,
                 slug: list.slug,
                 description: list.description || "",
-                defaultShelfName: list.defaultShelfName || "",
             })
         } else {
             setEditingList(null)
-            setListForm({ name: "", slug: "", description: "", defaultShelfName: "" })
+            setListForm({ name: "", slug: "", description: "" })
         }
         setListDialogOpen(true)
     }
@@ -385,7 +383,6 @@ export function ManageClient({ initialLists }: ManageClientProps) {
                 name: listForm.name,
                 slug: listForm.slug,
                 description: listForm.description || undefined,
-                defaultShelfName: listForm.defaultShelfName || null,
             }
             if (editingList) {
                 const res = await updateReadingList(editingList.id, submitData)
@@ -852,19 +849,6 @@ export function ManageClient({ initialLists }: ManageClientProps) {
                                 placeholder="Liste hakkında kısa açıklama..."
                                 rows={3}
                             />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Varsayılan Raf Adı</label>
-                            <Input
-                                value={listForm.defaultShelfName}
-                                onChange={(e) =>
-                                    setListForm({ ...listForm, defaultShelfName: e.target.value })
-                                }
-                                placeholder="Örn: Bilim Kurgu Okumaları Rafı"
-                            />
-                            <p className="text-xs text-muted-foreground">
-                                Bu listeye kitap eklendiğinde otomatik oluşturulacak raf. Boş bırakılırsa raf ataması yapılmaz.
-                            </p>
                         </div>
                     </div>
                     <DialogFooter>

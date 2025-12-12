@@ -37,7 +37,6 @@ import {
     PenLine,
     Building2,
     Map,
-    Layers,
     Barcode,
 } from "lucide-react"
 import { addQuote, deleteQuote } from "@/actions/quotes"
@@ -81,7 +80,7 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
 import { cn } from "@/lib/utils"
 
 // Types
-import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, Shelf, UserReadingListBook, ReadingListBook, ReadingListLevel, ReadingList } from "@prisma/client"
+import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, UserReadingListBook, ReadingListBook, ReadingListLevel, ReadingList } from "@prisma/client"
 
 type UserReadingListBookWithDetails = UserReadingListBook & {
     readingListBook: ReadingListBook & {
@@ -97,7 +96,6 @@ interface BookDetailClientProps {
         readingLogs: ReadingLog[]
         author: Author | null
         publisher: Publisher | null
-        shelf: Shelf | null
         userReadingListBooks: UserReadingListBookWithDetails[]
     }
 }
@@ -465,19 +463,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             >
                                 <Building2 className="h-3.5 w-3.5" />
                                 {book.publisher.name}
-                            </Link>
-                        )}
-                        {book.shelf && (
-                            <Link
-                                href="/library"
-                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm transition-colors"
-                                style={{
-                                    backgroundColor: book.shelf.color ? `${book.shelf.color}20` : 'hsl(var(--muted))',
-                                    color: book.shelf.color || 'inherit'
-                                }}
-                            >
-                                <Layers className="h-3.5 w-3.5" />
-                                {book.shelf.name}
                             </Link>
                         )}
                         {book.userReadingListBooks.length > 0 && book.userReadingListBooks.map((urlb) => (

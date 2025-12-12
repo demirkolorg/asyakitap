@@ -196,64 +196,11 @@ export async function linkBookToReadingList(bookId: string, readingListBookId: s
         // Verify book belongs to user
         const book = await prisma.book.findFirst({
             where: { id: bookId, userId: user.id },
-            select: { id: true, shelfId: true }
+            select: { id: true }
         })
 
         if (!book) {
             return { success: false, error: "Kitap bulunamadı" }
-        }
-
-        // Get reading list's defaultShelfName
-        const readingListBook = await prisma.readingListBook.findUnique({
-            where: { id: readingListBookId },
-            include: {
-                level: {
-                    include: { readingList: true }
-                }
-            }
-        })
-
-        if (!readingListBook) {
-            return { success: false, error: "Liste kitabı bulunamadı" }
-        }
-
-        const defaultShelfName = readingListBook.level.readingList.defaultShelfName
-        let shelfAssigned = false
-
-        // Handle shelf assignment if defaultShelfName is set
-        if (defaultShelfName) {
-            // Find or create the shelf
-            let shelf = await prisma.shelf.findFirst({
-                where: {
-                    userId: user.id,
-                    name: { equals: defaultShelfName, mode: 'insensitive' }
-                }
-            })
-
-            if (!shelf) {
-                // Create new shelf
-                const maxOrder = await prisma.shelf.aggregate({
-                    where: { userId: user.id },
-                    _max: { sortOrder: true }
-                })
-
-                shelf = await prisma.shelf.create({
-                    data: {
-                        userId: user.id,
-                        name: defaultShelfName,
-                        sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
-                    }
-                })
-            }
-
-            // Assign book to shelf (even if it's already in another shelf)
-            if (book.shelfId !== shelf.id) {
-                await prisma.book.update({
-                    where: { id: bookId },
-                    data: { shelfId: shelf.id }
-                })
-                shelfAssigned = true
-            }
         }
 
         // Check if link already exists
@@ -285,7 +232,7 @@ export async function linkBookToReadingList(bookId: string, readingListBookId: s
 
         revalidatePath(`/reading-lists/${listSlug}`)
         revalidatePath('/library')
-        return { success: true, shelfAssigned }
+        return { success: true }
     } catch (error) {
         console.error("Failed to link book:", error)
         return { success: false, error: "Kitap bağlanamadı" }
@@ -410,7 +357,6 @@ export async function createReadingList(data: {
     name: string
     slug: string
     description?: string
-    defaultShelfName?: string | null
 }) {
     try {
         const maxOrder = await prisma.readingList.aggregate({
@@ -422,7 +368,6 @@ export async function createReadingList(data: {
                 name: data.name,
                 slug: data.slug,
                 description: data.description || null,
-                defaultShelfName: data.defaultShelfName || null,
                 sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
             }
         })
@@ -440,7 +385,6 @@ export async function updateReadingList(id: string, data: {
     name?: string
     slug?: string
     description?: string
-    defaultShelfName?: string | null
 }) {
     try {
         const list = await prisma.readingList.update({
@@ -449,7 +393,7 @@ export async function updateReadingList(id: string, data: {
         })
 
         revalidatePath("/reading-lists")
-        revalidateTag(CACHE_TAGS.readingLists)
+        revalidateTag(CACHE_TAGS.readingLists, 'max')
         return { success: true, list }
     } catch (error) {
         console.error("Failed to update reading list:", error)

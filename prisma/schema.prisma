@@ -10,7 +10,6 @@ model User {
   id                   String                @id @default(uuid())
   email                String                @unique
   books                Book[]
-  shelves              Shelf[]
   userReadingListBooks UserReadingListBook[]
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
@@ -55,26 +54,6 @@ model Publisher {
   @@index([name])
 }
 
-// ==========================================
-// Raf Modeli (Kullanıcı Rafları)
-// ==========================================
-
-model Shelf {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name        String
-  description String?
-  color       String?  // Raf rengi (hex code)
-  sortOrder   Int      @default(0)
-  books       Book[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([userId])
-  @@index([userId, sortOrder])
-}
-
 model Book {
   id                   String                @id @default(cuid())
   userId               String
@@ -84,8 +63,6 @@ model Book {
   author               Author?               @relation(fields: [authorId], references: [id])
   publisherId          String?
   publisher            Publisher?            @relation(fields: [publisherId], references: [id])
-  shelfId              String?
-  shelf                Shelf?                @relation(fields: [shelfId], references: [id], onDelete: SetNull)
   coverUrl             String?
   pageCount            Int?
   isbn                 String?
@@ -106,7 +83,6 @@ model Book {
   @@index([userId])
   @@index([authorId])
   @@index([publisherId])
-  @@index([shelfId])
   @@index([userId, status]) // Status bazlı sorgular için (reading, completed, etc.)
   @@index([userId, updatedAt]) // Son güncellenen kitaplar için
 }
@@ -149,16 +125,15 @@ model Quote {
 // ==========================================
 
 model ReadingList {
-  id               String             @id @default(cuid())
-  slug             String             @unique
-  name             String
-  description      String?            @db.Text
-  coverUrl         String?
-  sortOrder        Int                @default(0)
-  defaultShelfName String?            // Varsayılan raf adı - kitap eklendiğinde bu rafa atanır
-  levels           ReadingListLevel[]
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  id          String             @id @default(cuid())
+  slug        String             @unique
+  name        String
+  description String?            @db.Text
+  coverUrl    String?
+  sortOrder   Int                @default(0)
+  levels      ReadingListLevel[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 }
 
 model ReadingListLevel {
