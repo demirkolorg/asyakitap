@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,7 +11,7 @@ import { getBestCoverUrl } from "@/lib/book-utils"
 import { addBookToLibrary } from "@/actions/library"
 import { getOrCreateAuthor } from "@/actions/authors"
 import { getOrCreatePublisher } from "@/actions/publisher"
-import { linkBookToReadingList } from "@/actions/reading-lists"
+import { linkBookToReadingList, searchReadingListBooks } from "@/actions/reading-lists"
 import {
     Card,
     CardContent,
@@ -20,13 +20,24 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Loader2, Map, X, Barcode, BookOpen, FileText } from "lucide-react"
+import { Loader2, Map, X, Barcode, BookOpen, FileText, Search, List } from "lucide-react"
 import Image from "next/image"
 import { toast } from "sonner"
 import { AuthorCombobox } from "@/components/author/author-combobox"
 import { AddAuthorModal } from "@/components/author/add-author-modal"
 import { PublisherCombobox } from "@/components/publisher/publisher-combobox"
 import { AddPublisherModal } from "@/components/publisher/add-publisher-modal"
+import { cn } from "@/lib/utils"
+import debounce from "lodash/debounce"
+
+type ReadingListBookResult = {
+    id: string
+    title: string
+    author: string
+    listName: string
+    levelName: string
+    listSlug: string
+}
 
 export function AddBookForm() {
     const searchParams = useSearchParams()
@@ -52,6 +63,27 @@ export function AddBookForm() {
     const [authorModalOpen, setAuthorModalOpen] = useState(false)
     // Publisher modal
     const [publisherModalOpen, setPublisherModalOpen] = useState(false)
+
+    // Reading list book search
+    const [rlSearchQuery, setRlSearchQuery] = useState("")
+    const [rlSearchResults, setRlSearchResults] = useState<ReadingListBookResult[]>([])
+    const [rlSearching, setRlSearching] = useState(false)
+    const [selectedRlBook, setSelectedRlBook] = useState<ReadingListBookResult | null>(null)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedRlSearch = useCallback(
+        debounce(async (query: string) => {
+            if (query.length < 2) {
+                setRlSearchResults([])
+                return
+            }
+            setRlSearching(true)
+            const results = await searchReadingListBooks(query)
+            setRlSearchResults(results)
+            setRlSearching(false)
+        }, 300),
+        []
+    )
 
     const clearReadingListContext = () => {
         const url = new URL(window.location.href)
@@ -104,6 +136,20 @@ export function AddBookForm() {
         setFetchingISBN(false)
     }
 
+    const clearForm = () => {
+        setTitle("")
+        setAuthorId("")
+        setPublisherId("")
+        setPageCount("")
+        setCoverUrl("")
+        setIsbn("")
+        setPublishedDate("")
+        setDescription("")
+        setSelectedRlBook(null)
+        setRlSearchQuery("")
+        setRlSearchResults([])
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!title.trim()) {
@@ -116,6 +162,10 @@ export function AddBookForm() {
         }
 
         setAddingBook(true)
+
+        // Hangi reading list book id kullanılacak?
+        const rlBookId = readingListBookId || selectedRlBook?.id
+
         const res = await addBookToLibrary({
             title: title.trim(),
             authorId,
@@ -126,36 +176,22 @@ export function AddBookForm() {
             publishedDate: publishedDate.trim() || undefined,
             description: description.trim() || undefined,
             status: "TO_READ",
+            readingListBookId: rlBookId || undefined,
         })
 
         if (res.success && res.book) {
             if (readingListBookId && readingListSlug) {
+                // URL'den gelen okuma listesi bağlantısı (eski mantık)
                 await linkBookToReadingList(res.book.id, readingListBookId, readingListSlug)
                 toast.success("Kitap kütüphanene ve okuma listesine eklendi!")
                 router.back()
             } else if (res.linkedToList) {
-                // Otomatik eşleşme bulundu
+                // Manuel seçilen okuma listesi bağlantısı
                 toast.success(`Kitap "${res.linkedToList}" listesine eklendi!`)
-                // Clear form
-                setTitle("")
-                setAuthorId("")
-                setPublisherId("")
-                setPageCount("")
-                setCoverUrl("")
-                setIsbn("")
-                setPublishedDate("")
-                setDescription("")
+                clearForm()
             } else {
                 toast.success("Kitap kütüphanenize eklendi")
-                // Clear form
-                setTitle("")
-                setAuthorId("")
-                setPublisherId("")
-                setPageCount("")
-                setCoverUrl("")
-                setIsbn("")
-                setPublishedDate("")
-                setDescription("")
+                clearForm()
             }
         } else {
             toast.error("Kitap eklenirken bir hata oluştu")
@@ -356,6 +392,84 @@ export function AddBookForm() {
                                 Kitabın konusu veya özeti hakkında bilgi ekleyebilirsiniz.
                             </p>
                         </div>
+
+                        {/* Okuma Listesi Seçici - URL'den gelmiyorsa göster */}
+                        {!readingListBookId && (
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2">
+                                    <List className="h-4 w-4" />
+                                    Okuma Listesine Bağla (Opsiyonel)
+                                </Label>
+
+                                {selectedRlBook ? (
+                                    <div className="flex items-center justify-between gap-2 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                                        <div>
+                                            <p className="font-medium">{selectedRlBook.title}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {selectedRlBook.author} • {selectedRlBook.listName}
+                                            </p>
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => {
+                                                setSelectedRlBook(null)
+                                                setRlSearchQuery("")
+                                            }}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="relative">
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                            <Input
+                                                placeholder="Kitap veya yazar ara..."
+                                                value={rlSearchQuery}
+                                                onChange={(e) => {
+                                                    setRlSearchQuery(e.target.value)
+                                                    debouncedRlSearch(e.target.value)
+                                                }}
+                                                className="pl-10"
+                                            />
+                                            {rlSearching && (
+                                                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                                            )}
+                                        </div>
+
+                                        {rlSearchResults.length > 0 && (
+                                            <div className="absolute z-10 w-full mt-1 bg-background border rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                                                {rlSearchResults.map((book) => (
+                                                    <button
+                                                        key={book.id}
+                                                        type="button"
+                                                        className={cn(
+                                                            "w-full text-left px-3 py-2 hover:bg-accent transition-colors",
+                                                            "border-b last:border-b-0"
+                                                        )}
+                                                        onClick={() => {
+                                                            setSelectedRlBook(book)
+                                                            setRlSearchResults([])
+                                                            setRlSearchQuery("")
+                                                        }}
+                                                    >
+                                                        <p className="font-medium">{book.title}</p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {book.author} • {book.listName} / {book.levelName}
+                                                        </p>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                <p className="text-xs text-muted-foreground">
+                                    Kitabı bir okuma listesiyle eşleştirmek için arama yapın.
+                                </p>
+                            </div>
+                        )}
                     </CardContent>
                     <CardFooter>
                         <Button type="submit" disabled={addingBook} className="w-full">

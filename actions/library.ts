@@ -6,7 +6,6 @@ import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { BookStatus } from "@prisma/client"
 import { CACHE_TAGS } from "@/lib/cache"
-import { autoLinkBookToReadingLists } from "./reading-lists"
 
 // Helper to invalidate user-related caches
 function invalidateUserCaches(userId: string) {
@@ -26,6 +25,7 @@ export async function addBookToLibrary(bookData: {
     publishedDate?: string
     description?: string
     status?: BookStatus
+    readingListBookId?: string // Manuel seçilen okuma listesi kitabı
 }) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -58,27 +58,24 @@ export async function addBookToLibrary(bookData: {
             }
         })
 
-        // Otomatik okuma listesi eşleştirmesi
+        // Manuel okuma listesi bağlantısı
         let linkedToList: string | undefined
-        if (newBook.author?.name) {
-            console.log("[AUTO-LINK] Trying to link:", {
-                userId: user.id,
-                bookId: newBook.id,
-                title: bookData.title,
-                author: newBook.author.name
+        if (bookData.readingListBookId) {
+            const rlBook = await prisma.readingListBook.findUnique({
+                where: { id: bookData.readingListBookId },
+                include: { level: { include: { readingList: true } } }
             })
-            const linkResult = await autoLinkBookToReadingLists(
-                user.id,
-                newBook.id,
-                bookData.title,
-                newBook.author.name
-            )
-            console.log("[AUTO-LINK] Result:", linkResult)
-            if (linkResult.linked && linkResult.listName) {
-                linkedToList = linkResult.listName
+
+            if (rlBook) {
+                await prisma.userReadingListBook.create({
+                    data: {
+                        userId: user.id,
+                        readingListBookId: bookData.readingListBookId,
+                        bookId: newBook.id
+                    }
+                })
+                linkedToList = rlBook.level.readingList.name
             }
-        } else {
-            console.log("[AUTO-LINK] Skipped - no author name")
         }
 
         // Invalidate caches

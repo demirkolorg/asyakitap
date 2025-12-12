@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { unstable_cache } from "next/cache"
 import { CACHE_TAGS, CACHE_DURATION } from "@/lib/cache"
-import { matchBookTitle, matchAuthorName } from "@/lib/string-utils"
 
 // Cached reading lists (static data - long cache)
 const getCachedReadingLists = unstable_cache(
@@ -615,16 +614,18 @@ export async function getReadingListForAdmin(id: string) {
     }
 }
 
-// Kitap eklendiğinde otomatik olarak okuma listesiyle eşleştir
-export async function autoLinkBookToReadingLists(
-    userId: string,
-    bookId: string,
-    bookTitle: string,
-    authorName: string
-): Promise<{ linked: boolean; listName?: string; levelName?: string }> {
+// ReadingListBook arama (kitap ekleme ekranı için)
+export async function searchReadingListBooks(query: string) {
+    if (!query || query.length < 2) return []
+
     try {
-        // Tüm ReadingListBook'ları çek
-        const readingListBooks = await prisma.readingListBook.findMany({
+        const books = await prisma.readingListBook.findMany({
+            where: {
+                OR: [
+                    { title: { contains: query, mode: "insensitive" } },
+                    { author: { contains: query, mode: "insensitive" } }
+                ]
+            },
             include: {
                 level: {
                     include: { readingList: true }
@@ -634,56 +635,20 @@ export async function autoLinkBookToReadingLists(
                 { level: { readingList: { sortOrder: "asc" } } },
                 { level: { levelNumber: "asc" } },
                 { sortOrder: "asc" }
-            ]
+            ],
+            take: 20
         })
 
-        // Başlık ve yazar benzerliği kontrol et
-        for (const rlBook of readingListBooks) {
-            const titleScore = matchBookTitle(bookTitle, rlBook.title)
-            const authorScore = matchAuthorName(authorName, rlBook.author)
-
-            // %80+ başlık eşleşmesi VE %70+ yazar eşleşmesi
-            if (titleScore >= 0.8 && authorScore >= 0.7) {
-                // Zaten bağlı mı kontrol et
-                const existing = await prisma.userReadingListBook.findUnique({
-                    where: {
-                        userId_readingListBookId: {
-                            userId,
-                            readingListBookId: rlBook.id
-                        }
-                    }
-                })
-
-                if (existing) {
-                    // Güncelle (farklı bir kitap bağlıysa)
-                    if (existing.bookId !== bookId) {
-                        await prisma.userReadingListBook.update({
-                            where: { id: existing.id },
-                            data: { bookId }
-                        })
-                    }
-                } else {
-                    // Yeni oluştur
-                    await prisma.userReadingListBook.create({
-                        data: {
-                            userId,
-                            readingListBookId: rlBook.id,
-                            bookId
-                        }
-                    })
-                }
-
-                return {
-                    linked: true,
-                    listName: rlBook.level.readingList.name,
-                    levelName: rlBook.level.name
-                }
-            }
-        }
-
-        return { linked: false }
+        return books.map(book => ({
+            id: book.id,
+            title: book.title,
+            author: book.author,
+            listName: book.level.readingList.name,
+            levelName: book.level.name,
+            listSlug: book.level.readingList.slug
+        }))
     } catch (error) {
-        console.error("Auto-link failed:", error)
-        return { linked: false }
+        console.error("Search reading list books failed:", error)
+        return []
     }
 }
