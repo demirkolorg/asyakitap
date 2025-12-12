@@ -159,13 +159,25 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
                                         onClick={async () => {
                                             try {
                                                 const text = await navigator.clipboard.readText()
-                                                setUrl(text)
-                                                setError("")
+                                                if (text.trim()) {
+                                                    setUrl(text)
+                                                    setError("")
+                                                    // Otomatik devam et
+                                                    setStep("loading")
+                                                    const result = await scrapeKitapyurdu(text)
+                                                    if (result.success && result.data) {
+                                                        setScrapedData(result.data)
+                                                        setStep("preview")
+                                                    } else {
+                                                        setError(result.error || "Bir hata oluştu")
+                                                        setStep("error")
+                                                    }
+                                                }
                                             } catch {
                                                 toast.error("Pano erişimi reddedildi")
                                             }
                                         }}
-                                        title="Yapıştır"
+                                        title="Yapıştır ve Devam Et"
                                     >
                                         <ClipboardPaste className="h-4 w-4" />
                                     </Button>
