@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import {
@@ -26,10 +26,25 @@ import {
     Barcode,
     Calendar,
     AlignLeft,
-    ClipboardPaste
+    ClipboardPaste,
+    Search,
+    List,
+    X
 } from "lucide-react"
 import { scrapeKitapyurdu, addBookFromKitapyurdu } from "@/actions/kitapyurdu"
+import { searchReadingListBooks } from "@/actions/reading-lists"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
+import debounce from "lodash/debounce"
+
+type ReadingListBookResult = {
+    id: string
+    title: string
+    author: string
+    listName: string
+    levelName: string
+    listSlug: string
+}
 
 interface ScrapedData {
     title: string
@@ -60,6 +75,27 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
     const [isAdding, setIsAdding] = useState(false)
     const [addedBookId, setAddedBookId] = useState<string | null>(null)
 
+    // Reading list book search
+    const [rlSearchQuery, setRlSearchQuery] = useState("")
+    const [rlSearchResults, setRlSearchResults] = useState<ReadingListBookResult[]>([])
+    const [rlSearching, setRlSearching] = useState(false)
+    const [selectedRlBook, setSelectedRlBook] = useState<ReadingListBookResult | null>(null)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedRlSearch = useCallback(
+        debounce(async (query: string) => {
+            if (query.length < 2) {
+                setRlSearchResults([])
+                return
+            }
+            setRlSearching(true)
+            const results = await searchReadingListBooks(query)
+            setRlSearchResults(results)
+            setRlSearching(false)
+        }, 300),
+        []
+    )
+
     const resetModal = () => {
         setStep("input")
         setUrl("")
@@ -67,6 +103,9 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
         setError("")
         setIsAdding(false)
         setAddedBookId(null)
+        setSelectedRlBook(null)
+        setRlSearchQuery("")
+        setRlSearchResults([])
     }
 
     const handleClose = () => {
@@ -98,7 +137,7 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
         if (!scrapedData) return
 
         setIsAdding(true)
-        const result = await addBookFromKitapyurdu(scrapedData)
+        const result = await addBookFromKitapyurdu(scrapedData, selectedRlBook?.id)
 
         if (result.success) {
             setAddedBookId(result.bookId || null)
@@ -279,6 +318,80 @@ export function KitapyurduModal({ open, onOpenChange }: KitapyurduModalProps) {
                                     </div>
                                 </div>
                             )}
+
+                            {/* Okuma Listesi Seçici */}
+                            <div className="mt-4 pt-4 border-t space-y-2">
+                                <Label className="flex items-center gap-2 text-sm">
+                                    <List className="h-4 w-4" />
+                                    Okuma Listesine Bağla (Opsiyonel)
+                                </Label>
+
+                                {selectedRlBook ? (
+                                    <div className="flex items-center justify-between gap-2 p-2 bg-primary/10 border border-primary/20 rounded-lg">
+                                        <div className="min-w-0">
+                                            <p className="font-medium text-sm truncate">{selectedRlBook.title}</p>
+                                            <p className="text-xs text-muted-foreground truncate">
+                                                {selectedRlBook.author} • {selectedRlBook.listName}
+                                            </p>
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-7 w-7 flex-shrink-0"
+                                            onClick={() => {
+                                                setSelectedRlBook(null)
+                                                setRlSearchQuery("")
+                                            }}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="relative">
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                            <Input
+                                                placeholder="Kitap veya yazar ara..."
+                                                value={rlSearchQuery}
+                                                onChange={(e) => {
+                                                    setRlSearchQuery(e.target.value)
+                                                    debouncedRlSearch(e.target.value)
+                                                }}
+                                                className="pl-10 h-9"
+                                            />
+                                            {rlSearching && (
+                                                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                                            )}
+                                        </div>
+
+                                        {rlSearchResults.length > 0 && (
+                                            <div className="absolute z-10 w-full mt-1 bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                                {rlSearchResults.map((book) => (
+                                                    <button
+                                                        key={book.id}
+                                                        type="button"
+                                                        className={cn(
+                                                            "w-full text-left px-3 py-2 hover:bg-accent transition-colors",
+                                                            "border-b last:border-b-0"
+                                                        )}
+                                                        onClick={() => {
+                                                            setSelectedRlBook(book)
+                                                            setRlSearchResults([])
+                                                            setRlSearchQuery("")
+                                                        }}
+                                                    >
+                                                        <p className="font-medium text-sm">{book.title}</p>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {book.author} • {book.listName} / {book.levelName}
+                                                        </p>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setStep("input")}>
