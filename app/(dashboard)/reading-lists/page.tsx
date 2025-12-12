@@ -1,12 +1,16 @@
-import { getReadingListsWithProgress } from "@/actions/reading-lists"
+import { getReadingListsWithProgress, getReadingLists } from "@/actions/reading-lists"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Map, BookOpen, ChevronRight, Layers, CheckCircle2, Settings } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { CopyAllListsButton } from "./client"
 
 export default async function ReadingListsPage() {
-    const lists = await getReadingListsWithProgress()
+    const [lists, allLists] = await Promise.all([
+        getReadingListsWithProgress(),
+        getReadingLists()
+    ])
 
     return (
         <div className="max-w-5xl mx-auto">
@@ -21,12 +25,15 @@ export default async function ReadingListsPage() {
                         Tematik okuma yol haritaları ile okuma deneyimini zenginleştir
                     </p>
                 </div>
-                <Button asChild variant="outline">
-                    <Link href="/reading-lists/manage">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Yönet
-                    </Link>
-                </Button>
+                <div className="flex items-center gap-2">
+                    <CopyAllListsButton lists={allLists} />
+                    <Button asChild variant="outline">
+                        <Link href="/reading-lists/manage">
+                            <Settings className="h-4 w-4 mr-2" />
+                            Yönet
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             {/* Lists Grid */}
