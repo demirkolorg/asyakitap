@@ -37,6 +37,7 @@ type ChallengeWidgetProps = {
         year: number
         name: string
         hasJoined: boolean
+        isWarmupPeriod?: boolean // Isınma turu mu?
         currentMonth: {
             monthNumber: number
             monthName: string
@@ -58,7 +59,7 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
         return null
     }
 
-    const { currentMonth, hasJoined, challengeId, year } = localChallenge
+    const { currentMonth, hasJoined, challengeId, year, isWarmupPeriod } = localChallenge
 
     const handleJoin = async () => {
         setIsJoining(true)
@@ -107,21 +108,34 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
     const progressPercentage = Math.round((completedCount / totalBooks) * 100)
 
     return (
-        <Card className="overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+        <Card className={cn(
+            "overflow-hidden border-2 bg-gradient-to-br",
+            isWarmupPeriod
+                ? "border-orange-500/30 from-orange-500/5 to-orange-500/10"
+                : "border-primary/20 from-primary/5 to-primary/10"
+        )}>
             <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2 text-lg">
-                        <Target className="h-5 w-5 text-primary" />
-                        {year} Okuma Hedefi
+                        <Target className={cn("h-5 w-5", isWarmupPeriod ? "text-orange-500" : "text-primary")} />
+                        {isWarmupPeriod ? "Isınma Turu 🔥" : `${year} Okuma Hedefi`}
                     </CardTitle>
                     <Link
-                        href={`/challenges/${year}`}
-                        className="text-xs text-primary hover:underline flex items-center gap-1"
+                        href="/challenges"
+                        className={cn(
+                            "text-xs hover:underline flex items-center gap-1",
+                            isWarmupPeriod ? "text-orange-500" : "text-primary"
+                        )}
                     >
                         Tümünü Gör
                         <ChevronRight className="h-3 w-3" />
                     </Link>
                 </div>
+                {isWarmupPeriod && (
+                    <div className="flex items-center gap-2 text-xs text-orange-600 bg-orange-100 dark:bg-orange-950/30 px-2 py-1 rounded-md w-fit">
+                        <span>2026&apos;ya hazırlık - Level 0</span>
+                    </div>
+                )}
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span className="text-lg">{currentMonth.themeIcon}</span>
                     <span>{currentMonth.monthName} - {currentMonth.theme}</span>

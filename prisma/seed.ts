@@ -1127,13 +1127,67 @@ async function main() {
     console.log(`Created: ${teknolojiYapayZeka.name}`)
 
     // ==========================================
-    // 2026 YILLIK OKUMA HEDEFİ (READING CHALLENGE)
+    // 2025-2026 OKUMA HEDEFİ (READING CHALLENGE)
+    // Erken Başlangıç: 2025 Aralık Son 2 Hafta + 2026 Tam Yıl
     // ==========================================
 
-    // Önce varolan 2026 challenge'ı sil
+    // Önce varolan challenge'ları sil
     await prisma.readingChallenge.deleteMany({
-        where: { year: 2026 }
+        where: { year: { in: [2025, 2026] } }
     })
+
+    // ==========================================
+    // 2025 - LEVEL 0: ALIŞTIRMA TURU
+    // ==========================================
+    const challenge2025 = await prisma.readingChallenge.create({
+        data: {
+            year: 2025,
+            name: "Level 0: Alışkanlık Kurulumu",
+            description: "2026'ya hazırlık: Aralık ayının son 2 haftasında okuma alışkanlığını başlat!",
+            strategy: "1_MAIN_2_BONUS",
+            isActive: true,
+            months: {
+                create: [
+                    // ARALIK 2025 - Level 0
+                    {
+                        monthNumber: 12, // Aralık
+                        monthName: "Aralık (Son 2 Hafta)",
+                        theme: "Level 0: Alışkanlık Kurulumu",
+                        themeIcon: "🔥",
+                        books: {
+                            create: [
+                                {
+                                    title: "Martı Jonathan Livingston",
+                                    author: "Richard Bach",
+                                    role: "MAIN",
+                                    pageCount: 100,
+                                    reason: "Yıla başlamadan önce sınırlarını zorlamak üzerine, bir gecede bitecek efsanevi bir motivasyon.",
+                                    sortOrder: 0
+                                },
+                                {
+                                    title: "Atomik Alışkanlıklar",
+                                    author: "James Clear",
+                                    role: "BONUS",
+                                    pageCount: 320,
+                                    reason: "Bu okuma listesini 1 yıl boyunca nasıl sürdüreceğinin bilimsel metodunu öğrenmek için.",
+                                    sortOrder: 1
+                                },
+                                {
+                                    title: "Bilinmeyen Bir Kadının Mektubu",
+                                    author: "Stefan Zweig",
+                                    role: "BONUS",
+                                    pageCount: 60,
+                                    reason: "Kısacık, sarsıcı ve edebi bir tatla ısınma turunu tamamlamak.",
+                                    sortOrder: 2
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    })
+    console.log(`Created: ${challenge2025.name}`)
 
     const challenge2026 = await prisma.readingChallenge.create({
         data: {
@@ -1484,11 +1538,11 @@ async function main() {
                                     sortOrder: 1
                                 },
                                 {
-                                    title: "Martı Jonathan Livingston",
-                                    author: "Richard Bach",
+                                    title: "Simyacı",
+                                    author: "Paulo Coelho",
                                     role: "BONUS",
-                                    pageCount: 100,
-                                    reason: "Kendini aşmak üzerine bir oturuşta bitecek felsefi bir masal.",
+                                    pageCount: 180,
+                                    reason: "Kişisel menkıbeni bulmak üzerine, dünyaca ünlü bir felsefi masal.",
                                     sortOrder: 2
                                 }
                             ]

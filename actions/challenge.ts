@@ -396,6 +396,7 @@ export async function getChallengeDetails(year: number): Promise<ChallengeOvervi
 
 // ==========================================
 // Aktif Challenge'ı Getir (Dashboard için)
+// Akıllı yıl geçişi: Aralık 15-31 arası 2025 Level 0, sonra 2026
 // ==========================================
 
 export async function getActiveChallenge() {
@@ -405,14 +406,42 @@ export async function getActiveChallenge() {
     if (!user) return null
 
     try {
-        const currentMonth = new Date().getMonth() + 1 // 1-12
-        const currentYear = new Date().getFullYear()
+        const now = new Date()
+        const currentDay = now.getDate()
+        const currentMonth = now.getMonth() + 1 // 1-12
+        const currentYear = now.getFullYear()
+
+        // Hangi yıl ve ay için challenge gösterilecek?
+        let targetYear: number
+        let targetMonth: number
+        let isWarmupPeriod = false // Isınma turu mu?
+
+        // 2025 Aralık 15-31 arası: Level 0 (2025 challenge, month 12)
+        if (currentYear === 2025 && currentMonth === 12 && currentDay >= 15) {
+            targetYear = 2025
+            targetMonth = 12
+            isWarmupPeriod = true
+        }
+        // 2026 ve sonrası: Normal takvim
+        else if (currentYear >= 2026) {
+            targetYear = 2026
+            targetMonth = currentMonth
+        }
+        // 2025'in geri kalanı: Henüz başlamadı, Level 0'ı göster (preview)
+        else {
+            targetYear = 2025
+            targetMonth = 12
+            isWarmupPeriod = true
+        }
 
         const challenge = await prisma.readingChallenge.findFirst({
-            where: { isActive: true },
+            where: {
+                year: targetYear,
+                isActive: true
+            },
             include: {
                 months: {
-                    where: { monthNumber: currentMonth },
+                    where: { monthNumber: targetMonth },
                     include: {
                         books: {
                             orderBy: [
@@ -450,6 +479,7 @@ export async function getActiveChallenge() {
             year: challenge.year,
             name: challenge.name,
             hasJoined: !!userProgress,
+            isWarmupPeriod, // Isınma turu etiketi için
             currentMonth: {
                 monthNumber: currentMonthData.monthNumber,
                 monthName: currentMonthData.monthName,
@@ -478,6 +508,172 @@ export async function getActiveChallenge() {
         }
     } catch (error) {
         console.error("Get active challenge error:", error)
+        return null
+    }
+}
+
+// ==========================================
+// Tüm Timeline'ı Getir (2025 Level 0 + 2026 Tam Yıl)
+// ==========================================
+
+export type ChallengeTimeline = {
+    challenges: ChallengeOverview[]
+    currentPeriod: {
+        year: number
+        month: number
+        isWarmupPeriod: boolean
+    }
+}
+
+export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    try {
+        const now = new Date()
+        const currentDay = now.getDate()
+        const currentMonth = now.getMonth() + 1
+        const currentYear = now.getFullYear()
+
+        // 2025 ve 2026 challenge'larını al
+        const challenges = await prisma.readingChallenge.findMany({
+            where: {
+                year: { in: [2025, 2026] },
+                isActive: true
+            },
+            orderBy: { year: "asc" },
+            include: {
+                months: {
+                    orderBy: { monthNumber: "asc" },
+                    include: {
+                        books: {
+                            orderBy: [
+                                { role: "asc" },
+                                { sortOrder: "asc" }
+                            ]
+                        }
+                    }
+                },
+                userProgress: {
+                    where: { userId: user.id },
+                    include: {
+                        books: true
+                    }
+                }
+            }
+        })
+
+        if (challenges.length === 0) return null
+
+        // Her challenge için overview oluştur
+        const challengeOverviews: ChallengeOverview[] = challenges.map(challenge => {
+            const userProgress = challenge.userProgress[0]
+            const userBooksMap = new Map(
+                userProgress?.books.map(b => [b.challengeBookId, b]) || []
+            )
+
+            let totalCompleted = 0
+            let mainCompleted = 0
+            let bonusCompleted = 0
+            let totalBooks = 0
+
+            const months: ChallengeMonthWithBooks[] = challenge.months.map(month => {
+                let monthCompleted = 0
+                let isMainCompleted = false
+
+                const books = month.books.map(book => {
+                    totalBooks++
+                    const userBook = userBooksMap.get(book.id)
+                    const status = userBook?.status || "NOT_STARTED"
+
+                    if (status === "COMPLETED") {
+                        totalCompleted++
+                        monthCompleted++
+                        if (book.role === "MAIN") {
+                            mainCompleted++
+                            isMainCompleted = true
+                        } else {
+                            bonusCompleted++
+                        }
+                    }
+
+                    return {
+                        id: book.id,
+                        title: book.title,
+                        author: book.author,
+                        role: book.role,
+                        pageCount: book.pageCount,
+                        coverUrl: book.coverUrl,
+                        reason: book.reason,
+                        userStatus: status,
+                        completedAt: userBook?.completedAt || null,
+                        takeaway: userBook?.takeaway || null
+                    }
+                })
+
+                return {
+                    id: month.id,
+                    monthNumber: month.monthNumber,
+                    monthName: month.monthName,
+                    theme: month.theme,
+                    themeIcon: month.themeIcon,
+                    books,
+                    progress: {
+                        total: books.length,
+                        completed: monthCompleted,
+                        percentage: books.length > 0 ? Math.round((monthCompleted / books.length) * 100) : 0
+                    },
+                    isMainCompleted
+                }
+            })
+
+            return {
+                id: challenge.id,
+                year: challenge.year,
+                name: challenge.name,
+                description: challenge.description,
+                strategy: challenge.strategy,
+                months,
+                totalProgress: {
+                    totalBooks,
+                    completedBooks: totalCompleted,
+                    percentage: totalBooks > 0 ? Math.round((totalCompleted / totalBooks) * 100) : 0,
+                    mainCompleted,
+                    bonusCompleted
+                }
+            }
+        })
+
+        // Şu anki dönem
+        let isWarmupPeriod = false
+        let targetYear = currentYear
+        let targetMonth = currentMonth
+
+        if (currentYear === 2025 && currentMonth === 12 && currentDay >= 15) {
+            isWarmupPeriod = true
+            targetYear = 2025
+            targetMonth = 12
+        } else if (currentYear >= 2026) {
+            targetYear = 2026
+            targetMonth = currentMonth
+        } else {
+            isWarmupPeriod = true
+            targetYear = 2025
+            targetMonth = 12
+        }
+
+        return {
+            challenges: challengeOverviews,
+            currentPeriod: {
+                year: targetYear,
+                month: targetMonth,
+                isWarmupPeriod
+            }
+        }
+    } catch (error) {
+        console.error("Get challenge timeline error:", error)
         return null
     }
 }
