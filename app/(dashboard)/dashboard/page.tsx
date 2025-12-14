@@ -1,12 +1,17 @@
 import { getDashboardData } from "@/actions/dashboard"
+import { getActiveChallenge } from "@/actions/challenge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BookOpen, BookCheck, BookMarked, Quote, FileText, TrendingUp, Plus, Users, Pen } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { ChallengeWidget } from "@/components/challenge/challenge-widget"
 
 export default async function DashboardPage() {
-    const data = await getDashboardData()
+    const [data, challenge] = await Promise.all([
+        getDashboardData(),
+        getActiveChallenge()
+    ])
 
     if (!data) {
         return <div>Yükleniyor...</div>
@@ -208,6 +213,9 @@ export default async function DashboardPage() {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Challenge Widget */}
+            {challenge && <ChallengeWidget challenge={challenge} />}
 
             {/* Three Column Layout - Stack on mobile */}
             <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-3">

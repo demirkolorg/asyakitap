@@ -7,12 +7,13 @@ datasource db {
 }
 
 model User {
-  id                   String                @id @default(uuid())
-  email                String                @unique
+  id                   String                  @id @default(uuid())
+  email                String                  @unique
   books                Book[]
   userReadingListBooks UserReadingListBook[]
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
+  challengeProgress    UserChallengeProgress[]
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
 }
 
 enum BookStatus {
@@ -182,4 +183,104 @@ model UserReadingListBook {
   @@index([userId])
   @@index([readingListBookId])
   @@index([bookId])
+}
+
+// ==========================================
+// Yıllık Okuma Hedefi (Reading Challenge)
+// ==========================================
+
+model ReadingChallenge {
+  id          String                 @id @default(cuid())
+  year        Int                    @unique
+  name        String                 // "2026 Okuma Hedefi"
+  description String?                @db.Text
+  strategy    String                 @default("1_MAIN_2_BONUS")
+  isActive    Boolean                @default(true)
+  months      ChallengeMonth[]
+  userProgress UserChallengeProgress[]
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+}
+
+model ChallengeMonth {
+  id          String            @id @default(cuid())
+  challengeId String
+  challenge   ReadingChallenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  monthNumber Int               // 1-12
+  monthName   String            // "Ocak", "Şubat"...
+  theme       String            // "Bilim Kurgu & Macera"
+  themeIcon   String?           // "🚀"
+  books       ChallengeBook[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([challengeId, monthNumber])
+  @@index([challengeId])
+}
+
+enum ChallengeBookRole {
+  MAIN
+  BONUS
+}
+
+enum ChallengeBookStatus {
+  LOCKED      // Bonus kitaplar başlangıçta kilitli
+  NOT_STARTED // Erişilebilir ama başlanmamış
+  IN_PROGRESS // Okunuyor
+  COMPLETED   // Tamamlandı
+}
+
+model ChallengeBook {
+  id           String              @id @default(cuid())
+  monthId      String
+  month        ChallengeMonth      @relation(fields: [monthId], references: [id], onDelete: Cascade)
+  title        String
+  author       String
+  role         ChallengeBookRole   // MAIN veya BONUS
+  pageCount    Int?
+  coverUrl     String?
+  reason       String?             @db.Text // Neden bu kitap seçildi
+  sortOrder    Int                 @default(0)
+  userProgress UserChallengeBook[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@index([monthId])
+  @@index([monthId, role])
+}
+
+// Kullanıcının challenge genelindeki durumu
+model UserChallengeProgress {
+  id           String           @id @default(cuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengeId  String
+  challenge    ReadingChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  joinedAt     DateTime         @default(now())
+  books        UserChallengeBook[]
+
+  @@unique([userId, challengeId])
+  @@index([userId])
+  @@index([challengeId])
+}
+
+// Kullanıcının her kitap için durumu
+model UserChallengeBook {
+  id              String               @id @default(cuid())
+  userProgressId  String
+  userProgress    UserChallengeProgress @relation(fields: [userProgressId], references: [id], onDelete: Cascade)
+  challengeBookId String
+  challengeBook   ChallengeBook        @relation(fields: [challengeBookId], references: [id], onDelete: Cascade)
+  status          ChallengeBookStatus  @default(LOCKED)
+  linkedBookId    String?              // Kullanıcının kütüphanesindeki kitaba bağlantı
+  startedAt       DateTime?
+  completedAt     DateTime?
+  takeaway        String?              @db.Text // "Bu kitaptan aklında kalan tek cümle"
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@unique([userProgressId, challengeBookId])
+  @@index([userProgressId])
+  @@index([challengeBookId])
+  @@index([status])
 }
