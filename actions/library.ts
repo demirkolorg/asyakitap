@@ -228,12 +228,70 @@ export async function updateBook(id: string, data: {
             }
         })
 
+        // Kitap durumu değiştiyse, bağlı challenge kitabını da güncelle
+        if (data.status) {
+            const challengeBook = await prisma.userChallengeBook.findFirst({
+                where: {
+                    linkedBookId: id,
+                    userProgress: { userId: user.id }
+                },
+                include: {
+                    challengeBook: true,
+                    userProgress: {
+                        include: {
+                            books: {
+                                include: { challengeBook: true }
+                            }
+                        }
+                    }
+                }
+            })
+
+            if (challengeBook) {
+                // Kitap durumunu challenge durumuna çevir
+                let challengeStatus: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" = "NOT_STARTED"
+                if (data.status === "READING") {
+                    challengeStatus = "IN_PROGRESS"
+                } else if (data.status === "COMPLETED") {
+                    challengeStatus = "COMPLETED"
+                }
+
+                // Challenge kitabını güncelle
+                await prisma.userChallengeBook.update({
+                    where: { id: challengeBook.id },
+                    data: {
+                        status: challengeStatus,
+                        startedAt: data.status === "READING" ? new Date() : challengeBook.startedAt,
+                        completedAt: data.status === "COMPLETED" ? new Date() : null
+                    }
+                })
+
+                // MAIN kitap tamamlandıysa, aynı aydaki BONUS kitapları aç
+                if (data.status === "COMPLETED" && challengeBook.challengeBook.role === "MAIN") {
+                    const monthId = challengeBook.challengeBook.monthId
+                    const bonusBooks = challengeBook.userProgress.books.filter(
+                        b => b.challengeBook.monthId === monthId &&
+                             b.challengeBook.role === "BONUS" &&
+                             b.status === "LOCKED"
+                    )
+
+                    for (const bonus of bonusBooks) {
+                        await prisma.userChallengeBook.update({
+                            where: { id: bonus.id },
+                            data: { status: "NOT_STARTED" }
+                        })
+                    }
+                }
+            }
+        }
+
         // Invalidate caches
         invalidateUserCaches(user.id)
         revalidateTag(CACHE_TAGS.book(id), 'max')
         revalidatePath(`/book/${id}`)
         revalidatePath("/library")
         revalidatePath("/dashboard")
+        revalidatePath("/challenges")
 
         return { success: true, book: updatedBook }
     } catch (error) {

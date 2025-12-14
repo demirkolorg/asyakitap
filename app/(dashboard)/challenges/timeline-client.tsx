@@ -19,7 +19,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
 import {
     Target,
     Lock,
@@ -28,15 +27,11 @@ import {
     Sparkles,
     Trophy,
     Loader2,
-    Flame,
-    Calendar
+    Flame
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
     joinChallenge,
-    markChallengeBookAsRead,
-    updateChallengeBookStatus,
-    updateTakeaway,
     linkChallengeBookToLibrary,
     getUserBooksForLinking
 } from "@/actions/challenge"
@@ -54,14 +49,6 @@ type ChallengeTimelineClientProps = {
 export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientProps) {
     const [localTimeline, setLocalTimeline] = useState(timeline)
     const [isJoining, setIsJoining] = useState<string | null>(null)
-    const [isUpdating, setIsUpdating] = useState<string | null>(null)
-    const [takeawayDialog, setTakeawayDialog] = useState<{
-        open: boolean
-        bookId: string
-        bookTitle: string
-    }>({ open: false, bookId: "", bookTitle: "" })
-    const [takeawayText, setTakeawayText] = useState("")
-    const [isSavingTakeaway, setIsSavingTakeaway] = useState(false)
 
     // Manuel eşleştirme state'leri
     const [linkDialog, setLinkDialog] = useState<{
@@ -105,53 +92,6 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
             toast.error(result.error)
         }
         setIsJoining(null)
-    }
-
-    const handleStartReading = async (bookId: string) => {
-        setIsUpdating(bookId)
-        const result = await updateChallengeBookStatus(bookId, "IN_PROGRESS")
-        if (result.success) {
-            toast.success("Okumaya başladınız!")
-        } else {
-            toast.error(result.error)
-        }
-        setIsUpdating(null)
-    }
-
-    const handleComplete = async (bookId: string, bookTitle: string, isMain: boolean) => {
-        setIsUpdating(bookId)
-        const result = await markChallengeBookAsRead(bookId)
-        if (result.success) {
-            toast.success(result.message)
-            if (isMain) {
-                // Konfeti efekti
-                window.dispatchEvent(new CustomEvent('challenge-main-completed'))
-            }
-            // Takeaway dialog aç
-            setTakeawayDialog({ open: true, bookId, bookTitle })
-        } else {
-            toast.error(result.error)
-        }
-        setIsUpdating(null)
-    }
-
-    const handleSaveTakeaway = async () => {
-        if (!takeawayText.trim()) {
-            setTakeawayDialog({ open: false, bookId: "", bookTitle: "" })
-            setTakeawayText("")
-            return
-        }
-
-        setIsSavingTakeaway(true)
-        const result = await updateTakeaway(takeawayDialog.bookId, takeawayText)
-        if (result.success) {
-            toast.success("Takeaway kaydedildi!")
-        } else {
-            toast.error(result.error)
-        }
-        setIsSavingTakeaway(false)
-        setTakeawayDialog({ open: false, bookId: "", bookTitle: "" })
-        setTakeawayText("")
     }
 
     // Manuel eşleştirme dialog'unu aç
@@ -373,56 +313,40 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                                         </p>
                                                     )}
 
-                                                    {/* Aksiyon butonları */}
-                                                    <div className="mt-3 flex flex-wrap gap-2">
-                                                        {mainBook.userStatus === "NOT_STARTED" && (
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                onClick={() => handleStartReading(mainBook.id)}
-                                                                disabled={isUpdating === mainBook.id}
-                                                            >
-                                                                {isUpdating === mainBook.id ? (
-                                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                                ) : (
-                                                                    "Okumaya Başla"
-                                                                )}
-                                                            </Button>
-                                                        )}
-                                                        {mainBook.userStatus === "IN_PROGRESS" && (
-                                                            <Button
-                                                                size="sm"
-                                                                onClick={() => handleComplete(mainBook.id, mainBook.title, true)}
-                                                                disabled={isUpdating === mainBook.id}
-                                                            >
-                                                                {isUpdating === mainBook.id ? (
-                                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                                ) : (
-                                                                    <>
-                                                                        <CheckCircle2 className="h-4 w-4 mr-1" />
-                                                                        Tamamladım
-                                                                    </>
-                                                                )}
-                                                            </Button>
-                                                        )}
-                                                        {mainBook.userStatus === "COMPLETED" && (
+                                                    {/* Durum ve eşleştirme */}
+                                                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                                                        {/* Durum göstergesi */}
+                                                        {mainBook.userStatus === "COMPLETED" ? (
                                                             <span className="inline-flex items-center gap-1 text-sm text-green-600 font-medium">
                                                                 <CheckCircle2 className="h-4 w-4" />
                                                                 Tamamlandı
+                                                            </span>
+                                                        ) : mainBook.linkedBookId ? (
+                                                            <span className="text-xs text-muted-foreground">
+                                                                Kitap detayından durumu güncelleyin
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-xs text-amber-600">
+                                                                Önce kütüphaneden eşleştirin →
                                                             </span>
                                                         )}
                                                         {/* Manuel eşleştirme butonu */}
                                                         <Button
                                                             size="sm"
-                                                            variant="ghost"
-                                                            className="h-8 px-2"
+                                                            variant={mainBook.linkedBookId ? "ghost" : "outline"}
+                                                            className="h-8 px-3"
                                                             onClick={() => handleOpenLinkDialog(mainBook.id, mainBook.title, mainBook.linkedBookId)}
-                                                            title={mainBook.linkedBookId ? "Kütüphane bağlantısını değiştir" : "Kütüphaneden eşleştir"}
                                                         >
                                                             {mainBook.linkedBookId ? (
-                                                                <Link2 className="h-4 w-4 text-green-600" />
+                                                                <>
+                                                                    <Link2 className="h-4 w-4 mr-1 text-green-600" />
+                                                                    Bağlı
+                                                                </>
                                                             ) : (
-                                                                <Link2Off className="h-4 w-4 text-muted-foreground" />
+                                                                <>
+                                                                    <Link2Off className="h-4 w-4 mr-1" />
+                                                                    Eşleştir
+                                                                </>
                                                             )}
                                                         </Button>
                                                     </div>
@@ -516,54 +440,24 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                                                 </p>
                                                             )}
 
-                                                            {/* Bonus kitap aksiyonları */}
+                                                            {/* Bonus kitap durum ve eşleştirme */}
                                                             <div className="flex items-center gap-1 mt-1">
-                                                                {book.userStatus === "NOT_STARTED" && (
-                                                                    <Button
-                                                                        size="sm"
-                                                                        variant="ghost"
-                                                                        className="h-6 text-xs px-2"
-                                                                        onClick={() => handleStartReading(book.id)}
-                                                                        disabled={isUpdating === book.id}
-                                                                    >
-                                                                        {isUpdating === book.id ? (
-                                                                            <Loader2 className="h-3 w-3 animate-spin" />
-                                                                        ) : (
-                                                                            "Başla"
-                                                                        )}
-                                                                    </Button>
-                                                                )}
-                                                                {book.userStatus === "IN_PROGRESS" && (
-                                                                    <Button
-                                                                        size="sm"
-                                                                        variant="ghost"
-                                                                        className="h-6 text-xs px-2"
-                                                                        onClick={() => handleComplete(book.id, book.title, false)}
-                                                                        disabled={isUpdating === book.id}
-                                                                    >
-                                                                        {isUpdating === book.id ? (
-                                                                            <Loader2 className="h-3 w-3 animate-spin" />
-                                                                        ) : (
-                                                                            "Bitirdim"
-                                                                        )}
-                                                                    </Button>
-                                                                )}
-                                                                {book.userStatus === "COMPLETED" && (
+                                                                {book.userStatus === "COMPLETED" ? (
                                                                     <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                                                )}
-                                                                {/* Bonus kitap eşleştirme butonu */}
-                                                                {book.userStatus !== "LOCKED" && (
+                                                                ) : book.userStatus !== "LOCKED" && (
                                                                     <Button
                                                                         size="sm"
                                                                         variant="ghost"
-                                                                        className="h-6 w-6 p-0"
+                                                                        className="h-6 px-2"
                                                                         onClick={() => handleOpenLinkDialog(book.id, book.title, book.linkedBookId)}
-                                                                        title={book.linkedBookId ? "Bağlantıyı değiştir" : "Eşleştir"}
                                                                     >
                                                                         {book.linkedBookId ? (
                                                                             <Link2 className="h-3 w-3 text-green-600" />
                                                                         ) : (
-                                                                            <Link2Off className="h-3 w-3 text-muted-foreground" />
+                                                                            <>
+                                                                                <Link2Off className="h-3 w-3 mr-1" />
+                                                                                <span className="text-xs">Eşleştir</span>
+                                                                            </>
                                                                         )}
                                                                     </Button>
                                                                 )}
@@ -580,46 +474,6 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                     )
                 })}
             </Accordion>
-
-            {/* Takeaway Dialog */}
-            <Dialog open={takeawayDialog.open} onOpenChange={(open) => {
-                if (!open) {
-                    setTakeawayDialog({ open: false, bookId: "", bookTitle: "" })
-                    setTakeawayText("")
-                }
-            }}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Tebrikler! "{takeawayDialog.bookTitle}" tamamlandı</DialogTitle>
-                        <DialogDescription>
-                            Bu kitaptan aklında kalan tek cümle veya düşünce ne?
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Textarea
-                        value={takeawayText}
-                        onChange={(e) => setTakeawayText(e.target.value)}
-                        placeholder="Bu kitaptan aklımda kalan..."
-                        rows={3}
-                    />
-                    <div className="flex justify-end gap-2">
-                        <Button
-                            variant="ghost"
-                            onClick={() => {
-                                setTakeawayDialog({ open: false, bookId: "", bookTitle: "" })
-                                setTakeawayText("")
-                            }}
-                        >
-                            Geç
-                        </Button>
-                        <Button onClick={handleSaveTakeaway} disabled={isSavingTakeaway}>
-                            {isSavingTakeaway ? (
-                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            ) : null}
-                            Kaydet
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
 
             {/* Manuel Eşleştirme Dialog */}
             <Dialog open={linkDialog.open} onOpenChange={(open) => {
