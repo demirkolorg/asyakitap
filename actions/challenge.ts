@@ -372,7 +372,7 @@ export async function getChallengeDetails(year: number): Promise<ChallengeOvervi
                         books: {
                             include: {
                                 linkedBook: {
-                                    select: { coverUrl: true }
+                                    select: { id: true, coverUrl: true }
                                 }
                             }
                         }
@@ -529,7 +529,7 @@ export async function getActiveChallenge() {
                         books: {
                             include: {
                                 linkedBook: {
-                                    select: { coverUrl: true }
+                                    select: { id: true, coverUrl: true }
                                 }
                             }
                         }
@@ -644,7 +644,7 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                         books: {
                             include: {
                                 linkedBook: {
-                                    select: { coverUrl: true }
+                                    select: { id: true, coverUrl: true }
                                 }
                             }
                         }

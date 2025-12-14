@@ -42,9 +42,10 @@ import {
 } from "@/actions/challenge"
 import { toast } from "sonner"
 import type { ChallengeTimeline, ChallengeOverview, ChallengeMonthWithBooks } from "@/actions/challenge"
-import { Link2, Link2Off, Search } from "lucide-react"
+import { Link2, Link2Off, Search, ExternalLink } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import Link from "next/link"
 
 type ChallengeTimelineClientProps = {
     timeline: ChallengeTimeline
@@ -312,25 +313,50 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                                         : "border-primary/30 bg-background"
                                             )}>
                                                 {/* Kapak */}
-                                                <div className="relative h-28 w-20 flex-shrink-0 rounded overflow-hidden bg-muted">
-                                                    {mainBook.coverUrl ? (
-                                                        <Image
-                                                            src={mainBook.coverUrl}
-                                                            alt={mainBook.title}
-                                                            fill
-                                                            className="object-cover"
-                                                        />
-                                                    ) : (
-                                                        <div className="flex items-center justify-center h-full">
-                                                            <BookOpen className="h-8 w-8 text-muted-foreground" />
+                                                {mainBook.linkedBookId ? (
+                                                    <Link href={`/book/${mainBook.linkedBookId}`} className="relative h-28 w-20 flex-shrink-0 rounded overflow-hidden bg-muted group">
+                                                        {(mainBook.linkedBookCoverUrl || mainBook.coverUrl) ? (
+                                                            <Image
+                                                                src={mainBook.linkedBookCoverUrl || mainBook.coverUrl!}
+                                                                alt={mainBook.title}
+                                                                fill
+                                                                className="object-cover group-hover:scale-105 transition-transform"
+                                                            />
+                                                        ) : (
+                                                            <div className="flex items-center justify-center h-full">
+                                                                <BookOpen className="h-8 w-8 text-muted-foreground" />
+                                                            </div>
+                                                        )}
+                                                        {mainBook.userStatus === "COMPLETED" && (
+                                                            <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                                                                <CheckCircle2 className="h-10 w-10 text-green-600" />
+                                                            </div>
+                                                        )}
+                                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                                            <ExternalLink className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                                         </div>
-                                                    )}
-                                                    {mainBook.userStatus === "COMPLETED" && (
-                                                        <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                                                            <CheckCircle2 className="h-10 w-10 text-green-600" />
-                                                        </div>
-                                                    )}
-                                                </div>
+                                                    </Link>
+                                                ) : (
+                                                    <div className="relative h-28 w-20 flex-shrink-0 rounded overflow-hidden bg-muted">
+                                                        {mainBook.coverUrl ? (
+                                                            <Image
+                                                                src={mainBook.coverUrl}
+                                                                alt={mainBook.title}
+                                                                fill
+                                                                className="object-cover"
+                                                            />
+                                                        ) : (
+                                                            <div className="flex items-center justify-center h-full">
+                                                                <BookOpen className="h-8 w-8 text-muted-foreground" />
+                                                            </div>
+                                                        )}
+                                                        {mainBook.userStatus === "COMPLETED" && (
+                                                            <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                                                                <CheckCircle2 className="h-10 w-10 text-green-600" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
 
                                                 {/* Bilgi */}
                                                 <div className="flex-1 min-w-0">
@@ -449,20 +475,37 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                                             </div>
                                                         )}
 
-                                                        <div className="relative h-16 w-11 flex-shrink-0 rounded overflow-hidden bg-muted">
-                                                            {book.coverUrl ? (
-                                                                <Image
-                                                                    src={book.coverUrl}
-                                                                    alt={book.title}
-                                                                    fill
-                                                                    className="object-cover"
-                                                                />
-                                                            ) : (
-                                                                <div className="flex items-center justify-center h-full">
-                                                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                        {book.linkedBookId ? (
+                                                            <Link href={`/book/${book.linkedBookId}`} className="relative h-16 w-11 flex-shrink-0 rounded overflow-hidden bg-muted group">
+                                                                {(book.linkedBookCoverUrl || book.coverUrl) ? (
+                                                                    <Image
+                                                                        src={book.linkedBookCoverUrl || book.coverUrl!}
+                                                                        alt={book.title}
+                                                                        fill
+                                                                        className="object-cover group-hover:scale-105 transition-transform"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="flex items-center justify-center h-full">
+                                                                        <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                                                    </div>
+                                                                )}
+                                                            </Link>
+                                                        ) : (
+                                                            <div className="relative h-16 w-11 flex-shrink-0 rounded overflow-hidden bg-muted">
+                                                                {book.coverUrl ? (
+                                                                    <Image
+                                                                        src={book.coverUrl}
+                                                                        alt={book.title}
+                                                                        fill
+                                                                        className="object-cover"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="flex items-center justify-center h-full">
+                                                                        <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
 
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-medium line-clamp-1">{book.title}</p>
