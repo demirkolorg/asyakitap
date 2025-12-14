@@ -25,6 +25,7 @@ import {
   Users,
   Pen,
   Building2,
+  Target,
 } from "lucide-react";
 
 // Ana Sayfa
@@ -57,6 +58,11 @@ const libraryItems = [
     title: "Okuma Listeleri",
     href: "/reading-lists",
     icon: Map,
+  },
+  {
+    title: "Okuma Hedefi",
+    href: "/challenges",
+    icon: Target,
   },
 ];
 
