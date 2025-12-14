@@ -29,6 +29,7 @@ export type ChallengeMonthWithBooks = {
         takeaway: string | null
         // Hibrit kapak için - kütüphanedeki kitaptan
         linkedBookCoverUrl: string | null
+        linkedBookId: string | null // Manuel eşleştirme için
     }[]
     progress: {
         total: number
@@ -423,7 +424,8 @@ export async function getChallengeDetails(year: number): Promise<ChallengeOvervi
                     userStatus: status,
                     completedAt: userBook?.completedAt || null,
                     takeaway: userBook?.takeaway || null,
-                    linkedBookCoverUrl: userBook?.linkedBook?.coverUrl || null
+                    linkedBookCoverUrl: userBook?.linkedBook?.coverUrl || null,
+                    linkedBookId: userBook?.linkedBookId || null
                 }
             })
 
@@ -696,7 +698,8 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                         userStatus: status,
                         completedAt: userBook?.completedAt || null,
                         takeaway: userBook?.takeaway || null,
-                        linkedBookCoverUrl: userBook?.linkedBook?.coverUrl || null
+                        linkedBookCoverUrl: userBook?.linkedBook?.coverUrl || null,
+                        linkedBookId: userBook?.linkedBookId || null
                     }
                 })
 
@@ -762,6 +765,101 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
     } catch (error) {
         console.error("Get challenge timeline error:", error)
         return null
+    }
+}
+
+// ==========================================
+// Manuel Kitap Eşleştirme
+// Challenge kitabını kütüphanedeki bir kitapla bağla
+// ==========================================
+
+export async function linkChallengeBookToLibrary(
+    challengeBookId: string,
+    libraryBookId: string | null // null = bağlantıyı kaldır
+) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Oturum açmanız gerekiyor" }
+    }
+
+    try {
+        // Kullanıcının bu challenge kitabı kaydını bul
+        const userBook = await prisma.userChallengeBook.findFirst({
+            where: {
+                challengeBookId,
+                userProgress: { userId: user.id }
+            }
+        })
+
+        if (!userBook) {
+            return { success: false, error: "Challenge kitabı bulunamadı" }
+        }
+
+        // Eğer bir kitap bağlanacaksa, kullanıcının kitabı olduğunu kontrol et
+        if (libraryBookId) {
+            const libraryBook = await prisma.book.findFirst({
+                where: {
+                    id: libraryBookId,
+                    userId: user.id
+                }
+            })
+
+            if (!libraryBook) {
+                return { success: false, error: "Kütüphane kitabı bulunamadı" }
+            }
+        }
+
+        // Güncelle
+        await prisma.userChallengeBook.update({
+            where: { id: userBook.id },
+            data: { linkedBookId: libraryBookId }
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/dashboard")
+
+        return { success: true }
+    } catch (error) {
+        console.error("Link challenge book error:", error)
+        return { success: false, error: "Bağlantı oluşturulamadı" }
+    }
+}
+
+// ==========================================
+// Kullanıcının Kütüphane Kitaplarını Getir (Eşleştirme için)
+// ==========================================
+
+export async function getUserBooksForLinking() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return []
+
+    try {
+        const books = await prisma.book.findMany({
+            where: { userId: user.id },
+            select: {
+                id: true,
+                title: true,
+                coverUrl: true,
+                author: {
+                    select: { name: true }
+                }
+            },
+            orderBy: { title: 'asc' }
+        })
+
+        return books.map(b => ({
+            id: b.id,
+            title: b.title,
+            author: b.author?.name || "",
+            coverUrl: b.coverUrl
+        }))
+    } catch (error) {
+        console.error("Get user books error:", error)
+        return []
     }
 }
 

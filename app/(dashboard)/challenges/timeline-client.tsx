@@ -36,10 +36,15 @@ import {
     joinChallenge,
     markChallengeBookAsRead,
     updateChallengeBookStatus,
-    updateTakeaway
+    updateTakeaway,
+    linkChallengeBookToLibrary,
+    getUserBooksForLinking
 } from "@/actions/challenge"
 import { toast } from "sonner"
 import type { ChallengeTimeline, ChallengeOverview, ChallengeMonthWithBooks } from "@/actions/challenge"
+import { Link2, Link2Off, Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type ChallengeTimelineClientProps = {
     timeline: ChallengeTimeline
@@ -56,6 +61,18 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
     }>({ open: false, bookId: "", bookTitle: "" })
     const [takeawayText, setTakeawayText] = useState("")
     const [isSavingTakeaway, setIsSavingTakeaway] = useState(false)
+
+    // Manuel eşleştirme state'leri
+    const [linkDialog, setLinkDialog] = useState<{
+        open: boolean
+        challengeBookId: string
+        challengeBookTitle: string
+        currentLinkedBookId: string | null
+    }>({ open: false, challengeBookId: "", challengeBookTitle: "", currentLinkedBookId: null })
+    const [userBooks, setUserBooks] = useState<{ id: string; title: string; author: string; coverUrl: string | null }[]>([])
+    const [isLoadingBooks, setIsLoadingBooks] = useState(false)
+    const [isLinking, setIsLinking] = useState(false)
+    const [linkSearchQuery, setLinkSearchQuery] = useState("")
 
     const { challenges, currentPeriod } = localTimeline
 
@@ -135,6 +152,43 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
         setTakeawayDialog({ open: false, bookId: "", bookTitle: "" })
         setTakeawayText("")
     }
+
+    // Manuel eşleştirme dialog'unu aç
+    const handleOpenLinkDialog = async (challengeBookId: string, challengeBookTitle: string, currentLinkedBookId: string | null) => {
+        setLinkDialog({
+            open: true,
+            challengeBookId,
+            challengeBookTitle,
+            currentLinkedBookId
+        })
+        setLinkSearchQuery("")
+
+        // Kullanıcının kitaplarını yükle
+        setIsLoadingBooks(true)
+        const books = await getUserBooksForLinking()
+        setUserBooks(books)
+        setIsLoadingBooks(false)
+    }
+
+    // Kitap eşleştir
+    const handleLinkBook = async (libraryBookId: string | null) => {
+        setIsLinking(true)
+        const result = await linkChallengeBookToLibrary(linkDialog.challengeBookId, libraryBookId)
+        if (result.success) {
+            toast.success(libraryBookId ? "Kitap bağlandı!" : "Bağlantı kaldırıldı!")
+            window.location.reload() // Basit yenileme
+        } else {
+            toast.error(result.error)
+        }
+        setIsLinking(false)
+        setLinkDialog({ open: false, challengeBookId: "", challengeBookTitle: "", currentLinkedBookId: null })
+    }
+
+    // Filtrelenmiş kitaplar
+    const filteredUserBooks = userBooks.filter(book =>
+        book.title.toLowerCase().includes(linkSearchQuery.toLowerCase()) ||
+        book.author.toLowerCase().includes(linkSearchQuery.toLowerCase())
+    )
 
     // Toplam ilerleme hesapla
     const totalBooks = challenges.reduce((acc, c) => acc + c.totalProgress.totalBooks, 0)
@@ -294,7 +348,7 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                                     )}
 
                                                     {/* Aksiyon butonları */}
-                                                    <div className="mt-3 flex gap-2">
+                                                    <div className="mt-3 flex flex-wrap gap-2">
                                                         {mainBook.userStatus === "NOT_STARTED" && (
                                                             <Button
                                                                 size="sm"
@@ -331,6 +385,20 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                                                 Tamamlandı
                                                             </span>
                                                         )}
+                                                        {/* Manuel eşleştirme butonu */}
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            className="h-8 px-2"
+                                                            onClick={() => handleOpenLinkDialog(mainBook.id, mainBook.title, mainBook.linkedBookId)}
+                                                            title={mainBook.linkedBookId ? "Kütüphane bağlantısını değiştir" : "Kütüphaneden eşleştir"}
+                                                        >
+                                                            {mainBook.linkedBookId ? (
+                                                                <Link2 className="h-4 w-4 text-green-600" />
+                                                            ) : (
+                                                                <Link2Off className="h-4 w-4 text-muted-foreground" />
+                                                            )}
+                                                        </Button>
                                                     </div>
 
                                                     {/* Takeaway */}
@@ -406,39 +474,57 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                                             )}
 
                                                             {/* Bonus kitap aksiyonları */}
-                                                            {book.userStatus === "NOT_STARTED" && (
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="ghost"
-                                                                    className="h-6 text-xs mt-1 px-2"
-                                                                    onClick={() => handleStartReading(book.id)}
-                                                                    disabled={isUpdating === book.id}
-                                                                >
-                                                                    {isUpdating === book.id ? (
-                                                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                                                    ) : (
-                                                                        "Başla"
-                                                                    )}
-                                                                </Button>
-                                                            )}
-                                                            {book.userStatus === "IN_PROGRESS" && (
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="ghost"
-                                                                    className="h-6 text-xs mt-1 px-2"
-                                                                    onClick={() => handleComplete(book.id, book.title, false)}
-                                                                    disabled={isUpdating === book.id}
-                                                                >
-                                                                    {isUpdating === book.id ? (
-                                                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                                                    ) : (
-                                                                        "Bitirdim"
-                                                                    )}
-                                                                </Button>
-                                                            )}
-                                                            {book.userStatus === "COMPLETED" && (
-                                                                <CheckCircle2 className="h-4 w-4 text-green-600 mt-1" />
-                                                            )}
+                                                            <div className="flex items-center gap-1 mt-1">
+                                                                {book.userStatus === "NOT_STARTED" && (
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="ghost"
+                                                                        className="h-6 text-xs px-2"
+                                                                        onClick={() => handleStartReading(book.id)}
+                                                                        disabled={isUpdating === book.id}
+                                                                    >
+                                                                        {isUpdating === book.id ? (
+                                                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                                                        ) : (
+                                                                            "Başla"
+                                                                        )}
+                                                                    </Button>
+                                                                )}
+                                                                {book.userStatus === "IN_PROGRESS" && (
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="ghost"
+                                                                        className="h-6 text-xs px-2"
+                                                                        onClick={() => handleComplete(book.id, book.title, false)}
+                                                                        disabled={isUpdating === book.id}
+                                                                    >
+                                                                        {isUpdating === book.id ? (
+                                                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                                                        ) : (
+                                                                            "Bitirdim"
+                                                                        )}
+                                                                    </Button>
+                                                                )}
+                                                                {book.userStatus === "COMPLETED" && (
+                                                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                                )}
+                                                                {/* Bonus kitap eşleştirme butonu */}
+                                                                {book.userStatus !== "LOCKED" && (
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="ghost"
+                                                                        className="h-6 w-6 p-0"
+                                                                        onClick={() => handleOpenLinkDialog(book.id, book.title, book.linkedBookId)}
+                                                                        title={book.linkedBookId ? "Bağlantıyı değiştir" : "Eşleştir"}
+                                                                    >
+                                                                        {book.linkedBookId ? (
+                                                                            <Link2 className="h-3 w-3 text-green-600" />
+                                                                        ) : (
+                                                                            <Link2Off className="h-3 w-3 text-muted-foreground" />
+                                                                        )}
+                                                                    </Button>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -487,6 +573,109 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                             ) : null}
                             Kaydet
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Manuel Eşleştirme Dialog */}
+            <Dialog open={linkDialog.open} onOpenChange={(open) => {
+                if (!open) {
+                    setLinkDialog({ open: false, challengeBookId: "", challengeBookTitle: "", currentLinkedBookId: null })
+                    setLinkSearchQuery("")
+                }
+            }}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Link2 className="h-5 w-5" />
+                            Kitap Eşleştir
+                        </DialogTitle>
+                        <DialogDescription>
+                            "{linkDialog.challengeBookTitle}" kitabını kütüphanenizdeki bir kitapla eşleştirin.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {/* Arama */}
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Kitap ara..."
+                            value={linkSearchQuery}
+                            onChange={(e) => setLinkSearchQuery(e.target.value)}
+                            className="pl-9"
+                        />
+                    </div>
+
+                    {/* Kitap Listesi */}
+                    <ScrollArea className="h-[300px] pr-4">
+                        {isLoadingBooks ? (
+                            <div className="flex items-center justify-center h-full">
+                                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                            </div>
+                        ) : filteredUserBooks.length === 0 ? (
+                            <div className="text-center text-muted-foreground py-8">
+                                {linkSearchQuery ? "Eşleşen kitap bulunamadı" : "Kütüphanenizde kitap yok"}
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {filteredUserBooks.map(book => (
+                                    <button
+                                        key={book.id}
+                                        onClick={() => handleLinkBook(book.id)}
+                                        disabled={isLinking}
+                                        className={cn(
+                                            "w-full flex items-center gap-3 p-2 rounded-lg border transition-all text-left",
+                                            "hover:bg-accent hover:border-primary/50",
+                                            linkDialog.currentLinkedBookId === book.id && "border-green-500 bg-green-50 dark:bg-green-950/20"
+                                        )}
+                                    >
+                                        <div className="relative h-12 w-8 flex-shrink-0 rounded overflow-hidden bg-muted">
+                                            {book.coverUrl ? (
+                                                <Image
+                                                    src={book.coverUrl}
+                                                    alt={book.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full">
+                                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium line-clamp-1">{book.title}</p>
+                                            <p className="text-xs text-muted-foreground">{book.author}</p>
+                                        </div>
+                                        {linkDialog.currentLinkedBookId === book.id && (
+                                            <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </ScrollArea>
+
+                    {/* Actions */}
+                    <div className="flex justify-between">
+                        {linkDialog.currentLinkedBookId && (
+                            <Button
+                                variant="outline"
+                                onClick={() => handleLinkBook(null)}
+                                disabled={isLinking}
+                                className="text-destructive hover:text-destructive"
+                            >
+                                <Link2Off className="h-4 w-4 mr-2" />
+                                Bağlantıyı Kaldır
+                            </Button>
+                        )}
+                        <Button
+                            variant="ghost"
+                            onClick={() => setLinkDialog({ open: false, challengeBookId: "", challengeBookTitle: "", currentLinkedBookId: null })}
+                            className="ml-auto"
+                        >
+                            İptal
                         </Button>
                     </div>
                 </DialogContent>
