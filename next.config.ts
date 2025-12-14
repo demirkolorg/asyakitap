@@ -1,4 +1,80 @@
 import type { NextConfig } from "next";
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  workboxOptions: {
+    disableDevLogs: true,
+    skipWaiting: true,
+    clientsClaim: true,
+    runtimeCaching: [
+      {
+        urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+        handler: "NetworkOnly",
+      },
+      {
+        urlPattern: /^https:\/\/img\.kitapyurdu\.com\/.*/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "kitapyurdu-images",
+          expiration: {
+            maxEntries: 200,
+            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+          },
+        },
+      },
+      {
+        urlPattern: /^https:\/\/images-na\.ssl-images-amazon\.com\/.*/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "amazon-images",
+          expiration: {
+            maxEntries: 200,
+            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+          },
+        },
+      },
+      {
+        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif|ico)$/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "static-images",
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+          },
+        },
+      },
+      {
+        urlPattern: /\.(?:js|css)$/i,
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "static-resources",
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+          },
+        },
+      },
+      {
+        urlPattern: /\.(?:woff|woff2|ttf|otf|eot)$/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "fonts",
+          expiration: {
+            maxEntries: 20,
+            maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+          },
+        },
+      },
+    ],
+  },
+});
 
 const nextConfig: NextConfig = {
   // Image optimization
@@ -91,4 +167,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);

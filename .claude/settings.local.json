@@ -39,7 +39,8 @@
       "Bash(npx tsx:*)",
       "Bash(del \"D:\\projects\\asyakitap\\actions\\shelf.ts\")",
       "Bash(if exist \".next\" rmdir /s /q \".next\")",
-      "Bash(del \"D:\\projects\\asyakitap\\actions\\goodreads.ts\")"
+      "Bash(del \"D:\\projects\\asyakitap\\actions\\goodreads.ts\")",
+      "Bash(npx next build:*)"
     ],
     "deny": [],
     "ask": []

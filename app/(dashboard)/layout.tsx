@@ -1,7 +1,6 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 export default function DashboardLayout({
     children,
@@ -17,7 +16,6 @@ export default function DashboardLayout({
                     {children}
                 </main>
             </SidebarInset>
-            <PWAInstallPrompt />
         </SidebarProvider>
     );
 }
