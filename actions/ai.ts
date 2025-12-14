@@ -2,6 +2,8 @@
 
 import { generateText, chat } from "@/lib/gemini"
 import { createClient } from "@/lib/supabase/server"
+import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
 
 /**
  * AI ile metin üretme (tek prompt)
@@ -98,12 +100,13 @@ Biyografide şunlar yer alsın:
 }
 
 /**
- * Tortu (okuma notu/düşünce) yorumla
+ * Tortu (okuma notu/düşünce) yorumla ve kaydet
  */
 export async function analyzeTortu(
     tortu: string,
     bookTitle: string,
-    authorName: string
+    authorName: string,
+    bookId?: string
 ) {
     const systemPrompt = `Sen empatik ve düşünceli bir edebiyat dostusun. Okuyucunun kitap hakkındaki düşüncelerini, notlarını ve hislerini yorumluyorsun.
 
@@ -125,16 +128,32 @@ ${tortu}
 
 Bu düşünceleri yorumla. Okuyucunun kitaptan ne aldığını, hangi noktaların dikkatini çektiğini değerlendir.`
 
-    return await generateText(prompt, systemPrompt)
+    const result = await generateText(prompt, systemPrompt)
+
+    // AI yorumunu veritabanına kaydet
+    if (bookId && result.success && result.text) {
+        try {
+            await prisma.book.update({
+                where: { id: bookId },
+                data: { tortuAiComment: result.text }
+            })
+            revalidatePath(`/book/${bookId}`)
+        } catch (error) {
+            console.error("Failed to save tortu AI comment:", error)
+        }
+    }
+
+    return result
 }
 
 /**
- * İmza (yazarın üslubu hakkında not) yorumla
+ * İmza (yazarın üslubu hakkında not) yorumla ve kaydet
  */
 export async function analyzeImza(
     imza: string,
     bookTitle: string,
-    authorName: string
+    authorName: string,
+    bookId?: string
 ) {
     const systemPrompt = `Sen bir edebiyat eleştirmeni ve üslup uzmanısın. Okuyucunun yazarın üslubu, dili ve tarzı hakkındaki gözlemlerini değerlendiriyorsun.
 
@@ -156,5 +175,20 @@ ${imza}
 
 Bu üslup analizini yorumla. Okuyucunun tespit ettiği özellikleri değerlendir ve derinleştir.`
 
-    return await generateText(prompt, systemPrompt)
+    const result = await generateText(prompt, systemPrompt)
+
+    // AI yorumunu veritabanına kaydet
+    if (bookId && result.success && result.text) {
+        try {
+            await prisma.book.update({
+                where: { id: bookId },
+                data: { imzaAiComment: result.text }
+            })
+            revalidatePath(`/book/${bookId}`)
+        } catch (error) {
+            console.error("Failed to save imza AI comment:", error)
+        }
+    }
+
+    return result
 }

@@ -145,9 +145,9 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [isSavingTakeaway, setIsSavingTakeaway] = useState(false)
     const [linkedChallengeBookId, setLinkedChallengeBookId] = useState<string | null>(null)
 
-    // AI yorum state'leri
-    const [tortuAiComment, setTortuAiComment] = useState<string | null>(null)
-    const [imzaAiComment, setImzaAiComment] = useState<string | null>(null)
+    // AI yorum state'leri - kaydedilmiş yorumları başlangıçta yükle
+    const [tortuAiComment, setTortuAiComment] = useState<string | null>(book.tortuAiComment || null)
+    const [imzaAiComment, setImzaAiComment] = useState<string | null>(book.imzaAiComment || null)
     const [isAnalyzingTortu, setIsAnalyzingTortu] = useState(false)
     const [isAnalyzingImza, setIsAnalyzingImza] = useState(false)
 
@@ -247,7 +247,8 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         const result = await analyzeTortu(
             tortu,
             book.title,
-            book.author?.name || "Bilinmeyen Yazar"
+            book.author?.name || "Bilinmeyen Yazar",
+            book.id // bookId parametresi - AI yorumunu DB'ye kaydetmek için
         )
 
         if (result.success && result.text) {
@@ -270,7 +271,8 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         const result = await analyzeImza(
             imza,
             book.title,
-            book.author?.name || "Bilinmeyen Yazar"
+            book.author?.name || "Bilinmeyen Yazar",
+            book.id // bookId parametresi - AI yorumunu DB'ye kaydetmek için
         )
 
         if (result.success && result.text) {

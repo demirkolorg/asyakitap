@@ -72,7 +72,9 @@ model Book {
   status               BookStatus            @default(TO_READ)
   currentPage          Int                   @default(0)
   tortu                String?               @db.Text // Kitaptan aklında kalanlar
+  tortuAiComment       String?               @db.Text // AI'ın tortu yorumu
   imza                 String?               @db.Text // Yazarın bu kitaptaki üslubu/tarzı
+  imzaAiComment        String?               @db.Text // AI'ın imza yorumu
   quotes               Quote[]
   readingLogs          ReadingLog[]
   userReadingListBooks UserReadingListBook[]
