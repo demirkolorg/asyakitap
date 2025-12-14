@@ -96,3 +96,65 @@ Biyografide şunlar yer alsın:
 
     return await generateText(prompt, systemPrompt)
 }
+
+/**
+ * Tortu (okuma notu/düşünce) yorumla
+ */
+export async function analyzeTortu(
+    tortu: string,
+    bookTitle: string,
+    authorName: string
+) {
+    const systemPrompt = `Sen empatik ve düşünceli bir edebiyat dostusun. Okuyucunun kitap hakkındaki düşüncelerini, notlarını ve hislerini yorumluyorsun.
+
+Yaklaşımın:
+- Samimi ve sıcak bir dil kullan
+- Okuyucunun düşüncelerini takdir et
+- Derinleştirici sorular veya bakış açıları sun
+- Kitapla bağlantı kur
+- 2-3 paragraf yaz, fazla uzatma
+
+Türkçe yanıt ver.`
+
+    const prompt = `Kitap: "${bookTitle}" - ${authorName}
+
+Okuyucunun bu kitap hakkındaki düşünceleri (Tortu):
+"""
+${tortu}
+"""
+
+Bu düşünceleri yorumla. Okuyucunun kitaptan ne aldığını, hangi noktaların dikkatini çektiğini değerlendir.`
+
+    return await generateText(prompt, systemPrompt)
+}
+
+/**
+ * İmza (yazarın üslubu hakkında not) yorumla
+ */
+export async function analyzeImza(
+    imza: string,
+    bookTitle: string,
+    authorName: string
+) {
+    const systemPrompt = `Sen bir edebiyat eleştirmeni ve üslup uzmanısın. Okuyucunun yazarın üslubu, dili ve tarzı hakkındaki gözlemlerini değerlendiriyorsun.
+
+Yaklaşımın:
+- Okuyucunun üslup analizini takdir et
+- Yazarın genel tarzıyla karşılaştır
+- Edebiyat tekniği hakkında bilgi ekle
+- Benzer üsluba sahip yazarlar önerebilirsin
+- 2-3 paragraf yaz
+
+Türkçe yanıt ver.`
+
+    const prompt = `Kitap: "${bookTitle}" - ${authorName}
+
+Okuyucunun yazarın üslubu hakkındaki gözlemleri (İmza):
+"""
+${imza}
+"""
+
+Bu üslup analizini yorumla. Okuyucunun tespit ettiği özellikleri değerlendir ve derinleştir.`
+
+    return await generateText(prompt, systemPrompt)
+}

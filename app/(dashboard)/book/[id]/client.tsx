@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { updateBook, deleteBook } from "@/actions/library"
+import { analyzeTortu, analyzeImza } from "@/actions/ai"
 import { useRouter } from "next/navigation"
 import {
     Trash2,
@@ -40,6 +41,9 @@ import {
     Barcode,
     Sparkles,
     Layers,
+    Bot,
+    Loader2,
+    RefreshCw,
 } from "lucide-react"
 import { addQuote, deleteQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -134,6 +138,12 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [progressInput, setProgressInput] = useState(book.currentPage.toString())
     const [mounted, setMounted] = useState(false)
 
+    // AI yorum state'leri
+    const [tortuAiComment, setTortuAiComment] = useState<string | null>(null)
+    const [imzaAiComment, setImzaAiComment] = useState<string | null>(null)
+    const [isAnalyzingTortu, setIsAnalyzingTortu] = useState(false)
+    const [isAnalyzingImza, setIsAnalyzingImza] = useState(false)
+
     useEffect(() => {
         setMounted(true)
     }, [])
@@ -186,6 +196,11 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         await updateBook(book.id, { imza })
         setIsSavingImza(false)
         toast.success("İmza kaydedildi")
+
+        // AI analizi başlat (arka planda)
+        if (imza.trim().length > 50) {
+            handleAnalyzeImza()
+        }
     }
 
     const handleUpdateProgress = async () => {
@@ -206,6 +221,57 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         await updateBook(book.id, { tortu })
         setIsSavingTortu(false)
         toast.success("Tortu kaydedildi")
+
+        // AI analizi başlat (arka planda)
+        if (tortu.trim().length > 50) {
+            handleAnalyzeTortu()
+        }
+    }
+
+    const handleAnalyzeTortu = async () => {
+        if (!tortu.trim() || tortu.trim().length < 50) {
+            toast.error("Tortu en az 50 karakter olmalı")
+            return
+        }
+
+        setIsAnalyzingTortu(true)
+        setTortuAiComment(null)
+
+        const result = await analyzeTortu(
+            tortu,
+            book.title,
+            book.author?.name || "Bilinmeyen Yazar"
+        )
+
+        if (result.success && result.text) {
+            setTortuAiComment(result.text)
+        } else {
+            toast.error(result.error || "AI yanıt üretemedi")
+        }
+        setIsAnalyzingTortu(false)
+    }
+
+    const handleAnalyzeImza = async () => {
+        if (!imza.trim() || imza.trim().length < 50) {
+            toast.error("İmza en az 50 karakter olmalı")
+            return
+        }
+
+        setIsAnalyzingImza(true)
+        setImzaAiComment(null)
+
+        const result = await analyzeImza(
+            imza,
+            book.title,
+            book.author?.name || "Bilinmeyen Yazar"
+        )
+
+        if (result.success && result.text) {
+            setImzaAiComment(result.text)
+        } else {
+            toast.error(result.error || "AI yanıt üretemedi")
+        }
+        setIsAnalyzingImza(false)
     }
 
     const handleCreateQuote = async () => {
@@ -708,11 +774,62 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         initialContent={tortu}
                                         onChange={(content) => setTortu(content)}
                                     />
-                                    <div className="flex justify-end">
+                                    <div className="flex justify-end gap-2">
+                                        <Button
+                                            variant="outline"
+                                            onClick={handleAnalyzeTortu}
+                                            disabled={isAnalyzingTortu || tortu.trim().length < 50}
+                                        >
+                                            {isAnalyzingTortu ? (
+                                                <>
+                                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                    Yorumlanıyor...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Bot className="h-4 w-4 mr-2" />
+                                                    AI Yorumu Al
+                                                </>
+                                            )}
+                                        </Button>
                                         <Button onClick={handleSaveTortu} disabled={isSavingTortu}>
                                             {isSavingTortu ? "Kaydediliyor..." : "Kaydet"}
                                         </Button>
                                     </div>
+
+                                    {/* AI Yorum Kartı */}
+                                    {(isAnalyzingTortu || tortuAiComment) && (
+                                        <div className="mt-4 rounded-xl border border-violet-200 dark:border-violet-800 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30 overflow-hidden">
+                                            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-violet-200 dark:border-violet-800 bg-violet-100/50 dark:bg-violet-900/30">
+                                                <div className="flex items-center gap-2">
+                                                    <Bot className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                                                    <span className="font-medium text-violet-700 dark:text-violet-300">AI Yorumu</span>
+                                                </div>
+                                                {tortuAiComment && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={handleAnalyzeTortu}
+                                                        disabled={isAnalyzingTortu}
+                                                        className="h-7 text-xs text-violet-600 hover:text-violet-700 hover:bg-violet-100 dark:text-violet-400 dark:hover:bg-violet-900/50"
+                                                    >
+                                                        <RefreshCw className={cn("h-3 w-3 mr-1", isAnalyzingTortu && "animate-spin")} />
+                                                        Yenile
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            <div className="p-4">
+                                                {isAnalyzingTortu ? (
+                                                    <div className="flex items-center justify-center py-8">
+                                                        <Loader2 className="h-6 w-6 animate-spin text-violet-500" />
+                                                        <span className="ml-2 text-muted-foreground">Düşünceleriniz yorumlanıyor...</span>
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{tortuAiComment}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
@@ -739,11 +856,62 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         onChange={(content) => setImza(content)}
                                         authorName={book.author?.name}
                                     />
-                                    <div className="flex justify-end">
+                                    <div className="flex justify-end gap-2">
+                                        <Button
+                                            variant="outline"
+                                            onClick={handleAnalyzeImza}
+                                            disabled={isAnalyzingImza || imza.trim().length < 50}
+                                        >
+                                            {isAnalyzingImza ? (
+                                                <>
+                                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                    Yorumlanıyor...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Bot className="h-4 w-4 mr-2" />
+                                                    AI Yorumu Al
+                                                </>
+                                            )}
+                                        </Button>
                                         <Button onClick={handleSaveImza} disabled={isSavingImza}>
                                             {isSavingImza ? "Kaydediliyor..." : "Kaydet"}
                                         </Button>
                                     </div>
+
+                                    {/* AI Yorum Kartı */}
+                                    {(isAnalyzingImza || imzaAiComment) && (
+                                        <div className="mt-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 overflow-hidden">
+                                            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-emerald-200 dark:border-emerald-800 bg-emerald-100/50 dark:bg-emerald-900/30">
+                                                <div className="flex items-center gap-2">
+                                                    <Bot className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                                                    <span className="font-medium text-emerald-700 dark:text-emerald-300">AI Yorumu</span>
+                                                </div>
+                                                {imzaAiComment && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={handleAnalyzeImza}
+                                                        disabled={isAnalyzingImza}
+                                                        className="h-7 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100 dark:text-emerald-400 dark:hover:bg-emerald-900/50"
+                                                    >
+                                                        <RefreshCw className={cn("h-3 w-3 mr-1", isAnalyzingImza && "animate-spin")} />
+                                                        Yenile
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            <div className="p-4">
+                                                {isAnalyzingImza ? (
+                                                    <div className="flex items-center justify-center py-8">
+                                                        <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
+                                                        <span className="ml-2 text-muted-foreground">Üslup analiziniz yorumlanıyor...</span>
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{imzaAiComment}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
