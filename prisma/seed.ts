@@ -1157,11 +1157,11 @@ async function main() {
                         books: {
                             create: [
                                 {
-                                    title: "Martı Jonathan Livingston",
-                                    author: "Richard Bach",
+                                    title: "Uzun Hikaye",
+                                    author: "Mustafa Kutlu",
                                     role: "MAIN",
-                                    pageCount: 100,
-                                    reason: "Yıla başlamadan önce sınırlarını zorlamak üzerine, bir gecede bitecek efsanevi bir motivasyon.",
+                                    pageCount: 160,
+                                    reason: "Kısa, akıcı ve kalbi ısıtan bir Anadolu hikayesiyle okuma alışkanlığı kurmak.",
                                     sortOrder: 0
                                 },
                                 {
@@ -1242,11 +1242,11 @@ async function main() {
                         books: {
                             create: [
                                 {
-                                    title: "Uzun Hikaye",
-                                    author: "Mustafa Kutlu",
+                                    title: "Martı Jonathan Livingston",
+                                    author: "Richard Bach",
                                     role: "MAIN",
-                                    pageCount: 160,
-                                    reason: "Kısa, akıcı ve kalbi ısıtan bir Anadolu hikayesiyle okuma kondisyonunu korumak.",
+                                    pageCount: 100,
+                                    reason: "Sınırlarını zorlamak üzerine, bir oturuşta bitecek efsanevi bir motivasyon kitabı.",
                                     sortOrder: 0
                                 },
                                 {
