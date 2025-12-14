@@ -1139,7 +1139,7 @@ async function main() {
         data: {
             year: 2026,
             name: "2026 Okuma Hedefi",
-            description: "Her ay 1 ana kitap + 2 bonus kitap ile yılda 36 kitap hedefi. Ana kitabı tamamlayarak bonus kitapların kilidini aç!",
+            description: "Yatay Okuma Stratejisi: Türler arası geçişle sıkılmadan, her ay en az 1 kitabı sindirerek bitirme hedefi.",
             strategy: "1_MAIN_2_BONUS",
             isActive: true,
             months: {
@@ -1156,409 +1156,409 @@ async function main() {
                                     title: "Marslı",
                                     author: "Andy Weir",
                                     role: "MAIN",
-                                    pageCount: 384,
-                                    reason: "Mars'ta mahsur kalan bir botanikçinin hayatta kalma mücadelesi. Yüksek tempolu, zeki ve esprili.",
+                                    pageCount: 380,
+                                    reason: "Yıla yüksek enerjiyle, zeki ve komik bir hayatta kalma hikayesiyle başlamak için.",
                                     sortOrder: 0
                                 },
                                 {
-                                    title: "Karanlık Madde",
-                                    author: "Blake Crouch",
+                                    title: "Başlat (Ready Player One)",
+                                    author: "Ernest Cline",
                                     role: "BONUS",
-                                    pageCount: 352,
-                                    reason: "Paralel evrenler arasında nefes nefese bir kaçış hikayesi.",
+                                    pageCount: 450,
+                                    reason: "80'ler nostaljisi ve oyun dünyasıyla eğlenceyi sürdürmek için.",
                                     sortOrder: 1
                                 },
                                 {
-                                    title: "Kurtuluş Projesi",
-                                    author: "Andy Weir",
+                                    title: "Minyeli Abdullah",
+                                    author: "Hekimoğlu İsmail",
                                     role: "BONUS",
-                                    pageCount: 496,
-                                    reason: "Uzayda tek başına uyanan bir adam ve insanlığı kurtarma görevi.",
+                                    pageCount: 240,
+                                    reason: "Uzaydan dünyaya dönüş; manevi ve nostaljik bir klasikle dinlenmek için.",
                                     sortOrder: 2
                                 }
                             ]
                         }
                     },
-                    // ŞUBAT - Distopya & Toplum
+                    // ŞUBAT - Edebiyat & İnsan
                     {
                         monthNumber: 2,
                         monthName: "Şubat",
-                        theme: "Distopya & Toplum",
-                        themeIcon: "🏚️",
+                        theme: "Edebiyat & İnsan",
+                        themeIcon: "💡",
                         books: {
                             create: [
                                 {
-                                    title: "1984",
-                                    author: "George Orwell",
+                                    title: "Uzun Hikaye",
+                                    author: "Mustafa Kutlu",
                                     role: "MAIN",
-                                    pageCount: 328,
-                                    reason: "Totaliter rejimlerin en güçlü eleştirisi. 'Büyük Birader sizi izliyor.'",
+                                    pageCount: 160,
+                                    reason: "Kısa, akıcı ve kalbi ısıtan bir Anadolu hikayesiyle okuma kondisyonunu korumak.",
                                     sortOrder: 0
                                 },
                                 {
-                                    title: "Fahrenheit 451",
-                                    author: "Ray Bradbury",
+                                    title: "Beyaz Diş",
+                                    author: "Jack London",
                                     role: "BONUS",
-                                    pageCount: 192,
-                                    reason: "Kitapların yakıldığı, ekranların insanları uyuşturduğu bir gelecek.",
+                                    pageCount: 280,
+                                    reason: "Doğa ve mücadele temalı, dünya edebiyatından akıcı bir klasik.",
                                     sortOrder: 1
                                 },
                                 {
-                                    title: "Cesur Yeni Dünya",
-                                    author: "Aldous Huxley",
+                                    title: "Kusursuz Cinayet Yoktur",
+                                    author: "Sevil Atasoy",
                                     role: "BONUS",
-                                    pageCount: 288,
-                                    reason: "Genetik mühendisliği ve mutluluk haplarıyla kontrol edilen toplum.",
+                                    pageCount: 320,
+                                    reason: "Biraz merak ve gizem. Adli bilimlere giriş.",
                                     sortOrder: 2
                                 }
                             ]
                         }
                     },
-                    // MART - Kişisel Gelişim & Alışkanlıklar
+                    // MART - Tarihi Kurgu
                     {
                         monthNumber: 3,
                         monthName: "Mart",
-                        theme: "Kişisel Gelişim & Alışkanlıklar",
-                        themeIcon: "🎯",
+                        theme: "Tarihi Kurgu",
+                        themeIcon: "🏰",
                         books: {
                             create: [
                                 {
-                                    title: "Atomik Alışkanlıklar",
-                                    author: "James Clear",
+                                    title: "Semerkant",
+                                    author: "Amin Maalouf",
                                     role: "MAIN",
-                                    pageCount: 320,
-                                    reason: "Küçük değişikliklerle büyük sonuçlar. Alışkanlık sistemlerinin bilimi.",
+                                    pageCount: 318,
+                                    reason: "Ömer Hayyam ve Hasan Sabbah'ın hikayesiyle Doğu'nun gizemli tarihine giriş.",
                                     sortOrder: 0
                                 },
                                 {
-                                    title: "Derin Çalışma",
-                                    author: "Cal Newport",
+                                    title: "Fedailerin Kalesi Alamut",
+                                    author: "Vladimir Bartol",
                                     role: "BONUS",
-                                    pageCount: 296,
-                                    reason: "Dikkat dağıtıcı dünyada odaklanma yeteneğini geliştirmek.",
+                                    pageCount: 510,
+                                    reason: "Semerkant'ı sevenler için aynı dönemi daha karanlık anlatan bir gerilim.",
                                     sortOrder: 1
                                 },
                                 {
-                                    title: "Düşünce Tuzakları",
-                                    author: "Rolf Dobelli",
+                                    title: "Sultanın Casusları",
+                                    author: "Emrah Safa Gürkan",
                                     role: "BONUS",
-                                    pageCount: 272,
-                                    reason: "Karar alma süreçlerindeki sistematik hatalarımız.",
+                                    pageCount: 400,
+                                    reason: "Tarihi bu sefer kurgu değil, eğlenceli ve gerçek casusluk hikayeleriyle okumak.",
                                     sortOrder: 2
                                 }
                             ]
                         }
                     },
-                    // NİSAN - Felsefe & Anlam
+                    // NİSAN - Teknoloji & Vizyon
                     {
                         monthNumber: 4,
                         monthName: "Nisan",
-                        theme: "Felsefe & Anlam",
-                        themeIcon: "🤔",
-                        books: {
-                            create: [
-                                {
-                                    title: "İnsanın Anlam Arayışı",
-                                    author: "Viktor Frankl",
-                                    role: "MAIN",
-                                    pageCount: 168,
-                                    reason: "Auschwitz'ten sağ çıkan bir psikiyatristin logoterapi yaklaşımı.",
-                                    sortOrder: 0
-                                },
-                                {
-                                    title: "Mutluluğun Mimarisi",
-                                    author: "Alain de Botton",
-                                    role: "BONUS",
-                                    pageCount: 280,
-                                    reason: "Günlük hayatın felsefesi ve mutluluğa dair pratik düşünceler.",
-                                    sortOrder: 1
-                                },
-                                {
-                                    title: "Stoacılık",
-                                    author: "Ryan Holiday",
-                                    role: "BONUS",
-                                    pageCount: 256,
-                                    reason: "Antik felsefenin modern hayata uygulanması.",
-                                    sortOrder: 2
-                                }
-                            ]
-                        }
-                    },
-                    // MAYIS - Tarih & Uygarlık
-                    {
-                        monthNumber: 5,
-                        monthName: "Mayıs",
-                        theme: "Tarih & Uygarlık",
-                        themeIcon: "🏛️",
-                        books: {
-                            create: [
-                                {
-                                    title: "Sapiens",
-                                    author: "Yuval Noah Harari",
-                                    role: "MAIN",
-                                    pageCount: 512,
-                                    reason: "İnsanlık tarihinin 70.000 yıllık serüveni. Bilişsel devrimden bugüne.",
-                                    sortOrder: 0
-                                },
-                                {
-                                    title: "Homo Deus",
-                                    author: "Yuval Noah Harari",
-                                    role: "BONUS",
-                                    pageCount: 448,
-                                    reason: "İnsanlığın geleceği: Tanrılaşma mı, yapay zekaya boyun eğmek mi?",
-                                    sortOrder: 1
-                                },
-                                {
-                                    title: "Tüfek, Mikrop ve Çelik",
-                                    author: "Jared Diamond",
-                                    role: "BONUS",
-                                    pageCount: 528,
-                                    reason: "Coğrafyanın uygarlıkların kaderini nasıl belirlediği.",
-                                    sortOrder: 2
-                                }
-                            ]
-                        }
-                    },
-                    // HAZİRAN - Yapay Zeka & Teknoloji
-                    {
-                        monthNumber: 6,
-                        monthName: "Haziran",
-                        theme: "Yapay Zeka & Teknoloji",
+                        theme: "Teknoloji & Vizyon",
                         themeIcon: "🤖",
-                        books: {
-                            create: [
-                                {
-                                    title: "Yapay Zeka",
-                                    author: "Cem Say",
-                                    role: "MAIN",
-                                    pageCount: 240,
-                                    reason: "Türkçe'nin en iyi ve en anlaşılır YZ giriş kitabı.",
-                                    sortOrder: 0
-                                },
-                                {
-                                    title: "Süper Zeka",
-                                    author: "Nick Bostrom",
-                                    role: "BONUS",
-                                    pageCount: 368,
-                                    reason: "Yapay genel zekanın riskleri ve insanlığın geleceği.",
-                                    sortOrder: 1
-                                },
-                                {
-                                    title: "Derin Düşünme",
-                                    author: "Garry Kasparov",
-                                    role: "BONUS",
-                                    pageCount: 304,
-                                    reason: "Kasparov'un Deep Blue'ya yenilişi ve makine zekasıyla barışması.",
-                                    sortOrder: 2
-                                }
-                            ]
-                        }
-                    },
-                    // TEMMUZ - Psikoloji & İnsan Doğası
-                    {
-                        monthNumber: 7,
-                        monthName: "Temmuz",
-                        theme: "Psikoloji & İnsan Doğası",
-                        themeIcon: "🧠",
-                        books: {
-                            create: [
-                                {
-                                    title: "Hızlı ve Yavaş Düşünme",
-                                    author: "Daniel Kahneman",
-                                    role: "MAIN",
-                                    pageCount: 528,
-                                    reason: "Nobel ödüllü ekonomistin düşünce sistemlerimizi açıkladığı başyapıt.",
-                                    sortOrder: 0
-                                },
-                                {
-                                    title: "İknanın Psikolojisi",
-                                    author: "Robert Cialdini",
-                                    role: "BONUS",
-                                    pageCount: 336,
-                                    reason: "İnsanlar neden 'evet' der? Etki ve ikna mekanizmaları.",
-                                    sortOrder: 1
-                                },
-                                {
-                                    title: "Duygusal Zeka",
-                                    author: "Daniel Goleman",
-                                    role: "BONUS",
-                                    pageCount: 384,
-                                    reason: "IQ'dan öte: Duyguları anlama ve yönetme becerisi.",
-                                    sortOrder: 2
-                                }
-                            ]
-                        }
-                    },
-                    // AĞUSTOS - Biyografi & Liderlik
-                    {
-                        monthNumber: 8,
-                        monthName: "Ağustos",
-                        theme: "Biyografi & Liderlik",
-                        themeIcon: "👤",
                         books: {
                             create: [
                                 {
                                     title: "Steve Jobs",
                                     author: "Walter Isaacson",
                                     role: "MAIN",
-                                    pageCount: 656,
-                                    reason: "Teknoloji ile beşeri bilimlerin kesişimi. Vizyon ve takıntı.",
+                                    pageCount: 600,
+                                    reason: "Teknoloji dünyasını şekillendiren bir dâhinin hayatını roman gibi okumak.",
                                     sortOrder: 0
                                 },
                                 {
-                                    title: "Elon Musk",
-                                    author: "Walter Isaacson",
+                                    title: "Sıfırdan Bire",
+                                    author: "Peter Thiel",
                                     role: "BONUS",
-                                    pageCount: 688,
-                                    reason: "Mars vizyonu, Tesla, SpaceX ve sınır tanımayan hırs.",
+                                    pageCount: 200,
+                                    reason: "Girişimcilik ve geleceği inşa etmek üzerine kısa ve vurucu bir kitap.",
                                     sortOrder: 1
                                 },
                                 {
-                                    title: "Shoe Dog",
-                                    author: "Phil Knight",
+                                    title: "Otostopçunun Galaksi Rehberi",
+                                    author: "Douglas Adams",
                                     role: "BONUS",
-                                    pageCount: 400,
-                                    reason: "Nike'ın kurucusunun samimi ve ilham verici hikayesi.",
+                                    pageCount: 250,
+                                    reason: "Teknolojinin ciddiyetinden sıkılınca evrene kahkahalarla gülmek için.",
                                     sortOrder: 2
                                 }
                             ]
                         }
                     },
-                    // EYLÜL - Ekonomi & Finans
+                    // MAYIS - Maneviyat & Siyer
                     {
-                        monthNumber: 9,
-                        monthName: "Eylül",
-                        theme: "Ekonomi & Finans",
-                        themeIcon: "📈",
+                        monthNumber: 5,
+                        monthName: "Mayıs",
+                        theme: "Maneviyat & Siyer",
+                        themeIcon: "📿",
                         books: {
                             create: [
                                 {
-                                    title: "Paranın Psikolojisi",
-                                    author: "Morgan Housel",
+                                    title: "Hz. Muhammed'in Hayatı",
+                                    author: "Martin Lings",
                                     role: "MAIN",
-                                    pageCount: 256,
-                                    reason: "Para ile ilişkimizi şekillendiren psikolojik faktörler.",
+                                    pageCount: 450,
+                                    reason: "Dünyanın en iyi siyerlerinden biriyle, dönemin atmosferini solumak.",
                                     sortOrder: 0
                                 },
                                 {
-                                    title: "Zengin Baba Yoksul Baba",
-                                    author: "Robert Kiyosaki",
+                                    title: "Çöl Deniz (Hz. Hatice)",
+                                    author: "Sibel Eraslan",
                                     role: "BONUS",
-                                    pageCount: 336,
-                                    reason: "Finansal okuryazarlığın temelleri ve varlık oluşturma.",
+                                    pageCount: 350,
+                                    reason: "Siyeri bir de Hz. Hatice'nin gözünden, duygusal bir romanla okumak.",
                                     sortOrder: 1
                                 },
                                 {
-                                    title: "Babil'in En Zengin Adamı",
-                                    author: "George S. Clason",
+                                    title: "Küçük Ağaç'ın Eğitimi",
+                                    author: "Forrest Carter",
                                     role: "BONUS",
-                                    pageCount: 144,
-                                    reason: "Antik Babil'den gelen zamansız finansal bilgelik.",
+                                    pageCount: 270,
+                                    reason: "Doğa, bilgelik ve saflık üzerine ruhu dinlendiren bir hikaye.",
                                     sortOrder: 2
                                 }
                             ]
                         }
                     },
-                    // EKİM - Edebiyat Klasikleri
+                    // HAZİRAN - Strateji & Casusluk
                     {
-                        monthNumber: 10,
-                        monthName: "Ekim",
-                        theme: "Edebiyat Klasikleri",
-                        themeIcon: "📚",
-                        books: {
-                            create: [
-                                {
-                                    title: "Suç ve Ceza",
-                                    author: "Fyodor Dostoyevski",
-                                    role: "MAIN",
-                                    pageCount: 672,
-                                    reason: "Ahlak, suçluluk ve insan psikolojisinin derinliklerine yolculuk.",
-                                    sortOrder: 0
-                                },
-                                {
-                                    title: "Dönüşüm",
-                                    author: "Franz Kafka",
-                                    role: "BONUS",
-                                    pageCount: 96,
-                                    reason: "Yabancılaşma ve varoluşun absürt doğası.",
-                                    sortOrder: 1
-                                },
-                                {
-                                    title: "Sefiller",
-                                    author: "Victor Hugo",
-                                    role: "BONUS",
-                                    pageCount: 1488,
-                                    reason: "Adalet, merhamet ve insan ruhunun kurtuluşu.",
-                                    sortOrder: 2
-                                }
-                            ]
-                        }
-                    },
-                    // KASIM - Bilim & Evren
-                    {
-                        monthNumber: 11,
-                        monthName: "Kasım",
-                        theme: "Bilim & Evren",
-                        themeIcon: "🔬",
-                        books: {
-                            create: [
-                                {
-                                    title: "Cosmos",
-                                    author: "Carl Sagan",
-                                    role: "MAIN",
-                                    pageCount: 432,
-                                    reason: "Evrenin büyüklüğü ve güzelliği. Bilimsel merakın şiiri.",
-                                    sortOrder: 0
-                                },
-                                {
-                                    title: "Kısa Bir Tarih",
-                                    author: "Bill Bryson",
-                                    role: "BONUS",
-                                    pageCount: 624,
-                                    reason: "Her şeyin neredeyse kısa tarihi: Big Bang'den bugüne.",
-                                    sortOrder: 1
-                                },
-                                {
-                                    title: "Zamanın Kısa Tarihi",
-                                    author: "Stephen Hawking",
-                                    role: "BONUS",
-                                    pageCount: 256,
-                                    reason: "Kara delikler, büyük patlama ve evrenin sırları.",
-                                    sortOrder: 2
-                                }
-                            ]
-                        }
-                    },
-                    // ARALIK - Strateji & Karar Alma
-                    {
-                        monthNumber: 12,
-                        monthName: "Aralık",
-                        theme: "Strateji & Karar Alma",
-                        themeIcon: "♟️",
+                        monthNumber: 6,
+                        monthName: "Haziran",
+                        theme: "Strateji & Casusluk",
+                        themeIcon: "🎯",
                         books: {
                             create: [
                                 {
                                     title: "Savaş Sanatı",
                                     author: "Sun Tzu",
                                     role: "MAIN",
-                                    pageCount: 160,
-                                    reason: "2500 yıllık strateji klasiği. İş ve hayatta uygulanabilir taktikler.",
+                                    pageCount: 100,
+                                    reason: "Yaz başlarken kısa ama bin yıllık strateji bilgeliği içeren bir temel eser.",
                                     sortOrder: 0
                                 },
                                 {
-                                    title: "Prens",
-                                    author: "Niccolo Machiavelli",
+                                    title: "Köstebek",
+                                    author: "John le Carré",
                                     role: "BONUS",
-                                    pageCount: 192,
-                                    reason: "Güç ve siyasetin acımasız gerçekleri.",
+                                    pageCount: 400,
+                                    reason: "Gerçekçi ve bürokratik bir soğuk savaş casusluğu romanı.",
                                     sortOrder: 1
                                 },
                                 {
-                                    title: "48 Güç Yasası",
-                                    author: "Robert Greene",
+                                    title: "Sherlock Holmes - Bütün Hikayeler 1",
+                                    author: "Arthur Conan Doyle",
                                     role: "BONUS",
-                                    pageCount: 496,
-                                    reason: "Tarihten güç ve manipülasyon dersleri.",
+                                    pageCount: 350,
+                                    reason: "Stratejiden sonra biraz da tümdengelim ve suç çözme keyfi.",
+                                    sortOrder: 2
+                                }
+                            ]
+                        }
+                    },
+                    // TEMMUZ - Bilim Kurgu & Gerilim
+                    {
+                        monthNumber: 7,
+                        monthName: "Temmuz",
+                        theme: "Bilim Kurgu & Gerilim",
+                        themeIcon: "🧬",
+                        books: {
+                            create: [
+                                {
+                                    title: "Karanlık Madde",
+                                    author: "Blake Crouch",
+                                    role: "MAIN",
+                                    pageCount: 400,
+                                    reason: "Yaz sıcağında elden bırakılamayacak, film gibi bir paralel evren kovalamacası.",
+                                    sortOrder: 0
+                                },
+                                {
+                                    title: "Jurassic Park",
+                                    author: "Michael Crichton",
+                                    role: "BONUS",
+                                    pageCount: 450,
+                                    reason: "Genetik bilimi ve kaos teorisi üzerine heyecanlı bir klasik.",
+                                    sortOrder: 1
+                                },
+                                {
+                                    title: "Yalan Söylediğimi Nasıl Anladın?",
+                                    author: "Paul Ekman",
+                                    role: "BONUS",
+                                    pageCount: 300,
+                                    reason: "İnsanların mimiklerini okumayı öğrenmek için eğlenceli bir kişisel gelişim.",
+                                    sortOrder: 2
+                                }
+                            ]
+                        }
+                    },
+                    // AĞUSTOS - Polisiye & Gizem
+                    {
+                        monthNumber: 8,
+                        monthName: "Ağustos",
+                        theme: "Polisiye & Gizem",
+                        themeIcon: "🔍",
+                        books: {
+                            create: [
+                                {
+                                    title: "Doğu Ekspresinde Cinayet",
+                                    author: "Agatha Christie",
+                                    role: "MAIN",
+                                    pageCount: 250,
+                                    reason: "Sıcaklarda zihni yormayan, sonu şaşırtıcı klasik bir dedektiflik hikayesi.",
+                                    sortOrder: 0
+                                },
+                                {
+                                    title: "İstanbul Hatırası",
+                                    author: "Ahmet Ümit",
+                                    role: "BONUS",
+                                    pageCount: 550,
+                                    reason: "İstanbul'un tarihiyle iç içe geçmiş yerli ve atmosferik bir polisiye.",
+                                    sortOrder: 1
+                                },
+                                {
+                                    title: "Yapay Zeka",
+                                    author: "Cem Say",
+                                    role: "BONUS",
+                                    pageCount: 200,
+                                    reason: "Eylüldeki teknoloji ayına hazırlık için hafif ve öğretici bir giriş.",
+                                    sortOrder: 2
+                                }
+                            ]
+                        }
+                    },
+                    // EYLÜL - Teknoloji & Gelecek
+                    {
+                        monthNumber: 9,
+                        monthName: "Eylül",
+                        theme: "Teknoloji & Gelecek",
+                        themeIcon: "🌌",
+                        books: {
+                            create: [
+                                {
+                                    title: "Elon Musk",
+                                    author: "Walter Isaacson",
+                                    role: "MAIN",
+                                    pageCount: 650,
+                                    reason: "Mars, elektrikli araçlar ve yapay zeka vizyonunu anlamak için güncel bir biyografi.",
+                                    sortOrder: 0
+                                },
+                                {
+                                    title: "Yapay Zeka 2041",
+                                    author: "Kai-Fu Lee",
+                                    role: "BONUS",
+                                    pageCount: 450,
+                                    reason: "Gelecekte bizi nelerin beklediğine dair bilimsel temelli 10 hikaye.",
+                                    sortOrder: 1
+                                },
+                                {
+                                    title: "1984",
+                                    author: "George Orwell",
+                                    role: "BONUS",
+                                    pageCount: 350,
+                                    reason: "Teknolojinin karanlık yüzünü hatırlatan distopik bir klasik.",
+                                    sortOrder: 2
+                                }
+                            ]
+                        }
+                    },
+                    // EKİM - Düşünce & Melankoli
+                    {
+                        monthNumber: 10,
+                        monthName: "Ekim",
+                        theme: "Düşünce & Melankoli",
+                        themeIcon: "🍂",
+                        books: {
+                            create: [
+                                {
+                                    title: "Kürk Mantolu Madonna",
+                                    author: "Sabahattin Ali",
+                                    role: "MAIN",
+                                    pageCount: 160,
+                                    reason: "Sonbahar ruhuna uygun, derin bir karakter analizi ve aşk hikayesi.",
+                                    sortOrder: 0
+                                },
+                                {
+                                    title: "Beş Şehir",
+                                    author: "Ahmet Hamdi Tanpınar",
+                                    role: "BONUS",
+                                    pageCount: 250,
+                                    reason: "Medeniyetimizin estetiğini ve şehirlerin ruhunu anlamak için.",
+                                    sortOrder: 1
+                                },
+                                {
+                                    title: "Martı Jonathan Livingston",
+                                    author: "Richard Bach",
+                                    role: "BONUS",
+                                    pageCount: 100,
+                                    reason: "Kendini aşmak üzerine bir oturuşta bitecek felsefi bir masal.",
+                                    sortOrder: 2
+                                }
+                            ]
+                        }
+                    },
+                    // KASIM - Dinler & Tarih
+                    {
+                        monthNumber: 11,
+                        monthName: "Kasım",
+                        theme: "Dinler & Tarih",
+                        themeIcon: "🏛️",
+                        books: {
+                            create: [
+                                {
+                                    title: "Tanrı'nın Tarihi",
+                                    author: "Karen Armstrong",
+                                    role: "MAIN",
+                                    pageCount: 550,
+                                    reason: "Üç büyük dinin tarihsel gelişimini anlatan, yılın en öğretici kitabı.",
+                                    sortOrder: 0
+                                },
+                                {
+                                    title: "Hristiyanlık ve İslam",
+                                    author: "Müfit Selim Saruhan",
+                                    role: "BONUS",
+                                    pageCount: 200,
+                                    reason: "Ana kitaptaki konuları karşılaştırmalı olarak pekiştirmek için.",
+                                    sortOrder: 1
+                                },
+                                {
+                                    title: "Malcolm X",
+                                    author: "Alex Haley",
+                                    role: "BONUS",
+                                    pageCount: 500,
+                                    reason: "İnanç ve mücadele üzerine sarsıcı bir biyografi.",
+                                    sortOrder: 2
+                                }
+                            ]
+                        }
+                    },
+                    // ARALIK - Cumhuriyet & Sentez
+                    {
+                        monthNumber: 12,
+                        monthName: "Aralık",
+                        theme: "Cumhuriyet & Sentez",
+                        themeIcon: "🇹🇷",
+                        books: {
+                            create: [
+                                {
+                                    title: "Çankaya",
+                                    author: "Falih Rıfkı Atay",
+                                    role: "MAIN",
+                                    pageCount: 600,
+                                    reason: "Yılı Cumhuriyet'in kuruluşu ve Atatürk'ün sofrasından anılarla kapatmak.",
+                                    sortOrder: 0
+                                },
+                                {
+                                    title: "Nutuk",
+                                    author: "Mustafa Kemal Atatürk",
+                                    role: "BONUS",
+                                    pageCount: 650,
+                                    reason: "Tarihi birinci ağızdan, kurucunun kaleminden okumak.",
+                                    sortOrder: 1
+                                },
+                                {
+                                    title: "Sinyal ve Gürültü",
+                                    author: "Nate Silver",
+                                    role: "BONUS",
+                                    pageCount: 500,
+                                    reason: "Yıl boyu okunan tüm veriyi ve bilgiyi nasıl analiz edeceğini öğrenerek seneyi bitirmek.",
                                     sortOrder: 2
                                 }
                             ]
