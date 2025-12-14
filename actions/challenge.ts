@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { ChallengeBookStatus, ChallengeBookRole } from "@prisma/client"
+import { matchBookScore } from "@/lib/string-utils"
 
 // ==========================================
 // Types
@@ -26,6 +27,8 @@ export type ChallengeMonthWithBooks = {
         userStatus: ChallengeBookStatus
         completedAt: Date | null
         takeaway: string | null
+        // Hibrit kapak için - kütüphanedeki kitaptan
+        linkedBookCoverUrl: string | null
     }[]
     progress: {
         total: number
@@ -49,6 +52,53 @@ export type ChallengeOverview = {
         mainCompleted: number
         bonusCompleted: number
     }
+}
+
+// ==========================================
+// Otomatik Kitap Eşleştirme
+// Kullanıcının kütüphanesindeki kitapları challenge kitaplarıyla eşleştir
+// ==========================================
+
+async function autoMatchBooksForUser(
+    userId: string,
+    challengeBooks: { id: string; title: string; author: string }[]
+): Promise<Map<string, string>> {
+    // Kullanıcının tüm kitaplarını al
+    const userBooks = await prisma.book.findMany({
+        where: { userId },
+        include: {
+            author: {
+                select: { name: true }
+            }
+        }
+    })
+
+    const matches = new Map<string, string>() // challengeBookId -> bookId
+
+    for (const challengeBook of challengeBooks) {
+        let bestMatch: { bookId: string; score: number } | null = null
+
+        for (const userBook of userBooks) {
+            const authorName = userBook.author?.name || ""
+            const score = matchBookScore(
+                challengeBook.title,
+                challengeBook.author,
+                userBook.title,
+                authorName
+            )
+
+            // %75+ eşleşme yeterli
+            if (score >= 0.75 && (!bestMatch || score > bestMatch.score)) {
+                bestMatch = { bookId: userBook.id, score }
+            }
+        }
+
+        if (bestMatch) {
+            matches.set(challengeBook.id, bestMatch.bookId)
+        }
+    }
+
+    return matches
 }
 
 // ==========================================
@@ -94,19 +144,32 @@ export async function joinChallenge(challengeId: string) {
             return { success: false, error: "Challenge bulunamadı" }
         }
 
+        // Tüm challenge kitaplarını düz liste olarak al
+        const allChallengeBooks = challenge.months.flatMap(month =>
+            month.books.map(book => ({
+                id: book.id,
+                title: book.title,
+                author: book.author,
+                role: book.role
+            }))
+        )
+
+        // Otomatik eşleştirme yap
+        const bookMatches = await autoMatchBooksForUser(user.id, allChallengeBooks)
+
         // UserChallengeProgress oluştur
         const userProgress = await prisma.userChallengeProgress.create({
             data: {
                 userId: user.id,
                 challengeId,
                 books: {
-                    create: challenge.months.flatMap(month =>
-                        month.books.map(book => ({
-                            challengeBookId: book.id,
-                            // MAIN kitaplar NOT_STARTED, BONUS kitaplar LOCKED
-                            status: book.role === "MAIN" ? "NOT_STARTED" : "LOCKED"
-                        }))
-                    )
+                    create: allChallengeBooks.map(book => ({
+                        challengeBookId: book.id,
+                        // MAIN kitaplar NOT_STARTED, BONUS kitaplar LOCKED
+                        status: book.role === "MAIN" ? "NOT_STARTED" : "LOCKED",
+                        // Eşleşen kütüphane kitabını bağla
+                        linkedBookId: bookMatches.get(book.id) || null
+                    }))
                 }
             }
         })
@@ -305,7 +368,13 @@ export async function getChallengeDetails(year: number): Promise<ChallengeOvervi
                 userProgress: {
                     where: { userId: user.id },
                     include: {
-                        books: true
+                        books: {
+                            include: {
+                                linkedBook: {
+                                    select: { coverUrl: true }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -353,7 +422,8 @@ export async function getChallengeDetails(year: number): Promise<ChallengeOvervi
                     reason: book.reason,
                     userStatus: status,
                     completedAt: userBook?.completedAt || null,
-                    takeaway: userBook?.takeaway || null
+                    takeaway: userBook?.takeaway || null,
+                    linkedBookCoverUrl: userBook?.linkedBook?.coverUrl || null
                 }
             })
 
@@ -454,7 +524,13 @@ export async function getActiveChallenge() {
                 userProgress: {
                     where: { userId: user.id },
                     include: {
-                        books: true
+                        books: {
+                            include: {
+                                linkedBook: {
+                                    select: { coverUrl: true }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -471,7 +547,8 @@ export async function getActiveChallenge() {
         const mainBook = currentMonthData.books.find(b => b.role === "MAIN")
         const bonusBooks = currentMonthData.books.filter(b => b.role === "BONUS")
 
-        const mainStatus = mainBook ? userBooksMap.get(mainBook.id)?.status || "NOT_STARTED" : null
+        const mainUserBook = mainBook ? userBooksMap.get(mainBook.id) : null
+        const mainStatus = mainUserBook?.status || "NOT_STARTED"
         const isMainCompleted = mainStatus === "COMPLETED"
 
         return {
@@ -489,20 +566,23 @@ export async function getActiveChallenge() {
                     id: mainBook.id,
                     title: mainBook.title,
                     author: mainBook.author,
-                    coverUrl: mainBook.coverUrl,
+                    coverUrl: mainUserBook?.linkedBook?.coverUrl || mainBook.coverUrl,
                     pageCount: mainBook.pageCount,
                     reason: mainBook.reason,
                     status: mainStatus
                 } : null,
-                bonusBooks: bonusBooks.map(book => ({
-                    id: book.id,
-                    title: book.title,
-                    author: book.author,
-                    coverUrl: book.coverUrl,
-                    pageCount: book.pageCount,
-                    reason: book.reason,
-                    status: userBooksMap.get(book.id)?.status || "LOCKED"
-                })),
+                bonusBooks: bonusBooks.map(book => {
+                    const userBook = userBooksMap.get(book.id)
+                    return {
+                        id: book.id,
+                        title: book.title,
+                        author: book.author,
+                        coverUrl: userBook?.linkedBook?.coverUrl || book.coverUrl,
+                        pageCount: book.pageCount,
+                        reason: book.reason,
+                        status: userBook?.status || "LOCKED"
+                    }
+                }),
                 isMainCompleted
             }
         }
@@ -559,7 +639,13 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                 userProgress: {
                     where: { userId: user.id },
                     include: {
-                        books: true
+                        books: {
+                            include: {
+                                linkedBook: {
+                                    select: { coverUrl: true }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -609,7 +695,8 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                         reason: book.reason,
                         userStatus: status,
                         completedAt: userBook?.completedAt || null,
-                        takeaway: userBook?.takeaway || null
+                        takeaway: userBook?.takeaway || null,
+                        linkedBookCoverUrl: userBook?.linkedBook?.coverUrl || null
                     }
                 })
 

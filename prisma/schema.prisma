@@ -76,6 +76,7 @@ model Book {
   quotes               Quote[]
   readingLogs          ReadingLog[]
   userReadingListBooks UserReadingListBook[]
+  challengeBooks       UserChallengeBook[]   // Challenge kitaplarıyla bağlantı
   startDate            DateTime?
   endDate              DateTime?
   createdAt            DateTime              @default(now())
@@ -273,6 +274,7 @@ model UserChallengeBook {
   challengeBook   ChallengeBook        @relation(fields: [challengeBookId], references: [id], onDelete: Cascade)
   status          ChallengeBookStatus  @default(LOCKED)
   linkedBookId    String?              // Kullanıcının kütüphanesindeki kitaba bağlantı
+  linkedBook      Book?                @relation(fields: [linkedBookId], references: [id], onDelete: SetNull)
   startedAt       DateTime?
   completedAt     DateTime?
   takeaway        String?              @db.Text // "Bu kitaptan aklında kalan tek cümle"
@@ -282,5 +284,6 @@ model UserChallengeBook {
   @@unique([userProgressId, challengeBookId])
   @@index([userProgressId])
   @@index([challengeBookId])
+  @@index([linkedBookId])
   @@index([status])
 }

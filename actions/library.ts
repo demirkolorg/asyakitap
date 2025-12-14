@@ -6,6 +6,7 @@ import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { BookStatus } from "@prisma/client"
 import { CACHE_TAGS } from "@/lib/cache"
+import { matchBookScore } from "@/lib/string-utils"
 
 // Helper to invalidate user-related caches
 function invalidateUserCaches(userId: string) {
@@ -78,10 +79,46 @@ export async function addBookToLibrary(bookData: {
             }
         }
 
+        // Otomatik Challenge kitabı eşleştirmesi
+        // Kullanıcının katıldığı challenge'lardaki kitaplarla eşleştir
+        const authorName = newBook.author?.name || ""
+        if (authorName) {
+            // Kullanıcının challenge progress'lerini al
+            const userChallengeBooks = await prisma.userChallengeBook.findMany({
+                where: {
+                    userProgress: { userId: user.id },
+                    linkedBookId: null // Henüz eşleşmemiş olanlar
+                },
+                include: {
+                    challengeBook: true
+                }
+            })
+
+            // Eşleşme ara
+            for (const ucb of userChallengeBooks) {
+                const score = matchBookScore(
+                    bookData.title,
+                    authorName,
+                    ucb.challengeBook.title,
+                    ucb.challengeBook.author
+                )
+
+                if (score >= 0.75) {
+                    // Eşleşme bulundu - bağla
+                    await prisma.userChallengeBook.update({
+                        where: { id: ucb.id },
+                        data: { linkedBookId: newBook.id }
+                    })
+                    break // İlk eşleşmeyi al
+                }
+            }
+        }
+
         // Invalidate caches
         invalidateUserCaches(user.id)
         revalidatePath("/library")
         revalidatePath("/dashboard")
+        revalidatePath("/challenges")
 
         return { success: true, book: newBook, linkedToList }
     } catch (error) {
