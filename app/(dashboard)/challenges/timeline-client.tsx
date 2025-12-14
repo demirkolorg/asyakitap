@@ -353,8 +353,14 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
 
                                                     {/* Takeaway */}
                                                     {mainBook.takeaway && (
-                                                        <div className="mt-3 p-2 bg-muted/50 rounded text-xs italic">
-                                                            "{mainBook.takeaway}"
+                                                        <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                                                            <div className="flex items-start gap-2">
+                                                                <Sparkles className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                                                                <div>
+                                                                    <p className="text-xs font-medium text-amber-700 dark:text-amber-400 mb-1">Aklımda kalan</p>
+                                                                    <p className="text-sm italic text-amber-900 dark:text-amber-200">"{mainBook.takeaway}"</p>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     )}
                                                 </div>
@@ -462,6 +468,13 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                                                     </Button>
                                                                 )}
                                                             </div>
+
+                                                            {/* Bonus kitap takeaway */}
+                                                            {book.takeaway && (
+                                                                <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded text-xs italic text-amber-900 dark:text-amber-200">
+                                                                    "{book.takeaway}"
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 ))}

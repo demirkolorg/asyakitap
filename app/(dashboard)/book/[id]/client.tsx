@@ -17,7 +17,8 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { updateBook, deleteBook } from "@/actions/library"
+import { updateBook, deleteBook, getLinkedChallengeBook } from "@/actions/library"
+import { updateTakeaway } from "@/actions/challenge"
 import { analyzeTortu, analyzeImza } from "@/actions/ai"
 import { useRouter } from "next/navigation"
 import {
@@ -137,6 +138,12 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [showAddAuthorModal, setShowAddAuthorModal] = useState(false)
     const [progressInput, setProgressInput] = useState(book.currentPage.toString())
     const [mounted, setMounted] = useState(false)
+
+    // Takeaway (Challenge için)
+    const [showTakeawayDialog, setShowTakeawayDialog] = useState(false)
+    const [takeawayText, setTakeawayText] = useState("")
+    const [isSavingTakeaway, setIsSavingTakeaway] = useState(false)
+    const [linkedChallengeBookId, setLinkedChallengeBookId] = useState<string | null>(null)
 
     // AI yorum state'leri
     const [tortuAiComment, setTortuAiComment] = useState<string | null>(null)
@@ -314,11 +321,35 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             setCurrentStatus("COMPLETED")
             setCurrentPage(book.pageCount || currentPage)
             toast.success("Tebrikler! Kitabı bitirdin!")
+
+            // Challenge'a bağlı mı kontrol et
+            const linkedBook = await getLinkedChallengeBook(book.id)
+            if (linkedBook) {
+                setLinkedChallengeBookId(linkedBook.id)
+                setShowTakeawayDialog(true)
+            }
+
             router.refresh()
         } else {
             toast.error("Bir hata oluştu")
         }
         setIsUpdatingStatus(false)
+    }
+
+    const handleSaveTakeaway = async () => {
+        if (!linkedChallengeBookId) return
+
+        setIsSavingTakeaway(true)
+        const result = await updateTakeaway(linkedChallengeBookId, takeawayText)
+        if (result.success) {
+            toast.success("Aklında kalan kaydedildi!")
+        } else {
+            toast.error(result.error || "Kaydedilemedi")
+        }
+        setIsSavingTakeaway(false)
+        setShowTakeawayDialog(false)
+        setTakeawayText("")
+        setLinkedChallengeBookId(null)
     }
 
     const handleAbandonReading = async () => {
@@ -1185,6 +1216,56 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Challenge Takeaway Dialog */}
+            <Dialog open={showTakeawayDialog} onOpenChange={(open) => {
+                if (!open) {
+                    setShowTakeawayDialog(false)
+                    setTakeawayText("")
+                    setLinkedChallengeBookId(null)
+                }
+            }}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Sparkles className="h-5 w-5 text-amber-500" />
+                            Tebrikler! 🎉
+                        </DialogTitle>
+                        <DialogDescription>
+                            "{book.title}" kitabını tamamladın! Bu kitaptan aklında kalan tek cümle veya düşünce ne?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Textarea
+                        value={takeawayText}
+                        onChange={(e) => setTakeawayText(e.target.value)}
+                        placeholder="Bu kitaptan aklımda kalan..."
+                        rows={4}
+                        className="mt-2"
+                    />
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setShowTakeawayDialog(false)
+                                setTakeawayText("")
+                                setLinkedChallengeBookId(null)
+                            }}
+                        >
+                            Geç
+                        </Button>
+                        <Button onClick={handleSaveTakeaway} disabled={isSavingTakeaway}>
+                            {isSavingTakeaway ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Kaydediliyor...
+                                </>
+                            ) : (
+                                "Kaydet"
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

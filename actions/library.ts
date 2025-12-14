@@ -324,6 +324,33 @@ export async function deleteBook(id: string) {
     }
 }
 
+// Kitabın bağlı olduğu challenge kitabını getir
+export async function getLinkedChallengeBook(bookId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    try {
+        const userChallengeBook = await prisma.userChallengeBook.findFirst({
+            where: {
+                linkedBookId: bookId,
+                userProgress: { userId: user.id }
+            },
+            select: {
+                id: true,
+                challengeBookId: true,
+                takeaway: true
+            }
+        })
+
+        return userChallengeBook
+    } catch (error) {
+        console.error("Failed to get linked challenge book:", error)
+        return null
+    }
+}
+
 // Header için şu an okunan kitaplar
 export async function getCurrentlyReadingBooks() {
     const supabase = await createClient()
