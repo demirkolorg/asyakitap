@@ -571,7 +571,8 @@ export async function getActiveChallenge() {
                     coverUrl: mainUserBook?.linkedBook?.coverUrl || mainBook.coverUrl,
                     pageCount: mainBook.pageCount,
                     reason: mainBook.reason,
-                    status: mainStatus
+                    status: mainStatus,
+                    linkedBookId: mainUserBook?.linkedBookId || null
                 } : null,
                 bonusBooks: bonusBooks.map(book => {
                     const userBook = userBooksMap.get(book.id)
@@ -582,7 +583,8 @@ export async function getActiveChallenge() {
                         coverUrl: userBook?.linkedBook?.coverUrl || book.coverUrl,
                         pageCount: book.pageCount,
                         reason: book.reason,
-                        status: userBook?.status || "LOCKED"
+                        status: userBook?.status || "LOCKED",
+                        linkedBookId: userBook?.linkedBookId || null
                     }
                 }),
                 isMainCompleted

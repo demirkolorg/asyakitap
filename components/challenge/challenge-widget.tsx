@@ -14,10 +14,11 @@ import {
     Sparkles,
     ChevronRight,
     Trophy,
-    Loader2
+    Loader2,
+    ExternalLink
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { joinChallenge, markChallengeBookAsRead, updateChallengeBookStatus } from "@/actions/challenge"
+import { joinChallenge } from "@/actions/challenge"
 import { toast } from "sonner"
 import { ChallengeBookStatus } from "@prisma/client"
 
@@ -29,6 +30,7 @@ type ChallengeBook = {
     pageCount: number | null
     reason: string | null
     status: ChallengeBookStatus | null
+    linkedBookId?: string | null
 }
 
 type ChallengeWidgetProps = {
@@ -52,7 +54,6 @@ type ChallengeWidgetProps = {
 
 export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
     const [isJoining, setIsJoining] = useState(false)
-    const [isUpdating, setIsUpdating] = useState<string | null>(null)
     const [localChallenge, setLocalChallenge] = useState(challenge)
 
     if (!localChallenge) {
@@ -71,32 +72,6 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
             toast.error(result.error)
         }
         setIsJoining(false)
-    }
-
-    const handleStartReading = async (bookId: string) => {
-        setIsUpdating(bookId)
-        const result = await updateChallengeBookStatus(bookId, "IN_PROGRESS")
-        if (result.success) {
-            toast.success("Okumaya başladınız!")
-        } else {
-            toast.error(result.error)
-        }
-        setIsUpdating(null)
-    }
-
-    const handleComplete = async (bookId: string) => {
-        setIsUpdating(bookId)
-        const result = await markChallengeBookAsRead(bookId)
-        if (result.success) {
-            toast.success(result.message)
-            if (result.wasMain) {
-                // Konfeti efekti için event dispatch
-                window.dispatchEvent(new CustomEvent('challenge-main-completed'))
-            }
-        } else {
-            toast.error(result.error)
-        }
-        setIsUpdating(null)
     }
 
     const completedCount = [
@@ -183,26 +158,46 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                         ? "border-green-500 bg-green-50 dark:bg-green-950/20"
                                         : "border-primary/30 bg-background"
                                 )}>
-                                    {/* Kapak */}
-                                    <div className="relative h-24 w-16 flex-shrink-0 rounded overflow-hidden bg-muted">
-                                        {currentMonth.mainBook.coverUrl ? (
-                                            <Image
-                                                src={currentMonth.mainBook.coverUrl}
-                                                alt={currentMonth.mainBook.title}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        ) : (
-                                            <div className="flex items-center justify-center h-full">
-                                                <BookOpen className="h-6 w-6 text-muted-foreground" />
-                                            </div>
-                                        )}
-                                        {currentMonth.mainBook.status === "COMPLETED" && (
-                                            <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                                                <CheckCircle2 className="h-8 w-8 text-green-600" />
-                                            </div>
-                                        )}
-                                    </div>
+                                    {/* Kapak - tıklanabilir */}
+                                    {currentMonth.mainBook.linkedBookId ? (
+                                        <Link
+                                            href={`/book/${currentMonth.mainBook.linkedBookId}`}
+                                            className="relative h-24 w-16 flex-shrink-0 rounded overflow-hidden bg-muted group"
+                                        >
+                                            {currentMonth.mainBook.coverUrl ? (
+                                                <Image
+                                                    src={currentMonth.mainBook.coverUrl}
+                                                    alt={currentMonth.mainBook.title}
+                                                    fill
+                                                    className="object-cover group-hover:scale-105 transition-transform"
+                                                />
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full">
+                                                    <BookOpen className="h-6 w-6 text-muted-foreground" />
+                                                </div>
+                                            )}
+                                            {currentMonth.mainBook.status === "COMPLETED" && (
+                                                <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                                                    <CheckCircle2 className="h-8 w-8 text-green-600" />
+                                                </div>
+                                            )}
+                                        </Link>
+                                    ) : (
+                                        <div className="relative h-24 w-16 flex-shrink-0 rounded overflow-hidden bg-muted">
+                                            {currentMonth.mainBook.coverUrl ? (
+                                                <Image
+                                                    src={currentMonth.mainBook.coverUrl}
+                                                    alt={currentMonth.mainBook.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full">
+                                                    <BookOpen className="h-6 w-6 text-muted-foreground" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
                                     {/* Bilgi */}
                                     <div className="flex-1 min-w-0">
@@ -218,45 +213,33 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                             </p>
                                         )}
 
-                                        {/* Aksiyon butonları */}
+                                        {/* Durum göstergesi */}
                                         <div className="mt-2">
-                                            {currentMonth.mainBook.status === "NOT_STARTED" && (
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    className="h-7 text-xs"
-                                                    onClick={() => handleStartReading(currentMonth.mainBook!.id)}
-                                                    disabled={isUpdating === currentMonth.mainBook.id}
-                                                >
-                                                    {isUpdating === currentMonth.mainBook.id ? (
-                                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                                    ) : (
-                                                        "Okumaya Başla"
-                                                    )}
-                                                </Button>
-                                            )}
-                                            {currentMonth.mainBook.status === "IN_PROGRESS" && (
-                                                <Button
-                                                    size="sm"
-                                                    className="h-7 text-xs"
-                                                    onClick={() => handleComplete(currentMonth.mainBook!.id)}
-                                                    disabled={isUpdating === currentMonth.mainBook.id}
-                                                >
-                                                    {isUpdating === currentMonth.mainBook.id ? (
-                                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                                    ) : (
-                                                        <>
-                                                            <CheckCircle2 className="h-3 w-3 mr-1" />
-                                                            Tamamladım
-                                                        </>
-                                                    )}
-                                                </Button>
-                                            )}
-                                            {currentMonth.mainBook.status === "COMPLETED" && (
+                                            {currentMonth.mainBook.status === "COMPLETED" ? (
                                                 <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
                                                     <CheckCircle2 className="h-3 w-3" />
                                                     Tamamlandı
                                                 </span>
+                                            ) : currentMonth.mainBook.status === "IN_PROGRESS" ? (
+                                                <span className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium">
+                                                    <BookOpen className="h-3 w-3" />
+                                                    Okunuyor
+                                                </span>
+                                            ) : currentMonth.mainBook.linkedBookId ? (
+                                                <Link
+                                                    href={`/book/${currentMonth.mainBook.linkedBookId}`}
+                                                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                                                >
+                                                    <ExternalLink className="h-3 w-3" />
+                                                    Kitaba Git
+                                                </Link>
+                                            ) : (
+                                                <Link
+                                                    href="/challenges"
+                                                    className="inline-flex items-center gap-1 text-xs text-amber-600 hover:underline"
+                                                >
+                                                    Eşleştir →
+                                                </Link>
                                             )}
                                         </div>
                                     </div>
