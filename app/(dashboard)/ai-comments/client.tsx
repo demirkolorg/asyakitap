@@ -14,6 +14,7 @@ import {
     Calendar,
     Sparkles,
     MessageSquare,
+    BarChart3,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -40,13 +41,21 @@ const sourceConfig = {
         bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
         icon: Pen,
         description: "Yazarın üslubu hakkında"
+    },
+    STATS: {
+        label: "İstatistik",
+        color: "bg-blue-500",
+        textColor: "text-blue-600",
+        bgColor: "bg-blue-50 dark:bg-blue-950/30",
+        icon: BarChart3,
+        description: "Okuma alışkanlıkları analizi"
     }
 }
 
 export function AICommentsClient({ data }: AICommentsClientProps) {
     const { comments, stats } = data
     const [searchQuery, setSearchQuery] = useState("")
-    const [filterSource, setFilterSource] = useState<"all" | "TORTU" | "IMZA">("all")
+    const [filterSource, setFilterSource] = useState<"all" | "TORTU" | "IMZA" | "STATS">("all")
 
     // Filter comments
     const filteredComments = useMemo(() => {
@@ -59,8 +68,8 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
         if (searchQuery) {
             const query = searchQuery.toLowerCase()
             result = result.filter(
-                c => c.book.title.toLowerCase().includes(query) ||
-                    (c.book.author?.name || "").toLowerCase().includes(query) ||
+                c => (c.book?.title || "").toLowerCase().includes(query) ||
+                    (c.book?.author?.name || "").toLowerCase().includes(query) ||
                     c.userContent.toLowerCase().includes(query) ||
                     c.aiComment.toLowerCase().includes(query)
             )
@@ -100,7 +109,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
                 <Card>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -136,6 +145,18 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                         <div className="text-2xl font-bold">{stats.imzaCount}</div>
                     </CardContent>
                 </Card>
+
+                <Card className={sourceConfig.STATS.bgColor}>
+                    <CardHeader className="pb-2">
+                        <CardTitle className={cn("text-sm font-medium flex items-center gap-2", sourceConfig.STATS.textColor)}>
+                            <BarChart3 className="h-4 w-4" />
+                            İstatistik Analizi
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.statsCount}</div>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Filter Bar */}
@@ -166,6 +187,15 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                     >
                         <Pen className="h-4 w-4 mr-1" />
                         İmza
+                    </Button>
+                    <Button
+                        variant={filterSource === "STATS" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setFilterSource("STATS")}
+                        className={filterSource === "STATS" ? "bg-blue-600 hover:bg-blue-700" : ""}
+                    >
+                        <BarChart3 className="h-4 w-4 mr-1" />
+                        İstatistik
                     </Button>
                 </div>
 
@@ -209,6 +239,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                     {filteredComments.map((comment) => {
                         const config = sourceConfig[comment.source]
                         const Icon = config.icon
+                        const isStatsComment = comment.source === "STATS"
 
                         return (
                             <Card
@@ -216,38 +247,58 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                 className="group hover:border-primary/30 transition-colors overflow-hidden"
                             >
                                 <div className="flex">
-                                    {/* Book Cover */}
-                                    <Link href={`/book/${comment.book.id}`} className="flex-shrink-0">
-                                        <div className="relative w-24 sm:w-28 aspect-[2/3] bg-muted">
-                                            {comment.book.coverUrl ? (
-                                                <Image
-                                                    src={comment.book.coverUrl.replace("http:", "https:")}
-                                                    alt={comment.book.title}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            ) : (
-                                                <div className="flex h-full items-center justify-center">
-                                                    <BookOpen className="h-8 w-8 text-muted-foreground" />
-                                                </div>
-                                            )}
+                                    {/* Book Cover - sadece kitap yorumları için */}
+                                    {!isStatsComment && comment.book && (
+                                        <Link href={`/book/${comment.book.id}`} className="flex-shrink-0">
+                                            <div className="relative w-24 sm:w-28 aspect-[2/3] bg-muted">
+                                                {comment.book.coverUrl ? (
+                                                    <Image
+                                                        src={comment.book.coverUrl.replace("http:", "https:")}
+                                                        alt={comment.book.title}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-full items-center justify-center">
+                                                        <BookOpen className="h-8 w-8 text-muted-foreground" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Link>
+                                    )}
+
+                                    {/* Stats Icon - istatistik yorumları için */}
+                                    {isStatsComment && (
+                                        <div className="flex-shrink-0 w-24 sm:w-28 aspect-[2/3] bg-gradient-to-br from-blue-500/20 to-blue-600/10 flex items-center justify-center">
+                                            <BarChart3 className="h-12 w-12 text-blue-500" />
                                         </div>
-                                    </Link>
+                                    )}
 
                                     {/* Content */}
                                     <div className="flex-1 p-4 sm:p-5 min-w-0">
-                                        {/* Header: Book Info + Source Badge */}
+                                        {/* Header */}
                                         <div className="flex items-start justify-between gap-4 mb-3">
                                             <div className="min-w-0">
-                                                <Link
-                                                    href={`/book/${comment.book.id}`}
-                                                    className="font-semibold hover:text-primary transition-colors line-clamp-1"
-                                                >
-                                                    {comment.book.title}
-                                                </Link>
-                                                <p className="text-muted-foreground text-sm">
-                                                    {comment.book.author?.name || "Bilinmiyor"}
-                                                </p>
+                                                {isStatsComment ? (
+                                                    <>
+                                                        <p className="font-semibold">Okuma Alışkanlıkları Analizi</p>
+                                                        <p className="text-muted-foreground text-sm">
+                                                            Genel istatistik değerlendirmesi
+                                                        </p>
+                                                    </>
+                                                ) : comment.book ? (
+                                                    <>
+                                                        <Link
+                                                            href={`/book/${comment.book.id}`}
+                                                            className="font-semibold hover:text-primary transition-colors line-clamp-1"
+                                                        >
+                                                            {comment.book.title}
+                                                        </Link>
+                                                        <p className="text-muted-foreground text-sm">
+                                                            {comment.book.author?.name || "Bilinmiyor"}
+                                                        </p>
+                                                    </>
+                                                ) : null}
                                             </div>
                                             <span className={cn(
                                                 "text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1 flex-shrink-0 text-white",
@@ -261,7 +312,9 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                         {/* User Content */}
                                         <div className="mb-3 p-3 rounded-lg bg-muted/50">
                                             <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                                                <span className="font-medium">Senin notun:</span>
+                                                <span className="font-medium">
+                                                    {isStatsComment ? "İstatistikler:" : "Senin notun:"}
+                                                </span>
                                             </p>
                                             <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                                                 {stripHtml(comment.userContent)}
@@ -285,12 +338,22 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                                 <Calendar className="h-3 w-3" />
                                                 <span>{formatDate(comment.createdAt)}</span>
                                             </div>
-                                            <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Link href={`/book/${comment.book.id}`}>
-                                                    Kitaba Git
-                                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                                </Link>
-                                            </Button>
+                                            {!isStatsComment && comment.book && (
+                                                <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Link href={`/book/${comment.book.id}`}>
+                                                        Kitaba Git
+                                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                                    </Link>
+                                                </Button>
+                                            )}
+                                            {isStatsComment && (
+                                                <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Link href="/stats">
+                                                        İstatistiklere Git
+                                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                                    </Link>
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

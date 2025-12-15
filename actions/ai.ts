@@ -238,6 +238,13 @@ export async function analyzeReadingHabits(stats: {
     topPublishers: { name: string; bookCount: number }[]
     bestMonth: { month: string; count: number } | null
 }) {
+    // Auth kontrolü
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
     const systemPrompt = `Sen samimi ve motive edici bir okuma koçusun. Kullanıcının okuma alışkanlıklarını analiz edip kişiselleştirilmiş yorumlar yapıyorsun.
 
 Yaklaşımın:
@@ -254,9 +261,7 @@ Türkçe yanıt ver.`
         ? stats.topAuthors.slice(0, 5).map(a => `${a.name} (${a.bookCount} kitap)`).join(", ")
         : "Henüz yazar verisi yok"
 
-    const prompt = `Okuma İstatistiklerim:
-
-Genel Durum:
+    const statsText = `Genel Durum:
 - Toplam kitap: ${stats.totalBooks}
 - Tamamlanan: ${stats.completedBooks}
 - Şu an okunan: ${stats.readingBooks}
@@ -275,9 +280,32 @@ Dönemsel:
 - En verimli ay: ${stats.bestMonth ? `${stats.bestMonth.month} (${stats.bestMonth.count} kitap)` : "Henüz veri yok"}
 
 En Çok Okuduğum Yazarlar:
-${topAuthorsText}
+${topAuthorsText}`
+
+    const prompt = `Okuma İstatistiklerim:
+
+${statsText}
 
 Bu verilere göre okuma alışkanlıklarımı analiz et. Neleri iyi yapıyorum, neleri geliştirebilirim? Motivasyon ve öneriler ver.`
 
-    return await generateText(prompt, systemPrompt)
+    const result = await generateText(prompt, systemPrompt)
+
+    // AI yorumunu veritabanına kaydet
+    if (result.success && result.text) {
+        try {
+            await prisma.aIComment.create({
+                data: {
+                    userId: user.id,
+                    source: "STATS",
+                    userContent: statsText,
+                    aiComment: result.text
+                }
+            })
+            revalidatePath("/ai-comments")
+        } catch (error) {
+            console.error("Failed to save stats AI comment:", error)
+        }
+    }
+
+    return result
 }

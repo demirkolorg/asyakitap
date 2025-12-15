@@ -10,18 +10,20 @@ export interface AICommentWithBook {
     userContent: string
     aiComment: string
     createdAt: Date
+    userId: string | null
     book: {
         id: string
         title: string
         coverUrl: string | null
         author: { name: string } | null
-    }
+    } | null
 }
 
 export interface AICommentsStats {
     total: number
     tortuCount: number
     imzaCount: number
+    statsCount: number
 }
 
 export interface AICommentsPageData {
@@ -30,7 +32,7 @@ export interface AICommentsPageData {
 }
 
 export async function getAICommentsPageData(
-    filter?: "all" | "TORTU" | "IMZA"
+    filter?: "all" | "TORTU" | "IMZA" | "STATS"
 ): Promise<AICommentsPageData | null> {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -44,10 +46,13 @@ export async function getAICommentsPageData(
             : {}
 
         const [comments, stats] = await Promise.all([
-            // AI yorumları - kullanıcının kitaplarına ait olanlar
+            // AI yorumları - kullanıcının kitaplarına veya direkt kullanıcıya ait olanlar
             prisma.aIComment.findMany({
                 where: {
-                    book: { userId: user.id },
+                    OR: [
+                        { book: { userId: user.id } },
+                        { userId: user.id }
+                    ],
                     ...sourceFilter
                 },
                 include: {
@@ -68,18 +73,39 @@ export async function getAICommentsPageData(
             // İstatistikler
             Promise.all([
                 prisma.aIComment.count({
-                    where: { book: { userId: user.id } }
+                    where: {
+                        OR: [
+                            { book: { userId: user.id } },
+                            { userId: user.id }
+                        ]
+                    }
                 }),
                 prisma.aIComment.count({
-                    where: { book: { userId: user.id }, source: "TORTU" }
+                    where: {
+                        OR: [
+                            { book: { userId: user.id } },
+                            { userId: user.id }
+                        ],
+                        source: "TORTU"
+                    }
                 }),
                 prisma.aIComment.count({
-                    where: { book: { userId: user.id }, source: "IMZA" }
+                    where: {
+                        OR: [
+                            { book: { userId: user.id } },
+                            { userId: user.id }
+                        ],
+                        source: "IMZA"
+                    }
+                }),
+                prisma.aIComment.count({
+                    where: { userId: user.id, source: "STATS" }
                 })
-            ]).then(([total, tortuCount, imzaCount]) => ({
+            ]).then(([total, tortuCount, imzaCount, statsCount]) => ({
                 total,
                 tortuCount,
-                imzaCount
+                imzaCount,
+                statsCount
             }))
         ])
 

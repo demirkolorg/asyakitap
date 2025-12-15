@@ -107,19 +107,22 @@ enum ReadingAction {
 enum AICommentSource {
   TORTU
   IMZA
+  STATS  // İstatistik analizi
 }
 
 model AIComment {
   id          String           @id @default(cuid())
-  bookId      String
-  book        Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  source      AICommentSource  // TORTU veya IMZA
-  userContent String           @db.Text // Kullanıcının yazdığı orijinal içerik
+  bookId      String?          // Opsiyonel - STATS için null olabilir
+  book        Book?            @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  userId      String?          // STATS için kullanıcı ID'si
+  source      AICommentSource  // TORTU, IMZA veya STATS
+  userContent String           @db.Text // Kullanıcının yazdığı orijinal içerik (STATS için istatistik özeti)
   aiComment   String           @db.Text // AI'ın yorumu
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 
   @@index([bookId])
+  @@index([userId])
   @@index([source])
   @@index([createdAt])
 }
