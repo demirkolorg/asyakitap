@@ -19,7 +19,7 @@ export type RepairCandidate = {
 
 export type RepairSuggestion = {
     type: 'reading-list' | 'challenge'
-    targetId: string
+    targetId: string // ReadingListBook.id veya ChallengeBook.id
     targetTitle: string
     targetAuthor: string
     listOrChallengeName: string
@@ -45,11 +45,13 @@ export type RepairResult = {
 // ==========================================
 
 /**
- * Kullanıcının tüm kopuk bağlantılarını tarayıp onar
- * 1. Reading List bağlantılarını kontrol et
- * 2. Challenge bağlantılarını kontrol et
- * 3. %75+ eşleşmeleri otomatik onar
- * 4. %45-75 arası eşleşmeleri öneri olarak döndür
+ * Kullanıcının tüm eksik bağlantılarını tarayıp onar
+ *
+ * DOĞRU MANTIK:
+ * 1. Okuma listesindeki TÜM kitapları al (ReadingListBook)
+ * 2. Her biri için kullanıcının UserReadingListBook kaydı var mı kontrol et
+ * 3. Kayıt yoksa veya bookId null ise → kullanıcının kütüphanesiyle eşleştirmeyi dene
+ * 4. %75+ eşleşmeleri otomatik bağla, %45-75 arası öneri olarak göster
  */
 export async function repairAllLinks(): Promise<RepairResult> {
     const supabase = await createClient()
@@ -78,6 +80,20 @@ export async function repairAllLinks(): Promise<RepairResult> {
             }
         })
 
+        if (userBooks.length === 0) {
+            return {
+                success: true,
+                stats: {
+                    readingListsScanned: 0,
+                    readingListsRepaired: 0,
+                    challengesScanned: 0,
+                    challengesRepaired: 0,
+                    suggestionsFound: 0
+                },
+                suggestions: []
+            }
+        }
+
         const stats: RepairStats = {
             readingListsScanned: 0,
             readingListsRepaired: 0,
@@ -88,49 +104,52 @@ export async function repairAllLinks(): Promise<RepairResult> {
 
         const suggestions: RepairSuggestion[] = []
 
-        // 1. READING LISTS - Kopuk bağlantıları bul ve onar
-        const brokenReadingListLinks = await prisma.userReadingListBook.findMany({
-            where: {
-                userId: user.id,
-                bookId: null // Bağlantı kopuk
-            },
+        // =====================================================
+        // 1. READING LISTS - Tüm okuma listesi kitaplarını tara
+        // =====================================================
+
+        // Tüm okuma listesi kitaplarını al
+        const allReadingListBooks = await prisma.readingListBook.findMany({
             include: {
-                readingListBook: {
+                level: {
                     include: {
-                        level: {
-                            include: {
-                                readingList: { select: { name: true, slug: true } }
-                            }
-                        }
+                        readingList: { select: { name: true, slug: true } }
                     }
+                },
+                userLinks: {
+                    where: { userId: user.id }
                 }
             }
         })
 
-        stats.readingListsScanned = brokenReadingListLinks.length
+        for (const rlBook of allReadingListBooks) {
+            // Bu kitap için kullanıcının bağlantısı var mı?
+            const existingLink = rlBook.userLinks[0]
 
-        for (const link of brokenReadingListLinks) {
+            // Bağlantı var ve bookId dolu ise atla
+            if (existingLink?.bookId) {
+                continue
+            }
+
+            stats.readingListsScanned++
+
+            // Kullanıcının kütüphanesinde eşleşme ara
             const candidates: RepairCandidate[] = []
-            let repaired = false
+            let bestMatch: { bookId: string, score: number } | null = null
 
             for (const userBook of userBooks) {
                 const authorName = userBook.author?.name || ""
                 const score = matchBookScore(
-                    link.readingListBook.title,
-                    link.readingListBook.author,
+                    rlBook.title,
+                    rlBook.author,
                     userBook.title,
                     authorName
                 )
 
                 if (isAutoLinkable(score)) {
-                    // %75+ - Otomatik onar
-                    await prisma.userReadingListBook.update({
-                        where: { id: link.id },
-                        data: { bookId: userBook.id }
-                    })
-                    stats.readingListsRepaired++
-                    repaired = true
-                    break
+                    if (!bestMatch || score > bestMatch.score) {
+                        bestMatch = { bookId: userBook.id, score }
+                    }
                 } else if (isSuggestionWorthy(score)) {
                     candidates.push({
                         bookId: userBook.id,
@@ -141,91 +160,147 @@ export async function repairAllLinks(): Promise<RepairResult> {
                 }
             }
 
-            // Otomatik onarılmadıysa ve aday varsa, öneri olarak ekle
-            if (!repaired && candidates.length > 0) {
+            // Otomatik bağlama (%75+)
+            if (bestMatch) {
+                if (existingLink) {
+                    // Mevcut kaydı güncelle
+                    await prisma.userReadingListBook.update({
+                        where: { id: existingLink.id },
+                        data: { bookId: bestMatch.bookId }
+                    })
+                } else {
+                    // Yeni kayıt oluştur
+                    await prisma.userReadingListBook.create({
+                        data: {
+                            userId: user.id,
+                            readingListBookId: rlBook.id,
+                            bookId: bestMatch.bookId
+                        }
+                    })
+                }
+                stats.readingListsRepaired++
+            } else if (candidates.length > 0) {
+                // Öneri olarak ekle
                 const topCandidates = candidates
                     .sort((a, b) => b.score - a.score)
                     .slice(0, 3)
 
                 suggestions.push({
                     type: 'reading-list',
-                    targetId: link.id,
-                    targetTitle: link.readingListBook.title,
-                    targetAuthor: link.readingListBook.author,
-                    listOrChallengeName: link.readingListBook.level.readingList.name,
+                    targetId: rlBook.id, // ReadingListBook.id
+                    targetTitle: rlBook.title,
+                    targetAuthor: rlBook.author,
+                    listOrChallengeName: rlBook.level.readingList.name,
                     candidates: topCandidates
                 })
                 stats.suggestionsFound++
             }
         }
 
-        // 2. CHALLENGES - Kopuk bağlantıları bul ve onar
-        const brokenChallengeLinks = await prisma.userChallengeBook.findMany({
-            where: {
-                userProgress: { userId: user.id },
-                linkedBookId: null
-            },
+        // =====================================================
+        // 2. CHALLENGES - Kullanıcının katıldığı challenge'ları tara
+        // =====================================================
+
+        // Kullanıcının challenge progress'lerini al
+        const userChallengeProgress = await prisma.userChallengeProgress.findMany({
+            where: { userId: user.id },
             include: {
-                challengeBook: {
+                challenge: {
                     include: {
-                        month: {
+                        months: {
                             include: {
-                                challenge: { select: { name: true, year: true } }
+                                books: {
+                                    include: {
+                                        userProgress: {
+                                            where: { userProgress: { userId: user.id } }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                },
+                books: true
             }
         })
 
-        stats.challengesScanned = brokenChallengeLinks.length
+        for (const progress of userChallengeProgress) {
+            for (const month of progress.challenge.months) {
+                for (const challengeBook of month.books) {
+                    // Bu kitap için kullanıcının kaydı var mı?
+                    const existingLink = challengeBook.userProgress[0]
 
-        for (const link of brokenChallengeLinks) {
-            const candidates: RepairCandidate[] = []
-            let repaired = false
+                    // Bağlantı var ve linkedBookId dolu ise atla
+                    if (existingLink?.linkedBookId) {
+                        continue
+                    }
 
-            for (const userBook of userBooks) {
-                const authorName = userBook.author?.name || ""
-                const score = matchBookScore(
-                    link.challengeBook.title,
-                    link.challengeBook.author,
-                    userBook.title,
-                    authorName
-                )
+                    stats.challengesScanned++
 
-                if (isAutoLinkable(score)) {
-                    // %75+ - Otomatik onar
-                    await prisma.userChallengeBook.update({
-                        where: { id: link.id },
-                        data: { linkedBookId: userBook.id }
-                    })
-                    stats.challengesRepaired++
-                    repaired = true
-                    break
-                } else if (isSuggestionWorthy(score)) {
-                    candidates.push({
-                        bookId: userBook.id,
-                        bookTitle: userBook.title,
-                        score,
-                        confidence: getMatchConfidence(score)
-                    })
+                    // Kullanıcının kütüphanesinde eşleşme ara
+                    const candidates: RepairCandidate[] = []
+                    let bestMatch: { bookId: string, score: number } | null = null
+
+                    for (const userBook of userBooks) {
+                        const authorName = userBook.author?.name || ""
+                        const score = matchBookScore(
+                            challengeBook.title,
+                            challengeBook.author,
+                            userBook.title,
+                            authorName
+                        )
+
+                        if (isAutoLinkable(score)) {
+                            if (!bestMatch || score > bestMatch.score) {
+                                bestMatch = { bookId: userBook.id, score }
+                            }
+                        } else if (isSuggestionWorthy(score)) {
+                            candidates.push({
+                                bookId: userBook.id,
+                                bookTitle: userBook.title,
+                                score,
+                                confidence: getMatchConfidence(score)
+                            })
+                        }
+                    }
+
+                    // Otomatik bağlama (%75+)
+                    if (bestMatch) {
+                        if (existingLink) {
+                            // Mevcut kaydı güncelle
+                            await prisma.userChallengeBook.update({
+                                where: { id: existingLink.id },
+                                data: { linkedBookId: bestMatch.bookId }
+                            })
+                        } else {
+                            // Yeni kayıt oluştur
+                            await prisma.userChallengeBook.create({
+                                data: {
+                                    userProgressId: progress.id,
+                                    challengeBookId: challengeBook.id,
+                                    linkedBookId: bestMatch.bookId,
+                                    status: 'NOT_STARTED'
+                                }
+                            })
+                        }
+                        stats.challengesRepaired++
+                    } else if (candidates.length > 0) {
+                        // Öneri olarak ekle
+                        const topCandidates = candidates
+                            .sort((a, b) => b.score - a.score)
+                            .slice(0, 3)
+
+                        suggestions.push({
+                            type: 'challenge',
+                            targetId: challengeBook.id, // ChallengeBook.id
+                            targetTitle: challengeBook.title,
+                            targetAuthor: challengeBook.author,
+                            listOrChallengeName: `${progress.challenge.name} (${progress.challenge.year})`,
+                            candidates: topCandidates
+                        })
+                        stats.suggestionsFound++
+                    }
                 }
-            }
-
-            if (!repaired && candidates.length > 0) {
-                const topCandidates = candidates
-                    .sort((a, b) => b.score - a.score)
-                    .slice(0, 3)
-
-                suggestions.push({
-                    type: 'challenge',
-                    targetId: link.id,
-                    targetTitle: link.challengeBook.title,
-                    targetAuthor: link.challengeBook.author,
-                    listOrChallengeName: `${link.challengeBook.month.challenge.name} (${link.challengeBook.month.challenge.year})`,
-                    candidates: topCandidates
-                })
-                stats.suggestionsFound++
             }
         }
 
@@ -259,6 +334,7 @@ export async function repairAllLinks(): Promise<RepairResult> {
 
 /**
  * Önerilen eşleştirmeyi manuel olarak onayla
+ * targetId: ReadingListBook.id veya ChallengeBook.id
  */
 export async function confirmSuggestedLink(
     type: 'reading-list' | 'challenge',
@@ -283,14 +359,70 @@ export async function confirmSuggestedLink(
         }
 
         if (type === 'reading-list') {
-            await prisma.userReadingListBook.update({
-                where: { id: targetId },
-                data: { bookId }
+            // targetId = ReadingListBook.id
+            // Upsert: varsa güncelle, yoksa oluştur
+            await prisma.userReadingListBook.upsert({
+                where: {
+                    userId_readingListBookId: {
+                        userId: user.id,
+                        readingListBookId: targetId
+                    }
+                },
+                update: { bookId },
+                create: {
+                    userId: user.id,
+                    readingListBookId: targetId,
+                    bookId
+                }
             })
         } else {
-            await prisma.userChallengeBook.update({
+            // targetId = ChallengeBook.id
+            // Önce kullanıcının progress'ini bul
+            const challengeBook = await prisma.challengeBook.findUnique({
                 where: { id: targetId },
-                data: { linkedBookId: bookId }
+                include: {
+                    month: {
+                        include: {
+                            challenge: true
+                        }
+                    }
+                }
+            })
+
+            if (!challengeBook) {
+                return { success: false, error: "Challenge kitabı bulunamadı" }
+            }
+
+            // Kullanıcının progress'ini bul veya oluştur
+            const userProgress = await prisma.userChallengeProgress.upsert({
+                where: {
+                    userId_challengeId: {
+                        userId: user.id,
+                        challengeId: challengeBook.month.challengeId
+                    }
+                },
+                update: {},
+                create: {
+                    userId: user.id,
+                    challengeId: challengeBook.month.challengeId
+                }
+            })
+
+            // Kitap bağlantısını upsert et
+            await prisma.userChallengeBook.upsert({
+                where: {
+                    userProgressId_challengeBookId: {
+                        userProgressId: userProgress.id,
+                        challengeBookId: targetId
+                    }
+                },
+                update: { linkedBookId: bookId },
+                create: {
+                    userProgressId: userProgress.id,
+                    challengeBookId: targetId,
+                    linkedBookId: bookId,
+                    status: 'NOT_STARTED'
+                }
             })
         }
 
@@ -307,7 +439,8 @@ export async function confirmSuggestedLink(
 }
 
 /**
- * Kopuk bağlantı sayısını getir (quick check)
+ * Potansiyel bağlantı sayısını getir (quick check)
+ * Kullanıcının kütüphanesindeki kitaplarla eşleşebilecek okuma listesi/challenge kitapları
  */
 export async function getBrokenLinksCount(): Promise<{
     readingLists: number
@@ -322,25 +455,55 @@ export async function getBrokenLinksCount(): Promise<{
     }
 
     try {
-        const [readingListCount, challengeCount] = await Promise.all([
-            prisma.userReadingListBook.count({
-                where: {
-                    userId: user.id,
-                    bookId: null
+        // Kullanıcının kitaplarını al
+        const userBooks = await prisma.book.findMany({
+            where: { userId: user.id },
+            select: { id: true }
+        })
+
+        if (userBooks.length === 0) {
+            return { readingLists: 0, challenges: 0, total: 0 }
+        }
+
+        // Bağlı olmayan okuma listesi kitaplarını say
+        const unboundReadingListBooks = await prisma.readingListBook.count({
+            where: {
+                userLinks: {
+                    none: {
+                        userId: user.id,
+                        bookId: { not: null }
+                    }
                 }
-            }),
-            prisma.userChallengeBook.count({
+            }
+        })
+
+        // Kullanıcının katıldığı challenge'lardaki bağlı olmayan kitapları say
+        const userChallenges = await prisma.userChallengeProgress.findMany({
+            where: { userId: user.id },
+            select: { challengeId: true }
+        })
+
+        let unboundChallengeBooks = 0
+        if (userChallenges.length > 0) {
+            unboundChallengeBooks = await prisma.challengeBook.count({
                 where: {
-                    userProgress: { userId: user.id },
-                    linkedBookId: null
+                    month: {
+                        challengeId: { in: userChallenges.map(c => c.challengeId) }
+                    },
+                    userProgress: {
+                        none: {
+                            userProgress: { userId: user.id },
+                            linkedBookId: { not: null }
+                        }
+                    }
                 }
             })
-        ])
+        }
 
         return {
-            readingLists: readingListCount,
-            challenges: challengeCount,
-            total: readingListCount + challengeCount
+            readingLists: unboundReadingListBooks,
+            challenges: unboundChallengeBooks,
+            total: unboundReadingListBooks + unboundChallengeBooks
         }
     } catch (error) {
         console.error("Get broken links count error:", error)
