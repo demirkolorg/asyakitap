@@ -351,6 +351,94 @@ export async function getLinkedChallengeBook(bookId: string) {
     }
 }
 
+// Kitabın bağlı olduğu challenge bilgilerini detaylı getir (kitap detay sayfası için)
+export async function getLinkedChallengeBookWithDetails(bookId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    try {
+        const userChallengeBook = await prisma.userChallengeBook.findFirst({
+            where: {
+                linkedBookId: bookId,
+                userProgress: { userId: user.id }
+            },
+            include: {
+                challengeBook: {
+                    include: {
+                        month: {
+                            include: {
+                                challenge: true
+                            }
+                        }
+                    }
+                },
+                userProgress: {
+                    include: {
+                        challenge: true,
+                        books: {
+                            include: {
+                                challengeBook: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        if (!userChallengeBook) return null
+
+        // Challenge istatistiklerini hesapla
+        const allBooks = userChallengeBook.userProgress.books
+        const completedBooks = allBooks.filter(b => b.status === 'COMPLETED')
+        const mainBooks = allBooks.filter(b => b.challengeBook.role === 'MAIN')
+        const bonusBooks = allBooks.filter(b => b.challengeBook.role === 'BONUS')
+        const completedMainBooks = mainBooks.filter(b => b.status === 'COMPLETED')
+        const completedBonusBooks = bonusBooks.filter(b => b.status === 'COMPLETED')
+
+        return {
+            id: userChallengeBook.id,
+            status: userChallengeBook.status,
+            takeaway: userChallengeBook.takeaway,
+            startedAt: userChallengeBook.startedAt,
+            completedAt: userChallengeBook.completedAt,
+            challengeBook: {
+                id: userChallengeBook.challengeBook.id,
+                title: userChallengeBook.challengeBook.title,
+                author: userChallengeBook.challengeBook.author,
+                role: userChallengeBook.challengeBook.role,
+                reason: userChallengeBook.challengeBook.reason,
+            },
+            month: {
+                monthNumber: userChallengeBook.challengeBook.month.monthNumber,
+                monthName: userChallengeBook.challengeBook.month.monthName,
+                theme: userChallengeBook.challengeBook.month.theme,
+                themeIcon: userChallengeBook.challengeBook.month.themeIcon,
+            },
+            challenge: {
+                id: userChallengeBook.userProgress.challenge.id,
+                year: userChallengeBook.userProgress.challenge.year,
+                name: userChallengeBook.userProgress.challenge.name,
+            },
+            stats: {
+                totalBooks: allBooks.length,
+                completedBooks: completedBooks.length,
+                mainBooks: mainBooks.length,
+                bonusBooks: bonusBooks.length,
+                completedMainBooks: completedMainBooks.length,
+                completedBonusBooks: completedBonusBooks.length,
+                percentage: allBooks.length > 0
+                    ? Math.round((completedBooks.length / allBooks.length) * 100)
+                    : 0
+            }
+        }
+    } catch (error) {
+        console.error("Failed to get linked challenge book with details:", error)
+        return null
+    }
+}
+
 // Header için şu an okunan kitaplar
 export async function getCurrentlyReadingBooks() {
     const supabase = await createClient()

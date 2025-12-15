@@ -17,7 +17,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { updateBook, deleteBook, getLinkedChallengeBook } from "@/actions/library"
+import { updateBook, deleteBook, getLinkedChallengeBook, getLinkedChallengeBookWithDetails } from "@/actions/library"
 import { updateTakeaway } from "@/actions/challenge"
 import { analyzeTortu, analyzeImza } from "@/actions/ai"
 import { useRouter } from "next/navigation"
@@ -45,6 +45,9 @@ import {
     Bot,
     Loader2,
     RefreshCw,
+    Target,
+    Trophy,
+    Star,
 } from "lucide-react"
 import { addQuote, deleteQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -98,6 +101,42 @@ type UserReadingListBookWithDetails = UserReadingListBook & {
     }
 }
 
+// Challenge bilgisi tipi
+type ChallengeInfo = {
+    id: string
+    status: string
+    takeaway: string | null
+    startedAt: Date | null
+    completedAt: Date | null
+    challengeBook: {
+        id: string
+        title: string
+        author: string
+        role: string
+        reason: string | null
+    }
+    month: {
+        monthNumber: number
+        monthName: string
+        theme: string
+        themeIcon: string | null
+    }
+    challenge: {
+        id: string
+        year: number
+        name: string
+    }
+    stats: {
+        totalBooks: number
+        completedBooks: number
+        mainBooks: number
+        bonusBooks: number
+        completedMainBooks: number
+        completedBonusBooks: number
+        percentage: number
+    }
+} | null
+
 interface BookDetailClientProps {
     book: Book & {
         quotes: QuoteType[]
@@ -106,9 +145,10 @@ interface BookDetailClientProps {
         publisher: Publisher | null
         userReadingListBooks: UserReadingListBookWithDetails[]
     }
+    challengeInfo: ChallengeInfo
 }
 
-export default function BookDetailClient({ book }: BookDetailClientProps) {
+export default function BookDetailClient({ book, challengeInfo }: BookDetailClientProps) {
     const router = useRouter()
     const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "history">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
@@ -665,6 +705,133 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     </div>
                                 )
                             })}
+                        </div>
+                    )}
+
+                    {/* Reading Challenge Card */}
+                    {challengeInfo && (
+                        <div className="mb-6">
+                            <div
+                                className="relative overflow-hidden rounded-xl border"
+                                style={{
+                                    background: "linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(234, 88, 12, 0.12) 100%)",
+                                    borderColor: "rgba(245, 158, 11, 0.25)"
+                                }}
+                            >
+                                {/* Sol kenar accent */}
+                                <div
+                                    className="absolute top-0 left-0 w-1 h-full bg-amber-500"
+                                />
+
+                                <div className="p-4 pl-5">
+                                    {/* Challenge Başlığı */}
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex-1 min-w-0">
+                                            <Link
+                                                href={`/challenges/${challengeInfo.challenge.year}`}
+                                                className="inline-flex items-center gap-2 font-semibold text-amber-600 hover:underline"
+                                            >
+                                                <Target className="h-4 w-4 flex-shrink-0" />
+                                                {challengeInfo.challenge.name}
+                                            </Link>
+                                            {/* İlerleme Özeti */}
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                {challengeInfo.stats.completedBooks} / {challengeInfo.stats.totalBooks} kitap tamamlandı
+                                            </p>
+                                        </div>
+                                        {/* Rol Badge */}
+                                        <div
+                                            className={cn(
+                                                "flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium text-white",
+                                                challengeInfo.challengeBook.role === "MAIN" ? "bg-amber-500" : "bg-orange-500"
+                                            )}
+                                        >
+                                            {challengeInfo.challengeBook.role === "MAIN" ? (
+                                                <span className="flex items-center gap-1">
+                                                    <Star className="h-3 w-3" />
+                                                    Ana Kitap
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-1">
+                                                    <Trophy className="h-3 w-3" />
+                                                    Bonus
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Ay ve Tema Bilgisi */}
+                                    <div
+                                        className="mt-3 pt-3 border-t"
+                                        style={{ borderColor: "rgba(245, 158, 11, 0.15)" }}
+                                    >
+                                        <div className="flex items-start gap-2">
+                                            <span className="text-lg flex-shrink-0">{challengeInfo.month.themeIcon || "📚"}</span>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium">
+                                                    {challengeInfo.month.monthName} - {challengeInfo.month.theme}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Kitap Seçilme Nedeni */}
+                                    {challengeInfo.challengeBook.reason && (
+                                        <div
+                                            className="mt-3 pt-3 border-t"
+                                            style={{ borderColor: "rgba(245, 158, 11, 0.15)" }}
+                                        >
+                                            <div className="flex items-start gap-2">
+                                                <Sparkles className="h-4 w-4 flex-shrink-0 mt-0.5 text-amber-500" />
+                                                <div className="flex-1">
+                                                    <p className="text-xs font-medium text-muted-foreground mb-1">
+                                                        Bu kitap neden seçildi?
+                                                    </p>
+                                                    <p className="text-sm leading-relaxed">
+                                                        {challengeInfo.challengeBook.reason}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* İlerleme Çubuğu */}
+                                    <div
+                                        className="mt-3 pt-3 border-t"
+                                        style={{ borderColor: "rgba(245, 158, 11, 0.15)" }}
+                                    >
+                                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                                            <span>Challenge İlerlemesi</span>
+                                            <span className="font-medium text-amber-600">%{challengeInfo.stats.percentage}</span>
+                                        </div>
+                                        <Progress value={challengeInfo.stats.percentage} className="h-2" />
+                                        <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                                            <span>{challengeInfo.stats.completedMainBooks}/{challengeInfo.stats.mainBooks} Ana</span>
+                                            <span>{challengeInfo.stats.completedBonusBooks}/{challengeInfo.stats.bonusBooks} Bonus</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Takeaway (eğer tamamlandıysa) */}
+                                    {challengeInfo.takeaway && (
+                                        <div
+                                            className="mt-3 pt-3 border-t"
+                                            style={{ borderColor: "rgba(245, 158, 11, 0.15)" }}
+                                        >
+                                            <div className="flex items-start gap-2">
+                                                <Quote className="h-4 w-4 flex-shrink-0 mt-0.5 text-amber-500" />
+                                                <div className="flex-1">
+                                                    <p className="text-xs font-medium text-muted-foreground mb-1">
+                                                        Bu kitaptan aklımda kalan
+                                                    </p>
+                                                    <p className="text-sm italic leading-relaxed">
+                                                        "{challengeInfo.takeaway}"
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     )}
 
