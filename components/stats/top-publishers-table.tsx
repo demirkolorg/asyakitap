@@ -61,12 +61,17 @@ export function TopPublishersTable({ publishers }: TopPublishersTableProps) {
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate">{publisher.name}</p>
                                 <p className="text-xs text-muted-foreground">
-                                    {publisher.completedCount} kitap okudum
+                                    {publisher.completedCount > 0
+                                        ? `${publisher.completedCount} kitap okudum`
+                                        : `${publisher.bookCount} kitap kütüphanede`
+                                    }
                                 </p>
                             </div>
-                            <span className="text-xs text-muted-foreground flex-shrink-0">
-                                {publisher.bookCount} kitap
-                            </span>
+                            {publisher.completedCount > 0 && publisher.bookCount > publisher.completedCount && (
+                                <span className="text-xs text-muted-foreground flex-shrink-0">
+                                    {publisher.bookCount} kitap
+                                </span>
+                            )}
                         </Link>
                     ))}
                 </div>

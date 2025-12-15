@@ -67,11 +67,17 @@ export function TopAuthorsTable({ authors }: TopAuthorsTableProps) {
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate">{author.name}</p>
                                 <p className="text-xs text-muted-foreground">
-                                    {author.completedCount} kitap okudum
+                                    {author.completedCount > 0
+                                        ? `${author.completedCount} kitap okudum`
+                                        : `${author.bookCount} kitap kütüphanede`
+                                    }
                                 </p>
                             </div>
                             <span className="text-xs text-muted-foreground flex-shrink-0">
-                                {author.totalPages.toLocaleString()} sayfa
+                                {author.totalPages > 0
+                                    ? `${author.totalPages.toLocaleString()} sayfa`
+                                    : ""
+                                }
                             </span>
                         </Link>
                     ))}

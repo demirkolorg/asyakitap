@@ -295,15 +295,24 @@ const getCachedStats = (userId: string) =>
 
             // Process author stats
             const topAuthors: AuthorStats[] = authorStats
-                .map(a => ({
-                    id: a.id,
-                    name: a.name,
-                    imageUrl: a.imageUrl,
-                    bookCount: a.books.length,
-                    completedCount: a.books.filter(b => b.status === 'COMPLETED').length,
-                    totalPages: a.books.reduce((sum, b) => sum + (b.pageCount || 0), 0)
-                }))
-                .sort((a, b) => b.completedCount - a.completedCount)
+                .map(a => {
+                    const completedBooks = a.books.filter(b => b.status === 'COMPLETED')
+                    return {
+                        id: a.id,
+                        name: a.name,
+                        imageUrl: a.imageUrl,
+                        bookCount: a.books.length,
+                        completedCount: completedBooks.length,
+                        totalPages: completedBooks.reduce((sum, b) => sum + (b.pageCount || 0), 0)
+                    }
+                })
+                .sort((a, b) => {
+                    // Önce tamamlanan kitap sayısına göre, eşitse toplam kitap sayısına göre
+                    if (b.completedCount !== a.completedCount) {
+                        return b.completedCount - a.completedCount
+                    }
+                    return b.bookCount - a.bookCount
+                })
                 .slice(0, 10)
 
             // Process publisher stats
@@ -314,7 +323,13 @@ const getCachedStats = (userId: string) =>
                     bookCount: p.books.length,
                     completedCount: p.books.filter(b => b.status === 'COMPLETED').length
                 }))
-                .sort((a, b) => b.completedCount - a.completedCount)
+                .sort((a, b) => {
+                    // Önce tamamlanan kitap sayısına göre, eşitse toplam kitap sayısına göre
+                    if (b.completedCount !== a.completedCount) {
+                        return b.completedCount - a.completedCount
+                    }
+                    return b.bookCount - a.bookCount
+                })
                 .slice(0, 10)
 
             // Process quote stats
