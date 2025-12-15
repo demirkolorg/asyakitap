@@ -17,7 +17,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { updateBook, deleteBook, getLinkedChallengeBook, getLinkedChallengeBookWithDetails } from "@/actions/library"
+import { updateBook, deleteBook, getLinkedChallengeBook, getLinkedChallengeBookWithDetails, getBookDependencies } from "@/actions/library"
 import { updateTakeaway } from "@/actions/challenge"
 import { analyzeTortu, analyzeImza } from "@/actions/ai"
 import { useRouter } from "next/navigation"
@@ -191,6 +191,16 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
     const [isAnalyzingTortu, setIsAnalyzingTortu] = useState(false)
     const [isAnalyzingImza, setIsAnalyzingImza] = useState(false)
 
+    // Silme için bağımlılık kontrolü state'i
+    const [deleteConfirmState, setDeleteConfirmState] = useState<{
+        step: 'initial' | 'confirm-dependencies'
+        dependencies?: {
+            hasLinks: boolean
+            readingLists: { listName: string; bookTitle: string }[]
+            challenges: { challengeName: string; monthName: string; bookTitle: string }[]
+        }
+    }>({ step: 'initial' })
+
     useEffect(() => {
         setMounted(true)
     }, [])
@@ -199,14 +209,43 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
 
     const handleDeleteBook = async () => {
         setIsDeleting(true)
-        const result = await deleteBook(book.id)
+
+        // İlk silme denemesi - bağımlılıkları kontrol et
+        const result = await deleteBook(book.id, false)
+
+        if (result.requiresConfirmation && result.dependencies) {
+            // Bağlantılar var - kullanıcıyı bilgilendir
+            setDeleteConfirmState({
+                step: 'confirm-dependencies',
+                dependencies: result.dependencies
+            })
+            setIsDeleting(false)
+            return
+        }
+
         if (result.success) {
             toast.success("Kitap silindi")
             router.push("/library")
         } else {
-            toast.error("Kitap silinemedi")
+            toast.error(result.error || "Kitap silinemedi")
             setIsDeleting(false)
         }
+    }
+
+    const handleConfirmDeleteWithDependencies = async () => {
+        setIsDeleting(true)
+        const result = await deleteBook(book.id, true) // Force delete
+
+        if (result.success) {
+            toast.success("Kitap silindi (bağlantılar kaldırıldı)")
+            router.push("/library")
+        } else {
+            toast.error(result.error || "Kitap silinemedi")
+        }
+
+        setIsDeleting(false)
+        setShowDeleteDialog(false)
+        setDeleteConfirmState({ step: 'initial' })
     }
 
     const handleEditBook = async () => {
@@ -1366,7 +1405,12 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
             </Dialog>
 
             {/* Delete Confirmation Dialog */}
-            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialog open={showDeleteDialog} onOpenChange={(open) => {
+                setShowDeleteDialog(open)
+                if (!open) {
+                    setDeleteConfirmState({ step: 'initial' })
+                }
+            }}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Kitabı silmek istediğinize emin misiniz?</AlertDialogTitle>
@@ -1374,14 +1418,73 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
                             Bu işlem geri alınamaz. Kitap ve tüm alıntıları kalıcı olarak silinecektir.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
+
+                    {/* Bağımlılık Uyarısı */}
+                    {deleteConfirmState.step === 'confirm-dependencies' && deleteConfirmState.dependencies && (
+                        <div className="space-y-3 my-4">
+                            <div className="rounded-lg bg-amber-50 dark:bg-amber-950/20 p-4 border border-amber-200 dark:border-amber-800">
+                                <p className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-3">
+                                    Bu kitap şu bağlantılara sahip:
+                                </p>
+
+                                {deleteConfirmState.dependencies.readingLists.length > 0 && (
+                                    <div className="space-y-1 mb-3">
+                                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1">
+                                            <Map className="h-3 w-3" />
+                                            Okuma Listeleri:
+                                        </p>
+                                        {deleteConfirmState.dependencies.readingLists.map((rl, i) => (
+                                            <p key={i} className="text-xs text-amber-600 dark:text-amber-400 ml-4">
+                                                • {rl.listName} - "{rl.bookTitle}"
+                                            </p>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {deleteConfirmState.dependencies.challenges.length > 0 && (
+                                    <div className="space-y-1">
+                                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1">
+                                            <Target className="h-3 w-3" />
+                                            Challenge'lar:
+                                        </p>
+                                        {deleteConfirmState.dependencies.challenges.map((ch, i) => (
+                                            <p key={i} className="text-xs text-amber-600 dark:text-amber-400 ml-4">
+                                                • {ch.challengeName} - {ch.monthName} - "{ch.bookTitle}"
+                                            </p>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <p className="text-sm text-muted-foreground">
+                                Kitabı silerseniz, bu bağlantılar kaldırılacak. İlerlemeniz kaybolmayacak, sadece bağlantı kopacak.
+                            </p>
+                        </div>
+                    )}
+
                     <AlertDialogFooter>
                         <AlertDialogCancel>Vazgeç</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDeleteBook}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                            {isDeleting ? "Siliniyor..." : "Evet, Sil"}
-                        </AlertDialogAction>
+                        {deleteConfirmState.step === 'initial' ? (
+                            <AlertDialogAction
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    handleDeleteBook()
+                                }}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                                {isDeleting ? "Kontrol ediliyor..." : "Evet, Sil"}
+                            </AlertDialogAction>
+                        ) : (
+                            <AlertDialogAction
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    handleConfirmDeleteWithDependencies()
+                                }}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                                {isDeleting ? "Siliniyor..." : "Bağlantıları Kaldır ve Sil"}
+                            </AlertDialogAction>
+                        )}
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

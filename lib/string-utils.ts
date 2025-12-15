@@ -102,3 +102,36 @@ export function matchBookScore(
     // Başlık daha önemli (%60), yazar %40
     return titleSim * 0.6 + authorSim * 0.4
 }
+
+/**
+ * Eşleşme güven seviyesi
+ * - strong: %75+ otomatik bağla
+ * - medium: %60-75 öneri olarak göster
+ * - weak: %45-60 düşük güvenli öneri
+ * - none: %45 altı eşleşme yok
+ */
+export type MatchConfidence = 'strong' | 'medium' | 'weak' | 'none'
+
+/**
+ * Skora göre eşleşme güven seviyesini belirle
+ */
+export function getMatchConfidence(score: number): MatchConfidence {
+    if (score >= 0.75) return 'strong'
+    if (score >= 0.60) return 'medium'
+    if (score >= 0.45) return 'weak'
+    return 'none'
+}
+
+/**
+ * Güven seviyesinin otomatik bağlama için yeterli olup olmadığını kontrol et
+ */
+export function isAutoLinkable(score: number): boolean {
+    return score >= 0.75
+}
+
+/**
+ * Güven seviyesinin öneri olarak gösterilmeye değer olup olmadığını kontrol et
+ */
+export function isSuggestionWorthy(score: number): boolean {
+    return score >= 0.45 && score < 0.75
+}

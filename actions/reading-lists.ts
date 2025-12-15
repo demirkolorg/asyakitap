@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { unstable_cache } from "next/cache"
-import { CACHE_TAGS, CACHE_DURATION } from "@/lib/cache"
+import { CACHE_TAGS, CACHE_DURATION, invalidateLinkCaches } from "@/lib/cache"
+import { matchBookScore, isAutoLinkable, isSuggestionWorthy, getMatchConfidence, type MatchConfidence } from "@/lib/string-utils"
 
 // Cached reading lists (static data - long cache)
 const getCachedReadingLists = unstable_cache(
@@ -203,35 +204,30 @@ export async function linkBookToReadingList(bookId: string, readingListBookId: s
             return { success: false, error: "Kitap bulunamadı" }
         }
 
-        // Check if link already exists
-        const existingLink = await prisma.userReadingListBook.findUnique({
+        // Upsert - create or update
+        await prisma.userReadingListBook.upsert({
             where: {
                 userId_readingListBookId: {
                     userId: user.id,
                     readingListBookId
                 }
+            },
+            create: {
+                userId: user.id,
+                readingListBookId,
+                bookId
+            },
+            update: {
+                bookId
             }
         })
 
-        if (existingLink) {
-            // Update existing link with the book
-            await prisma.userReadingListBook.update({
-                where: { id: existingLink.id },
-                data: { bookId }
-            })
-        } else {
-            // Create new link
-            await prisma.userReadingListBook.create({
-                data: {
-                    userId: user.id,
-                    readingListBookId,
-                    bookId
-                }
-            })
-        }
-
+        // Cache invalidation
+        invalidateLinkCaches(user.id, bookId)
+        revalidateTag(CACHE_TAGS.readingList(listSlug), 'max')
         revalidatePath(`/reading-lists/${listSlug}`)
         revalidatePath('/library')
+
         return { success: true }
     } catch (error) {
         console.error("Failed to link book:", error)
@@ -247,6 +243,17 @@ export async function unlinkBookFromReadingList(readingListBookId: string, listS
     if (!user) throw new Error("Unauthorized")
 
     try {
+        // Önce bağlı kitap ID'sini al (cache invalidation için)
+        const existingLink = await prisma.userReadingListBook.findUnique({
+            where: {
+                userId_readingListBookId: {
+                    userId: user.id,
+                    readingListBookId
+                }
+            },
+            select: { bookId: true }
+        })
+
         await prisma.userReadingListBook.delete({
             where: {
                 userId_readingListBookId: {
@@ -256,7 +263,12 @@ export async function unlinkBookFromReadingList(readingListBookId: string, listS
             }
         })
 
+        // Cache invalidation
+        invalidateLinkCaches(user.id, existingLink?.bookId || undefined)
+        revalidateTag(CACHE_TAGS.readingList(listSlug), 'max')
         revalidatePath(`/reading-lists/${listSlug}`)
+        revalidatePath('/library')
+
         return { success: true }
     } catch (error) {
         console.error("Failed to unlink book:", error)
@@ -650,5 +662,155 @@ export async function searchReadingListBooks(query: string) {
     } catch (error) {
         console.error("Search reading list books failed:", error)
         return []
+    }
+}
+
+// =====================
+// AUTO-MATCH FONKSİYONLARI
+// =====================
+
+export type ReadingListMatchCandidate = {
+    bookId: string
+    bookTitle: string
+    score: number
+    confidence: MatchConfidence
+}
+
+export type ReadingListMatchSuggestion = {
+    readingListBookId: string
+    readingListBookTitle: string
+    readingListBookAuthor: string
+    listName: string
+    listSlug: string
+    candidates: ReadingListMatchCandidate[]
+}
+
+/**
+ * Kullanıcının kütüphanesindeki kitapları belirli bir okuma listesiyle otomatik eşleştir
+ */
+export async function autoMatchUserBooksToReadingList(
+    listSlug: string
+): Promise<{
+    success: boolean
+    autoLinked: number
+    suggestions: ReadingListMatchSuggestion[]
+}> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, autoLinked: 0, suggestions: [] }
+    }
+
+    try {
+        // Okuma listesini al
+        const list = await prisma.readingList.findUnique({
+            where: { slug: listSlug },
+            include: {
+                levels: {
+                    include: {
+                        books: {
+                            include: {
+                                userLinks: {
+                                    where: { userId: user.id }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        if (!list) {
+            return { success: false, autoLinked: 0, suggestions: [] }
+        }
+
+        // Kullanıcının tüm kitaplarını al
+        const userBooks = await prisma.book.findMany({
+            where: { userId: user.id },
+            include: { author: { select: { name: true } } }
+        })
+
+        let autoLinked = 0
+        const suggestions: ReadingListMatchSuggestion[] = []
+
+        for (const level of list.levels) {
+            for (const rlBook of level.books) {
+                // Zaten bağlantı varsa atla
+                const existingLink = rlBook.userLinks.find(l => l.bookId !== null)
+                if (existingLink) continue
+
+                const candidates: ReadingListMatchCandidate[] = []
+                let bestStrongMatch: { bookId: string; score: number } | null = null
+
+                for (const userBook of userBooks) {
+                    const authorName = userBook.author?.name || ""
+                    const score = matchBookScore(
+                        rlBook.title,
+                        rlBook.author,
+                        userBook.title,
+                        authorName
+                    )
+
+                    if (isAutoLinkable(score)) {
+                        if (!bestStrongMatch || score > bestStrongMatch.score) {
+                            bestStrongMatch = { bookId: userBook.id, score }
+                        }
+                    } else if (isSuggestionWorthy(score)) {
+                        candidates.push({
+                            bookId: userBook.id,
+                            bookTitle: userBook.title,
+                            score,
+                            confidence: getMatchConfidence(score)
+                        })
+                    }
+                }
+
+                if (bestStrongMatch) {
+                    // Otomatik bağla
+                    await prisma.userReadingListBook.upsert({
+                        where: {
+                            userId_readingListBookId: {
+                                userId: user.id,
+                                readingListBookId: rlBook.id
+                            }
+                        },
+                        create: {
+                            userId: user.id,
+                            readingListBookId: rlBook.id,
+                            bookId: bestStrongMatch.bookId
+                        },
+                        update: {
+                            bookId: bestStrongMatch.bookId
+                        }
+                    })
+                    autoLinked++
+                } else if (candidates.length > 0) {
+                    // Önerileri kaydet
+                    const topCandidates = candidates
+                        .sort((a, b) => b.score - a.score)
+                        .slice(0, 3)
+
+                    suggestions.push({
+                        readingListBookId: rlBook.id,
+                        readingListBookTitle: rlBook.title,
+                        readingListBookAuthor: rlBook.author,
+                        listName: list.name,
+                        listSlug: list.slug,
+                        candidates: topCandidates
+                    })
+                }
+            }
+        }
+
+        // Cache invalidation
+        invalidateLinkCaches(user.id)
+        revalidateTag(CACHE_TAGS.readingList(listSlug), 'max')
+        revalidatePath(`/reading-lists/${listSlug}`)
+
+        return { success: true, autoLinked, suggestions }
+    } catch (error) {
+        console.error("Auto-match reading list books error:", error)
+        return { success: false, autoLinked: 0, suggestions: [] }
     }
 }

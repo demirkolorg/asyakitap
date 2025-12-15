@@ -4,16 +4,24 @@ import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
-import { BookStatus } from "@prisma/client"
-import { CACHE_TAGS } from "@/lib/cache"
-import { matchBookScore } from "@/lib/string-utils"
+import { BookStatus, Prisma } from "@prisma/client"
+import { CACHE_TAGS, invalidateLinkCaches } from "@/lib/cache"
+import { matchBookScore, isAutoLinkable } from "@/lib/string-utils"
 
 // Helper to invalidate user-related caches
-function invalidateUserCaches(userId: string) {
+function invalidateUserCaches(userId: string, bookId?: string) {
     revalidateTag(CACHE_TAGS.userBooks(userId), 'max')
     revalidateTag(CACHE_TAGS.userStats(userId), 'max')
     revalidateTag(CACHE_TAGS.userQuotes(userId), 'max')
     revalidateTag(CACHE_TAGS.userAuthors(userId), 'max')
+    revalidateTag(CACHE_TAGS.userReadingListLinks(userId), 'max')
+    revalidateTag(CACHE_TAGS.userChallengeLinks(userId), 'max')
+
+    if (bookId) {
+        revalidateTag(CACHE_TAGS.book(bookId), 'max')
+        revalidateTag(CACHE_TAGS.bookReadingLists(bookId), 'max')
+        revalidateTag(CACHE_TAGS.bookChallenge(bookId), 'max')
+    }
 }
 
 export async function addBookToLibrary(bookData: {
@@ -36,91 +44,134 @@ export async function addBookToLibrary(bookData: {
     }
 
     try {
-        const newBook = await prisma.book.create({
-            data: {
-                userId: user.id,
-                title: bookData.title,
-                authorId: bookData.authorId,
-                publisherId: bookData.publisherId,
-                coverUrl: bookData.coverUrl,
-                pageCount: bookData.pageCount,
-                isbn: bookData.isbn,
-                publishedDate: bookData.publishedDate,
-                description: bookData.description,
-                status: bookData.status || "TO_READ",
-            },
-            select: {
-                id: true,
-                title: true,
-                coverUrl: true,
-                status: true,
-                author: { select: { id: true, name: true } },
-                publisher: { select: { id: true, name: true } }
+        // Tüm işlemleri tek transaction içinde yap
+        const result = await prisma.$transaction(async (tx) => {
+            // 1. Kitabı oluştur
+            const newBook = await tx.book.create({
+                data: {
+                    userId: user.id,
+                    title: bookData.title,
+                    authorId: bookData.authorId,
+                    publisherId: bookData.publisherId,
+                    coverUrl: bookData.coverUrl,
+                    pageCount: bookData.pageCount,
+                    isbn: bookData.isbn,
+                    publishedDate: bookData.publishedDate,
+                    description: bookData.description,
+                    status: bookData.status || "TO_READ",
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    coverUrl: true,
+                    status: true,
+                    author: { select: { id: true, name: true } },
+                    publisher: { select: { id: true, name: true } }
+                }
+            })
+
+            const authorName = newBook.author?.name || ""
+            let linkedToList: string | undefined
+
+            // 2. Manuel okuma listesi bağlantısı (varsa)
+            if (bookData.readingListBookId) {
+                const rlBook = await tx.readingListBook.findUnique({
+                    where: { id: bookData.readingListBookId },
+                    include: { level: { include: { readingList: true } } }
+                })
+
+                if (rlBook) {
+                    await tx.userReadingListBook.upsert({
+                        where: {
+                            userId_readingListBookId: {
+                                userId: user.id,
+                                readingListBookId: bookData.readingListBookId
+                            }
+                        },
+                        create: {
+                            userId: user.id,
+                            readingListBookId: bookData.readingListBookId,
+                            bookId: newBook.id
+                        },
+                        update: {
+                            bookId: newBook.id
+                        }
+                    })
+                    linkedToList = rlBook.level.readingList.name
+                }
             }
+
+            // 3. Otomatik Challenge kitabı eşleştirmesi
+            if (authorName) {
+                const userChallengeBooks = await tx.userChallengeBook.findMany({
+                    where: {
+                        userProgress: { userId: user.id },
+                        linkedBookId: null // Henüz eşleşmemiş olanlar
+                    },
+                    include: { challengeBook: true }
+                })
+
+                for (const ucb of userChallengeBooks) {
+                    const score = matchBookScore(
+                        bookData.title,
+                        authorName,
+                        ucb.challengeBook.title,
+                        ucb.challengeBook.author
+                    )
+
+                    if (isAutoLinkable(score)) {
+                        await tx.userChallengeBook.update({
+                            where: { id: ucb.id },
+                            data: { linkedBookId: newBook.id }
+                        })
+                        break // İlk eşleşmeyi al
+                    }
+                }
+            }
+
+            // 4. Otomatik Reading List eşleştirmesi (bağlı olmayan UserReadingListBook'lar için)
+            if (authorName) {
+                const unlinkedReadingListBooks = await tx.userReadingListBook.findMany({
+                    where: {
+                        userId: user.id,
+                        bookId: null // Kütüphane kitabına bağlı olmayan
+                    },
+                    include: { readingListBook: true }
+                })
+
+                for (const urlb of unlinkedReadingListBooks) {
+                    const score = matchBookScore(
+                        bookData.title,
+                        authorName,
+                        urlb.readingListBook.title,
+                        urlb.readingListBook.author
+                    )
+
+                    if (isAutoLinkable(score)) {
+                        await tx.userReadingListBook.update({
+                            where: { id: urlb.id },
+                            data: { bookId: newBook.id }
+                        })
+                        break // İlk eşleşmeyi al
+                    }
+                }
+            }
+
+            return { newBook, linkedToList }
+        }, {
+            maxWait: 5000,
+            timeout: 10000,
+            isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted
         })
 
-        // Manuel okuma listesi bağlantısı
-        let linkedToList: string | undefined
-        if (bookData.readingListBookId) {
-            const rlBook = await prisma.readingListBook.findUnique({
-                where: { id: bookData.readingListBookId },
-                include: { level: { include: { readingList: true } } }
-            })
-
-            if (rlBook) {
-                await prisma.userReadingListBook.create({
-                    data: {
-                        userId: user.id,
-                        readingListBookId: bookData.readingListBookId,
-                        bookId: newBook.id
-                    }
-                })
-                linkedToList = rlBook.level.readingList.name
-            }
-        }
-
-        // Otomatik Challenge kitabı eşleştirmesi
-        // Kullanıcının katıldığı challenge'lardaki kitaplarla eşleştir
-        const authorName = newBook.author?.name || ""
-        if (authorName) {
-            // Kullanıcının challenge progress'lerini al
-            const userChallengeBooks = await prisma.userChallengeBook.findMany({
-                where: {
-                    userProgress: { userId: user.id },
-                    linkedBookId: null // Henüz eşleşmemiş olanlar
-                },
-                include: {
-                    challengeBook: true
-                }
-            })
-
-            // Eşleşme ara
-            for (const ucb of userChallengeBooks) {
-                const score = matchBookScore(
-                    bookData.title,
-                    authorName,
-                    ucb.challengeBook.title,
-                    ucb.challengeBook.author
-                )
-
-                if (score >= 0.75) {
-                    // Eşleşme bulundu - bağla
-                    await prisma.userChallengeBook.update({
-                        where: { id: ucb.id },
-                        data: { linkedBookId: newBook.id }
-                    })
-                    break // İlk eşleşmeyi al
-                }
-            }
-        }
-
-        // Invalidate caches
-        invalidateUserCaches(user.id)
+        // Cache invalidation
+        invalidateUserCaches(user.id, result.newBook.id)
         revalidatePath("/library")
         revalidatePath("/dashboard")
         revalidatePath("/challenges")
+        revalidatePath("/reading-lists")
 
-        return { success: true, book: newBook, linkedToList }
+        return { success: true, book: result.newBook, linkedToList: result.linkedToList }
     } catch (error) {
         console.error("Failed to add book:", error)
         return { success: false, error: "Failed to add book" }
@@ -300,22 +351,111 @@ export async function updateBook(id: string, data: {
     }
 }
 
-export async function deleteBook(id: string) {
+/**
+ * Kitabın bağımlılıklarını kontrol et
+ * Silmeden önce kullanıcıya bilgi vermek için
+ */
+export async function getBookDependencies(bookId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    try {
+        const [readingListLinks, challengeLinks] = await Promise.all([
+            // Okuma listesi bağlantıları
+            prisma.userReadingListBook.findMany({
+                where: {
+                    userId: user.id,
+                    bookId
+                },
+                include: {
+                    readingListBook: {
+                        include: {
+                            level: {
+                                include: {
+                                    readingList: {
+                                        select: { name: true, slug: true }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }),
+
+            // Challenge bağlantıları
+            prisma.userChallengeBook.findMany({
+                where: {
+                    linkedBookId: bookId,
+                    userProgress: { userId: user.id }
+                },
+                include: {
+                    challengeBook: {
+                        include: {
+                            month: {
+                                include: {
+                                    challenge: {
+                                        select: { year: true, name: true }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        ])
+
+        return {
+            hasLinks: readingListLinks.length > 0 || challengeLinks.length > 0,
+            readingLists: readingListLinks.map(link => ({
+                listName: link.readingListBook.level.readingList.name,
+                listSlug: link.readingListBook.level.readingList.slug,
+                bookTitle: link.readingListBook.title
+            })),
+            challenges: challengeLinks.map(link => ({
+                challengeName: link.challengeBook.month.challenge.name,
+                year: link.challengeBook.month.challenge.year,
+                monthName: link.challengeBook.month.monthName,
+                bookTitle: link.challengeBook.title
+            }))
+        }
+    } catch (error) {
+        console.error("Failed to get book dependencies:", error)
+        return null
+    }
+}
+
+export async function deleteBook(id: string, confirmDependencies = false) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) throw new Error("Unauthorized")
 
     try {
+        // Bağımlılık kontrolü (eğer onay verilmediyse)
+        if (!confirmDependencies) {
+            const deps = await getBookDependencies(id)
+            if (deps?.hasLinks) {
+                return {
+                    success: false,
+                    requiresConfirmation: true,
+                    dependencies: deps,
+                    error: "Bu kitap okuma listeleri veya challenge'lara bağlı"
+                }
+            }
+        }
+
         await prisma.book.delete({
             where: { id, userId: user.id },
         })
 
         // Invalidate caches
-        invalidateUserCaches(user.id)
-        revalidateTag(CACHE_TAGS.book(id), 'max')
+        invalidateUserCaches(user.id, id)
         revalidatePath("/library")
         revalidatePath("/dashboard")
+        revalidatePath("/reading-lists")
+        revalidatePath("/challenges")
 
         return { success: true }
     } catch (error) {

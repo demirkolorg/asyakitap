@@ -2,9 +2,10 @@
 
 import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { ChallengeBookStatus, ChallengeBookRole } from "@prisma/client"
-import { matchBookScore } from "@/lib/string-utils"
+import { matchBookScore, isAutoLinkable, isSuggestionWorthy, getMatchConfidence, type MatchConfidence } from "@/lib/string-utils"
+import { CACHE_TAGS, invalidateLinkCaches } from "@/lib/cache"
 
 // ==========================================
 // Types
@@ -60,10 +61,27 @@ export type ChallengeOverview = {
 // Kullanıcının kütüphanesindeki kitapları challenge kitaplarıyla eşleştir
 // ==========================================
 
+export type BookMatchCandidate = {
+    bookId: string
+    bookTitle: string
+    score: number
+    confidence: MatchConfidence
+}
+
+export type ChallengeMatchSuggestion = {
+    challengeBookId: string
+    challengeBookTitle: string
+    challengeBookAuthor: string
+    candidates: BookMatchCandidate[]
+}
+
 async function autoMatchBooksForUser(
     userId: string,
     challengeBooks: { id: string; title: string; author: string }[]
-): Promise<Map<string, string>> {
+): Promise<{
+    strongMatches: Map<string, string>
+    suggestions: ChallengeMatchSuggestion[]
+}> {
     // Kullanıcının tüm kitaplarını al
     const userBooks = await prisma.book.findMany({
         where: { userId },
@@ -74,10 +92,12 @@ async function autoMatchBooksForUser(
         }
     })
 
-    const matches = new Map<string, string>() // challengeBookId -> bookId
+    const strongMatches = new Map<string, string>() // challengeBookId -> bookId (otomatik bağlanacak)
+    const suggestions: ChallengeMatchSuggestion[] = []
 
     for (const challengeBook of challengeBooks) {
-        let bestMatch: { bookId: string; score: number } | null = null
+        const candidates: BookMatchCandidate[] = []
+        let bestStrongMatch: { bookId: string; score: number } | null = null
 
         for (const userBook of userBooks) {
             const authorName = userBook.author?.name || ""
@@ -88,18 +108,42 @@ async function autoMatchBooksForUser(
                 authorName
             )
 
-            // %75+ eşleşme yeterli
-            if (score >= 0.75 && (!bestMatch || score > bestMatch.score)) {
-                bestMatch = { bookId: userBook.id, score }
+            const confidence = getMatchConfidence(score)
+
+            if (isAutoLinkable(score)) {
+                // %75+ - Güçlü eşleşme, otomatik bağla
+                if (!bestStrongMatch || score > bestStrongMatch.score) {
+                    bestStrongMatch = { bookId: userBook.id, score }
+                }
+            } else if (isSuggestionWorthy(score)) {
+                // %45-75 - Öneri olarak kaydet
+                candidates.push({
+                    bookId: userBook.id,
+                    bookTitle: userBook.title,
+                    score,
+                    confidence
+                })
             }
         }
 
-        if (bestMatch) {
-            matches.set(challengeBook.id, bestMatch.bookId)
+        if (bestStrongMatch) {
+            strongMatches.set(challengeBook.id, bestStrongMatch.bookId)
+        } else if (candidates.length > 0) {
+            // Otomatik eşleşme bulunamadı ama öneriler var
+            const topCandidates = candidates
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 3) // En iyi 3 öneriyi tut
+
+            suggestions.push({
+                challengeBookId: challengeBook.id,
+                challengeBookTitle: challengeBook.title,
+                challengeBookAuthor: challengeBook.author,
+                candidates: topCandidates
+            })
         }
     }
 
-    return matches
+    return { strongMatches, suggestions }
 }
 
 // ==========================================
@@ -156,7 +200,7 @@ export async function joinChallenge(challengeId: string) {
         )
 
         // Otomatik eşleştirme yap
-        const bookMatches = await autoMatchBooksForUser(user.id, allChallengeBooks)
+        const { strongMatches, suggestions } = await autoMatchBooksForUser(user.id, allChallengeBooks)
 
         // UserChallengeProgress oluştur
         const userProgress = await prisma.userChallengeProgress.create({
@@ -169,16 +213,25 @@ export async function joinChallenge(challengeId: string) {
                         // MAIN kitaplar NOT_STARTED, BONUS kitaplar LOCKED
                         status: book.role === "MAIN" ? "NOT_STARTED" : "LOCKED",
                         // Eşleşen kütüphane kitabını bağla
-                        linkedBookId: bookMatches.get(book.id) || null
+                        linkedBookId: strongMatches.get(book.id) || null
                     }))
                 }
             }
         })
 
+        // Cache invalidation
+        invalidateLinkCaches(user.id)
+        revalidateTag(CACHE_TAGS.challenges, 'max')
+        revalidateTag(CACHE_TAGS.challenge(challenge.year), 'max')
         revalidatePath("/challenges")
         revalidatePath("/dashboard")
 
-        return { success: true, progressId: userProgress.id }
+        return {
+            success: true,
+            progressId: userProgress.id,
+            autoLinkedCount: strongMatches.size,
+            suggestions: suggestions.length > 0 ? suggestions : undefined
+        }
     } catch (error) {
         console.error("Join challenge error:", error)
         return { success: false, error: "Challenge'a katılırken hata oluştu" }
@@ -792,6 +845,13 @@ export async function linkChallengeBookToLibrary(
             where: {
                 challengeBookId,
                 userProgress: { userId: user.id }
+            },
+            include: {
+                userProgress: {
+                    include: {
+                        challenge: { select: { year: true } }
+                    }
+                }
             }
         })
 
@@ -819,8 +879,13 @@ export async function linkChallengeBookToLibrary(
             data: { linkedBookId: libraryBookId }
         })
 
+        // Cache invalidation
+        invalidateLinkCaches(user.id, libraryBookId || undefined)
+        revalidateTag(CACHE_TAGS.challenges, 'max')
+        revalidateTag(CACHE_TAGS.challenge(userBook.userProgress.challenge.year), 'max')
         revalidatePath("/challenges")
         revalidatePath("/dashboard")
+        revalidatePath("/library")
 
         return { success: true }
     } catch (error) {

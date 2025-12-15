@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { useTheme } from "next-themes"
-import { Moon, Sun, Monitor, User, Palette, Bug } from "lucide-react"
+import { Moon, Sun, Monitor, User, Palette, Bug, Wrench, ChevronRight } from "lucide-react"
 import { toast } from "sonner"
 import { getDebugInfo } from "@/actions/debug"
+import Link from "next/link"
 
 export default function SettingsPage() {
     const { theme, setTheme } = useTheme()
@@ -75,6 +76,30 @@ export default function SettingsPage() {
                             </Button>
                         </div>
                     </div>
+                </CardContent>
+            </Card>
+
+            {/* Repair Links */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Wrench className="h-5 w-5" />
+                        Bağlantıları Onar
+                    </CardTitle>
+                    <CardDescription>
+                        Kitaplarınız ile okuma listeleri ve challenge'lar arasındaki kopuk bağlantıları onarın
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Link href="/settings/repair-links">
+                        <Button variant="outline" className="w-full justify-between">
+                            <span className="flex items-center gap-2">
+                                <Wrench className="h-4 w-4" />
+                                Bağlantıları Tara ve Onar
+                            </span>
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </Link>
                 </CardContent>
             </Card>
 
