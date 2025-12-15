@@ -27,6 +27,7 @@ import {
   Building2,
   Target,
   BarChart3,
+  Bot,
 } from "lucide-react";
 
 // Ana Sayfa
@@ -88,6 +89,11 @@ const notesItems = [
     title: "İmzalar",
     href: "/imzalar",
     icon: Pen,
+  },
+  {
+    title: "AI Yorumları",
+    href: "/ai-comments",
+    icon: Bot,
   },
 ];
 

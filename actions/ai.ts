@@ -133,11 +133,24 @@ Bu düşünceleri yorumla. Okuyucunun kitaptan ne aldığını, hangi noktaları
     // AI yorumunu veritabanına kaydet
     if (bookId && result.success && result.text) {
         try {
+            // Book'a kaydet (eski yöntem - geriye uyumluluk)
             await prisma.book.update({
                 where: { id: bookId },
                 data: { tortuAiComment: result.text }
             })
+
+            // AIComment tablosuna kaydet (yeni yöntem - metadata ile)
+            await prisma.aIComment.create({
+                data: {
+                    bookId,
+                    source: "TORTU",
+                    userContent: tortu,
+                    aiComment: result.text
+                }
+            })
+
             revalidatePath(`/book/${bookId}`)
+            revalidatePath("/ai-comments")
         } catch (error) {
             console.error("Failed to save tortu AI comment:", error)
         }
@@ -180,11 +193,24 @@ Bu üslup analizini yorumla. Okuyucunun tespit ettiği özellikleri değerlendir
     // AI yorumunu veritabanına kaydet
     if (bookId && result.success && result.text) {
         try {
+            // Book'a kaydet (eski yöntem - geriye uyumluluk)
             await prisma.book.update({
                 where: { id: bookId },
                 data: { imzaAiComment: result.text }
             })
+
+            // AIComment tablosuna kaydet (yeni yöntem - metadata ile)
+            await prisma.aIComment.create({
+                data: {
+                    bookId,
+                    source: "IMZA",
+                    userContent: imza,
+                    aiComment: result.text
+                }
+            })
+
             revalidatePath(`/book/${bookId}`)
+            revalidatePath("/ai-comments")
         } catch (error) {
             console.error("Failed to save imza AI comment:", error)
         }

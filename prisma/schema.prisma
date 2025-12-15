@@ -79,6 +79,7 @@ model Book {
   readingLogs          ReadingLog[]
   userReadingListBooks UserReadingListBook[]
   challengeBooks       UserChallengeBook[]   // Challenge kitaplarıyla bağlantı
+  aiComments           AIComment[]           // AI yorumları
   startDate            DateTime?
   endDate              DateTime?
   createdAt            DateTime              @default(now())
@@ -97,6 +98,30 @@ enum ReadingAction {
   ABANDONED
   RESTARTED
   ADDED_TO_LIST
+}
+
+// ==========================================
+// AI Yorumları
+// ==========================================
+
+enum AICommentSource {
+  TORTU
+  IMZA
+}
+
+model AIComment {
+  id          String           @id @default(cuid())
+  bookId      String
+  book        Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  source      AICommentSource  // TORTU veya IMZA
+  userContent String           @db.Text // Kullanıcının yazdığı orijinal içerik
+  aiComment   String           @db.Text // AI'ın yorumu
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([bookId])
+  @@index([source])
+  @@index([createdAt])
 }
 
 model ReadingLog {
