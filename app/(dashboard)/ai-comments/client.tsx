@@ -258,26 +258,24 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                             </span>
                                         </div>
 
-                                        {/* User Content Preview */}
+                                        {/* User Content */}
                                         <div className="mb-3 p-3 rounded-lg bg-muted/50">
-                                            <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                                            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                                                 <span className="font-medium">Senin notun:</span>
                                             </p>
-                                            <p className="text-sm text-muted-foreground line-clamp-2">
-                                                {stripHtml(comment.userContent).slice(0, 200)}
-                                                {comment.userContent.length > 200 && "..."}
+                                            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                                {stripHtml(comment.userContent)}
                                             </p>
                                         </div>
 
                                         {/* AI Comment */}
-                                        <div className="mb-3">
-                                            <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                                                <Sparkles className="h-3 w-3" />
+                                        <div className="mb-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
+                                            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                                                <Sparkles className="h-3 w-3 text-primary" />
                                                 <span className="font-medium">AI Yorumu:</span>
                                             </p>
-                                            <p className="text-sm line-clamp-3">
-                                                {comment.aiComment.slice(0, 300)}
-                                                {comment.aiComment.length > 300 && "..."}
+                                            <p className="text-sm whitespace-pre-wrap">
+                                                {comment.aiComment}
                                             </p>
                                         </div>
 

@@ -1,6 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import {
     BookOpen,
@@ -12,13 +14,17 @@ import {
     Quote,
     Calendar,
     TrendingUp,
-    Award
+    Award,
+    Sparkles,
+    Loader2,
+    RefreshCw
 } from "lucide-react"
 import { StatCard } from "@/components/stats/stat-card"
 import { MonthlyChart } from "@/components/stats/monthly-chart"
 import { StatusDistribution } from "@/components/stats/status-distribution"
 import { TopAuthorsTable } from "@/components/stats/top-authors-table"
 import { TopPublishersTable } from "@/components/stats/top-publishers-table"
+import { analyzeReadingHabits } from "@/actions/ai"
 import type { FullStatsData } from "@/actions/stats"
 
 interface StatsClientProps {
@@ -27,6 +33,43 @@ interface StatsClientProps {
 
 export function StatsClient({ stats }: StatsClientProps) {
     const { readingStats, monthlyData, topAuthors, topPublishers, quoteStats, challengeStats, bestMonth } = stats
+    const [aiAnalysis, setAiAnalysis] = useState<string | null>(null)
+    const [isAnalyzing, setIsAnalyzing] = useState(false)
+    const [analysisError, setAnalysisError] = useState<string | null>(null)
+
+    const handleGetAIAnalysis = async () => {
+        setIsAnalyzing(true)
+        setAnalysisError(null)
+
+        try {
+            const result = await analyzeReadingHabits({
+                totalBooks: readingStats.totalBooks,
+                completedBooks: readingStats.completedBooks,
+                readingBooks: readingStats.readingBooks,
+                toReadBooks: readingStats.toReadBooks,
+                dnfBooks: readingStats.dnfBooks,
+                totalPagesRead: readingStats.totalPagesRead,
+                averageDaysPerBook: readingStats.averageDaysPerBook,
+                pagesPerDay: readingStats.pagesPerDay,
+                booksThisMonth: readingStats.booksThisMonth,
+                booksThisYear: readingStats.booksThisYear,
+                completionRate: readingStats.completionRate,
+                topAuthors: topAuthors.map(a => ({ name: a.name, bookCount: a.bookCount })),
+                topPublishers: topPublishers.map(p => ({ name: p.name, bookCount: p.bookCount })),
+                bestMonth
+            })
+
+            if (result.success && result.text) {
+                setAiAnalysis(result.text)
+            } else {
+                setAnalysisError(result.error || "Analiz oluşturulamadı")
+            }
+        } catch {
+            setAnalysisError("Bir hata oluştu")
+        } finally {
+            setIsAnalyzing(false)
+        }
+    }
 
     return (
         <div className="space-y-6">
@@ -240,6 +283,66 @@ export function StatsClient({ stats }: StatsClientProps) {
                     </CardContent>
                 </Card>
             )}
+
+            {/* AI Analysis */}
+            <Card className="border-primary/20">
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2 text-base">
+                            <Sparkles className="h-5 w-5 text-primary" />
+                            AI Okuma Analizi
+                        </CardTitle>
+                        {aiAnalysis && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleGetAIAnalysis}
+                                disabled={isAnalyzing}
+                            >
+                                <RefreshCw className={`h-4 w-4 ${isAnalyzing ? 'animate-spin' : ''}`} />
+                            </Button>
+                        )}
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {!aiAnalysis && !isAnalyzing && !analysisError && (
+                        <div className="text-center py-6">
+                            <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                            <p className="text-muted-foreground mb-4">
+                                Okuma alışkanlıkların hakkında AI&apos;dan kişiselleştirilmiş bir analiz al
+                            </p>
+                            <Button onClick={handleGetAIAnalysis} disabled={isAnalyzing}>
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                Analiz Al
+                            </Button>
+                        </div>
+                    )}
+
+                    {isAnalyzing && (
+                        <div className="flex items-center justify-center py-8">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            <span className="ml-3 text-muted-foreground">Analiz hazırlanıyor...</span>
+                        </div>
+                    )}
+
+                    {analysisError && (
+                        <div className="text-center py-6">
+                            <p className="text-destructive mb-4">{analysisError}</p>
+                            <Button variant="outline" onClick={handleGetAIAnalysis}>
+                                Tekrar Dene
+                            </Button>
+                        </div>
+                    )}
+
+                    {aiAnalysis && !isAnalyzing && (
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                                {aiAnalysis}
+                            </p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     )
 }

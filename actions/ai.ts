@@ -218,3 +218,66 @@ Bu üslup analizini yorumla. Okuyucunun tespit ettiği özellikleri değerlendir
 
     return result
 }
+
+/**
+ * Genel okuma analizi - İstatistikler ve okuma alışkanlıkları hakkında AI yorumu
+ */
+export async function analyzeReadingHabits(stats: {
+    totalBooks: number
+    completedBooks: number
+    readingBooks: number
+    toReadBooks: number
+    dnfBooks: number
+    totalPagesRead: number
+    averageDaysPerBook: number | null
+    pagesPerDay: number | null
+    booksThisMonth: number
+    booksThisYear: number
+    completionRate: number
+    topAuthors: { name: string; bookCount: number }[]
+    topPublishers: { name: string; bookCount: number }[]
+    bestMonth: { month: string; count: number } | null
+}) {
+    const systemPrompt = `Sen samimi ve motive edici bir okuma koçusun. Kullanıcının okuma alışkanlıklarını analiz edip kişiselleştirilmiş yorumlar yapıyorsun.
+
+Yaklaşımın:
+- Samimi ve cesaretlendirici bir dil kullan
+- Başarıları takdir et
+- Gelişim alanlarını nazikçe belirt
+- Somut ve uygulanabilir öneriler sun
+- 3-4 paragraf yaz, çok uzatma
+- Emoji kullanma
+
+Türkçe yanıt ver.`
+
+    const topAuthorsText = stats.topAuthors.length > 0
+        ? stats.topAuthors.slice(0, 5).map(a => `${a.name} (${a.bookCount} kitap)`).join(", ")
+        : "Henüz yazar verisi yok"
+
+    const prompt = `Okuma İstatistiklerim:
+
+Genel Durum:
+- Toplam kitap: ${stats.totalBooks}
+- Tamamlanan: ${stats.completedBooks}
+- Şu an okunan: ${stats.readingBooks}
+- Okunacak listesinde: ${stats.toReadBooks}
+- Yarım bırakılan: ${stats.dnfBooks}
+- Tamamlanma oranı: %${stats.completionRate}
+
+Okuma Hızı:
+- Toplam okunan sayfa: ${stats.totalPagesRead.toLocaleString()}
+- Ortalama kitap süresi: ${stats.averageDaysPerBook ?? "Veri yok"} gün
+- Günlük sayfa ortalaması: ${stats.pagesPerDay ?? "Veri yok"} sayfa
+
+Dönemsel:
+- Bu ay: ${stats.booksThisMonth} kitap
+- Bu yıl: ${stats.booksThisYear} kitap
+- En verimli ay: ${stats.bestMonth ? `${stats.bestMonth.month} (${stats.bestMonth.count} kitap)` : "Henüz veri yok"}
+
+En Çok Okuduğum Yazarlar:
+${topAuthorsText}
+
+Bu verilere göre okuma alışkanlıklarımı analiz et. Neleri iyi yapıyorum, neleri geliştirebilirim? Motivasyon ve öneriler ver.`
+
+    return await generateText(prompt, systemPrompt)
+}
