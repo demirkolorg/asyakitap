@@ -34,6 +34,10 @@ import {
     Map,
     ExternalLink,
     Loader2,
+    Target,
+    Calendar,
+    Lock,
+    Play,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Book, BookStatus, Author, Publisher } from "@prisma/client"
@@ -59,9 +63,73 @@ interface BookGroup {
     books: BookWithRelations[]
 }
 
+interface LinkedBookInfo {
+    id: string
+    title: string
+    coverUrl: string | null
+    status: BookStatus
+    currentPage: number
+    pageCount: number | null
+    author: Author | null
+    publisher: Publisher | null
+}
+
+interface ChallengeBookWithLinked {
+    challengeBookId: string
+    title: string
+    author: string
+    role: 'MAIN' | 'BONUS'
+    status: 'LOCKED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED'
+    linkedBook: LinkedBookInfo | null
+}
+
+interface ChallengeMonth {
+    monthNumber: number
+    monthName: string
+    theme: string
+    themeIcon: string | null
+    books: ChallengeBookWithLinked[]
+    stats: {
+        total: number
+        completed: number
+        linked: number
+        percentage: number
+    }
+}
+
+interface ChallengeGroup {
+    id: string
+    year: number
+    name: string
+    months: ChallengeMonth[]
+    stats: {
+        totalBooks: number
+        completedBooks: number
+        linkedBooks: number
+        percentage: number
+    }
+}
+
+interface ChallengeData {
+    challenges: ChallengeGroup[]
+    unlinkedBooks: BookWithRelations[]
+}
+
+// Minimal book type for display
+type DisplayBook = {
+    id: string
+    title: string
+    coverUrl: string | null
+    status: BookStatus
+    currentPage: number
+    pageCount: number | null
+    author: { name: string } | null
+}
+
 interface LibraryClientProps {
     books: BookWithRelations[]
     groupedBooks: { groups: BookGroup[] }
+    challengeData: ChallengeData
 }
 
 type StatusFilter = "ALL" | BookStatus
@@ -109,16 +177,16 @@ interface ReadingList {
     levelCount: number
 }
 
-export default function LibraryClient({ books, groupedBooks }: LibraryClientProps) {
+export default function LibraryClient({ books, groupedBooks, challengeData }: LibraryClientProps) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
-    const [activeTab, setActiveTab] = useState<"cards" | "shelves">("shelves")
+    const [activeTab, setActiveTab] = useState<"cards" | "lists" | "challenge">("lists")
     const [activeStatus, setActiveStatus] = useState<StatusFilter>("ALL")
     const [searchQuery, setSearchQuery] = useState("")
 
     // Reading list link modal state
     const [linkModalOpen, setLinkModalOpen] = useState(false)
-    const [selectedBookForLink, setSelectedBookForLink] = useState<BookWithRelations | null>(null)
+    const [selectedBookForLink, setSelectedBookForLink] = useState<DisplayBook | null>(null)
     const [readingLists, setReadingLists] = useState<ReadingList[]>([])
     const [linkSearchQuery, setLinkSearchQuery] = useState("")
     const [loadingLists, setLoadingLists] = useState(false)
@@ -201,7 +269,7 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
     }
 
     // Open link modal and fetch reading lists
-    const openLinkModal = async (book: BookWithRelations) => {
+    const openLinkModal = async (book: DisplayBook) => {
         setSelectedBookForLink(book)
         setLinkModalOpen(true)
         setLinkSearchQuery("")
@@ -277,7 +345,7 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
     }
 
     // Book Card Component with Context Menu
-    const BookCard = ({ book, isShelfView = false }: { book: BookWithRelations; isShelfView?: boolean }) => (
+    const BookCard = ({ book, isShelfView = false }: { book: DisplayBook; isShelfView?: boolean }) => (
         <ContextMenu>
             <ContextMenuTrigger asChild>
                 <div className={cn(
@@ -468,11 +536,13 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-lg md:text-2xl font-bold">
-                                {activeTab === "shelves" ? "Raflarım" : statusConfig[activeStatus].label}
+                                {activeTab === "lists" ? "Listelerim" : activeTab === "challenge" ? "Okuma Hedefim" : statusConfig[activeStatus].label}
                             </h1>
                             <p className="text-muted-foreground text-xs md:text-sm">
-                                {activeTab === "shelves"
+                                {activeTab === "lists"
                                     ? `${filteredGroups.length} liste, ${filteredGroups.reduce((acc, g) => acc + g.filteredBooks.length, 0)} kitap${(activeStatus !== "ALL" || searchQuery) ? ` (filtrelenmiş)` : ""}`
+                                    : activeTab === "challenge"
+                                    ? "Okuma hedefindeki kitaplarınız"
                                     : `${filteredBooks.length} kitap`
                                 }
                             </p>
@@ -490,13 +560,22 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                                     <Grid3X3 className="h-4 w-4" />
                                 </Button>
                                 <Button
-                                    variant={activeTab === "shelves" ? "secondary" : "ghost"}
+                                    variant={activeTab === "lists" ? "secondary" : "ghost"}
                                     size="icon"
-                                    className="rounded-l-none h-8 w-8 md:h-9 md:w-9"
-                                    onClick={() => setActiveTab("shelves")}
-                                    title="Raf Görünümü"
+                                    className="h-8 w-8 md:h-9 md:w-9"
+                                    onClick={() => setActiveTab("lists")}
+                                    title="Liste Görünümü"
                                 >
                                     <Layers className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant={activeTab === "challenge" ? "secondary" : "ghost"}
+                                    size="icon"
+                                    className="rounded-l-none h-8 w-8 md:h-9 md:w-9"
+                                    onClick={() => setActiveTab("challenge")}
+                                    title="Hedef Görünümü"
+                                >
+                                    <Target className="h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
@@ -545,8 +624,8 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                     </>
                 )}
 
-                {/* Shelf View (Reading List Groups with Levels) */}
-                {activeTab === "shelves" && (
+                {/* List View (Reading List Groups with Levels) */}
+                {activeTab === "lists" && (
                     <div className="space-y-6 md:space-y-10">
                         {filteredGroups.map((group) => {
                             const color = group.id === "rafsiz" ? "#6b7280" : (getReadingListColor(group.id) || "#6b7280")
@@ -687,6 +766,150 @@ export default function LibraryClient({ books, groupedBooks }: LibraryClientProp
                                         </Button>
                                     </>
                                 )}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Challenge View (Reading Challenge Groups by Month) */}
+                {activeTab === "challenge" && (
+                    <div className="space-y-6 md:space-y-10">
+                        {challengeData.challenges.length > 0 ? (
+                            challengeData.challenges.map((challenge) => (
+                                <div key={challenge.id} className="relative">
+                                    {/* Challenge Header */}
+                                    <div className="flex items-center justify-between gap-3 mb-4 md:mb-5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-1 h-8 rounded-full bg-amber-500" />
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <h2 className="text-base md:text-xl font-bold">
+                                                        {challenge.name}
+                                                    </h2>
+                                                    <span className="text-xs md:text-sm text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                                                        {challenge.stats.completedBooks}/{challenge.stats.totalBooks} kitap
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <Progress value={challenge.stats.percentage} className="h-1.5 w-32" />
+                                                    <span className="text-xs text-muted-foreground">
+                                                        %{challenge.stats.percentage}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Link
+                                            href="/challenges"
+                                            className="text-xs text-primary hover:text-primary/80 font-medium transition-colors flex items-center gap-1"
+                                        >
+                                            Challenge'a Git
+                                            <ExternalLink className="h-3 w-3" />
+                                        </Link>
+                                    </div>
+
+                                    {/* Months */}
+                                    <div className="space-y-6">
+                                        {challenge.months.filter(month => month.books.some(b => b.linkedBook)).map((month) => (
+                                            <div key={month.monthNumber} className="relative">
+                                                {/* Month Header */}
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-lg bg-amber-100 dark:bg-amber-900/30">
+                                                        {month.themeIcon || <Calendar className="h-4 w-4" />}
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-sm font-medium">
+                                                            {month.monthName}
+                                                        </span>
+                                                        <span className="text-xs text-muted-foreground ml-2">
+                                                            {month.theme}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-xs text-muted-foreground ml-auto">
+                                                        {month.stats.completed}/{month.stats.total}
+                                                    </span>
+                                                </div>
+
+                                                {/* Books on Shelf */}
+                                                <div className="relative">
+                                                    <div
+                                                        className="absolute -bottom-3 left-0 right-0 h-3 rounded-b-lg shadow-inner"
+                                                        style={{
+                                                            background: 'linear-gradient(to bottom, rgb(245 158 11 / 0.1), rgb(245 158 11 / 0.2))',
+                                                            boxShadow: 'inset 0 2px 4px rgb(245 158 11 / 0.15)'
+                                                        }}
+                                                    />
+                                                    <div
+                                                        className="absolute -bottom-3 left-0 right-0 h-1 rounded-b-lg bg-amber-500/30"
+                                                    />
+
+                                                    <div className="grid gap-3 md:gap-4 grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 pb-4">
+                                                        {month.books.map((challengeBook) => (
+                                                            challengeBook.linkedBook ? (
+                                                                <div key={challengeBook.challengeBookId} className="relative">
+                                                                    <BookCard book={challengeBook.linkedBook} isShelfView />
+                                                                    {/* Challenge status indicator */}
+                                                                    <div className={cn(
+                                                                        "absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] shadow-sm z-20",
+                                                                        challengeBook.status === 'COMPLETED' && "bg-green-500",
+                                                                        challengeBook.status === 'IN_PROGRESS' && "bg-yellow-500",
+                                                                        challengeBook.status === 'NOT_STARTED' && "bg-gray-400",
+                                                                        challengeBook.status === 'LOCKED' && "bg-gray-600"
+                                                                    )}>
+                                                                        {challengeBook.status === 'COMPLETED' && <CheckCircle2 className="h-3 w-3" />}
+                                                                        {challengeBook.status === 'IN_PROGRESS' && <Play className="h-3 w-3" />}
+                                                                        {challengeBook.status === 'LOCKED' && <Lock className="h-3 w-3" />}
+                                                                        {challengeBook.role === 'MAIN' && challengeBook.status === 'NOT_STARTED' && '★'}
+                                                                        {challengeBook.role === 'BONUS' && challengeBook.status === 'NOT_STARTED' && '+'}
+                                                                    </div>
+                                                                </div>
+                                                            ) : null
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed rounded-xl bg-muted/20">
+                                <Target className="h-16 w-16 text-muted-foreground/40 mb-4" />
+                                <p className="text-muted-foreground mb-4">Henüz bir okuma hedefine katılmadınız</p>
+                                <Button asChild size="sm">
+                                    <Link href="/challenges">
+                                        Okuma Hedeflerini Gör
+                                    </Link>
+                                </Button>
+                            </div>
+                        )}
+
+                        {/* Unlinked Books */}
+                        {challengeData.unlinkedBooks.length > 0 && challengeData.challenges.length > 0 && (
+                            <div className="relative">
+                                <div className="flex items-center gap-3 mb-4 md:mb-5">
+                                    <div className="w-1 h-8 rounded-full bg-gray-400" />
+                                    <div>
+                                        <h2 className="text-base md:text-xl font-bold text-muted-foreground">
+                                            Hedefe Bağlı Olmayan Kitaplar
+                                        </h2>
+                                        <span className="text-xs text-muted-foreground">
+                                            {challengeData.unlinkedBooks.length} kitap
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="relative rounded-xl p-4 md:p-5 bg-muted/30 border-2 border-dashed">
+                                    <div className="grid gap-3 md:gap-4 grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
+                                        {challengeData.unlinkedBooks.slice(0, 24).map((book) => (
+                                            <BookCard key={book.id} book={book} isShelfView />
+                                        ))}
+                                    </div>
+                                    {challengeData.unlinkedBooks.length > 24 && (
+                                        <p className="text-xs text-muted-foreground text-center mt-4">
+                                            ve {challengeData.unlinkedBooks.length - 24} kitap daha...
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>

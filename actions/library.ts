@@ -763,3 +763,146 @@ export async function getBooksGroupedByReadingList() {
         return { groups: [] }
     }
 }
+
+// Kitapları okuma hedeflerine göre grupla
+export async function getBooksGroupedByChallenge() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return { challenges: [], unlinkedBooks: [] }
+
+    try {
+        // Kullanıcının katıldığı challenge'ları al
+        const userChallengeProgress = await prisma.userChallengeProgress.findMany({
+            where: { userId: user.id },
+            include: {
+                challenge: {
+                    include: {
+                        months: {
+                            orderBy: { monthNumber: 'asc' },
+                            include: {
+                                books: {
+                                    orderBy: [
+                                        { role: 'asc' },
+                                        { sortOrder: 'asc' }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                books: {
+                    include: {
+                        linkedBook: {
+                            include: {
+                                author: true,
+                                publisher: true
+                            }
+                        },
+                        challengeBook: {
+                            include: {
+                                month: true
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: {
+                challenge: { year: 'desc' }
+            }
+        })
+
+        // Challenge'a bağlı kitap ID'leri
+        const linkedBookIds = new Set<string>()
+
+        const challenges = userChallengeProgress.map(progress => {
+            // Her ay için kitapları grupla
+            const months = progress.challenge.months.map(month => {
+                const monthBooks = progress.books.filter(
+                    b => b.challengeBook.monthId === month.id
+                )
+
+                const booksWithStatus = monthBooks.map(userBook => {
+                    if (userBook.linkedBookId) {
+                        linkedBookIds.add(userBook.linkedBookId)
+                    }
+
+                    return {
+                        challengeBookId: userBook.challengeBookId,
+                        title: userBook.challengeBook.title,
+                        author: userBook.challengeBook.author,
+                        role: userBook.challengeBook.role,
+                        status: userBook.status,
+                        linkedBook: userBook.linkedBook ? {
+                            id: userBook.linkedBook.id,
+                            title: userBook.linkedBook.title,
+                            coverUrl: userBook.linkedBook.coverUrl,
+                            status: userBook.linkedBook.status,
+                            currentPage: userBook.linkedBook.currentPage,
+                            pageCount: userBook.linkedBook.pageCount,
+                            author: userBook.linkedBook.author,
+                            publisher: userBook.linkedBook.publisher
+                        } : null
+                    }
+                })
+
+                const completedCount = booksWithStatus.filter(b => b.status === 'COMPLETED').length
+                const linkedCount = booksWithStatus.filter(b => b.linkedBook !== null).length
+
+                return {
+                    monthNumber: month.monthNumber,
+                    monthName: month.monthName,
+                    theme: month.theme,
+                    themeIcon: month.themeIcon,
+                    books: booksWithStatus,
+                    stats: {
+                        total: booksWithStatus.length,
+                        completed: completedCount,
+                        linked: linkedCount,
+                        percentage: booksWithStatus.length > 0
+                            ? Math.round((completedCount / booksWithStatus.length) * 100)
+                            : 0
+                    }
+                }
+            })
+
+            // Genel istatistikler
+            const allBooks = progress.books
+            const completedBooks = allBooks.filter(b => b.status === 'COMPLETED')
+            const linkedBooks = allBooks.filter(b => b.linkedBookId !== null)
+
+            return {
+                id: progress.challenge.id,
+                year: progress.challenge.year,
+                name: progress.challenge.name,
+                months,
+                stats: {
+                    totalBooks: allBooks.length,
+                    completedBooks: completedBooks.length,
+                    linkedBooks: linkedBooks.length,
+                    percentage: allBooks.length > 0
+                        ? Math.round((completedBooks.length / allBooks.length) * 100)
+                        : 0
+                }
+            }
+        })
+
+        // Challenge'a bağlı olmayan kitapları al
+        const unlinkedBooks = await prisma.book.findMany({
+            where: {
+                userId: user.id,
+                id: { notIn: Array.from(linkedBookIds) }
+            },
+            include: {
+                author: true,
+                publisher: true
+            },
+            orderBy: { updatedAt: 'desc' }
+        })
+
+        return { challenges, unlinkedBooks }
+    } catch (error) {
+        console.error("Failed to fetch challenge grouped books:", error)
+        return { challenges: [], unlinkedBooks: [] }
+    }
+}
