@@ -26,6 +26,7 @@ import {
   Pen,
   Building2,
   Target,
+  BarChart3,
 } from "lucide-react";
 
 // Ana Sayfa
@@ -34,6 +35,11 @@ const homeItems = [
     title: "Genel Bakış",
     href: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "İstatistikler",
+    href: "/stats",
+    icon: BarChart3,
   },
 ];
 
