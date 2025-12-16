@@ -32,7 +32,8 @@ export function ReadingListsClient({ lists }: ReadingListsClientProps) {
         open: boolean
         name: string
         description: string
-    }>({ open: false, name: "", description: "" })
+        coverUrl: string
+    }>({ open: false, name: "", description: "", coverUrl: "" })
 
     const handleCopyAllAsJson = () => {
         const jsonData = lists.map(list => ({
@@ -59,11 +60,12 @@ export function ReadingListsClient({ lists }: ReadingListsClientProps) {
         try {
             const result = await createReadingList({
                 name: createDialog.name,
-                description: createDialog.description || undefined
+                description: createDialog.description || undefined,
+                coverUrl: createDialog.coverUrl || undefined
             })
             if (result.success && result.list) {
                 toast.success("Liste oluşturuldu")
-                setCreateDialog({ open: false, name: "", description: "" })
+                setCreateDialog({ open: false, name: "", description: "", coverUrl: "" })
                 router.push(`/reading-lists/${result.list.slug}`)
             } else {
                 toast.error(result.error || "Liste oluşturulamadı")
@@ -98,7 +100,7 @@ export function ReadingListsClient({ lists }: ReadingListsClientProps) {
                     </Button>
                     <Button
                         size="sm"
-                        onClick={() => setCreateDialog({ open: true, name: "", description: "" })}
+                        onClick={() => setCreateDialog({ open: true, name: "", description: "", coverUrl: "" })}
                         className="gap-2"
                     >
                         <Plus className="h-4 w-4" />
@@ -133,6 +135,15 @@ export function ReadingListsClient({ lists }: ReadingListsClientProps) {
                                 placeholder="Bu liste hakkında kısa bir açıklama..."
                                 value={createDialog.description}
                                 onChange={(e) => setCreateDialog({ ...createDialog, description: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="list-cover">Kapak URL (Opsiyonel)</Label>
+                            <Input
+                                id="list-cover"
+                                placeholder="https://..."
+                                value={createDialog.coverUrl}
+                                onChange={(e) => setCreateDialog({ ...createDialog, coverUrl: e.target.value })}
                             />
                         </div>
                     </div>

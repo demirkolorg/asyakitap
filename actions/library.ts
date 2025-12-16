@@ -113,6 +113,37 @@ export async function getBook(id: string) {
                 readingLogs: {
                     orderBy: { createdAt: 'desc' },
                     take: 20
+                },
+                readingListBooks: {
+                    include: {
+                        level: {
+                            include: {
+                                readingList: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        slug: true,
+                                        coverUrl: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                challengeBooks: {
+                    include: {
+                        month: {
+                            include: {
+                                challenge: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        year: true
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         })

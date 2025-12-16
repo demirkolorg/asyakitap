@@ -27,7 +27,6 @@ import {
     CheckCircle2,
     XCircle,
     Library,
-    List,
     ExternalLink,
     Map,
     Target,
@@ -50,7 +49,7 @@ interface LibraryClientProps {
 }
 
 type StatusFilter = "ALL" | BookStatus
-type ViewMode = "cards" | "list" | "reading-lists" | "challenges"
+type ViewMode = "cards" | "reading-lists" | "challenges"
 
 const statusConfig: Record<StatusFilter, { label: string; icon: React.ReactNode; color: string }> = {
     ALL: { label: "Tümü", icon: <Library className="h-4 w-4" />, color: "text-foreground" },
@@ -172,49 +171,6 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                 </ContextMenuItem>
             </ContextMenuContent>
         </ContextMenu>
-    )
-
-    // Book List Item Component
-    const BookListItem = ({ book }: { book: BookWithRelations }) => (
-        <Link
-            href={`/book/${book.id}`}
-            className="flex items-center gap-4 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
-        >
-            <div className="relative w-12 h-16 flex-shrink-0 rounded overflow-hidden bg-muted">
-                {book.coverUrl ? (
-                    <Image
-                        src={book.coverUrl.replace("http:", "https:")}
-                        alt={book.title}
-                        fill
-                        className="object-cover"
-                    />
-                ) : (
-                    <div className="flex items-center justify-center h-full">
-                        <BookOpen className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                )}
-            </div>
-            <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-sm line-clamp-1">{book.title}</h3>
-                <p className="text-xs text-muted-foreground line-clamp-1">
-                    {book.author?.name || "Bilinmiyor"}
-                </p>
-                {book.status === "READING" && book.pageCount && (
-                    <div className="flex items-center gap-2 mt-1">
-                        <Progress value={(book.currentPage / book.pageCount) * 100} className="h-1 flex-1" />
-                        <span className="text-[10px] text-muted-foreground">
-                            {Math.round((book.currentPage / book.pageCount) * 100)}%
-                        </span>
-                    </div>
-                )}
-            </div>
-            <div className={cn(
-                "px-2 py-1 rounded text-[10px] font-medium text-white flex-shrink-0",
-                statusBadgeConfig[book.status].bgColor
-            )}>
-                {statusBadgeConfig[book.status].label}
-            </div>
-        </Link>
     )
 
     // Mini Book Card for Reading Lists and Challenges
@@ -430,7 +386,7 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
     return (
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 overflow-hidden">
             {/* Mobile Status Filter - Horizontal scrollable (only for cards/list views) */}
-            {(activeView === "cards" || activeView === "list") && (
+            {activeView === "cards" && (
                 <div className="lg:hidden overflow-hidden">
                     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                         {(Object.keys(statusConfig) as StatusFilter[]).map((status) => (
@@ -488,18 +444,6 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                             Kart Görünümü
                         </button>
                         <button
-                            onClick={() => setActiveView("list")}
-                            className={cn(
-                                "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
-                                activeView === "list"
-                                    ? "bg-primary text-primary-foreground"
-                                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                            )}
-                        >
-                            <List className="h-4 w-4" />
-                            Liste Görünümü
-                        </button>
-                        <button
                             onClick={() => setActiveView("reading-lists")}
                             className={cn(
                                 "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
@@ -526,7 +470,7 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                     </div>
 
                     {/* Status Filters (only for cards/list views) */}
-                    {(activeView === "cards" || activeView === "list") && (
+                    {activeView === "cards" && (
                         <div className="space-y-1">
                             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                                 Durum
@@ -594,7 +538,7 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-lg md:text-2xl font-bold">
-                                {activeView === "cards" || activeView === "list"
+                                {activeView === "cards"
                                     ? statusConfig[activeStatus].label
                                     : activeView === "reading-lists"
                                         ? "Okuma Listeleri"
@@ -602,7 +546,7 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                                 }
                             </h1>
                             <p className="text-muted-foreground text-xs md:text-sm">
-                                {activeView === "cards" || activeView === "list"
+                                {activeView === "cards"
                                     ? `${filteredBooks.length} kitap`
                                     : activeView === "reading-lists"
                                         ? `${readingLists.length} liste`
@@ -623,18 +567,9 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                                     <Grid3X3 className="h-4 w-4" />
                                 </Button>
                                 <Button
-                                    variant={activeView === "list" ? "secondary" : "ghost"}
-                                    size="icon"
-                                    className="h-8 w-8 md:h-9 md:w-9 rounded-none border-x"
-                                    onClick={() => setActiveView("list")}
-                                    title="Liste Görünümü"
-                                >
-                                    <List className="h-4 w-4" />
-                                </Button>
-                                <Button
                                     variant={activeView === "reading-lists" ? "secondary" : "ghost"}
                                     size="icon"
-                                    className="h-8 w-8 md:h-9 md:w-9 rounded-none"
+                                    className="h-8 w-8 md:h-9 md:w-9 rounded-none border-x"
                                     onClick={() => setActiveView("reading-lists")}
                                     title="Okuma Listeleri"
                                 >
@@ -653,7 +588,7 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                         </div>
                     </div>
 
-                    {(activeView === "cards" || activeView === "list") && (
+                    {activeView === "cards" && (
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -692,38 +627,6 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                             <div className="grid gap-2 md:gap-3 grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-9 2xl:grid-cols-11">
                                 {filteredBooks.map((book) => (
                                     <BookCard key={book.id} book={book} />
-                                ))}
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {/* List View */}
-                {activeView === "list" && (
-                    <>
-                        {filteredBooks.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-lg bg-muted/40">
-                                <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
-                                {searchQuery ? (
-                                    <>
-                                        <p className="text-muted-foreground mb-2">Arama sonucu bulunamadı</p>
-                                        <Button variant="outline" onClick={() => setSearchQuery("")}>
-                                            Aramayı Temizle
-                                        </Button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <p className="text-muted-foreground mb-4">Bu kategoride henüz kitap yok</p>
-                                        <Button asChild variant="outline">
-                                            <Link href="/library/add">Kitap Ekle</Link>
-                                        </Button>
-                                    </>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="space-y-2">
-                                {filteredBooks.map((book) => (
-                                    <BookListItem key={book.id} book={book} />
                                 ))}
                             </div>
                         )}

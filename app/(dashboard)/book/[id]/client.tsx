@@ -40,6 +40,9 @@ import {
     Bot,
     Loader2,
     RefreshCw,
+    Map,
+    Target,
+    Sparkles,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -82,7 +85,38 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
 import { cn } from "@/lib/utils"
 
 // Types
-import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher } from "@prisma/client"
+import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, ChallengeBookRole } from "@prisma/client"
+
+interface ReadingListBookInfo {
+    id: string
+    level: {
+        id: string
+        levelNumber: number
+        name: string
+        readingList: {
+            id: string
+            name: string
+            slug: string
+            coverUrl: string | null
+        }
+    }
+}
+
+interface ChallengeBookInfo {
+    id: string
+    role: ChallengeBookRole
+    month: {
+        id: string
+        monthNumber: number
+        monthName: string
+        theme: string | null
+        challenge: {
+            id: string
+            name: string
+            year: number
+        }
+    }
+}
 
 interface BookDetailClientProps {
     book: Book & {
@@ -90,6 +124,8 @@ interface BookDetailClientProps {
         readingLogs: ReadingLog[]
         author: Author | null
         publisher: Publisher | null
+        readingListBooks: ReadingListBookInfo[]
+        challengeBooks: ChallengeBookInfo[]
     }
 }
 
@@ -522,6 +558,52 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 <Building2 className="h-3.5 w-3.5" />
                                 {book.publisher.name}
                             </Link>
+                        </div>
+                    )}
+
+                    {/* Reading Lists & Challenges */}
+                    {(book.readingListBooks.length > 0 || book.challengeBooks.length > 0) && (
+                        <div className="flex flex-wrap gap-2 md:gap-3 mb-4 justify-center md:justify-start">
+                            {/* Reading Lists */}
+                            {book.readingListBooks.map((rlb) => (
+                                <Link
+                                    key={rlb.id}
+                                    href={`/reading-lists/${rlb.level.readingList.slug}`}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-sm transition-colors border border-primary/20"
+                                >
+                                    <Map className="h-3.5 w-3.5 text-primary" />
+                                    <span className="font-medium">{rlb.level.readingList.name}</span>
+                                    <span className="text-muted-foreground">• Seviye {rlb.level.levelNumber}</span>
+                                </Link>
+                            ))}
+
+                            {/* Challenges */}
+                            {book.challengeBooks.map((cb) => (
+                                <Link
+                                    key={cb.id}
+                                    href={`/challenges/${cb.month.challenge.year}`}
+                                    className={cn(
+                                        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors border",
+                                        cb.role === "MAIN"
+                                            ? "bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/20"
+                                            : "bg-purple-500/10 hover:bg-purple-500/20 border-purple-500/20"
+                                    )}
+                                >
+                                    {cb.role === "MAIN" ? (
+                                        <Target className="h-3.5 w-3.5 text-amber-600" />
+                                    ) : (
+                                        <Sparkles className="h-3.5 w-3.5 text-purple-600" />
+                                    )}
+                                    <span className="font-medium">{cb.month.challenge.name}</span>
+                                    <span className="text-muted-foreground">• {cb.month.monthName}</span>
+                                    <span className={cn(
+                                        "text-[10px] px-1.5 py-0.5 rounded",
+                                        cb.role === "MAIN" ? "bg-amber-500/20 text-amber-700" : "bg-purple-500/20 text-purple-700"
+                                    )}>
+                                        {cb.role === "MAIN" ? "Ana" : "Bonus"}
+                                    </span>
+                                </Link>
+                            ))}
                         </div>
                     )}
 
