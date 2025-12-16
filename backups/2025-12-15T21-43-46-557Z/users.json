@@ -1,0 +1,1571 @@
+[
+  {
+    "id": "bd5bc606-757a-413b-b1e6-4562f2699572",
+    "email": "demirkol.abdullah93@gmail.com",
+    "createdAt": "2025-12-09T22:04:01.199Z",
+    "updatedAt": "2025-12-14T12:55:18.991Z",
+    "books": [
+      {
+        "id": "cmj0leah60002xsizc90vc2uz",
+        "title": "Dune",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0k56zf00000bi6cps72pib",
+        "title": "İslam Deklarasyonu ve Tarihi Savunma",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0kf62i00000ajvh431ccnz",
+        "title": "Gülün Adı (Ciltsiz)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lec0g0003xsiz252gujt2",
+        "title": "Dune Mesihi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0ledl70004xsizfn9hjx5n",
+        "title": "Dune Çocukları",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0leojk000bxsiz0fwj772w",
+        "title": "Cesur Yeni Dünya",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj15hidk00020ald54zw1onm",
+        "title": "Bilinçaltının Gücü",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2glc2q00080al7mintjifw",
+        "title": "Bir Çift Yürek",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0leqbg000dxsiza2w52f5y",
+        "title": "Kıyamete Bir Milyar Yıl",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lehr40005xsizhmo117q9",
+        "title": "Dune Tanrı İmparatoru",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lejak0006xsizd7rgwx0p",
+        "title": "Dune Sapkınları",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lekvj0007xsizt6fbuqch",
+        "title": "Dune Rahibeler Meclisi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj1jsdu200020akz6026i6b6",
+        "title": "Alışkanlıkların Gücü",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g5rqs00020aldqtju23s9",
+        "title": "Eyvallah - Seyyah",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0les3w000fxsizbdizsmv3",
+        "title": "Salgın",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lf009000qxsizc2nzkbqr",
+        "title": "Puslu Kıtalar Atlası",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0letvl000hxsiz7h2wq2t2",
+        "title": "Kum",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lexyv000nxsizdjch4sre",
+        "title": "Olasılıksız",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lf9e80012xsizmeq3cdlh",
+        "title": "Leyleklerin Uçuşu",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gmn0000050aih1oa2dr4y",
+        "title": "Doppler",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lf5dk000wxsizx1l6a4p3",
+        "title": "Beyaz Diş (Karton Kapak)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfdey0018xsizvsb3xjhd",
+        "title": "Sır",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfffc001bxsizihm84bfg",
+        "title": "Erbain",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfbee0015xsiz7njwpfkc",
+        "title": "Suç Ortakları",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lf7eh000zxsizlh5zb9dj",
+        "title": "Sakkara'nın Kumları",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj1jtntp00020bl4as5yzls9",
+        "title": "Trend Takipçisi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfizc001fxsizce00genn",
+        "title": "İdeolocya Örgüsü (kod36)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfkrp001hxsizbkp3fa32",
+        "title": "Bu Ülke",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lft7e001oxsizuhokub4k",
+        "title": "İslami Yeniden Doğuşun Meseleleri",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfmu8001kxsizs0hfavg9",
+        "title": "Diriliş Neslinin Amentüsü",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfrl6001nxsizil9kjwt0",
+        "title": "Yitik Cennet",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfodn001lxsiz0rf4gwzk",
+        "title": "İnsanlığın Dirilişi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfgyu001cxsizkrwi42h2",
+        "title": "Üç Zor Mesele",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfq17001mxsizkzeqrnru",
+        "title": "İslamın Dirilişi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj1tswb500010ald671jbz9x",
+        "title": "Hz. Muhammed'in Hayatı (Ciltsiz)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g33g0000b0al5qdlm7j4t",
+        "title": "Kuyucaklı Yusuf",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lg0se001yxsizf2actqm2",
+        "title": "Gençlerle Başbaşa",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfys4001vxsiztr2xmd00",
+        "title": "İnsanlığın Medeniyet Destanı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfx8a001uxsizrw820u91",
+        "title": "İslam'ın Vadettikleri",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lg2k10020xsizd13ei2vb",
+        "title": "Hatıralar",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lggbu002hxsizpwa3d3ib",
+        "title": "Atomik Alışkanlıklar",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2goikv000a0aih0m1m49z9",
+        "title": "Gulyabani (Günümüz Türkçesiyle)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lgaa90028xsiz1uwglvlo",
+        "title": "Darbeye Geçit yok",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lgcaw002bxsiz736vgqio",
+        "title": "Sabredenler ve Şükredenler",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lgeae002exsize9a6f2xs",
+        "title": "Namaz Çağrısı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lg8he0026xsizyr4lcj4j",
+        "title": "İstihbarat Savaşları",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2fynx600020alhb2qvyo83",
+        "title": "Müslümanca Düşünme Üzerine Denemeler",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2geawd000l0ald0evj2qd1",
+        "title": "Bir Gizli Servisin Tarihi-MİT 2-F-63",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj1tush300000ajreeuu8gr5",
+        "title": "Beklenmeyen Misafir",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lgmes002qxsizptf378f6",
+        "title": "Hafıza Koçu",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lfv8e001rxsizpfbqy43v",
+        "title": "Modern Ortadoğu Tarihi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0levx9000kxsiz43l6jotv",
+        "title": "Zaman Makinesi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g3qtk000c0al5uey1kpsm",
+        "title": "Kürk Mantolu Madonna",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2fsqwh00000ajye2gvxt40",
+        "title": "On Kişiydiler (On Küçük Zenci)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lemqh0009xsizitn6q334",
+        "title": "Fahrenheit 451",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g63ih00020ajl31tef3ny",
+        "title": "Yaşamak",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gfu91000o0aldhvi9oz15",
+        "title": "Lem'alar (Çanta Boy İki Renk)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2fzkhk00000al515tdkp2o",
+        "title": "İmkansız Öyküler",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lf3tr000vxsizfjy33n8c",
+        "title": "Martin Eden",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lg55t0023xsiz2dptet5d",
+        "title": "Türklerin Serüveni",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lg6pt0024xsizugmvzptn",
+        "title": "Türklerin Büyükleri",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g1xvj00060al55jf9k5eq",
+        "title": "Ya Tahammül Ya Sefer",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gjf5400010aihg7uwlyon",
+        "title": "Cehennem (Karton Kapak)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lf20x000txsizqsgtj9ns",
+        "title": "Fedailerin Kalesi Alamut",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lgkfc002nxsizrgizu24w",
+        "title": "Stratejik İletişim",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj0lgic8002kxsizrew410hz",
+        "title": "Outliers (Çizginin Dışındakiler)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g510h00010ajyq4a79b9n",
+        "title": "Beş Şehir",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g6aea00040ajl7zja2swu",
+        "title": "Momo",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g793p00000al2uofc2861",
+        "title": "İçimizdeki Şeytan",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g7l5200060ajld1kemz0g",
+        "title": "Sevmek Bu Kadar Güzelken",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g7t6d00020al2uhlpjg8e",
+        "title": "İnce Memed 1",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g9ob200030ald8c1eme8z",
+        "title": "Yoldaki Mühendis 2",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g1axm00040al5w7v2dwge",
+        "title": "Uzun Hikaye",
+        "status": "READING"
+      },
+      {
+        "id": "cmj2gbxl100070ak3qdhnblp3",
+        "title": "Metro 2034",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gjotz00020al7j8751otj",
+        "title": "Martı Jonathan Livingston",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gallq00060ak3wjw6u5ej",
+        "title": "Sherlock Holmes - Oyun Başladı / Bütün Hikayeler 2",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gbhe900090aldn45tvkvz",
+        "title": "Sherlock Holmes - Gölge Koleksiyonu / Bütün Hikayeler 5",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gb14h00070alduhtujp5z",
+        "title": "Sherlock Holmes – Suç Uyanıyor / Bütün Hikayeler 1",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gb9pj00080aldaev8jzqu",
+        "title": "Sherlock Holmes – Şüphenin İzinde / Bütün Hikayeler 3",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj7dac2o00000biidpwk1yqv",
+        "title": "Marslı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gf7ts00080ajlxf2chobj",
+        "title": "19. Yüzyıl Siyasi Tarihi, 1789-1914 (Ciltli)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gcygj000f0ald6te0has7",
+        "title": "Kudüs Yazıları",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gqcuo000j0al7yx54bk0f",
+        "title": "Peygamber Efendimiz'in Muhtasar Hayatı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj7davrv00040bii8cjty9ch",
+        "title": "50 Soruda Yapay Zeka",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gllim00020aiheczex8gz",
+        "title": "Doğu Ekspresinde Cinayet",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gqmte000i0aih8wecp5lh",
+        "title": "Cumhuriyet Efsaneleri",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2glx3v00030aiheo99ez9z",
+        "title": "Kırmadan İncitmeden",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gkr5600020ajs3vypja12",
+        "title": "Haarp Silahı ve Nicola Tesla",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj7dba4300000ajvyjhf5f3y",
+        "title": "Minyeli Abdullah (50. Yıl Özel İlk Baskı Kapak)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gn02u000c0al7s0j3zi77",
+        "title": "Ortadoğu'ya Dair Yirmi Tez",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gn64m00070aih94m1t11j",
+        "title": "Bin Muhteşem Güneş",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gr55k00030al5xcsjxef8",
+        "title": "Bir Ömür Nasıl Yaşanır?",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gmfe6000b0al7vyprihxg",
+        "title": "İtbarak",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj7dbri500030ajvticlol3b",
+        "title": "Devlet Ana",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2go24k000e0al7dqnz4n1w",
+        "title": "1984",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gozin000d0aihirubh4vx",
+        "title": "Kendine Ait Bir Oda",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gpng100050ajs337lyw3o",
+        "title": "Beyaz Gemi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gpwiw000g0aihbrgbpg6j",
+        "title": "Küçük Ağaç'ın Eğitimi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj7dc59400070biidqx45vxv",
+        "title": "Semerkant",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gbpnh000c0aldivxxl59n",
+        "title": "Metro 2033",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gqwbm00010al51hb41aab",
+        "title": "99 Soruda Lozan",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2grsb700070ajsglitqato",
+        "title": "Türk Milli Kültürü",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gs1p200090ajsmij1ez6m",
+        "title": "Terör",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g2n0u00080al5a4tta5xz",
+        "title": "Selam Olsun",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2fwbfk00020ajm30ptkvs7",
+        "title": "Yoksulluk Kitabı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2fxhw900010al5i97lxcwm",
+        "title": "Hayvan Çiftliği (Ciltsiz)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2fy6g700030al55ntr5nyr",
+        "title": "Dönüşüm (Karton Kapak)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gt5bu00050al57jnq3y18",
+        "title": "Yafes'in Kılıcı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g0fnf00010ajosq2qb1tn",
+        "title": "Ferrari'sini Satan Bilge",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2fz4ry00030alhlwl6vfso",
+        "title": "Gül Yetiştiren Adam",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g1lm000050al5kzf0q376",
+        "title": "Bu Böyledir",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g4u0200020ajpmjnnr3x1",
+        "title": "Fabrika Ayarı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2fvssj00010ajmgmukglph",
+        "title": "Bangır Bangır Ferdi Çalıyor Evde...",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g29lo00070al56hofs25v",
+        "title": "Yoksulluk İçimizde",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g9b6e00020ak3nrwpyha4",
+        "title": "Yoldaki Mühendis",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gc6cq00080ak3t4el4e5f",
+        "title": "Metro 2035",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gfl97000a0ak3qki73vcy",
+        "title": "Modern Ortadoğu Tarihi 1453-2015 (Ciltli)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gm58d000a0al75tjkj48j",
+        "title": "Babamın Şarkısı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gnij5000d0al7j8ct4caz",
+        "title": "Uçurtma Avcısı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2g010o00030al5fblitzud",
+        "title": "Allah İçin Sevmek",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gnskd00080aih7nxmokb5",
+        "title": "Ve Dağlar Yankılandı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2go9wp000g0al74u6tjzt9",
+        "title": "Şeker Portakalı (Ciltsiz)",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2grgul000l0al70q9aaa3e",
+        "title": "Karanlıkta Yürüyen Yabancı",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2ftjc300020ajy528m7x4x",
+        "title": "Drina Köprüsü",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gassn00060aldx6m9ma4c",
+        "title": "Milliyetçilik Nedir, Ne Değildir?",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gsy99000c0ajs27bpu45z",
+        "title": "Cemaat'in İflası",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2ga6co00050ak3jaosahnh",
+        "title": "Sherlock Holmes - Bir Suçun Portresi / Bütün Hikayeler 4",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gsoa400040al574wrdbfr",
+        "title": "Da Vinci Şifresi",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gd9w3000i0aldpmpf4jt6",
+        "title": "İstanbul Hatırası",
+        "status": "TO_READ"
+      },
+      {
+        "id": "cmj2gim6h00010ajuy0xtgv7g",
+        "title": "Atalar Cengi",
+        "status": "TO_READ"
+      }
+    ],
+    "userReadingListBooks": [
+      {
+        "id": "cmj7dacjr00010biiyv9hph60",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouozy0002gkiz3ssxt4ur",
+        "createdAt": "2025-12-15T16:27:35.559Z",
+        "readingListBook": {
+          "title": "Marslı",
+          "author": "Andy Weir"
+        }
+      },
+      {
+        "id": "cmj7daw9200050biiho0kw7au",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5oviwx00b2gkizm060n2d3",
+        "createdAt": "2025-12-15T16:28:01.094Z",
+        "readingListBook": {
+          "title": "Yapay Zeka",
+          "author": "Cem Say"
+        }
+      },
+      {
+        "id": "cmj7dbaky00010ajvqfqvfb2p",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo00022gkizuyiqt20u",
+        "createdAt": "2025-12-15T16:28:19.666Z",
+        "readingListBook": {
+          "title": "Minyeli Abdullah",
+          "author": "Hekimoğlu İsmail"
+        }
+      },
+      {
+        "id": "cmj7dbryv00040ajvx8l7xyop",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ov1as005fgkiziqw41vzy",
+        "createdAt": "2025-12-15T16:28:42.198Z",
+        "readingListBook": {
+          "title": "Devlet Ana",
+          "author": "Kemal Tahir"
+        }
+      },
+      {
+        "id": "cmj7dc5ph00080biirz1z6lgt",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ov1as005ggkizxnci73r7",
+        "createdAt": "2025-12-15T16:29:00.005Z",
+        "readingListBook": {
+          "title": "Semerkant",
+          "author": "Amin Maalouf"
+        }
+      },
+      {
+        "id": "cmj7e3b1q00000al8oi6g9233",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo00024gkizp7zoqv3f",
+        "createdAt": "2025-12-15T16:50:06.638Z",
+        "readingListBook": {
+          "title": "Uzun Hikaye",
+          "author": "Mustafa Kutlu"
+        }
+      },
+      {
+        "id": "cmj7lrsio00000al7dtx9cfve",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouwk3003wgkizt27ms2b7",
+        "createdAt": "2025-12-15T20:25:06.336Z",
+        "readingListBook": {
+          "title": "Küçük Ağaç'ın Eğitimi",
+          "author": "Forrest Carter"
+        }
+      },
+      {
+        "id": "cmj7lrsoi00010al7wqd5l8jb",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5out8s001qgkizbcpkrr4l",
+        "createdAt": "2025-12-15T20:25:06.546Z",
+        "readingListBook": {
+          "title": "Dune",
+          "author": "Frank Herbert"
+        }
+      },
+      {
+        "id": "cmj7lrtfi00070al7zetcutr9",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo00026gkiz2ascfvxj",
+        "createdAt": "2025-12-15T20:25:07.518Z",
+        "readingListBook": {
+          "title": "Sır",
+          "author": "Mustafa Kutlu"
+        }
+      },
+      {
+        "id": "cmj7lrtk700080al72pxpv6v1",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002agkizg9atzvuf",
+        "createdAt": "2025-12-15T20:25:07.687Z",
+        "readingListBook": {
+          "title": "Martin Eden",
+          "author": "Jack London"
+        }
+      },
+      {
+        "id": "cmj7lrtok00090al7djme3x14",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002bgkizcswdoor5",
+        "createdAt": "2025-12-15T20:25:07.844Z",
+        "readingListBook": {
+          "title": "Beyaz Diş",
+          "author": "Jack London"
+        }
+      },
+      {
+        "id": "cmj7lrtsy000a0al7i7knkrvt",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002cgkiz205gjruj",
+        "createdAt": "2025-12-15T20:25:08.002Z",
+        "readingListBook": {
+          "title": "Babamın Şarkısı",
+          "author": "İsmail Özen"
+        }
+      },
+      {
+        "id": "cmj7lrtxf000b0al7h9013uqi",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002dgkiz6afeg5yj",
+        "createdAt": "2025-12-15T20:25:08.163Z",
+        "readingListBook": {
+          "title": "Bangır Bangır Ferdi Çalıyor Evde...",
+          "author": "Mahir Ünsal Eriş"
+        }
+      },
+      {
+        "id": "cmj7lru1t000c0al7v30u5hpe",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002egkizwlpnkvp7",
+        "createdAt": "2025-12-15T20:25:08.321Z",
+        "readingListBook": {
+          "title": "Beyaz Gemi",
+          "author": "Cengiz Aytmatov"
+        }
+      },
+      {
+        "id": "cmj7lru66000d0al7plz15zp6",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002fgkizq21iwhvp",
+        "createdAt": "2025-12-15T20:25:08.478Z",
+        "readingListBook": {
+          "title": "Bir Çift Yürek",
+          "author": "Marlo Morgan"
+        }
+      },
+      {
+        "id": "cmj7lruaj000e0al7nn2cieh9",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002ggkizhl0c0kvk",
+        "createdAt": "2025-12-15T20:25:08.635Z",
+        "readingListBook": {
+          "title": "Bu Böyledir",
+          "author": "Mustafa Kutlu"
+        }
+      },
+      {
+        "id": "cmj7lruex000f0al7b6wjxmef",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002hgkizlb4c8sf7",
+        "createdAt": "2025-12-15T20:25:08.793Z",
+        "readingListBook": {
+          "title": "Fabrika Ayarı",
+          "author": "Hayati İnanç"
+        }
+      },
+      {
+        "id": "cmj7lruja000g0al7h76axy62",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002igkizvtpwzj81",
+        "createdAt": "2025-12-15T20:25:08.950Z",
+        "readingListBook": {
+          "title": "Martı Jonathan Livingston",
+          "author": "Richard Bach"
+        }
+      },
+      {
+        "id": "cmj7lruom000h0al73p8vzxec",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5oupxy000fgkize2jjmqoo",
+        "createdAt": "2025-12-15T20:25:09.142Z",
+        "readingListBook": {
+          "title": "Fahrenheit 451",
+          "author": "Ray Bradbury"
+        }
+      },
+      {
+        "id": "cmj7lruvf000i0al7tzauc2ma",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ourcv000wgkiz38ljdij5",
+        "createdAt": "2025-12-15T20:25:09.387Z",
+        "readingListBook": {
+          "title": "Metro 2033",
+          "author": "Dmitry Glukhovsky"
+        }
+      },
+      {
+        "id": "cmj7lrv8u000l0al7d39oirj5",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002jgkizxlwzhig4",
+        "createdAt": "2025-12-15T20:25:09.870Z",
+        "readingListBook": {
+          "title": "Selam Olsun",
+          "author": "Mustafa Kutlu"
+        }
+      },
+      {
+        "id": "cmj7lrvdh000m0al7updfhz1r",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ourcv0013gkiz2kkx25hi",
+        "createdAt": "2025-12-15T20:25:10.037Z",
+        "readingListBook": {
+          "title": "Kum",
+          "author": "Hugh Howey"
+        }
+      },
+      {
+        "id": "cmj7lrvhv000n0al74ydtll3w",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ourcv0014gkizmzcn50wl",
+        "createdAt": "2025-12-15T20:25:10.195Z",
+        "readingListBook": {
+          "title": "Salgın",
+          "author": "Ling Ma"
+        }
+      },
+      {
+        "id": "cmj7lrvmn000o0al78fvve5tb",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ourtu001bgkiz82iz0517",
+        "createdAt": "2025-12-15T20:25:10.367Z",
+        "readingListBook": {
+          "title": "Kıyamete Bir Milyar Yıl",
+          "author": "Arkadi ve Boris Strugatski"
+        }
+      },
+      {
+        "id": "cmj7lrvqz000p0al7c5etfqlx",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ousav001dgkizp8b746p6",
+        "createdAt": "2025-12-15T20:25:10.523Z",
+        "readingListBook": {
+          "title": "1984",
+          "author": "George Orwell"
+        }
+      },
+      {
+        "id": "cmj7lrvvc000q0al7e4wnklyr",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ousav001egkiz4f0u5ru9",
+        "createdAt": "2025-12-15T20:25:10.680Z",
+        "readingListBook": {
+          "title": "Hayvan Çiftliği",
+          "author": "George Orwell"
+        }
+      },
+      {
+        "id": "cmj7lrvzq000r0al7nukpavb6",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ousav001fgkizhcr08eo3",
+        "createdAt": "2025-12-15T20:25:10.838Z",
+        "readingListBook": {
+          "title": "Cesur Yeni Dünya",
+          "author": "Aldous Huxley"
+        }
+      },
+      {
+        "id": "cmj7lrw4r000s0al7kly8kceo",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouwk3003vgkiz15gfi107",
+        "createdAt": "2025-12-15T20:25:11.019Z",
+        "readingListBook": {
+          "title": "Ferrari'sini Satan Bilge",
+          "author": "Robin Sharma"
+        }
+      },
+      {
+        "id": "cmj7lrw95000t0al7e2q81xlh",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002kgkizdqjl3i2d",
+        "createdAt": "2025-12-15T20:25:11.177Z",
+        "readingListBook": {
+          "title": "Şeker Portakalı",
+          "author": "Jose Mauro De Vasconcelos"
+        }
+      },
+      {
+        "id": "cmj7lrwdk000u0al7r75j8q4k",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002lgkizba7u7ury",
+        "createdAt": "2025-12-15T20:25:11.336Z",
+        "readingListBook": {
+          "title": "Sevmek Bu Kadar Güzelken",
+          "author": "Sema Maraşlı"
+        }
+      },
+      {
+        "id": "cmj7lrwhx000v0al76z4yzbye",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002mgkizxm4q7p89",
+        "createdAt": "2025-12-15T20:25:11.493Z",
+        "readingListBook": {
+          "title": "Yoksulluk İçimizde",
+          "author": "Mustafa Kutlu"
+        }
+      },
+      {
+        "id": "cmj7lrwma000w0al7shtpczgm",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouuo0002ngkizq86hftfa",
+        "createdAt": "2025-12-15T20:25:11.650Z",
+        "readingListBook": {
+          "title": "Yoksulluk Kitabı",
+          "author": "Mustafa Kutlu"
+        }
+      },
+      {
+        "id": "cmj7lrwr6000x0al7sg6gh0sq",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouv53002tgkiz2b6vn833",
+        "createdAt": "2025-12-15T20:25:11.826Z",
+        "readingListBook": {
+          "title": "Gül Yetiştiren Adam",
+          "author": "Rasim Özdenören"
+        }
+      },
+      {
+        "id": "cmj7lrwvk000y0al7pgzivaxm",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouv53002vgkizjyf6nplu",
+        "createdAt": "2025-12-15T20:25:11.984Z",
+        "readingListBook": {
+          "title": "Momo",
+          "author": "Michael Ende"
+        }
+      },
+      {
+        "id": "cmj7lrwzx000z0al7aq2napmy",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouv53002wgkiz4u5ofc1t",
+        "createdAt": "2025-12-15T20:25:12.141Z",
+        "readingListBook": {
+          "title": "Bin Muhteşem Güneş",
+          "author": "Khaled Hosseini"
+        }
+      },
+      {
+        "id": "cmj7lrx4900100al79iizv4b0",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouv53002xgkiz7buoe5zp",
+        "createdAt": "2025-12-15T20:25:12.297Z",
+        "readingListBook": {
+          "title": "Doppler",
+          "author": "Erlend Loe"
+        }
+      },
+      {
+        "id": "cmj7lrx8m00110al79btuvg0y",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouv53002ygkizqyb5vnp8",
+        "createdAt": "2025-12-15T20:25:12.454Z",
+        "readingListBook": {
+          "title": "Uçurtma Avcısı",
+          "author": "Khaled Hosseini"
+        }
+      },
+      {
+        "id": "cmj7lrxd000120al7zdn64frm",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouv53002zgkizsxzryomn",
+        "createdAt": "2025-12-15T20:25:12.612Z",
+        "readingListBook": {
+          "title": "Ve Dağlar Yankılandı",
+          "author": "Khaled Hosseini"
+        }
+      },
+      {
+        "id": "cmj7lrxhc00130al7ric9uwbe",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouv530030gkizawryrzjr",
+        "createdAt": "2025-12-15T20:25:12.767Z",
+        "readingListBook": {
+          "title": "Yaşamak",
+          "author": "Yu Hua"
+        }
+      },
+      {
+        "id": "cmj7lrxly00140al7f4g73715",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouvm20035gkizkvfu2rby",
+        "createdAt": "2025-12-15T20:25:12.934Z",
+        "readingListBook": {
+          "title": "Kürk Mantolu Madonna",
+          "author": "Sabahattin Ali"
+        }
+      },
+      {
+        "id": "cmj7lrxqk00150al7f1cm5rew",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouvm20039gkiztwh43bn6",
+        "createdAt": "2025-12-15T20:25:13.100Z",
+        "readingListBook": {
+          "title": "Dönüşüm",
+          "author": "Franz Kafka"
+        }
+      },
+      {
+        "id": "cmj7lrxux00160al7jont2uon",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouvm2003agkizsf21wfyh",
+        "createdAt": "2025-12-15T20:25:13.257Z",
+        "readingListBook": {
+          "title": "Gulyabani",
+          "author": "Hüseyin Rahmi Gürpınar"
+        }
+      },
+      {
+        "id": "cmj7lrxzb00170al73ccyatc0",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouvm2003bgkiz6crkyrss",
+        "createdAt": "2025-12-15T20:25:13.415Z",
+        "readingListBook": {
+          "title": "İçimizdeki Şeytan",
+          "author": "Sabahattin Ali"
+        }
+      },
+      {
+        "id": "cmj7lry3o00180al78i4gj0z9",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouvm2003cgkizdzmnpgf5",
+        "createdAt": "2025-12-15T20:25:13.572Z",
+        "readingListBook": {
+          "title": "Kendine Ait Bir Oda",
+          "author": "Virginia Woolf"
+        }
+      },
+      {
+        "id": "cmj7lry8100190al7uq62g40o",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouvm2003dgkizi0d33eq4",
+        "createdAt": "2025-12-15T20:25:13.729Z",
+        "readingListBook": {
+          "title": "Kuyucaklı Yusuf",
+          "author": "Sabahattin Ali"
+        }
+      },
+      {
+        "id": "cmj7lrych001a0al7h5hzrg4w",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouw32003ggkiz8qxzw2ut",
+        "createdAt": "2025-12-15T20:25:13.889Z",
+        "readingListBook": {
+          "title": "İdeolocya Örgüsü",
+          "author": "Necip Fazıl Kısakürek"
+        }
+      },
+      {
+        "id": "cmj7lryhc001b0al7yaf830vm",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouw32003lgkizxnhmvx2f",
+        "createdAt": "2025-12-15T20:25:14.064Z",
+        "readingListBook": {
+          "title": "İnce Memed 1",
+          "author": "Yaşar Kemal"
+        }
+      },
+      {
+        "id": "cmj7lrylt001c0al7asa8ij5m",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouwk3003ogkizzs49ioqv",
+        "createdAt": "2025-12-15T20:25:14.225Z",
+        "readingListBook": {
+          "title": "Gençlerle Başbaşa",
+          "author": "Ali Fuad Başgil"
+        }
+      },
+      {
+        "id": "cmj7lryq8001d0al7pg3624yd",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouwk3003pgkizv6bsrxri",
+        "createdAt": "2025-12-15T20:25:14.384Z",
+        "readingListBook": {
+          "title": "Atomik Alışkanlıklar",
+          "author": "James Clear"
+        }
+      },
+      {
+        "id": "cmj7lryuw001e0al7624sdll2",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouwk3003ugkizk010df1s",
+        "createdAt": "2025-12-15T20:25:14.552Z",
+        "readingListBook": {
+          "title": "Bir Ömür Nasıl Yaşanır?",
+          "author": "İlber Ortaylı"
+        }
+      },
+      {
+        "id": "cmj7lryz9001f0al7lraw47xo",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouwk3003xgkizbpok804o",
+        "createdAt": "2025-12-15T20:25:14.709Z",
+        "readingListBook": {
+          "title": "Yoldaki Mühendis",
+          "author": "Abdullah Galib Bergusi"
+        }
+      },
+      {
+        "id": "cmj7lrz3o001g0al7qzw30evn",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouwk3003ygkizwr2eleos",
+        "createdAt": "2025-12-15T20:25:14.868Z",
+        "readingListBook": {
+          "title": "Yoldaki Mühendis 2",
+          "author": "Abdullah Galib Bergusi"
+        }
+      },
+      {
+        "id": "cmj7lrz87001h0al7jkxt9170",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5oux120042gkiz0f77djdy",
+        "createdAt": "2025-12-15T20:25:15.031Z",
+        "readingListBook": {
+          "title": "Beş Şehir",
+          "author": "Ahmet Hamdi Tanpınar"
+        }
+      },
+      {
+        "id": "cmj7lrzd8001i0al72jby1kgc",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouxi2004bgkizccp5jzje",
+        "createdAt": "2025-12-15T20:25:15.212Z",
+        "readingListBook": {
+          "title": "Bu Ülke",
+          "author": "Cemil Meriç"
+        }
+      },
+      {
+        "id": "cmj7lrzhy001j0al7e3frbagc",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouxz2004hgkiz24odo553",
+        "createdAt": "2025-12-15T20:25:15.382Z",
+        "readingListBook": {
+          "title": "İslam Deklarasyonu",
+          "author": "Aliya İzzetbegoviç"
+        }
+      },
+      {
+        "id": "cmj7lrzmf001k0al7sfi2pd56",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouyg2004kgkiz1r0v4u23",
+        "createdAt": "2025-12-15T20:25:15.543Z",
+        "readingListBook": {
+          "title": "Erbain",
+          "author": "İsmet Özel"
+        }
+      },
+      {
+        "id": "cmj7lrzqr001l0al79ql5l5a4",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouyg2004lgkiz1vf8hqxl",
+        "createdAt": "2025-12-15T20:25:15.699Z",
+        "readingListBook": {
+          "title": "Üç Mesele",
+          "author": "İsmet Özel"
+        }
+      },
+      {
+        "id": "cmj7lrzvb001m0al7ibgrkyxk",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouyx0004pgkizp0z68z8e",
+        "createdAt": "2025-12-15T20:25:15.863Z",
+        "readingListBook": {
+          "title": "Diriliş Neslinin Amentüsü",
+          "author": "Sezai Karakoç"
+        }
+      },
+      {
+        "id": "cmj7lrzzo001n0al7d2malhq7",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouyx0004qgkizmyklt8rd",
+        "createdAt": "2025-12-15T20:25:16.020Z",
+        "readingListBook": {
+          "title": "Yitik Cennet",
+          "author": "Sezai Karakoç"
+        }
+      },
+      {
+        "id": "cmj7ls041001o0al7mo953jcn",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouyx0004rgkiz3oo5pvtq",
+        "createdAt": "2025-12-15T20:25:16.177Z",
+        "readingListBook": {
+          "title": "İslam'ın Dirilişi",
+          "author": "Sezai Karakoç"
+        }
+      },
+      {
+        "id": "cmj7ls09k001p0al7r0acgvxj",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ouzv40059gkiziys750w7",
+        "createdAt": "2025-12-15T20:25:16.376Z",
+        "readingListBook": {
+          "title": "Ya Tahammül Ya Sefer",
+          "author": "Mustafa Kutlu"
+        }
+      },
+      {
+        "id": "cmj7ls0eh001q0al7ygo84cd6",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ov1as005jgkizvnwhxlyf",
+        "createdAt": "2025-12-15T20:25:16.553Z",
+        "readingListBook": {
+          "title": "Puslu Kıtalar Atlası",
+          "author": "İhsan Oktay Anar"
+        }
+      },
+      {
+        "id": "cmj7ls0ki001r0al7qkfgsbpq",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ov2qk0065gkiz97gf146j",
+        "createdAt": "2025-12-15T20:25:16.770Z",
+        "readingListBook": {
+          "title": "Alamut",
+          "author": "Vladimir Bartol"
+        }
+      },
+      {
+        "id": "cmj7ls0q9001s0al7djnz806b",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ov465006ogkizi2e63q64",
+        "createdAt": "2025-12-15T20:25:16.976Z",
+        "readingListBook": {
+          "title": "Darbeye Geçit Yok",
+          "author": "Abdulkadir Selvi"
+        }
+      },
+      {
+        "id": "cmj7ls0vy001t0al7z8e6spvq",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ov7080079gkiz91a3ftvu",
+        "createdAt": "2025-12-15T20:25:17.182Z",
+        "readingListBook": {
+          "title": "Hz. Muhammed'in Hayatı",
+          "author": "Martin Lings"
+        }
+      },
+      {
+        "id": "cmj7ls152001u0al7g5ezoyva",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovb9v008wgkizrwihkrh7",
+        "createdAt": "2025-12-15T20:25:17.510Z",
+        "readingListBook": {
+          "title": "Sabredenler ve Şükredenler",
+          "author": "İbn Kayyim el-Cevziyye"
+        }
+      },
+      {
+        "id": "cmj7ls19f001v0al74qfw1oc3",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovb9v008xgkiz5bv6fkrx",
+        "createdAt": "2025-12-15T20:25:17.667Z",
+        "readingListBook": {
+          "title": "Namaz Çağrısı",
+          "author": "Ramazan Kayan"
+        }
+      },
+      {
+        "id": "cmj7ls1ds001w0al728r90nsn",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovb9v008ygkizor0b5gny",
+        "createdAt": "2025-12-15T20:25:17.824Z",
+        "readingListBook": {
+          "title": "İslam'ın Vadettikleri",
+          "author": "Roger Garaudy"
+        }
+      },
+      {
+        "id": "cmj7ls1im001x0al7nm231wjc",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovcoz0096gkizp1i1gjmq",
+        "createdAt": "2025-12-15T20:25:17.998Z",
+        "readingListBook": {
+          "title": "İstihbarat Savaşları",
+          "author": "Hüseyin Aziz Akyürek"
+        }
+      },
+      {
+        "id": "cmj7ls1n0001y0al7jp4tdo59",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovcoz0097gkizahgq3c0x",
+        "createdAt": "2025-12-15T20:25:18.156Z",
+        "readingListBook": {
+          "title": "Suç Ortakları",
+          "author": "Agatha Christie"
+        }
+      },
+      {
+        "id": "cmj7ls1rf001z0al7tpjhs8o9",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovcoz0099gkizo57jrkai",
+        "createdAt": "2025-12-15T20:25:18.315Z",
+        "readingListBook": {
+          "title": "Sakkara'nın Kumları",
+          "author": "Glenn Meade"
+        }
+      },
+      {
+        "id": "cmj7ls1w500200al7tmh7d7uk",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovd5y009egkizj088k3uv",
+        "createdAt": "2025-12-15T20:25:18.485Z",
+        "readingListBook": {
+          "title": "Doğu Ekspresinde Cinayet",
+          "author": "Agatha Christie"
+        }
+      },
+      {
+        "id": "cmj7ls22s00210al7r1e1sch4",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovfjz00aagkiz1j73hj6p",
+        "createdAt": "2025-12-15T20:25:18.724Z",
+        "readingListBook": {
+          "title": "Stratejik İletişim",
+          "author": "Dr. Rıza Güler"
+        }
+      },
+      {
+        "id": "cmj7ls27700220al7g74h2wq5",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovfjz00abgkizf0qv7977",
+        "createdAt": "2025-12-15T20:25:18.883Z",
+        "readingListBook": {
+          "title": "Outliers (Çizginin Dışındakiler)",
+          "author": "Malcolm Gladwell"
+        }
+      },
+      {
+        "id": "cmj7ls2c600230al7m6lt8184",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovgiw00algkizqen3rf4q",
+        "createdAt": "2025-12-15T20:25:19.062Z",
+        "readingListBook": {
+          "title": "Gülün Adı",
+          "author": "Umberto Eco"
+        }
+      },
+      {
+        "id": "cmj7ls2k900240al7mb2cayrz",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovm9q00c8gkizz0aom4k8",
+        "createdAt": "2025-12-15T20:25:19.353Z",
+        "readingListBook": {
+          "title": "Marslı",
+          "author": "Andy Weir"
+        }
+      },
+      {
+        "id": "cmj7ls2ov00250al7kt4abj49",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovm9q00ccgkizdr2ahlp4",
+        "createdAt": "2025-12-15T20:25:19.519Z",
+        "readingListBook": {
+          "title": "Cesur Yeni Dünya",
+          "author": "Aldous Huxley"
+        }
+      },
+      {
+        "id": "cmj7ls2tc00260al7a7rj71ok",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovmrd00cggkiz50to1q5e",
+        "createdAt": "2025-12-15T20:25:19.680Z",
+        "readingListBook": {
+          "title": "Dune",
+          "author": "Frank Herbert"
+        }
+      },
+      {
+        "id": "cmj7ls2xq00270al7bd9028bm",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovmrd00chgkiz2kdollp6",
+        "createdAt": "2025-12-15T20:25:19.838Z",
+        "readingListBook": {
+          "title": "Olasılıksız",
+          "author": "Adam Fawer"
+        }
+      },
+      {
+        "id": "cmj7lssnz00000akz17wdrj85",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5oupxy000egkiz7pn30ytw",
+        "createdAt": "2025-12-15T20:25:53.183Z",
+        "readingListBook": {
+          "title": "Zaman Makinesi",
+          "author": "H.G. Wells"
+        }
+      },
+      {
+        "id": "cmj7ltvmn00010akz74md5syk",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ov1sk005rgkiza5jjxg51",
+        "createdAt": "2025-12-15T20:26:43.679Z",
+        "readingListBook": {
+          "title": "Türklerin Serüveni",
+          "author": "Cansu Canan Özgen"
+        }
+      },
+      {
+        "id": "cmj7ltyrx00020akz43y8do04",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ov1sk005tgkizbyvefdeb",
+        "createdAt": "2025-12-15T20:26:47.757Z",
+        "readingListBook": {
+          "title": "Türklerin Büyükleri",
+          "author": "Cansu Canan Özgen"
+        }
+      },
+      {
+        "id": "cmj7lu2me00030akzwouiozcn",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ov1sk005sgkizafvu52lp",
+        "createdAt": "2025-12-15T20:26:52.742Z",
+        "readingListBook": {
+          "title": "İnsanlığın Medeniyet Destanı",
+          "author": "Cansu Canan Özgen"
+        }
+      },
+      {
+        "id": "cmj7luual00040akzjkxllwiy",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovcoz0098gkizlildkdey",
+        "createdAt": "2025-12-15T20:27:28.605Z",
+        "readingListBook": {
+          "title": "Leyleklerin Uçuşu",
+          "author": "J.C. Grangé"
+        }
+      },
+      {
+        "id": "cmj7lv0hv00050akz88d74q19",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "readingListBookId": "cmj5ovf2x00a2gkizc0jcvqyj",
+        "createdAt": "2025-12-15T20:27:36.642Z",
+        "readingListBook": {
+          "title": "MİT'in Gizli Tarihi",
+          "author": "Tuncay Özkan"
+        }
+      }
+    ],
+    "challengeProgress": [
+      {
+        "id": "cmj5oz3xi00000al5m9g2wsya",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "challengeId": "cmj5ovny300cjgkizxbjrsji4",
+        "joinedAt": "2025-12-14T12:19:14.067Z",
+        "challenge": {
+          "year": 2025,
+          "name": "Level 0: Alışkanlık Kurulumu"
+        },
+        "books": [
+          {
+            "id": "cmj5oz41l00030al5khyl7e8n",
+            "userProgressId": "cmj5oz3xi00000al5m9g2wsya",
+            "challengeBookId": "cmj5ovof300cngkizze2q03lu",
+            "status": "LOCKED",
+            "startedAt": null,
+            "completedAt": null,
+            "takeaway": null,
+            "createdAt": "2025-12-14T12:19:14.067Z",
+            "updatedAt": "2025-12-14T12:19:14.067Z",
+            "challengeBook": {
+              "title": "Bilinmeyen Bir Kadının Mektubu",
+              "author": "Stefan Zweig"
+            }
+          },
+          {
+            "id": "cmj5oz41l00010al5j0qq3ry2",
+            "userProgressId": "cmj5oz3xi00000al5m9g2wsya",
+            "challengeBookId": "cmj5ovof200clgkizxg8wamrs",
+            "status": "IN_PROGRESS",
+            "startedAt": "2025-12-14T12:19:17.422Z",
+            "completedAt": null,
+            "takeaway": null,
+            "createdAt": "2025-12-14T12:19:14.067Z",
+            "updatedAt": "2025-12-14T12:33:57.837Z",
+            "challengeBook": {
+              "title": "Uzun Hikaye",
+              "author": "Mustafa Kutlu"
+            }
+          },
+          {
+            "id": "cmj5oz41l00020al5bij9lz0v",
+            "userProgressId": "cmj5oz3xi00000al5m9g2wsya",
+            "challengeBookId": "cmj5ovof300cmgkizoeazx1pq",
+            "status": "LOCKED",
+            "startedAt": null,
+            "completedAt": null,
+            "takeaway": null,
+            "createdAt": "2025-12-14T12:19:14.067Z",
+            "updatedAt": "2025-12-15T18:38:21.009Z",
+            "challengeBook": {
+              "title": "Atomik Alışkanlıklar",
+              "author": "James Clear"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

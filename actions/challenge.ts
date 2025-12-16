@@ -4,50 +4,57 @@ import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { ChallengeBookStatus, ChallengeBookRole } from "@prisma/client"
-import { matchBookScore, isAutoLinkable, isSuggestionWorthy, getMatchConfidence, type MatchConfidence } from "@/lib/string-utils"
-import { CACHE_TAGS, invalidateLinkCaches } from "@/lib/cache"
+import { CACHE_TAGS } from "@/lib/cache"
+import { scrapeKitapyurdu } from "./kitapyurdu"
 
 // ==========================================
 // Types
 // ==========================================
 
-export type ChallengeMonthWithBooks = {
+export interface ChallengeBook {
+    id: string
+    bookId: string
+    role: ChallengeBookRole
+    reason: string | null
+    sortOrder: number
+    book: {
+        id: string
+        title: string
+        coverUrl: string | null
+        pageCount: number | null
+        inLibrary: boolean
+        author: { id: string; name: string } | null
+        publisher: { id: string; name: string } | null
+    }
+    userStatus?: ChallengeBookStatus
+    completedAt?: Date | null
+    takeaway?: string | null
+}
+
+export interface ChallengeMonth {
     id: string
     monthNumber: number
     monthName: string
     theme: string
     themeIcon: string | null
-    books: {
-        id: string
-        title: string
-        author: string
-        role: ChallengeBookRole
-        pageCount: number | null
-        coverUrl: string | null
-        reason: string | null
-        userStatus: ChallengeBookStatus
-        completedAt: Date | null
-        takeaway: string | null
-        // Hibrit kapak için - kütüphanedeki kitaptan
-        linkedBookCoverUrl: string | null
-        linkedBookId: string | null // Manuel eşleştirme için
-    }[]
-    progress: {
+    books: ChallengeBook[]
+    progress?: {
         total: number
         completed: number
         percentage: number
     }
-    isMainCompleted: boolean
+    isMainCompleted?: boolean
 }
 
-export type ChallengeOverview = {
+export interface ChallengeDetail {
     id: string
     year: number
     name: string
     description: string | null
     strategy: string
-    months: ChallengeMonthWithBooks[]
-    totalProgress: {
+    isActive: boolean
+    months: ChallengeMonth[]
+    totalProgress?: {
         totalBooks: number
         completedBooks: number
         percentage: number
@@ -56,100 +63,688 @@ export type ChallengeOverview = {
     }
 }
 
-// ==========================================
-// Otomatik Kitap Eşleştirme
-// Kullanıcının kütüphanesindeki kitapları challenge kitaplarıyla eşleştir
-// ==========================================
-
-export type BookMatchCandidate = {
-    bookId: string
-    bookTitle: string
-    score: number
-    confidence: MatchConfidence
+export interface ChallengeSummary {
+    id: string
+    year: number
+    name: string
+    description: string | null
+    isActive: boolean
+    monthCount: number
+    totalBooks: number
 }
 
-export type ChallengeMatchSuggestion = {
-    challengeBookId: string
-    challengeBookTitle: string
-    challengeBookAuthor: string
-    candidates: BookMatchCandidate[]
-}
+// Legacy type aliases for backward compatibility
+export type ChallengeOverview = ChallengeDetail
+export type ChallengeMonthWithBooks = ChallengeMonth
 
-async function autoMatchBooksForUser(
-    userId: string,
-    challengeBooks: { id: string; title: string; author: string }[]
-): Promise<{
-    strongMatches: Map<string, string>
-    suggestions: ChallengeMatchSuggestion[]
-}> {
-    // Kullanıcının tüm kitaplarını al
-    const userBooks = await prisma.book.findMany({
-        where: { userId },
-        include: {
-            author: {
-                select: { name: true }
-            }
-        }
-    })
-
-    const strongMatches = new Map<string, string>() // challengeBookId -> bookId (otomatik bağlanacak)
-    const suggestions: ChallengeMatchSuggestion[] = []
-
-    for (const challengeBook of challengeBooks) {
-        const candidates: BookMatchCandidate[] = []
-        let bestStrongMatch: { bookId: string; score: number } | null = null
-
-        for (const userBook of userBooks) {
-            const authorName = userBook.author?.name || ""
-            const score = matchBookScore(
-                challengeBook.title,
-                challengeBook.author,
-                userBook.title,
-                authorName
-            )
-
-            const confidence = getMatchConfidence(score)
-
-            if (isAutoLinkable(score)) {
-                // %75+ - Güçlü eşleşme, otomatik bağla
-                if (!bestStrongMatch || score > bestStrongMatch.score) {
-                    bestStrongMatch = { bookId: userBook.id, score }
-                }
-            } else if (isSuggestionWorthy(score)) {
-                // %45-75 - Öneri olarak kaydet
-                candidates.push({
-                    bookId: userBook.id,
-                    bookTitle: userBook.title,
-                    score,
-                    confidence
-                })
-            }
-        }
-
-        if (bestStrongMatch) {
-            strongMatches.set(challengeBook.id, bestStrongMatch.bookId)
-        } else if (candidates.length > 0) {
-            // Otomatik eşleşme bulunamadı ama öneriler var
-            const topCandidates = candidates
-                .sort((a, b) => b.score - a.score)
-                .slice(0, 3) // En iyi 3 öneriyi tut
-
-            suggestions.push({
-                challengeBookId: challengeBook.id,
-                challengeBookTitle: challengeBook.title,
-                challengeBookAuthor: challengeBook.author,
-                candidates: topCandidates
-            })
-        }
+export interface ChallengeTimeline {
+    challenges: ChallengeDetail[]
+    currentPeriod: {
+        year: number
+        month: number
+        isWarmupPeriod: boolean
     }
-
-    return { strongMatches, suggestions }
 }
 
 // ==========================================
-// Challenge'a Katıl
+// READ Operations
 // ==========================================
 
+// Get all challenges summary
+export async function getChallengesSummary(): Promise<ChallengeSummary[]> {
+    try {
+        const challenges = await prisma.readingChallenge.findMany({
+            orderBy: { year: "desc" },
+            include: {
+                months: {
+                    include: {
+                        _count: {
+                            select: { books: true }
+                        }
+                    }
+                }
+            }
+        })
+
+        return challenges.map(challenge => {
+            const totalBooks = challenge.months.reduce((sum, month) => sum + month._count.books, 0)
+
+            return {
+                id: challenge.id,
+                year: challenge.year,
+                name: challenge.name,
+                description: challenge.description,
+                isActive: challenge.isActive,
+                monthCount: challenge.months.length,
+                totalBooks
+            }
+        })
+    } catch (error) {
+        console.error("Failed to fetch challenges summary:", error)
+        return []
+    }
+}
+
+// Get challenge detail (for admin - without user progress)
+// Alias for backward compatibility
+export const getChallengeDetails = getChallengeWithProgress
+
+export async function getChallengeDetail(year: number): Promise<ChallengeDetail | null> {
+    try {
+        const challenge = await prisma.readingChallenge.findUnique({
+            where: { year },
+            include: {
+                months: {
+                    orderBy: { monthNumber: "asc" },
+                    include: {
+                        books: {
+                            orderBy: [
+                                { role: "asc" }, // MAIN önce
+                                { sortOrder: "asc" }
+                            ],
+                            include: {
+                                book: {
+                                    include: {
+                                        author: { select: { id: true, name: true } },
+                                        publisher: { select: { id: true, name: true } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        if (!challenge) return null
+
+        const months: ChallengeMonth[] = challenge.months.map(month => ({
+            id: month.id,
+            monthNumber: month.monthNumber,
+            monthName: month.monthName,
+            theme: month.theme,
+            themeIcon: month.themeIcon,
+            books: month.books.map(cb => ({
+                id: cb.id,
+                bookId: cb.bookId,
+                role: cb.role,
+                reason: cb.reason,
+                sortOrder: cb.sortOrder,
+                book: {
+                    id: cb.book.id,
+                    title: cb.book.title,
+                    coverUrl: cb.book.coverUrl,
+                    pageCount: cb.book.pageCount,
+                    inLibrary: cb.book.inLibrary,
+                    author: cb.book.author,
+                    publisher: cb.book.publisher
+                }
+            }))
+        }))
+
+        return {
+            id: challenge.id,
+            year: challenge.year,
+            name: challenge.name,
+            description: challenge.description,
+            strategy: challenge.strategy,
+            isActive: challenge.isActive,
+            months
+        }
+    } catch (error) {
+        console.error("Failed to fetch challenge detail:", error)
+        return null
+    }
+}
+
+// Get challenge with user progress (for user view)
+export async function getChallengeWithProgress(year: number): Promise<ChallengeDetail | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    try {
+        const challenge = await prisma.readingChallenge.findUnique({
+            where: { year },
+            include: {
+                months: {
+                    orderBy: { monthNumber: "asc" },
+                    include: {
+                        books: {
+                            orderBy: [
+                                { role: "asc" },
+                                { sortOrder: "asc" }
+                            ],
+                            include: {
+                                book: {
+                                    include: {
+                                        author: { select: { id: true, name: true } },
+                                        publisher: { select: { id: true, name: true } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                userProgress: {
+                    where: { userId: user.id },
+                    include: {
+                        books: true
+                    }
+                }
+            }
+        })
+
+        if (!challenge) return null
+
+        const userProgress = challenge.userProgress[0]
+        const userBooksMap = new Map(
+            userProgress?.books.map(b => [b.challengeBookId, b]) || []
+        )
+
+        let totalCompleted = 0
+        let mainCompleted = 0
+        let bonusCompleted = 0
+        let totalBooks = 0
+
+        const months: ChallengeMonth[] = challenge.months.map(month => {
+            let monthCompleted = 0
+            let isMainCompleted = false
+
+            const books = month.books.map(cb => {
+                totalBooks++
+                const userBook = userBooksMap.get(cb.id)
+                const status = userBook?.status || "NOT_STARTED"
+
+                if (status === "COMPLETED") {
+                    totalCompleted++
+                    monthCompleted++
+                    if (cb.role === "MAIN") {
+                        mainCompleted++
+                        isMainCompleted = true
+                    } else {
+                        bonusCompleted++
+                    }
+                }
+
+                return {
+                    id: cb.id,
+                    bookId: cb.bookId,
+                    role: cb.role,
+                    reason: cb.reason,
+                    sortOrder: cb.sortOrder,
+                    book: {
+                        id: cb.book.id,
+                        title: cb.book.title,
+                        coverUrl: cb.book.coverUrl,
+                        pageCount: cb.book.pageCount,
+                        inLibrary: cb.book.inLibrary,
+                        author: cb.book.author,
+                        publisher: cb.book.publisher
+                    },
+                    userStatus: status,
+                    completedAt: userBook?.completedAt || null,
+                    takeaway: userBook?.takeaway || null
+                }
+            })
+
+            return {
+                id: month.id,
+                monthNumber: month.monthNumber,
+                monthName: month.monthName,
+                theme: month.theme,
+                themeIcon: month.themeIcon,
+                books,
+                progress: {
+                    total: books.length,
+                    completed: monthCompleted,
+                    percentage: books.length > 0 ? Math.round((monthCompleted / books.length) * 100) : 0
+                },
+                isMainCompleted
+            }
+        })
+
+        return {
+            id: challenge.id,
+            year: challenge.year,
+            name: challenge.name,
+            description: challenge.description,
+            strategy: challenge.strategy,
+            isActive: challenge.isActive,
+            months,
+            totalProgress: {
+                totalBooks,
+                completedBooks: totalCompleted,
+                percentage: totalBooks > 0 ? Math.round((totalCompleted / totalBooks) * 100) : 0,
+                mainCompleted,
+                bonusCompleted
+            }
+        }
+    } catch (error) {
+        console.error("Failed to fetch challenge with progress:", error)
+        return null
+    }
+}
+
+// Get active challenge for dashboard widget
+export async function getActiveChallenge() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    try {
+        const now = new Date()
+        const currentMonth = now.getMonth() + 1
+        const currentYear = now.getFullYear()
+
+        // Find active challenge for current year
+        const challenge = await prisma.readingChallenge.findFirst({
+            where: {
+                year: currentYear,
+                isActive: true
+            },
+            include: {
+                months: {
+                    where: { monthNumber: currentMonth },
+                    include: {
+                        books: {
+                            orderBy: [
+                                { role: "asc" },
+                                { sortOrder: "asc" }
+                            ],
+                            include: {
+                                book: {
+                                    include: {
+                                        author: { select: { name: true } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                userProgress: {
+                    where: { userId: user.id },
+                    include: {
+                        books: true
+                    }
+                }
+            }
+        })
+
+        if (!challenge || challenge.months.length === 0) return null
+
+        const currentMonthData = challenge.months[0]
+        const userProgress = challenge.userProgress[0]
+        const userBooksMap = new Map(
+            userProgress?.books.map(b => [b.challengeBookId, b]) || []
+        )
+
+        const mainBook = currentMonthData.books.find(b => b.role === "MAIN")
+        const bonusBooks = currentMonthData.books.filter(b => b.role === "BONUS")
+
+        const mainUserBook = mainBook ? userBooksMap.get(mainBook.id) : null
+        const mainStatus = mainUserBook?.status || "NOT_STARTED"
+        const isMainCompleted = mainStatus === "COMPLETED"
+
+        return {
+            challengeId: challenge.id,
+            year: challenge.year,
+            name: challenge.name,
+            hasJoined: !!userProgress,
+            currentMonth: {
+                monthNumber: currentMonthData.monthNumber,
+                monthName: currentMonthData.monthName,
+                theme: currentMonthData.theme,
+                themeIcon: currentMonthData.themeIcon,
+                mainBook: mainBook ? {
+                    id: mainBook.id,
+                    title: mainBook.book.title,
+                    author: mainBook.book.author?.name || "Bilinmeyen Yazar",
+                    coverUrl: mainBook.book.coverUrl,
+                    pageCount: mainBook.book.pageCount,
+                    reason: mainBook.reason,
+                    status: mainStatus
+                } : null,
+                bonusBooks: bonusBooks.map(book => {
+                    const userBook = userBooksMap.get(book.id)
+                    return {
+                        id: book.id,
+                        title: book.book.title,
+                        author: book.book.author?.name || "Bilinmeyen Yazar",
+                        coverUrl: book.book.coverUrl,
+                        pageCount: book.book.pageCount,
+                        reason: book.reason,
+                        status: userBook?.status || "LOCKED"
+                    }
+                }),
+                isMainCompleted
+            }
+        }
+    } catch (error) {
+        console.error("Get active challenge error:", error)
+        return null
+    }
+}
+
+// ==========================================
+// CREATE Operations
+// ==========================================
+
+// Create a new challenge
+export async function createChallenge(data: {
+    year: number
+    name: string
+    description?: string
+    strategy?: string
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // Check if year exists
+        const existing = await prisma.readingChallenge.findUnique({
+            where: { year: data.year }
+        })
+        if (existing) {
+            return { success: false, error: "Bu yıl için zaten bir hedef var" }
+        }
+
+        const challenge = await prisma.readingChallenge.create({
+            data: {
+                year: data.year,
+                name: data.name,
+                description: data.description || null,
+                strategy: data.strategy || "1_MAIN_2_BONUS",
+                isActive: true
+            }
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true, challenge }
+    } catch (error) {
+        console.error("Failed to create challenge:", error)
+        return { success: false, error: "Hedef oluşturulamadı" }
+    }
+}
+
+// Create a month in challenge
+export async function createChallengeMonth(data: {
+    challengeId: string
+    monthNumber: number
+    monthName: string
+    theme: string
+    themeIcon?: string
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // Check if month exists
+        const existing = await prisma.challengeMonth.findUnique({
+            where: {
+                challengeId_monthNumber: {
+                    challengeId: data.challengeId,
+                    monthNumber: data.monthNumber
+                }
+            }
+        })
+        if (existing) {
+            return { success: false, error: "Bu ay zaten mevcut" }
+        }
+
+        const month = await prisma.challengeMonth.create({
+            data: {
+                challengeId: data.challengeId,
+                monthNumber: data.monthNumber,
+                monthName: data.monthName,
+                theme: data.theme,
+                themeIcon: data.themeIcon || null
+            }
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true, month }
+    } catch (error) {
+        console.error("Failed to create challenge month:", error)
+        return { success: false, error: "Ay oluşturulamadı" }
+    }
+}
+
+// Add book to challenge month
+export async function addBookToChallenge(data: {
+    monthId: string
+    bookId: string
+    role: ChallengeBookRole
+    reason?: string
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // Check if book already exists in this month
+        const existing = await prisma.challengeBook.findUnique({
+            where: {
+                monthId_bookId: {
+                    monthId: data.monthId,
+                    bookId: data.bookId
+                }
+            }
+        })
+        if (existing) {
+            return { success: false, error: "Bu kitap zaten bu ayda mevcut" }
+        }
+
+        const maxOrder = await prisma.challengeBook.aggregate({
+            where: { monthId: data.monthId },
+            _max: { sortOrder: true }
+        })
+
+        const challengeBook = await prisma.challengeBook.create({
+            data: {
+                monthId: data.monthId,
+                bookId: data.bookId,
+                role: data.role,
+                reason: data.reason || null,
+                sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
+            },
+            include: {
+                book: {
+                    include: {
+                        author: true,
+                        publisher: true
+                    }
+                }
+            }
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true, challengeBook }
+    } catch (error) {
+        console.error("Failed to add book to challenge:", error)
+        return { success: false, error: "Kitap eklenemedi" }
+    }
+}
+
+// ==========================================
+// UPDATE Operations
+// ==========================================
+
+// Update challenge
+export async function updateChallenge(id: string, data: {
+    name?: string
+    description?: string
+    strategy?: string
+    isActive?: boolean
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        const challenge = await prisma.readingChallenge.update({
+            where: { id },
+            data
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true, challenge }
+    } catch (error) {
+        console.error("Failed to update challenge:", error)
+        return { success: false, error: "Hedef güncellenemedi" }
+    }
+}
+
+// Update challenge month
+export async function updateChallengeMonth(id: string, data: {
+    theme?: string
+    themeIcon?: string
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        const month = await prisma.challengeMonth.update({
+            where: { id },
+            data
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true, month }
+    } catch (error) {
+        console.error("Failed to update challenge month:", error)
+        return { success: false, error: "Ay güncellenemedi" }
+    }
+}
+
+// Update challenge book
+export async function updateChallengeBook(id: string, data: {
+    role?: ChallengeBookRole
+    reason?: string
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        const book = await prisma.challengeBook.update({
+            where: { id },
+            data
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true, book }
+    } catch (error) {
+        console.error("Failed to update challenge book:", error)
+        return { success: false, error: "Kitap güncellenemedi" }
+    }
+}
+
+// Reorder books in month
+export async function reorderChallengeBooks(monthId: string, bookIds: string[]) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        await prisma.$transaction(
+            bookIds.map((id, index) =>
+                prisma.challengeBook.update({
+                    where: { id },
+                    data: { sortOrder: index }
+                })
+            )
+        )
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to reorder challenge books:", error)
+        return { success: false, error: "Sıralama güncellenemedi" }
+    }
+}
+
+// ==========================================
+// DELETE Operations
+// ==========================================
+
+// Delete challenge
+export async function deleteChallenge(id: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        await prisma.readingChallenge.delete({
+            where: { id }
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to delete challenge:", error)
+        return { success: false, error: "Hedef silinemedi" }
+    }
+}
+
+// Delete challenge month
+export async function deleteChallengeMonth(id: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        await prisma.challengeMonth.delete({
+            where: { id }
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to delete challenge month:", error)
+        return { success: false, error: "Ay silinemedi" }
+    }
+}
+
+// Remove book from challenge
+export async function removeBookFromChallenge(id: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        await prisma.challengeBook.delete({
+            where: { id }
+        })
+
+        revalidatePath("/challenges")
+        revalidatePath("/admin/challenges")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to remove book from challenge:", error)
+        return { success: false, error: "Kitap kaldırılamadı" }
+    }
+}
+
+// ==========================================
+// User Progress Operations
+// ==========================================
+
+// Join challenge
 export async function joinChallenge(challengeId: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -159,7 +754,7 @@ export async function joinChallenge(challengeId: string) {
     }
 
     try {
-        // Zaten katılmış mı?
+        // Check if already joined
         const existing = await prisma.userChallengeProgress.findUnique({
             where: {
                 userId_challengeId: {
@@ -170,10 +765,10 @@ export async function joinChallenge(challengeId: string) {
         })
 
         if (existing) {
-            return { success: true, message: "Zaten bu challenge'a katılmışsınız" }
+            return { success: true, message: "Zaten bu hedeffe katılmışsınız" }
         }
 
-        // Challenge'ın tüm kitaplarını al
+        // Get all challenge books
         const challenge = await prisma.readingChallenge.findUnique({
             where: { id: challengeId },
             include: {
@@ -186,23 +781,17 @@ export async function joinChallenge(challengeId: string) {
         })
 
         if (!challenge) {
-            return { success: false, error: "Challenge bulunamadı" }
+            return { success: false, error: "Hedef bulunamadı" }
         }
 
-        // Tüm challenge kitaplarını düz liste olarak al
         const allChallengeBooks = challenge.months.flatMap(month =>
             month.books.map(book => ({
                 id: book.id,
-                title: book.title,
-                author: book.author,
                 role: book.role
             }))
         )
 
-        // Otomatik eşleştirme yap
-        const { strongMatches, suggestions } = await autoMatchBooksForUser(user.id, allChallengeBooks)
-
-        // UserChallengeProgress oluştur
+        // Create user progress
         const userProgress = await prisma.userChallengeProgress.create({
             data: {
                 userId: user.id,
@@ -210,38 +799,26 @@ export async function joinChallenge(challengeId: string) {
                 books: {
                     create: allChallengeBooks.map(book => ({
                         challengeBookId: book.id,
-                        // MAIN kitaplar NOT_STARTED, BONUS kitaplar LOCKED
-                        status: book.role === "MAIN" ? "NOT_STARTED" : "LOCKED",
-                        // Eşleşen kütüphane kitabını bağla
-                        linkedBookId: strongMatches.get(book.id) || null
+                        status: book.role === "MAIN" ? "NOT_STARTED" : "LOCKED"
                     }))
                 }
             }
         })
 
-        // Cache invalidation
-        invalidateLinkCaches(user.id)
-        revalidateTag(CACHE_TAGS.challenges, 'max')
-        revalidateTag(CACHE_TAGS.challenge(challenge.year), 'max')
         revalidatePath("/challenges")
         revalidatePath("/dashboard")
 
         return {
             success: true,
-            progressId: userProgress.id,
-            autoLinkedCount: strongMatches.size,
-            suggestions: suggestions.length > 0 ? suggestions : undefined
+            progressId: userProgress.id
         }
     } catch (error) {
         console.error("Join challenge error:", error)
-        return { success: false, error: "Challenge'a katılırken hata oluştu" }
+        return { success: false, error: "Hedefe katılırken hata oluştu" }
     }
 }
 
-// ==========================================
-// Kitabı Okundu İşaretle
-// ==========================================
-
+// Mark book as completed
 export async function markChallengeBookAsRead(
     challengeBookId: string,
     takeaway?: string
@@ -254,7 +831,6 @@ export async function markChallengeBookAsRead(
     }
 
     try {
-        // Kullanıcının bu kitap için kaydını bul
         const userBook = await prisma.userChallengeBook.findFirst({
             where: {
                 challengeBookId,
@@ -284,7 +860,7 @@ export async function markChallengeBookAsRead(
             return { success: false, error: "Bu kitap henüz kilitli" }
         }
 
-        // Kitabı COMPLETED yap
+        // Mark as completed
         await prisma.userChallengeBook.update({
             where: { id: userBook.id },
             data: {
@@ -294,7 +870,7 @@ export async function markChallengeBookAsRead(
             }
         })
 
-        // Eğer bu MAIN kitapsa, aynı aydaki BONUS kitapların kilidini aç
+        // If this was MAIN book, unlock BONUS books
         if (userBook.challengeBook.role === "MAIN") {
             const bonusBooks = userBook.challengeBook.month.books.filter(
                 b => b.role === "BONUS"
@@ -330,10 +906,7 @@ export async function markChallengeBookAsRead(
     }
 }
 
-// ==========================================
-// Kitap Durumunu Güncelle
-// ==========================================
-
+// Update book status
 export async function updateChallengeBookStatus(
     challengeBookId: string,
     status: ChallengeBookStatus
@@ -394,546 +967,7 @@ export async function updateChallengeBookStatus(
     }
 }
 
-// ==========================================
-// Challenge Detaylarını Getir
-// ==========================================
-
-export async function getChallengeDetails(year: number): Promise<ChallengeOverview | null> {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) return null
-
-    try {
-        const challenge = await prisma.readingChallenge.findUnique({
-            where: { year },
-            include: {
-                months: {
-                    orderBy: { monthNumber: "asc" },
-                    include: {
-                        books: {
-                            orderBy: [
-                                { role: "asc" }, // MAIN önce
-                                { sortOrder: "asc" }
-                            ]
-                        }
-                    }
-                },
-                userProgress: {
-                    where: { userId: user.id },
-                    include: {
-                        books: {
-                            include: {
-                                linkedBook: {
-                                    select: { id: true, coverUrl: true }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        })
-
-        if (!challenge) return null
-
-        const userProgress = challenge.userProgress[0]
-        const userBooksMap = new Map(
-            userProgress?.books.map(b => [b.challengeBookId, b]) || []
-        )
-
-        let totalCompleted = 0
-        let mainCompleted = 0
-        let bonusCompleted = 0
-        let totalBooks = 0
-
-        const months: ChallengeMonthWithBooks[] = challenge.months.map(month => {
-            let monthCompleted = 0
-            let isMainCompleted = false
-
-            const books = month.books.map(book => {
-                totalBooks++
-                const userBook = userBooksMap.get(book.id)
-                const status = userBook?.status || "NOT_STARTED"
-
-                if (status === "COMPLETED") {
-                    totalCompleted++
-                    monthCompleted++
-                    if (book.role === "MAIN") {
-                        mainCompleted++
-                        isMainCompleted = true
-                    } else {
-                        bonusCompleted++
-                    }
-                }
-
-                return {
-                    id: book.id,
-                    title: book.title,
-                    author: book.author,
-                    role: book.role,
-                    pageCount: book.pageCount,
-                    coverUrl: book.coverUrl,
-                    reason: book.reason,
-                    userStatus: status,
-                    completedAt: userBook?.completedAt || null,
-                    takeaway: userBook?.takeaway || null,
-                    linkedBookCoverUrl: userBook?.linkedBook?.coverUrl || null,
-                    linkedBookId: userBook?.linkedBookId || null
-                }
-            })
-
-            return {
-                id: month.id,
-                monthNumber: month.monthNumber,
-                monthName: month.monthName,
-                theme: month.theme,
-                themeIcon: month.themeIcon,
-                books,
-                progress: {
-                    total: books.length,
-                    completed: monthCompleted,
-                    percentage: Math.round((monthCompleted / books.length) * 100)
-                },
-                isMainCompleted
-            }
-        })
-
-        return {
-            id: challenge.id,
-            year: challenge.year,
-            name: challenge.name,
-            description: challenge.description,
-            strategy: challenge.strategy,
-            months,
-            totalProgress: {
-                totalBooks,
-                completedBooks: totalCompleted,
-                percentage: Math.round((totalCompleted / totalBooks) * 100),
-                mainCompleted,
-                bonusCompleted
-            }
-        }
-    } catch (error) {
-        console.error("Get challenge details error:", error)
-        return null
-    }
-}
-
-// ==========================================
-// Aktif Challenge'ı Getir (Dashboard için)
-// Akıllı yıl geçişi: Aralık 15-31 arası 2025 Level 0, sonra 2026
-// ==========================================
-
-export async function getActiveChallenge() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) return null
-
-    try {
-        const now = new Date()
-        const currentDay = now.getDate()
-        const currentMonth = now.getMonth() + 1 // 1-12
-        const currentYear = now.getFullYear()
-
-        // Hangi yıl ve ay için challenge gösterilecek?
-        let targetYear: number
-        let targetMonth: number
-        let isWarmupPeriod = false // Isınma turu mu?
-
-        // 2025 Aralık 15-31 arası: Level 0 (2025 challenge, month 12)
-        if (currentYear === 2025 && currentMonth === 12 && currentDay >= 15) {
-            targetYear = 2025
-            targetMonth = 12
-            isWarmupPeriod = true
-        }
-        // 2026 ve sonrası: Normal takvim
-        else if (currentYear >= 2026) {
-            targetYear = 2026
-            targetMonth = currentMonth
-        }
-        // 2025'in geri kalanı: Henüz başlamadı, Level 0'ı göster (preview)
-        else {
-            targetYear = 2025
-            targetMonth = 12
-            isWarmupPeriod = true
-        }
-
-        const challenge = await prisma.readingChallenge.findFirst({
-            where: {
-                year: targetYear,
-                isActive: true
-            },
-            include: {
-                months: {
-                    where: { monthNumber: targetMonth },
-                    include: {
-                        books: {
-                            orderBy: [
-                                { role: "asc" },
-                                { sortOrder: "asc" }
-                            ]
-                        }
-                    }
-                },
-                userProgress: {
-                    where: { userId: user.id },
-                    include: {
-                        books: {
-                            include: {
-                                linkedBook: {
-                                    select: { id: true, coverUrl: true }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        })
-
-        if (!challenge || challenge.months.length === 0) return null
-
-        const currentMonthData = challenge.months[0]
-        const userProgress = challenge.userProgress[0]
-        const userBooksMap = new Map(
-            userProgress?.books.map(b => [b.challengeBookId, b]) || []
-        )
-
-        const mainBook = currentMonthData.books.find(b => b.role === "MAIN")
-        const bonusBooks = currentMonthData.books.filter(b => b.role === "BONUS")
-
-        const mainUserBook = mainBook ? userBooksMap.get(mainBook.id) : null
-        const mainStatus = mainUserBook?.status || "NOT_STARTED"
-        const isMainCompleted = mainStatus === "COMPLETED"
-
-        return {
-            challengeId: challenge.id,
-            year: challenge.year,
-            name: challenge.name,
-            hasJoined: !!userProgress,
-            isWarmupPeriod, // Isınma turu etiketi için
-            currentMonth: {
-                monthNumber: currentMonthData.monthNumber,
-                monthName: currentMonthData.monthName,
-                theme: currentMonthData.theme,
-                themeIcon: currentMonthData.themeIcon,
-                mainBook: mainBook ? {
-                    id: mainBook.id,
-                    title: mainBook.title,
-                    author: mainBook.author,
-                    coverUrl: mainUserBook?.linkedBook?.coverUrl || mainBook.coverUrl,
-                    pageCount: mainBook.pageCount,
-                    reason: mainBook.reason,
-                    status: mainStatus,
-                    linkedBookId: mainUserBook?.linkedBookId || null
-                } : null,
-                bonusBooks: bonusBooks.map(book => {
-                    const userBook = userBooksMap.get(book.id)
-                    return {
-                        id: book.id,
-                        title: book.title,
-                        author: book.author,
-                        coverUrl: userBook?.linkedBook?.coverUrl || book.coverUrl,
-                        pageCount: book.pageCount,
-                        reason: book.reason,
-                        status: userBook?.status || "LOCKED",
-                        linkedBookId: userBook?.linkedBookId || null
-                    }
-                }),
-                isMainCompleted
-            }
-        }
-    } catch (error) {
-        console.error("Get active challenge error:", error)
-        return null
-    }
-}
-
-// ==========================================
-// Tüm Timeline'ı Getir (2025 Level 0 + 2026 Tam Yıl)
-// ==========================================
-
-export type ChallengeTimeline = {
-    challenges: ChallengeOverview[]
-    currentPeriod: {
-        year: number
-        month: number
-        isWarmupPeriod: boolean
-    }
-}
-
-export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) return null
-
-    try {
-        const now = new Date()
-        const currentDay = now.getDate()
-        const currentMonth = now.getMonth() + 1
-        const currentYear = now.getFullYear()
-
-        // 2025 ve 2026 challenge'larını al
-        const challenges = await prisma.readingChallenge.findMany({
-            where: {
-                year: { in: [2025, 2026] },
-                isActive: true
-            },
-            orderBy: { year: "asc" },
-            include: {
-                months: {
-                    orderBy: { monthNumber: "asc" },
-                    include: {
-                        books: {
-                            orderBy: [
-                                { role: "asc" },
-                                { sortOrder: "asc" }
-                            ]
-                        }
-                    }
-                },
-                userProgress: {
-                    where: { userId: user.id },
-                    include: {
-                        books: {
-                            include: {
-                                linkedBook: {
-                                    select: { id: true, coverUrl: true }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        })
-
-        if (challenges.length === 0) return null
-
-        // Her challenge için overview oluştur
-        const challengeOverviews: ChallengeOverview[] = challenges.map(challenge => {
-            const userProgress = challenge.userProgress[0]
-            const userBooksMap = new Map(
-                userProgress?.books.map(b => [b.challengeBookId, b]) || []
-            )
-
-            let totalCompleted = 0
-            let mainCompleted = 0
-            let bonusCompleted = 0
-            let totalBooks = 0
-
-            const months: ChallengeMonthWithBooks[] = challenge.months.map(month => {
-                let monthCompleted = 0
-                let isMainCompleted = false
-
-                const books = month.books.map(book => {
-                    totalBooks++
-                    const userBook = userBooksMap.get(book.id)
-                    const status = userBook?.status || "NOT_STARTED"
-
-                    if (status === "COMPLETED") {
-                        totalCompleted++
-                        monthCompleted++
-                        if (book.role === "MAIN") {
-                            mainCompleted++
-                            isMainCompleted = true
-                        } else {
-                            bonusCompleted++
-                        }
-                    }
-
-                    return {
-                        id: book.id,
-                        title: book.title,
-                        author: book.author,
-                        role: book.role,
-                        pageCount: book.pageCount,
-                        coverUrl: book.coverUrl,
-                        reason: book.reason,
-                        userStatus: status,
-                        completedAt: userBook?.completedAt || null,
-                        takeaway: userBook?.takeaway || null,
-                        linkedBookCoverUrl: userBook?.linkedBook?.coverUrl || null,
-                        linkedBookId: userBook?.linkedBookId || null
-                    }
-                })
-
-                return {
-                    id: month.id,
-                    monthNumber: month.monthNumber,
-                    monthName: month.monthName,
-                    theme: month.theme,
-                    themeIcon: month.themeIcon,
-                    books,
-                    progress: {
-                        total: books.length,
-                        completed: monthCompleted,
-                        percentage: books.length > 0 ? Math.round((monthCompleted / books.length) * 100) : 0
-                    },
-                    isMainCompleted
-                }
-            })
-
-            return {
-                id: challenge.id,
-                year: challenge.year,
-                name: challenge.name,
-                description: challenge.description,
-                strategy: challenge.strategy,
-                months,
-                totalProgress: {
-                    totalBooks,
-                    completedBooks: totalCompleted,
-                    percentage: totalBooks > 0 ? Math.round((totalCompleted / totalBooks) * 100) : 0,
-                    mainCompleted,
-                    bonusCompleted
-                }
-            }
-        })
-
-        // Şu anki dönem
-        let isWarmupPeriod = false
-        let targetYear = currentYear
-        let targetMonth = currentMonth
-
-        if (currentYear === 2025 && currentMonth === 12 && currentDay >= 15) {
-            isWarmupPeriod = true
-            targetYear = 2025
-            targetMonth = 12
-        } else if (currentYear >= 2026) {
-            targetYear = 2026
-            targetMonth = currentMonth
-        } else {
-            isWarmupPeriod = true
-            targetYear = 2025
-            targetMonth = 12
-        }
-
-        return {
-            challenges: challengeOverviews,
-            currentPeriod: {
-                year: targetYear,
-                month: targetMonth,
-                isWarmupPeriod
-            }
-        }
-    } catch (error) {
-        console.error("Get challenge timeline error:", error)
-        return null
-    }
-}
-
-// ==========================================
-// Manuel Kitap Eşleştirme
-// Challenge kitabını kütüphanedeki bir kitapla bağla
-// ==========================================
-
-export async function linkChallengeBookToLibrary(
-    challengeBookId: string,
-    libraryBookId: string | null // null = bağlantıyı kaldır
-) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-        return { success: false, error: "Oturum açmanız gerekiyor" }
-    }
-
-    try {
-        // Kullanıcının bu challenge kitabı kaydını bul
-        const userBook = await prisma.userChallengeBook.findFirst({
-            where: {
-                challengeBookId,
-                userProgress: { userId: user.id }
-            },
-            include: {
-                userProgress: {
-                    include: {
-                        challenge: { select: { year: true } }
-                    }
-                }
-            }
-        })
-
-        if (!userBook) {
-            return { success: false, error: "Challenge kitabı bulunamadı" }
-        }
-
-        // Eğer bir kitap bağlanacaksa, kullanıcının kitabı olduğunu kontrol et
-        if (libraryBookId) {
-            const libraryBook = await prisma.book.findFirst({
-                where: {
-                    id: libraryBookId,
-                    userId: user.id
-                }
-            })
-
-            if (!libraryBook) {
-                return { success: false, error: "Kütüphane kitabı bulunamadı" }
-            }
-        }
-
-        // Güncelle
-        await prisma.userChallengeBook.update({
-            where: { id: userBook.id },
-            data: { linkedBookId: libraryBookId }
-        })
-
-        // Cache invalidation
-        invalidateLinkCaches(user.id, libraryBookId || undefined)
-        revalidateTag(CACHE_TAGS.challenges, 'max')
-        revalidateTag(CACHE_TAGS.challenge(userBook.userProgress.challenge.year), 'max')
-        revalidatePath("/challenges")
-        revalidatePath("/dashboard")
-        revalidatePath("/library")
-
-        return { success: true }
-    } catch (error) {
-        console.error("Link challenge book error:", error)
-        return { success: false, error: "Bağlantı oluşturulamadı" }
-    }
-}
-
-// ==========================================
-// Kullanıcının Kütüphane Kitaplarını Getir (Eşleştirme için)
-// ==========================================
-
-export async function getUserBooksForLinking() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) return []
-
-    try {
-        const books = await prisma.book.findMany({
-            where: { userId: user.id },
-            select: {
-                id: true,
-                title: true,
-                coverUrl: true,
-                author: {
-                    select: { name: true }
-                }
-            },
-            orderBy: { title: 'asc' }
-        })
-
-        return books.map(b => ({
-            id: b.id,
-            title: b.title,
-            author: b.author?.name || "",
-            coverUrl: b.coverUrl
-        }))
-    } catch (error) {
-        console.error("Get user books error:", error)
-        return []
-    }
-}
-
-// ==========================================
-// Takeaway Güncelle
-// ==========================================
-
+// Update takeaway
 export async function updateTakeaway(challengeBookId: string, takeaway: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -967,5 +1001,414 @@ export async function updateTakeaway(challengeBookId: string, takeaway: string) 
     } catch (error) {
         console.error("Update takeaway error:", error)
         return { success: false, error: "Güncelleme başarısız" }
+    }
+}
+
+// Get challenge timeline (all years)
+export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    try {
+        const now = new Date()
+        const currentMonth = now.getMonth() + 1
+        const currentYear = now.getFullYear()
+
+        const challenges = await prisma.readingChallenge.findMany({
+            where: { isActive: true },
+            orderBy: { year: "desc" },
+            include: {
+                months: {
+                    orderBy: { monthNumber: "asc" },
+                    include: {
+                        books: {
+                            orderBy: [
+                                { role: "asc" },
+                                { sortOrder: "asc" }
+                            ],
+                            include: {
+                                book: {
+                                    include: {
+                                        author: { select: { id: true, name: true } },
+                                        publisher: { select: { id: true, name: true } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                userProgress: {
+                    where: { userId: user.id },
+                    include: {
+                        books: true
+                    }
+                }
+            }
+        })
+
+        if (challenges.length === 0) return null
+
+        const challengeDetails: ChallengeDetail[] = challenges.map(challenge => {
+            const userProgress = challenge.userProgress[0]
+            const userBooksMap = new Map(
+                userProgress?.books.map(b => [b.challengeBookId, b]) || []
+            )
+
+            let totalCompleted = 0
+            let mainCompleted = 0
+            let bonusCompleted = 0
+            let totalBooks = 0
+
+            const months: ChallengeMonth[] = challenge.months.map(month => {
+                let monthCompleted = 0
+                let isMainCompleted = false
+
+                const books = month.books.map(cb => {
+                    totalBooks++
+                    const userBook = userBooksMap.get(cb.id)
+                    const status = userBook?.status || "NOT_STARTED"
+
+                    if (status === "COMPLETED") {
+                        totalCompleted++
+                        monthCompleted++
+                        if (cb.role === "MAIN") {
+                            mainCompleted++
+                            isMainCompleted = true
+                        } else {
+                            bonusCompleted++
+                        }
+                    }
+
+                    return {
+                        id: cb.id,
+                        bookId: cb.bookId,
+                        role: cb.role,
+                        reason: cb.reason,
+                        sortOrder: cb.sortOrder,
+                        book: {
+                            id: cb.book.id,
+                            title: cb.book.title,
+                            coverUrl: cb.book.coverUrl,
+                            pageCount: cb.book.pageCount,
+                            inLibrary: cb.book.inLibrary,
+                            author: cb.book.author,
+                            publisher: cb.book.publisher
+                        },
+                        userStatus: status,
+                        completedAt: userBook?.completedAt || null,
+                        takeaway: userBook?.takeaway || null
+                    }
+                })
+
+                return {
+                    id: month.id,
+                    monthNumber: month.monthNumber,
+                    monthName: month.monthName,
+                    theme: month.theme,
+                    themeIcon: month.themeIcon,
+                    books,
+                    progress: {
+                        total: books.length,
+                        completed: monthCompleted,
+                        percentage: books.length > 0 ? Math.round((monthCompleted / books.length) * 100) : 0
+                    },
+                    isMainCompleted
+                }
+            })
+
+            return {
+                id: challenge.id,
+                year: challenge.year,
+                name: challenge.name,
+                description: challenge.description,
+                strategy: challenge.strategy,
+                isActive: challenge.isActive,
+                months,
+                totalProgress: {
+                    totalBooks,
+                    completedBooks: totalCompleted,
+                    percentage: totalBooks > 0 ? Math.round((totalCompleted / totalBooks) * 100) : 0,
+                    mainCompleted,
+                    bonusCompleted
+                }
+            }
+        })
+
+        return {
+            challenges: challengeDetails,
+            currentPeriod: {
+                year: currentYear,
+                month: currentMonth,
+                isWarmupPeriod: false
+            }
+        }
+    } catch (error) {
+        console.error("Get challenge timeline error:", error)
+        return null
+    }
+}
+
+// Get all challenges (for admin)
+export async function getAllChallenges() {
+    try {
+        return await prisma.readingChallenge.findMany({
+            orderBy: { year: "desc" },
+            include: {
+                _count: {
+                    select: {
+                        months: true
+                    }
+                },
+                months: {
+                    include: {
+                        _count: {
+                            select: { books: true }
+                        }
+                    }
+                }
+            }
+        })
+    } catch (error) {
+        console.error("Failed to fetch all challenges:", error)
+        return []
+    }
+}
+
+// ==========================================
+// Kitapyurdu Integration
+// ==========================================
+
+// Add book from Kitapyurdu URL to a challenge month
+export async function addBookFromKitapyurduToChallenge(data: {
+    monthId: string
+    kitapyurduUrl: string
+    role: ChallengeBookRole
+    reason?: string
+    inLibrary?: boolean
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // Scrape book data from Kitapyurdu
+        const scrapeResult = await scrapeKitapyurdu(data.kitapyurduUrl)
+        if (!scrapeResult.success || !scrapeResult.data) {
+            return { success: false, error: scrapeResult.error || "Kitap bilgileri alınamadı" }
+        }
+
+        const bookData = scrapeResult.data
+
+        // Check if book already exists in DB (by title and author)
+        let book = await prisma.book.findFirst({
+            where: {
+                title: { equals: bookData.title, mode: "insensitive" },
+                author: { name: { equals: bookData.author, mode: "insensitive" } }
+            }
+        })
+
+        if (!book) {
+            // Create author if not exists
+            let author = await prisma.author.findFirst({
+                where: { name: { equals: bookData.author, mode: "insensitive" } }
+            })
+            if (!author) {
+                author = await prisma.author.create({
+                    data: {
+                        name: bookData.author,
+                        imageUrl: bookData.authorImageUrl
+                    }
+                })
+            }
+
+            // Create publisher if not exists
+            let publisher = null
+            if (bookData.publisher) {
+                publisher = await prisma.publisher.findFirst({
+                    where: { name: { equals: bookData.publisher, mode: "insensitive" } }
+                })
+                if (!publisher) {
+                    publisher = await prisma.publisher.create({
+                        data: {
+                            name: bookData.publisher,
+                            imageUrl: bookData.publisherImageUrl
+                        }
+                    })
+                }
+            }
+
+            // Create the book
+            book = await prisma.book.create({
+                data: {
+                    userId: user.id,
+                    title: bookData.title,
+                    authorId: author.id,
+                    publisherId: publisher?.id,
+                    coverUrl: bookData.coverUrl,
+                    pageCount: bookData.pageCount,
+                    isbn: bookData.isbn,
+                    publishedDate: bookData.publishedDate,
+                    description: bookData.description,
+                    inLibrary: data.inLibrary ?? false,
+                    status: "TO_READ"
+                }
+            })
+        }
+
+        // Check if book already exists in this month
+        const existing = await prisma.challengeBook.findUnique({
+            where: {
+                monthId_bookId: {
+                    monthId: data.monthId,
+                    bookId: book.id
+                }
+            }
+        })
+        if (existing) {
+            return { success: false, error: "Bu kitap zaten bu ayda mevcut" }
+        }
+
+        // Get max sort order
+        const maxOrder = await prisma.challengeBook.aggregate({
+            where: { monthId: data.monthId },
+            _max: { sortOrder: true }
+        })
+
+        // Add book to challenge month
+        const challengeBook = await prisma.challengeBook.create({
+            data: {
+                monthId: data.monthId,
+                bookId: book.id,
+                role: data.role,
+                reason: data.reason || null,
+                sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
+            },
+            include: {
+                book: {
+                    include: {
+                        author: true,
+                        publisher: true
+                    }
+                }
+            }
+        })
+
+        revalidatePath("/challenges")
+        return { success: true, challengeBook, bookTitle: bookData.title }
+    } catch (error) {
+        console.error("Failed to add book from Kitapyurdu:", error)
+        return { success: false, error: "Kitap eklenirken hata oluştu" }
+    }
+}
+
+// Add book manually to a challenge month (creates Book record first)
+export async function addBookManuallyToChallenge(data: {
+    monthId: string
+    title: string
+    author: string
+    role: ChallengeBookRole
+    pageCount?: number
+    coverUrl?: string
+    publisher?: string
+    reason?: string
+    inLibrary?: boolean
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // Check if book already exists in DB
+        let book = await prisma.book.findFirst({
+            where: {
+                title: { equals: data.title, mode: "insensitive" },
+                author: { name: { equals: data.author, mode: "insensitive" } }
+            }
+        })
+
+        if (!book) {
+            // Create author if not exists
+            let author = await prisma.author.findFirst({
+                where: { name: { equals: data.author, mode: "insensitive" } }
+            })
+            if (!author) {
+                author = await prisma.author.create({
+                    data: { name: data.author }
+                })
+            }
+
+            // Create publisher if provided
+            let publisher = null
+            if (data.publisher) {
+                publisher = await prisma.publisher.findFirst({
+                    where: { name: { equals: data.publisher, mode: "insensitive" } }
+                })
+                if (!publisher) {
+                    publisher = await prisma.publisher.create({
+                        data: { name: data.publisher }
+                    })
+                }
+            }
+
+            // Create the book
+            book = await prisma.book.create({
+                data: {
+                    userId: user.id,
+                    title: data.title,
+                    authorId: author.id,
+                    publisherId: publisher?.id,
+                    coverUrl: data.coverUrl,
+                    pageCount: data.pageCount,
+                    inLibrary: data.inLibrary ?? false,
+                    status: "TO_READ"
+                }
+            })
+        }
+
+        // Check if book already exists in this month
+        const existing = await prisma.challengeBook.findUnique({
+            where: {
+                monthId_bookId: {
+                    monthId: data.monthId,
+                    bookId: book.id
+                }
+            }
+        })
+        if (existing) {
+            return { success: false, error: "Bu kitap zaten bu ayda mevcut" }
+        }
+
+        // Get max sort order
+        const maxOrder = await prisma.challengeBook.aggregate({
+            where: { monthId: data.monthId },
+            _max: { sortOrder: true }
+        })
+
+        // Add book to challenge month
+        const challengeBook = await prisma.challengeBook.create({
+            data: {
+                monthId: data.monthId,
+                bookId: book.id,
+                role: data.role,
+                reason: data.reason || null,
+                sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
+            },
+            include: {
+                book: {
+                    include: {
+                        author: true,
+                        publisher: true
+                    }
+                }
+            }
+        })
+
+        revalidatePath("/challenges")
+        return { success: true, challengeBook }
+    } catch (error) {
+        console.error("Failed to add book manually:", error)
+        return { success: false, error: "Kitap eklenirken hata oluştu" }
     }
 }

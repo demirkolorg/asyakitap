@@ -7,13 +7,12 @@ datasource db {
 }
 
 model User {
-  id                   String                  @id @default(uuid())
-  email                String                  @unique
-  books                Book[]
-  userReadingListBooks UserReadingListBook[]
-  challengeProgress    UserChallengeProgress[]
-  createdAt            DateTime                @default(now())
-  updatedAt            DateTime                @updatedAt
+  id                String                  @id @default(uuid())
+  email             String                  @unique
+  books             Book[]
+  challengeProgress UserChallengeProgress[]
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
 }
 
 enum BookStatus {
@@ -69,6 +68,7 @@ model Book {
   isbn                 String?
   publishedDate        String?               // Yayın tarihi (örn: "29.10.2025")
   description          String?               @db.Text // Kitap açıklaması
+  inLibrary            Boolean               @default(false) // Kitap fiziksel olarak kütüphanede mi?
   status               BookStatus            @default(TO_READ)
   currentPage          Int                   @default(0)
   tortu                String?               @db.Text // Kitaptan aklında kalanlar
@@ -77,9 +77,9 @@ model Book {
   imzaAiComment        String?               @db.Text // AI'ın imza yorumu
   quotes               Quote[]
   readingLogs          ReadingLog[]
-  userReadingListBooks UserReadingListBook[]
-  challengeBooks       UserChallengeBook[]   // Challenge kitaplarıyla bağlantı
   aiComments           AIComment[]           // AI yorumları
+  readingListBooks     ReadingListBook[]     // Bu kitabın bulunduğu okuma listeleri
+  challengeBooks       ChallengeBook[]       // Bu kitabın bulunduğu challenge'lar
   startDate            DateTime?
   endDate              DateTime?
   createdAt            DateTime              @default(now())
@@ -89,6 +89,7 @@ model Book {
   @@index([authorId])
   @@index([publisherId])
   @@index([userId, status]) // Status bazlı sorgular için (reading, completed, etc.)
+  @@index([userId, inLibrary]) // Kütüphanedeki kitaplar için
   @@index([userId, updatedAt]) // Son güncellenen kitaplar için
 }
 
@@ -187,34 +188,18 @@ model ReadingListBook {
   id        String                @id @default(cuid())
   levelId   String
   level     ReadingListLevel      @relation(fields: [levelId], references: [id], onDelete: Cascade)
-  title     String
-  author    String
-  neden     String?               @db.Text
-  pageCount Int?
-  coverUrl  String?
+  bookId    String                // Book tablosuna referans
+  book      Book                  @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  neden     String?               @db.Text // Bu kitap neden okunmalı?
   sortOrder Int                   @default(0)
-  userLinks UserReadingListBook[]
   createdAt DateTime              @default(now())
   updatedAt DateTime              @updatedAt
 
+  @@unique([levelId, bookId]) // Aynı seviyede aynı kitap olamaz
   @@index([levelId])
-}
-
-model UserReadingListBook {
-  id                String          @id @default(cuid())
-  userId            String
-  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  readingListBookId String
-  readingListBook   ReadingListBook @relation(fields: [readingListBookId], references: [id], onDelete: Cascade)
-  bookId            String?
-  book              Book?           @relation(fields: [bookId], references: [id], onDelete: SetNull)
-  createdAt         DateTime        @default(now())
-
-  @@unique([userId, readingListBookId])
-  @@index([userId])
-  @@index([readingListBookId])
   @@index([bookId])
 }
+
 
 // ==========================================
 // Yıllık Okuma Hedefi (Reading Challenge)
@@ -265,19 +250,19 @@ model ChallengeBook {
   id           String              @id @default(cuid())
   monthId      String
   month        ChallengeMonth      @relation(fields: [monthId], references: [id], onDelete: Cascade)
-  title        String
-  author       String
+  bookId       String              // Book tablosuna referans
+  book         Book                @relation(fields: [bookId], references: [id], onDelete: Cascade)
   role         ChallengeBookRole   // MAIN veya BONUS
-  pageCount    Int?
-  coverUrl     String?
   reason       String?             @db.Text // Neden bu kitap seçildi
   sortOrder    Int                 @default(0)
   userProgress UserChallengeBook[]
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
 
+  @@unique([monthId, bookId]) // Aynı ayda aynı kitap olamaz
   @@index([monthId])
   @@index([monthId, role])
+  @@index([bookId])
 }
 
 // Kullanıcının challenge genelindeki durumu
@@ -303,8 +288,6 @@ model UserChallengeBook {
   challengeBookId String
   challengeBook   ChallengeBook        @relation(fields: [challengeBookId], references: [id], onDelete: Cascade)
   status          ChallengeBookStatus  @default(LOCKED)
-  linkedBookId    String?              // Kullanıcının kütüphanesindeki kitaba bağlantı
-  linkedBook      Book?                @relation(fields: [linkedBookId], references: [id], onDelete: SetNull)
   startedAt       DateTime?
   completedAt     DateTime?
   takeaway        String?              @db.Text // "Bu kitaptan aklında kalan tek cümle"
@@ -314,6 +297,5 @@ model UserChallengeBook {
   @@unique([userProgressId, challengeBookId])
   @@index([userProgressId])
   @@index([challengeBookId])
-  @@index([linkedBookId])
   @@index([status])
 }

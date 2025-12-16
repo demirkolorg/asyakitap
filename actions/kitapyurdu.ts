@@ -244,8 +244,7 @@ async function fetchPublisherImage(publisherUrl: string): Promise<string | null>
 }
 
 export async function addBookFromKitapyurdu(
-    bookData: ScrapedBookData,
-    readingListBookId?: string
+    bookData: ScrapedBookData
 ): Promise<AddBookResult> {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -327,35 +326,13 @@ export async function addBookFromKitapyurdu(
             }
         })
 
-        // Okuma listesine bağla (varsa)
-        let linkedToList: string | undefined
-        if (readingListBookId) {
-            const rlBook = await prisma.readingListBook.findUnique({
-                where: { id: readingListBookId },
-                include: { level: { include: { readingList: true } } }
-            })
-
-            if (rlBook) {
-                await prisma.userReadingListBook.create({
-                    data: {
-                        userId: user.id,
-                        readingListBookId: readingListBookId,
-                        bookId: newBook.id
-                    }
-                })
-                linkedToList = rlBook.level.readingList.name
-            }
-        }
-
         revalidatePath("/library")
         revalidatePath("/dashboard")
 
         return {
             success: true,
             bookId: newBook.id,
-            message: linkedToList
-                ? `"${bookData.title}" "${linkedToList}" listesine eklendi`
-                : `"${bookData.title}" kütüphanenize eklendi`
+            message: `"${bookData.title}" kütüphanenize eklendi`
         }
     } catch (error) {
         console.error("Add book from Kitapyurdu error:", error)

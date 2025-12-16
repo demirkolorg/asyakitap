@@ -1,7 +1,7 @@
-import { getReadingLists } from "@/actions/reading-lists"
-import { ManageClient } from "./client"
+import { redirect } from "next/navigation"
 
-export default async function ManageReadingListsPage() {
-    const lists = await getReadingLists()
-    return <ManageClient initialLists={lists} />
+// Manage page is no longer needed - redirect to main reading lists page
+// All editing features are now inline on the list detail pages
+export default function ManageReadingListsPage() {
+    redirect("/reading-lists")
 }

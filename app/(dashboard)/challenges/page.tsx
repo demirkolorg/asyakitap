@@ -1,16 +1,11 @@
-import { getChallengeTimeline } from "@/actions/challenge"
-import { ChallengeTimelineClient } from "./timeline-client"
+import { getChallengeTimeline, getAllChallenges } from "@/actions/challenge"
+import { ChallengesPageClient } from "./page-client"
 
 export default async function ChallengesPage() {
-    const timeline = await getChallengeTimeline()
+    const [timeline, allChallenges] = await Promise.all([
+        getChallengeTimeline(),
+        getAllChallenges()
+    ])
 
-    if (!timeline) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[400px]">
-                <p className="text-muted-foreground">Okuma hedefi bulunamadı.</p>
-            </div>
-        )
-    }
-
-    return <ChallengeTimelineClient timeline={timeline} />
+    return <ChallengesPageClient timeline={timeline} allChallenges={allChallenges} />
 }

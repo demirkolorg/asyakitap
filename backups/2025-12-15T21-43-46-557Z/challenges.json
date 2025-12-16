@@ -1,0 +1,808 @@
+[
+  {
+    "id": "cmj5ovny300cjgkizxbjrsji4",
+    "year": 2025,
+    "name": "Level 0: Alışkanlık Kurulumu",
+    "description": "2026'ya hazırlık: Aralık ayının son 2 haftasında okuma alışkanlığını başlat!",
+    "strategy": "1_MAIN_2_BONUS",
+    "isActive": true,
+    "createdAt": "2025-12-14T12:16:33.226Z",
+    "updatedAt": "2025-12-14T12:16:33.226Z",
+    "months": [
+      {
+        "id": "cmj5ovo6k00ckgkiztl7seap6",
+        "challengeId": "cmj5ovny300cjgkizxbjrsji4",
+        "monthNumber": 12,
+        "monthName": "Aralık (Son 2 Hafta)",
+        "theme": "Level 0: Alışkanlık Kurulumu",
+        "themeIcon": "🔥",
+        "createdAt": "2025-12-14T12:16:33.226Z",
+        "updatedAt": "2025-12-14T12:16:33.226Z",
+        "books": [
+          {
+            "id": "cmj5ovof200clgkizxg8wamrs",
+            "monthId": "cmj5ovo6k00ckgkiztl7seap6",
+            "title": "Uzun Hikaye",
+            "author": "Mustafa Kutlu",
+            "role": "MAIN",
+            "pageCount": 160,
+            "coverUrl": null,
+            "reason": "Kısa, akıcı ve kalbi ısıtan bir Anadolu hikayesiyle okuma alışkanlığı kurmak.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:33.226Z",
+            "updatedAt": "2025-12-14T12:16:33.226Z",
+            "userProgress": [
+              {
+                "id": "cmj5oz41l00010al5j0qq3ry2",
+                "userProgressId": "cmj5oz3xi00000al5m9g2wsya",
+                "challengeBookId": "cmj5ovof200clgkizxg8wamrs",
+                "status": "IN_PROGRESS",
+                "startedAt": "2025-12-14T12:19:17.422Z",
+                "completedAt": null,
+                "takeaway": null,
+                "createdAt": "2025-12-14T12:19:14.067Z",
+                "updatedAt": "2025-12-14T12:33:57.837Z"
+              }
+            ]
+          },
+          {
+            "id": "cmj5ovof300cmgkizoeazx1pq",
+            "monthId": "cmj5ovo6k00ckgkiztl7seap6",
+            "title": "Atomik Alışkanlıklar",
+            "author": "James Clear",
+            "role": "BONUS",
+            "pageCount": 320,
+            "coverUrl": null,
+            "reason": "Bu okuma listesini 1 yıl boyunca nasıl sürdüreceğinin bilimsel metodunu öğrenmek için.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:33.226Z",
+            "updatedAt": "2025-12-14T12:16:33.226Z",
+            "userProgress": [
+              {
+                "id": "cmj5oz41l00020al5bij9lz0v",
+                "userProgressId": "cmj5oz3xi00000al5m9g2wsya",
+                "challengeBookId": "cmj5ovof300cmgkizoeazx1pq",
+                "status": "LOCKED",
+                "startedAt": null,
+                "completedAt": null,
+                "takeaway": null,
+                "createdAt": "2025-12-14T12:19:14.067Z",
+                "updatedAt": "2025-12-15T18:38:21.009Z"
+              }
+            ]
+          },
+          {
+            "id": "cmj5ovof300cngkizze2q03lu",
+            "monthId": "cmj5ovo6k00ckgkiztl7seap6",
+            "title": "Bilinmeyen Bir Kadının Mektubu",
+            "author": "Stefan Zweig",
+            "role": "BONUS",
+            "pageCount": 60,
+            "coverUrl": null,
+            "reason": "Kısacık, sarsıcı ve edebi bir tatla ısınma turunu tamamlamak.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:33.226Z",
+            "updatedAt": "2025-12-14T12:16:33.226Z",
+            "userProgress": [
+              {
+                "id": "cmj5oz41l00030al5khyl7e8n",
+                "userProgressId": "cmj5oz3xi00000al5m9g2wsya",
+                "challengeBookId": "cmj5ovof300cngkizze2q03lu",
+                "status": "LOCKED",
+                "startedAt": null,
+                "completedAt": null,
+                "takeaway": null,
+                "createdAt": "2025-12-14T12:19:14.067Z",
+                "updatedAt": "2025-12-14T12:19:14.067Z"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "userProgress": [
+      {
+        "id": "cmj5oz3xi00000al5m9g2wsya",
+        "userId": "bd5bc606-757a-413b-b1e6-4562f2699572",
+        "challengeId": "cmj5ovny300cjgkizxbjrsji4",
+        "joinedAt": "2025-12-14T12:19:14.067Z",
+        "books": [
+          {
+            "id": "cmj5oz41l00030al5khyl7e8n",
+            "userProgressId": "cmj5oz3xi00000al5m9g2wsya",
+            "challengeBookId": "cmj5ovof300cngkizze2q03lu",
+            "status": "LOCKED",
+            "startedAt": null,
+            "completedAt": null,
+            "takeaway": null,
+            "createdAt": "2025-12-14T12:19:14.067Z",
+            "updatedAt": "2025-12-14T12:19:14.067Z"
+          },
+          {
+            "id": "cmj5oz41l00010al5j0qq3ry2",
+            "userProgressId": "cmj5oz3xi00000al5m9g2wsya",
+            "challengeBookId": "cmj5ovof200clgkizxg8wamrs",
+            "status": "IN_PROGRESS",
+            "startedAt": "2025-12-14T12:19:17.422Z",
+            "completedAt": null,
+            "takeaway": null,
+            "createdAt": "2025-12-14T12:19:14.067Z",
+            "updatedAt": "2025-12-14T12:33:57.837Z"
+          },
+          {
+            "id": "cmj5oz41l00020al5bij9lz0v",
+            "userProgressId": "cmj5oz3xi00000al5m9g2wsya",
+            "challengeBookId": "cmj5ovof300cmgkizoeazx1pq",
+            "status": "LOCKED",
+            "startedAt": null,
+            "completedAt": null,
+            "takeaway": null,
+            "createdAt": "2025-12-14T12:19:14.067Z",
+            "updatedAt": "2025-12-15T18:38:21.009Z"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cmj5ovpd500cogkizly0y3y6x",
+    "year": 2026,
+    "name": "2026 Okuma Hedefi",
+    "description": "Yatay Okuma Stratejisi: Türler arası geçişle sıkılmadan, her ay en az 1 kitabı sindirerek bitirme hedefi.",
+    "strategy": "1_MAIN_2_BONUS",
+    "isActive": true,
+    "createdAt": "2025-12-14T12:16:35.064Z",
+    "updatedAt": "2025-12-14T12:16:35.064Z",
+    "months": [
+      {
+        "id": "cmj5ovplv00cpgkiza3vc2kxz",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 1,
+        "monthName": "Ocak",
+        "theme": "Bilim Kurgu & Macera",
+        "themeIcon": "🚀",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovpuc00cqgkizgw08iy3s",
+            "monthId": "cmj5ovplv00cpgkiza3vc2kxz",
+            "title": "Marslı",
+            "author": "Andy Weir",
+            "role": "MAIN",
+            "pageCount": 380,
+            "coverUrl": null,
+            "reason": "Yıla yüksek enerjiyle, zeki ve komik bir hayatta kalma hikayesiyle başlamak için.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovpuc00crgkizbyht98vo",
+            "monthId": "cmj5ovplv00cpgkiza3vc2kxz",
+            "title": "Başlat (Ready Player One)",
+            "author": "Ernest Cline",
+            "role": "BONUS",
+            "pageCount": 450,
+            "coverUrl": null,
+            "reason": "80'ler nostaljisi ve oyun dünyasıyla eğlenceyi sürdürmek için.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovpuc00csgkizvf320xta",
+            "monthId": "cmj5ovplv00cpgkiza3vc2kxz",
+            "title": "Minyeli Abdullah",
+            "author": "Hekimoğlu İsmail",
+            "role": "BONUS",
+            "pageCount": 240,
+            "coverUrl": null,
+            "reason": "Uzaydan dünyaya dönüş; manevi ve nostaljik bir klasikle dinlenmek için.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovq2v00ctgkizv7qz8gye",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 2,
+        "monthName": "Şubat",
+        "theme": "Edebiyat & İnsan",
+        "themeIcon": "💡",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovqbb00cugkiz8megmcif",
+            "monthId": "cmj5ovq2v00ctgkizv7qz8gye",
+            "title": "Martı Jonathan Livingston",
+            "author": "Richard Bach",
+            "role": "MAIN",
+            "pageCount": 100,
+            "coverUrl": null,
+            "reason": "Sınırlarını zorlamak üzerine, bir oturuşta bitecek efsanevi bir motivasyon kitabı.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovqbb00cvgkizjkh2dnk4",
+            "monthId": "cmj5ovq2v00ctgkizv7qz8gye",
+            "title": "Beyaz Diş",
+            "author": "Jack London",
+            "role": "BONUS",
+            "pageCount": 280,
+            "coverUrl": null,
+            "reason": "Doğa ve mücadele temalı, dünya edebiyatından akıcı bir klasik.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovqbb00cwgkizbz0ihb99",
+            "monthId": "cmj5ovq2v00ctgkizv7qz8gye",
+            "title": "Kusursuz Cinayet Yoktur",
+            "author": "Sevil Atasoy",
+            "role": "BONUS",
+            "pageCount": 320,
+            "coverUrl": null,
+            "reason": "Biraz merak ve gizem. Adli bilimlere giriş.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovqju00cxgkizz01l7unx",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 3,
+        "monthName": "Mart",
+        "theme": "Tarihi Kurgu",
+        "themeIcon": "🏰",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovqsi00cygkiz7q7vqwfz",
+            "monthId": "cmj5ovqju00cxgkizz01l7unx",
+            "title": "Semerkant",
+            "author": "Amin Maalouf",
+            "role": "MAIN",
+            "pageCount": 318,
+            "coverUrl": null,
+            "reason": "Ömer Hayyam ve Hasan Sabbah'ın hikayesiyle Doğu'nun gizemli tarihine giriş.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovqsj00czgkiz2wrmd92i",
+            "monthId": "cmj5ovqju00cxgkizz01l7unx",
+            "title": "Fedailerin Kalesi Alamut",
+            "author": "Vladimir Bartol",
+            "role": "BONUS",
+            "pageCount": 510,
+            "coverUrl": null,
+            "reason": "Semerkant'ı sevenler için aynı dönemi daha karanlık anlatan bir gerilim.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovqsj00d0gkizngjbibju",
+            "monthId": "cmj5ovqju00cxgkizz01l7unx",
+            "title": "Sultanın Casusları",
+            "author": "Emrah Safa Gürkan",
+            "role": "BONUS",
+            "pageCount": 400,
+            "coverUrl": null,
+            "reason": "Tarihi bu sefer kurgu değil, eğlenceli ve gerçek casusluk hikayeleriyle okumak.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovr0z00d1gkiz4q5sk15s",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 4,
+        "monthName": "Nisan",
+        "theme": "Teknoloji & Vizyon",
+        "themeIcon": "🤖",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovr9h00d2gkizdxbrjtay",
+            "monthId": "cmj5ovr0z00d1gkiz4q5sk15s",
+            "title": "Steve Jobs",
+            "author": "Walter Isaacson",
+            "role": "MAIN",
+            "pageCount": 600,
+            "coverUrl": null,
+            "reason": "Teknoloji dünyasını şekillendiren bir dâhinin hayatını roman gibi okumak.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovr9h00d3gkizp53aa4qq",
+            "monthId": "cmj5ovr0z00d1gkiz4q5sk15s",
+            "title": "Sıfırdan Bire",
+            "author": "Peter Thiel",
+            "role": "BONUS",
+            "pageCount": 200,
+            "coverUrl": null,
+            "reason": "Girişimcilik ve geleceği inşa etmek üzerine kısa ve vurucu bir kitap.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovr9h00d4gkizvp5qpcbj",
+            "monthId": "cmj5ovr0z00d1gkiz4q5sk15s",
+            "title": "Otostopçunun Galaksi Rehberi",
+            "author": "Douglas Adams",
+            "role": "BONUS",
+            "pageCount": 250,
+            "coverUrl": null,
+            "reason": "Teknolojinin ciddiyetinden sıkılınca evrene kahkahalarla gülmek için.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovri800d5gkiz75pzzf90",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 5,
+        "monthName": "Mayıs",
+        "theme": "Maneviyat & Siyer",
+        "themeIcon": "📿",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovrqq00d6gkiz4lhica0i",
+            "monthId": "cmj5ovri800d5gkiz75pzzf90",
+            "title": "Hz. Muhammed'in Hayatı",
+            "author": "Martin Lings",
+            "role": "MAIN",
+            "pageCount": 450,
+            "coverUrl": null,
+            "reason": "Dünyanın en iyi siyerlerinden biriyle, dönemin atmosferini solumak.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovrqq00d7gkizdelvmd7k",
+            "monthId": "cmj5ovri800d5gkiz75pzzf90",
+            "title": "Çöl Deniz (Hz. Hatice)",
+            "author": "Sibel Eraslan",
+            "role": "BONUS",
+            "pageCount": 350,
+            "coverUrl": null,
+            "reason": "Siyeri bir de Hz. Hatice'nin gözünden, duygusal bir romanla okumak.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovrqq00d8gkizn6ba0ihl",
+            "monthId": "cmj5ovri800d5gkiz75pzzf90",
+            "title": "Küçük Ağaç'ın Eğitimi",
+            "author": "Forrest Carter",
+            "role": "BONUS",
+            "pageCount": 270,
+            "coverUrl": null,
+            "reason": "Doğa, bilgelik ve saflık üzerine ruhu dinlendiren bir hikaye.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovrz700d9gkiz9lnqtqum",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 6,
+        "monthName": "Haziran",
+        "theme": "Strateji & Casusluk",
+        "themeIcon": "🎯",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovs7o00dagkizc49z67qh",
+            "monthId": "cmj5ovrz700d9gkiz9lnqtqum",
+            "title": "Savaş Sanatı",
+            "author": "Sun Tzu",
+            "role": "MAIN",
+            "pageCount": 100,
+            "coverUrl": null,
+            "reason": "Yaz başlarken kısa ama bin yıllık strateji bilgeliği içeren bir temel eser.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovs7p00dbgkizhktu7nv2",
+            "monthId": "cmj5ovrz700d9gkiz9lnqtqum",
+            "title": "Köstebek",
+            "author": "John le Carré",
+            "role": "BONUS",
+            "pageCount": 400,
+            "coverUrl": null,
+            "reason": "Gerçekçi ve bürokratik bir soğuk savaş casusluğu romanı.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovs7p00dcgkiz1waqh4zq",
+            "monthId": "cmj5ovrz700d9gkiz9lnqtqum",
+            "title": "Sherlock Holmes - Bütün Hikayeler 1",
+            "author": "Arthur Conan Doyle",
+            "role": "BONUS",
+            "pageCount": 350,
+            "coverUrl": null,
+            "reason": "Stratejiden sonra biraz da tümdengelim ve suç çözme keyfi.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovsg600ddgkiz0jtswrrs",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 7,
+        "monthName": "Temmuz",
+        "theme": "Bilim Kurgu & Gerilim",
+        "themeIcon": "🧬",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovsou00degkiz38vmqoui",
+            "monthId": "cmj5ovsg600ddgkiz0jtswrrs",
+            "title": "Karanlık Madde",
+            "author": "Blake Crouch",
+            "role": "MAIN",
+            "pageCount": 400,
+            "coverUrl": null,
+            "reason": "Yaz sıcağında elden bırakılamayacak, film gibi bir paralel evren kovalamacası.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovsou00dfgkizfjo1n0j2",
+            "monthId": "cmj5ovsg600ddgkiz0jtswrrs",
+            "title": "Jurassic Park",
+            "author": "Michael Crichton",
+            "role": "BONUS",
+            "pageCount": 450,
+            "coverUrl": null,
+            "reason": "Genetik bilimi ve kaos teorisi üzerine heyecanlı bir klasik.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovsou00dggkizo8ugk964",
+            "monthId": "cmj5ovsg600ddgkiz0jtswrrs",
+            "title": "Yalan Söylediğimi Nasıl Anladın?",
+            "author": "Paul Ekman",
+            "role": "BONUS",
+            "pageCount": 300,
+            "coverUrl": null,
+            "reason": "İnsanların mimiklerini okumayı öğrenmek için eğlenceli bir kişisel gelişim.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovsxf00dhgkizt2siawln",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 8,
+        "monthName": "Ağustos",
+        "theme": "Polisiye & Gizem",
+        "themeIcon": "🔍",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovt5w00digkizes69qvaa",
+            "monthId": "cmj5ovsxf00dhgkizt2siawln",
+            "title": "Doğu Ekspresinde Cinayet",
+            "author": "Agatha Christie",
+            "role": "MAIN",
+            "pageCount": 250,
+            "coverUrl": null,
+            "reason": "Sıcaklarda zihni yormayan, sonu şaşırtıcı klasik bir dedektiflik hikayesi.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovt5w00djgkiz5j5wrhr9",
+            "monthId": "cmj5ovsxf00dhgkizt2siawln",
+            "title": "İstanbul Hatırası",
+            "author": "Ahmet Ümit",
+            "role": "BONUS",
+            "pageCount": 550,
+            "coverUrl": null,
+            "reason": "İstanbul'un tarihiyle iç içe geçmiş yerli ve atmosferik bir polisiye.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovt5w00dkgkizxmfdeenb",
+            "monthId": "cmj5ovsxf00dhgkizt2siawln",
+            "title": "Yapay Zeka",
+            "author": "Cem Say",
+            "role": "BONUS",
+            "pageCount": 200,
+            "coverUrl": null,
+            "reason": "Eylüldeki teknoloji ayına hazırlık için hafif ve öğretici bir giriş.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovteh00dlgkiz5fe89bpo",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 9,
+        "monthName": "Eylül",
+        "theme": "Teknoloji & Gelecek",
+        "themeIcon": "🌌",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovtmy00dmgkizhzjki4k5",
+            "monthId": "cmj5ovteh00dlgkiz5fe89bpo",
+            "title": "Elon Musk",
+            "author": "Walter Isaacson",
+            "role": "MAIN",
+            "pageCount": 650,
+            "coverUrl": null,
+            "reason": "Mars, elektrikli araçlar ve yapay zeka vizyonunu anlamak için güncel bir biyografi.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovtmy00dngkizjsetjwjs",
+            "monthId": "cmj5ovteh00dlgkiz5fe89bpo",
+            "title": "Yapay Zeka 2041",
+            "author": "Kai-Fu Lee",
+            "role": "BONUS",
+            "pageCount": 450,
+            "coverUrl": null,
+            "reason": "Gelecekte bizi nelerin beklediğine dair bilimsel temelli 10 hikaye.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovtmy00dogkizbeqww0qu",
+            "monthId": "cmj5ovteh00dlgkiz5fe89bpo",
+            "title": "1984",
+            "author": "George Orwell",
+            "role": "BONUS",
+            "pageCount": 350,
+            "coverUrl": null,
+            "reason": "Teknolojinin karanlık yüzünü hatırlatan distopik bir klasik.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovtvh00dpgkizlyh9tjef",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 10,
+        "monthName": "Ekim",
+        "theme": "Düşünce & Melankoli",
+        "themeIcon": "🍂",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovu4300dqgkiz76db90o7",
+            "monthId": "cmj5ovtvh00dpgkizlyh9tjef",
+            "title": "Kürk Mantolu Madonna",
+            "author": "Sabahattin Ali",
+            "role": "MAIN",
+            "pageCount": 160,
+            "coverUrl": null,
+            "reason": "Sonbahar ruhuna uygun, derin bir karakter analizi ve aşk hikayesi.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovu4300drgkiztgnulj9a",
+            "monthId": "cmj5ovtvh00dpgkizlyh9tjef",
+            "title": "Beş Şehir",
+            "author": "Ahmet Hamdi Tanpınar",
+            "role": "BONUS",
+            "pageCount": 250,
+            "coverUrl": null,
+            "reason": "Medeniyetimizin estetiğini ve şehirlerin ruhunu anlamak için.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovu4300dsgkizxvax006p",
+            "monthId": "cmj5ovtvh00dpgkizlyh9tjef",
+            "title": "Simyacı",
+            "author": "Paulo Coelho",
+            "role": "BONUS",
+            "pageCount": 180,
+            "coverUrl": null,
+            "reason": "Kişisel menkıbeni bulmak üzerine, dünyaca ünlü bir felsefi masal.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovuck00dtgkizy05rhvov",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 11,
+        "monthName": "Kasım",
+        "theme": "Dinler & Tarih",
+        "themeIcon": "🏛️",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovul200dugkizldc3suup",
+            "monthId": "cmj5ovuck00dtgkizy05rhvov",
+            "title": "Tanrı'nın Tarihi",
+            "author": "Karen Armstrong",
+            "role": "MAIN",
+            "pageCount": 550,
+            "coverUrl": null,
+            "reason": "Üç büyük dinin tarihsel gelişimini anlatan, yılın en öğretici kitabı.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovul200dvgkizutb0yyd6",
+            "monthId": "cmj5ovuck00dtgkizy05rhvov",
+            "title": "Hristiyanlık ve İslam",
+            "author": "Müfit Selim Saruhan",
+            "role": "BONUS",
+            "pageCount": 200,
+            "coverUrl": null,
+            "reason": "Ana kitaptaki konuları karşılaştırmalı olarak pekiştirmek için.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovul200dwgkiz542qlf38",
+            "monthId": "cmj5ovuck00dtgkizy05rhvov",
+            "title": "Malcolm X",
+            "author": "Alex Haley",
+            "role": "BONUS",
+            "pageCount": 500,
+            "coverUrl": null,
+            "reason": "İnanç ve mücadele üzerine sarsıcı bir biyografi.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      },
+      {
+        "id": "cmj5ovutj00dxgkizdacjb2mw",
+        "challengeId": "cmj5ovpd500cogkizly0y3y6x",
+        "monthNumber": 12,
+        "monthName": "Aralık",
+        "theme": "Cumhuriyet & Sentez",
+        "themeIcon": "🇹🇷",
+        "createdAt": "2025-12-14T12:16:35.064Z",
+        "updatedAt": "2025-12-14T12:16:35.064Z",
+        "books": [
+          {
+            "id": "cmj5ovv2000dygkizbt3qrrru",
+            "monthId": "cmj5ovutj00dxgkizdacjb2mw",
+            "title": "Çankaya",
+            "author": "Falih Rıfkı Atay",
+            "role": "MAIN",
+            "pageCount": 600,
+            "coverUrl": null,
+            "reason": "Yılı Cumhuriyet'in kuruluşu ve Atatürk'ün sofrasından anılarla kapatmak.",
+            "sortOrder": 0,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovv2100dzgkiz7lwzndm9",
+            "monthId": "cmj5ovutj00dxgkizdacjb2mw",
+            "title": "Nutuk",
+            "author": "Mustafa Kemal Atatürk",
+            "role": "BONUS",
+            "pageCount": 650,
+            "coverUrl": null,
+            "reason": "Tarihi birinci ağızdan, kurucunun kaleminden okumak.",
+            "sortOrder": 1,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          },
+          {
+            "id": "cmj5ovv2100e0gkizvcsa19uj",
+            "monthId": "cmj5ovutj00dxgkizdacjb2mw",
+            "title": "Sinyal ve Gürültü",
+            "author": "Nate Silver",
+            "role": "BONUS",
+            "pageCount": 500,
+            "coverUrl": null,
+            "reason": "Yıl boyu okunan tüm veriyi ve bilgiyi nasıl analiz edeceğini öğrenerek seneyi bitirmek.",
+            "sortOrder": 2,
+            "createdAt": "2025-12-14T12:16:35.064Z",
+            "updatedAt": "2025-12-14T12:16:35.064Z",
+            "userProgress": []
+          }
+        ]
+      }
+    ],
+    "userProgress": []
+  }
+]

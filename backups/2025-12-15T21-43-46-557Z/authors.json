@@ -1,0 +1,1438 @@
+[
+  {
+    "id": "cmj0g14zc00000aju8o9ct1c0",
+    "name": "Umberto Eco",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T20:10:01.464Z",
+    "updatedAt": "2025-12-10T20:10:01.464Z",
+    "books": [
+      {
+        "id": "cmj0kf62i00000ajvh431ccnz",
+        "title": "Gülün Adı (Ciltsiz)"
+      }
+    ]
+  },
+  {
+    "id": "cmj0jflxs00000al53zs2lcwn",
+    "name": "Aliya İzzetbegoviç",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T21:45:15.471Z",
+    "updatedAt": "2025-12-10T21:45:15.471Z",
+    "books": [
+      {
+        "id": "cmj0k56zf00000bi6cps72pib",
+        "title": "İslam Deklarasyonu ve Tarihi Savunma"
+      },
+      {
+        "id": "cmj0lft7e001oxsizuhokub4k",
+        "title": "İslami Yeniden Doğuşun Meseleleri"
+      }
+    ]
+  },
+  {
+    "id": "cmj0le9rz0000xsizgpdpifry",
+    "name": "Frank Herbert",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:12.287Z",
+    "updatedAt": "2025-12-10T22:40:12.287Z",
+    "books": [
+      {
+        "id": "cmj0leah60002xsizc90vc2uz",
+        "title": "Dune"
+      },
+      {
+        "id": "cmj0lec0g0003xsiz252gujt2",
+        "title": "Dune Mesihi"
+      },
+      {
+        "id": "cmj0ledl70004xsizfn9hjx5n",
+        "title": "Dune Çocukları"
+      },
+      {
+        "id": "cmj0lehr40005xsizhmo117q9",
+        "title": "Dune Tanrı İmparatoru"
+      },
+      {
+        "id": "cmj0lejak0006xsizd7rgwx0p",
+        "title": "Dune Sapkınları"
+      },
+      {
+        "id": "cmj0lekvj0007xsizt6fbuqch",
+        "title": "Dune Rahibeler Meclisi"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lema50008xsizu6zsbohr",
+    "name": "Ray Bradbury",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:28.493Z",
+    "updatedAt": "2025-12-10T22:40:28.493Z",
+    "books": [
+      {
+        "id": "cmj0lemqh0009xsizitn6q334",
+        "title": "Fahrenheit 451"
+      }
+    ]
+  },
+  {
+    "id": "cmj0leo36000axsizzyhzfwjc",
+    "name": "Aldous Huxley",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:30.834Z",
+    "updatedAt": "2025-12-10T22:40:30.834Z",
+    "books": [
+      {
+        "id": "cmj0leojk000bxsiz0fwj772w",
+        "title": "Cesur Yeni Dünya"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lepv1000cxsizyr819o0h",
+    "name": "Arkadi Strugatski",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:33.133Z",
+    "updatedAt": "2025-12-10T22:40:33.133Z",
+    "books": [
+      {
+        "id": "cmj0leqbg000dxsiza2w52f5y",
+        "title": "Kıyamete Bir Milyar Yıl"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lernj000exsizz5jroazk",
+    "name": "Ling Ma",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:35.455Z",
+    "updatedAt": "2025-12-10T22:40:35.455Z",
+    "books": [
+      {
+        "id": "cmj0les3w000fxsizbdizsmv3",
+        "title": "Salgın"
+      }
+    ]
+  },
+  {
+    "id": "cmj0letf9000gxsizqcwe2vxm",
+    "name": "Hugh Howey",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:37.749Z",
+    "updatedAt": "2025-12-10T22:40:37.749Z",
+    "books": [
+      {
+        "id": "cmj0letvl000hxsiz7h2wq2t2",
+        "title": "Kum"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lev8r000ixsizjsuqt0s0",
+    "name": "Herbert George Wells",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:40.107Z",
+    "updatedAt": "2025-12-10T22:40:40.107Z",
+    "books": [
+      {
+        "id": "cmj0levx9000kxsiz43l6jotv",
+        "title": "Zaman Makinesi"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lexac000lxsizwf6hsvvq",
+    "name": "Adam Fawer",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:42.756Z",
+    "updatedAt": "2025-12-10T22:40:42.756Z",
+    "books": [
+      {
+        "id": "cmj0lexyv000nxsizdjch4sre",
+        "title": "Olasılıksız"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lezbn000oxsizco46zdka",
+    "name": "İhsan Oktay Anar",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:45.395Z",
+    "updatedAt": "2025-12-10T22:40:45.395Z",
+    "books": [
+      {
+        "id": "cmj0lf009000qxsizc2nzkbqr",
+        "title": "Puslu Kıtalar Atlası"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lf1cf000rxsizlmloqwsc",
+    "name": "Vladimir Bartol",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:48.015Z",
+    "updatedAt": "2025-12-10T22:40:48.015Z",
+    "books": [
+      {
+        "id": "cmj0lf20x000txsizqsgtj9ns",
+        "title": "Fedailerin Kalesi Alamut"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lf3df000uxsizehkidgyc",
+    "name": "Jack London",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:50.643Z",
+    "updatedAt": "2025-12-10T22:40:50.643Z",
+    "books": [
+      {
+        "id": "cmj0lf5dk000wxsizx1l6a4p3",
+        "title": "Beyaz Diş (Karton Kapak)"
+      },
+      {
+        "id": "cmj0lf3tr000vxsizfjy33n8c",
+        "title": "Martin Eden"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lf6py000xxsiz4yhkirod",
+    "name": "Glenn Meade",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:54.982Z",
+    "updatedAt": "2025-12-10T22:40:54.982Z",
+    "books": [
+      {
+        "id": "cmj0lf7eh000zxsizlh5zb9dj",
+        "title": "Sakkara'nın Kumları"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lf8pp0010xsizjw48y97y",
+    "name": "Jean Christophe Grange",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:40:57.565Z",
+    "updatedAt": "2025-12-10T22:40:57.565Z",
+    "books": [
+      {
+        "id": "cmj0lf9e80012xsizmeq3cdlh",
+        "title": "Leyleklerin Uçuşu"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfapw0013xsizap3cpg9x",
+    "name": "Agatha Christie",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:00.164Z",
+    "updatedAt": "2025-12-10T22:41:00.164Z",
+    "books": [
+      {
+        "id": "cmj0lfbee0015xsiz7njwpfkc",
+        "title": "Suç Ortakları"
+      },
+      {
+        "id": "cmj1tush300000ajreeuu8gr5",
+        "title": "Beklenmeyen Misafir"
+      },
+      {
+        "id": "cmj2fsqwh00000ajye2gvxt40",
+        "title": "On Kişiydiler (On Küçük Zenci)"
+      },
+      {
+        "id": "cmj2gllim00020aiheczex8gz",
+        "title": "Doğu Ekspresinde Cinayet"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfcqf0016xsizk3scomqv",
+    "name": "Mustafa Kutlu",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:02.775Z",
+    "updatedAt": "2025-12-10T22:41:02.775Z",
+    "books": [
+      {
+        "id": "cmj0lfdey0018xsizvsb3xjhd",
+        "title": "Sır"
+      },
+      {
+        "id": "cmj2g1xvj00060al55jf9k5eq",
+        "title": "Ya Tahammül Ya Sefer"
+      },
+      {
+        "id": "cmj2g1axm00040al5w7v2dwge",
+        "title": "Uzun Hikaye"
+      },
+      {
+        "id": "cmj2g2n0u00080al5a4tta5xz",
+        "title": "Selam Olsun"
+      },
+      {
+        "id": "cmj2fwbfk00020ajm30ptkvs7",
+        "title": "Yoksulluk Kitabı"
+      },
+      {
+        "id": "cmj2g1lm000050al5kzf0q376",
+        "title": "Bu Böyledir"
+      },
+      {
+        "id": "cmj2g29lo00070al56hofs25v",
+        "title": "Yoksulluk İçimizde"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfeqs0019xsizsbqw6jwr",
+    "name": "İsmet Özel",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:05.380Z",
+    "updatedAt": "2025-12-10T22:41:05.380Z",
+    "books": [
+      {
+        "id": "cmj0lfffc001bxsizihm84bfg",
+        "title": "Erbain"
+      },
+      {
+        "id": "cmj0lfgyu001cxsizkrwi42h2",
+        "title": "Üç Zor Mesele"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfiai001dxsizgrsug6ss",
+    "name": "Necip Fazıl Kısakürek",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:09.978Z",
+    "updatedAt": "2025-12-10T22:41:09.978Z",
+    "books": [
+      {
+        "id": "cmj0lfizc001fxsizce00genn",
+        "title": "İdeolocya Örgüsü (kod36)"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfkbd001gxsiz8ut6caz6",
+    "name": "Cemil Meriç",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:12.601Z",
+    "updatedAt": "2025-12-10T22:41:12.601Z",
+    "books": [
+      {
+        "id": "cmj0lfkrp001hxsizbkp3fa32",
+        "title": "Bu Ülke"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfm5j001ixsizfjheu69d",
+    "name": "Sezai Karakoç",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:14.983Z",
+    "updatedAt": "2025-12-10T22:41:14.983Z",
+    "books": [
+      {
+        "id": "cmj0lfmu8001kxsizs0hfavg9",
+        "title": "Diriliş Neslinin Amentüsü"
+      },
+      {
+        "id": "cmj0lfrl6001nxsizil9kjwt0",
+        "title": "Yitik Cennet"
+      },
+      {
+        "id": "cmj0lfodn001lxsiz0rf4gwzk",
+        "title": "İnsanlığın Dirilişi"
+      },
+      {
+        "id": "cmj0lfq17001mxsizkzeqrnru",
+        "title": "İslamın Dirilişi"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfujw001pxsizdfyaa1ed",
+    "name": "William L. Cleveland",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:25.868Z",
+    "updatedAt": "2025-12-10T22:41:25.868Z",
+    "books": [
+      {
+        "id": "cmj0lfv8e001rxsizpfbqy43v",
+        "title": "Modern Ortadoğu Tarihi"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfwjr001sxsizqu6i3hhp",
+    "name": "Roger Garaudy",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:28.455Z",
+    "updatedAt": "2025-12-10T22:41:28.455Z",
+    "books": [
+      {
+        "id": "cmj0lfys4001vxsiztr2xmd00",
+        "title": "İnsanlığın Medeniyet Destanı"
+      },
+      {
+        "id": "cmj0lfx8a001uxsizrw820u91",
+        "title": "İslam'ın Vadettikleri"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lg03v001wxsizcwjh6w1l",
+    "name": "Ord. Prof. Dr. Ali Fuad Başgil",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:33.067Z",
+    "updatedAt": "2025-12-10T22:41:33.067Z",
+    "books": [
+      {
+        "id": "cmj0lg0se001yxsizf2actqm2",
+        "title": "Gençlerle Başbaşa"
+      },
+      {
+        "id": "cmj0lg2k10020xsizd13ei2vb",
+        "title": "Hatıralar"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lg4ha0021xsizz52luxgf",
+    "name": "Prof. Dr. Feridun M. Emecen",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:38.734Z",
+    "updatedAt": "2025-12-10T22:41:38.734Z",
+    "books": [
+      {
+        "id": "cmj0lg55t0023xsiz2dptet5d",
+        "title": "Türklerin Serüveni"
+      },
+      {
+        "id": "cmj0lg6pt0024xsizugmvzptn",
+        "title": "Türklerin Büyükleri"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lg8110025xsizp12k5jhs",
+    "name": "Hüseyin Aziz Akyürek",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:43.333Z",
+    "updatedAt": "2025-12-10T22:41:43.333Z",
+    "books": [
+      {
+        "id": "cmj0lg8he0026xsizyr4lcj4j",
+        "title": "İstihbarat Savaşları"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lg9tx0027xsizznuvjddp",
+    "name": "Abdülkadir Selvi",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:45.669Z",
+    "updatedAt": "2025-12-10T22:41:45.669Z",
+    "books": [
+      {
+        "id": "cmj0lgaa90028xsiz1uwglvlo",
+        "title": "Darbeye Geçit yok"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lgbme0029xsizngpawiba",
+    "name": "İbn Kayyım El-Cevziyye",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:47.990Z",
+    "updatedAt": "2025-12-10T22:41:47.990Z",
+    "books": [
+      {
+        "id": "cmj0lgcaw002bxsiz736vgqio",
+        "title": "Sabredenler ve Şükredenler"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lgdlv002cxsiz5z50rn8r",
+    "name": "Ramazan Kayan",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:50.563Z",
+    "updatedAt": "2025-12-10T22:41:50.563Z",
+    "books": [
+      {
+        "id": "cmj0lgeae002exsize9a6f2xs",
+        "title": "Namaz Çağrısı"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lgfnb002fxsizkl69w644",
+    "name": "James Clear",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:53.207Z",
+    "updatedAt": "2025-12-10T22:41:53.207Z",
+    "books": [
+      {
+        "id": "cmj0lggbu002hxsizpwa3d3ib",
+        "title": "Atomik Alışkanlıklar"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lghnn002ixsiz95r641u9",
+    "name": "Malcolm Gladwell",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:55.811Z",
+    "updatedAt": "2025-12-10T22:41:55.811Z",
+    "books": [
+      {
+        "id": "cmj0lgic8002kxsizrew410hz",
+        "title": "Outliers (Çizginin Dışındakiler)"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lgjqs002lxsiztgmah8ga",
+    "name": "Rıza Güler",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:41:58.516Z",
+    "updatedAt": "2025-12-10T22:41:58.516Z",
+    "books": [
+      {
+        "id": "cmj0lgkfc002nxsizrgizu24w",
+        "title": "Stratejik İletişim"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lglq9002oxsiznpxte9kq",
+    "name": "Gareth Moore",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-10T22:42:01.089Z",
+    "updatedAt": "2025-12-10T22:42:01.089Z",
+    "books": [
+      {
+        "id": "cmj0lgmes002qxsizptf378f6",
+        "title": "Hafıza Koçu"
+      }
+    ]
+  },
+  {
+    "id": "cmj15hi0n00000ald5in9ljmx",
+    "name": "Joseph Murphy",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-11T08:02:35.255Z",
+    "updatedAt": "2025-12-11T08:02:35.255Z",
+    "books": [
+      {
+        "id": "cmj15hidk00020ald54zw1onm",
+        "title": "Bilinçaltının Gücü"
+      }
+    ]
+  },
+  {
+    "id": "cmj1jsdh800000akzxxrnvd2q",
+    "name": "Charles Duhigg",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-11T14:42:57.212Z",
+    "updatedAt": "2025-12-11T14:42:57.212Z",
+    "books": [
+      {
+        "id": "cmj1jsdu200020akz6026i6b6",
+        "title": "Alışkanlıkların Gücü"
+      }
+    ]
+  },
+  {
+    "id": "cmj1jtnh500000bl4wi8boolp",
+    "name": "Michael W. Covel",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-11T14:43:56.825Z",
+    "updatedAt": "2025-12-11T14:43:56.825Z",
+    "books": [
+      {
+        "id": "cmj1jtntp00020bl4as5yzls9",
+        "title": "Trend Takipçisi"
+      }
+    ]
+  },
+  {
+    "id": "cmj1kb63300000al7ii1g6bl3",
+    "name": "Hekimoğlu İsmail",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-11T14:57:34.095Z",
+    "updatedAt": "2025-12-11T14:57:34.095Z",
+    "books": [
+      {
+        "id": "cmj7dba4300000ajvyjhf5f3y",
+        "title": "Minyeli Abdullah (50. Yıl Özel İlk Baskı Kapak)"
+      }
+    ]
+  },
+  {
+    "id": "cmj1tsw6u00000ald4g16oqb8",
+    "name": "Martin Lings",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-11T19:23:17.622Z",
+    "updatedAt": "2025-12-11T19:23:17.622Z",
+    "books": [
+      {
+        "id": "cmj1tswb500010ald671jbz9x",
+        "title": "Hz. Muhammed'in Hayatı (Ciltsiz)"
+      }
+    ]
+  },
+  {
+    "id": "cmj2ftj7t00010ajyre3ijun5",
+    "name": "İvo Andriç",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:39:39.017Z",
+    "updatedAt": "2025-12-12T05:39:39.017Z",
+    "books": [
+      {
+        "id": "cmj2ftjc300020ajy528m7x4x",
+        "title": "Drina Köprüsü"
+      }
+    ]
+  },
+  {
+    "id": "cmj2fvsoa00000ajml9kw3f8w",
+    "name": "Mahir Ünsal Eriş",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:41:24.586Z",
+    "updatedAt": "2025-12-12T05:41:24.586Z",
+    "books": [
+      {
+        "id": "cmj2fvssj00010ajmgmukglph",
+        "title": "Bangır Bangır Ferdi Çalıyor Evde..."
+      }
+    ]
+  },
+  {
+    "id": "cmj2fxhrs00000al500xck62w",
+    "name": "George Orwell",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:42:43.768Z",
+    "updatedAt": "2025-12-12T05:42:43.768Z",
+    "books": [
+      {
+        "id": "cmj2go24k000e0al7dqnz4n1w",
+        "title": "1984"
+      },
+      {
+        "id": "cmj2fxhw900010al5i97lxcwm",
+        "title": "Hayvan Çiftliği (Ciltsiz)"
+      }
+    ]
+  },
+  {
+    "id": "cmj2fy6c300020al5ghsq9a9a",
+    "name": "Franz Kafka",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:43:15.603Z",
+    "updatedAt": "2025-12-12T05:43:15.603Z",
+    "books": [
+      {
+        "id": "cmj2fy6g700030al55ntr5nyr",
+        "title": "Dönüşüm (Karton Kapak)"
+      }
+    ]
+  },
+  {
+    "id": "cmj2fynsp00000alh1wwtozo0",
+    "name": "Rasim Özdenören",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:43:38.233Z",
+    "updatedAt": "2025-12-12T05:43:38.233Z",
+    "books": [
+      {
+        "id": "cmj2fynx600020alhb2qvyo83",
+        "title": "Müslümanca Düşünme Üzerine Denemeler"
+      },
+      {
+        "id": "cmj2fzkhk00000al515tdkp2o",
+        "title": "İmkansız Öyküler"
+      },
+      {
+        "id": "cmj2fz4ry00030alhlwl6vfso",
+        "title": "Gül Yetiştiren Adam"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g00wd00010al5xrrqp5zu",
+    "name": "İmam Gazali",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:44:41.869Z",
+    "updatedAt": "2025-12-12T05:44:41.869Z",
+    "books": [
+      {
+        "id": "cmj2g010o00030al5fblitzud",
+        "title": "Allah İçin Sevmek"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g0fj700000ajowm0mg1lj",
+    "name": "Robin Sharma",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:45:00.834Z",
+    "updatedAt": "2025-12-12T05:45:00.834Z",
+    "books": [
+      {
+        "id": "cmj2g0fnf00010ajosq2qb1tn",
+        "title": "Ferrari'sini Satan Bilge"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g33bq00090al5qih5cvut",
+    "name": "Sabahattin Ali",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:47:04.982Z",
+    "updatedAt": "2025-12-12T05:47:04.982Z",
+    "books": [
+      {
+        "id": "cmj2g33g0000b0al5qdlm7j4t",
+        "title": "Kuyucaklı Yusuf"
+      },
+      {
+        "id": "cmj2g3qtk000c0al5uey1kpsm",
+        "title": "Kürk Mantolu Madonna"
+      },
+      {
+        "id": "cmj2g793p00000al2uofc2861",
+        "title": "İçimizdeki Şeytan"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g4tvo00000ajpf76ezjg7",
+    "name": "Hayati İnanç",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:48:26.052Z",
+    "updatedAt": "2025-12-12T05:48:26.052Z",
+    "books": [
+      {
+        "id": "cmj2g4u0200020ajpmjnnr3x1",
+        "title": "Fabrika Ayarı"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g50w700000ajyiywso75d",
+    "name": "Ahmet Hamdi Tanpınar",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:48:35.143Z",
+    "updatedAt": "2025-12-12T05:48:35.143Z",
+    "books": [
+      {
+        "id": "cmj2g510h00010ajyq4a79b9n",
+        "title": "Beş Şehir"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g5rm800000aldmqez9v28",
+    "name": "Hikmet Anıl Öztekin",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:49:09.776Z",
+    "updatedAt": "2025-12-12T05:49:09.776Z",
+    "books": [
+      {
+        "id": "cmj2g5rqs00020aldqtju23s9",
+        "title": "Eyvallah - Seyyah"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g63e600000ajlp0zjxlyt",
+    "name": "Yu Hua",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:49:25.038Z",
+    "updatedAt": "2025-12-12T05:49:25.038Z",
+    "books": [
+      {
+        "id": "cmj2g63ih00020ajl31tef3ny",
+        "title": "Yaşamak"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g6aa500030ajlnmwo8rb3",
+    "name": "Michael Ende",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:49:33.965Z",
+    "updatedAt": "2025-12-12T05:49:33.965Z",
+    "books": [
+      {
+        "id": "cmj2g6aea00040ajl7zja2swu",
+        "title": "Momo"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g7l0u00050ajl0dlnhsgl",
+    "name": "Sema Maraşlı",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:50:34.542Z",
+    "updatedAt": "2025-12-12T05:50:34.542Z",
+    "books": [
+      {
+        "id": "cmj2g7l5200060ajld1kemz0g",
+        "title": "Sevmek Bu Kadar Güzelken"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g7t2500010al2yyy7r4ea",
+    "name": "Yaşar Kemal",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:50:44.957Z",
+    "updatedAt": "2025-12-12T05:50:44.957Z",
+    "books": [
+      {
+        "id": "cmj2g7t6d00020al2uhlpjg8e",
+        "title": "İnce Memed 1"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g9b2100000ak34j0w4t78",
+    "name": "Abdullah Galib Bergusi",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:51:54.937Z",
+    "updatedAt": "2025-12-12T05:51:54.937Z",
+    "books": [
+      {
+        "id": "cmj2g9ob200030ald8c1eme8z",
+        "title": "Yoldaki Mühendis 2"
+      },
+      {
+        "id": "cmj2g9b6e00020ak3nrwpyha4",
+        "title": "Yoldaki Mühendis"
+      }
+    ]
+  },
+  {
+    "id": "cmj2ga68d00030ak3o0534qua",
+    "name": "Sir Arthur Conan Doyle",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:52:35.341Z",
+    "updatedAt": "2025-12-12T05:52:35.341Z",
+    "books": [
+      {
+        "id": "cmj2gallq00060ak3wjw6u5ej",
+        "title": "Sherlock Holmes - Oyun Başladı / Bütün Hikayeler 2"
+      },
+      {
+        "id": "cmj2gbhe900090aldn45tvkvz",
+        "title": "Sherlock Holmes - Gölge Koleksiyonu / Bütün Hikayeler 5"
+      },
+      {
+        "id": "cmj2gb14h00070alduhtujp5z",
+        "title": "Sherlock Holmes – Suç Uyanıyor / Bütün Hikayeler 1"
+      },
+      {
+        "id": "cmj2gb9pj00080aldaev8jzqu",
+        "title": "Sherlock Holmes – Şüphenin İzinde / Bütün Hikayeler 3"
+      },
+      {
+        "id": "cmj2ga6co00050ak3jaosahnh",
+        "title": "Sherlock Holmes - Bir Suçun Portresi / Bütün Hikayeler 4"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gasoa00040ald75g0uy6r",
+    "name": "Ahmet Köklügiller",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:53:04.426Z",
+    "updatedAt": "2025-12-12T05:53:04.426Z",
+    "books": [
+      {
+        "id": "cmj2gassn00060aldx6m9ma4c",
+        "title": "Milliyetçilik Nedir, Ne Değildir?"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gbpj3000a0aldc9kbj3oy",
+    "name": "Dmitry Glukhovsky",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:53:47.007Z",
+    "updatedAt": "2025-12-12T05:53:47.007Z",
+    "books": [
+      {
+        "id": "cmj2gbxl100070ak3qdhnblp3",
+        "title": "Metro 2034"
+      },
+      {
+        "id": "cmj2gbpnh000c0aldivxxl59n",
+        "title": "Metro 2033"
+      },
+      {
+        "id": "cmj2gc6cq00080ak3t4el4e5f",
+        "title": "Metro 2035"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gcyc9000d0aldj7933l55",
+    "name": "Taha Kılınç",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:54:45.081Z",
+    "updatedAt": "2025-12-12T05:54:45.081Z",
+    "books": [
+      {
+        "id": "cmj2gcygj000f0ald6te0has7",
+        "title": "Kudüs Yazıları"
+      },
+      {
+        "id": "cmj2glx3v00030aiheo99ez9z",
+        "title": "Kırmadan İncitmeden"
+      },
+      {
+        "id": "cmj2gn02u000c0al7s0j3zi77",
+        "title": "Ortadoğu'ya Dair Yirmi Tez"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gd9rt000g0aldbei14upi",
+    "name": "Ahmet Ümit",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:54:59.897Z",
+    "updatedAt": "2025-12-12T05:54:59.897Z",
+    "books": [
+      {
+        "id": "cmj2gd9w3000i0aldpmpf4jt6",
+        "title": "İstanbul Hatırası"
+      }
+    ]
+  },
+  {
+    "id": "cmj2geas9000j0aldtklwqxfi",
+    "name": "Tuncay Özkan",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:55:47.865Z",
+    "updatedAt": "2025-12-12T05:55:47.865Z",
+    "books": [
+      {
+        "id": "cmj2geawd000l0ald0evj2qd1",
+        "title": "Bir Gizli Servisin Tarihi-MİT 2-F-63"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gf7ph00070ajlmf2my7p6",
+    "name": "Prof. Dr. Fahir Armaoğlu",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:56:30.533Z",
+    "updatedAt": "2025-12-12T05:56:30.533Z",
+    "books": [
+      {
+        "id": "cmj2gf7ts00080ajlxf2chobj",
+        "title": "19. Yüzyıl Siyasi Tarihi, 1789-1914 (Ciltli)"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gfl5300090ak3xb6z2cfa",
+    "name": "James L. Gelvin",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:56:47.943Z",
+    "updatedAt": "2025-12-12T05:56:47.943Z",
+    "books": [
+      {
+        "id": "cmj2gfl97000a0ak3qki73vcy",
+        "title": "Modern Ortadoğu Tarihi 1453-2015 (Ciltli)"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gfu4u000m0aldnj6dqmoh",
+    "name": "Bediüzzaman Said Nursi",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:56:59.598Z",
+    "updatedAt": "2025-12-12T05:56:59.598Z",
+    "books": [
+      {
+        "id": "cmj2gfu91000o0aldhvi9oz15",
+        "title": "Lem'alar (Çanta Boy İki Renk)"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gim2700000ajujfnxj7gm",
+    "name": "Çağlayan Yılmaz",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:59:09.103Z",
+    "updatedAt": "2025-12-12T05:59:09.103Z",
+    "books": [
+      {
+        "id": "cmj2gmfe6000b0al7vyprihxg",
+        "title": "İtbarak"
+      },
+      {
+        "id": "cmj2gt5bu00050al57jnq3y18",
+        "title": "Yafes'in Kılıcı"
+      },
+      {
+        "id": "cmj2gim6h00010ajuy0xtgv7g",
+        "title": "Atalar Cengi"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gjf0x00000aihazbuar89",
+    "name": "Dan Brown",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:59:46.641Z",
+    "updatedAt": "2025-12-12T05:59:46.641Z",
+    "books": [
+      {
+        "id": "cmj2gjf5400010aihg7uwlyon",
+        "title": "Cehennem (Karton Kapak)"
+      },
+      {
+        "id": "cmj2gsoa400040al574wrdbfr",
+        "title": "Da Vinci Şifresi"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gjopp00000al70dk8lkmo",
+    "name": "Richard Bach",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T05:59:59.197Z",
+    "updatedAt": "2025-12-12T05:59:59.197Z",
+    "books": [
+      {
+        "id": "cmj2gjotz00020al7j8751otj",
+        "title": "Martı Jonathan Livingston"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gkr0u00000ajst6jsehf4",
+    "name": "Kürşad Berkkan",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:00:48.846Z",
+    "updatedAt": "2025-12-12T06:00:48.846Z",
+    "books": [
+      {
+        "id": "cmj2gkr5600020ajs3vypja12",
+        "title": "Haarp Silahı ve Nicola Tesla"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gl4ml00030al7ncis3tzf",
+    "name": "Marcos Eduardo Neves",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:01:06.477Z",
+    "updatedAt": "2025-12-12T06:01:06.477Z",
+    "books": []
+  },
+  {
+    "id": "cmj2glbyf00060al7taveo8pw",
+    "name": "Marlo Morgan",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:01:15.975Z",
+    "updatedAt": "2025-12-12T06:01:15.975Z",
+    "books": [
+      {
+        "id": "cmj2glc2q00080al7mintjifw",
+        "title": "Bir Çift Yürek"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gm54700090al74e1l8jfg",
+    "name": "İsmail Özen",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:01:53.767Z",
+    "updatedAt": "2025-12-12T06:01:53.767Z",
+    "books": [
+      {
+        "id": "cmj2gm58d000a0al75tjkj48j",
+        "title": "Babamın Şarkısı"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gmmvu00040aihg03oj96b",
+    "name": "Erlend Loe",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:02:16.794Z",
+    "updatedAt": "2025-12-12T06:02:16.794Z",
+    "books": [
+      {
+        "id": "cmj2gmn0000050aih1oa2dr4y",
+        "title": "Doppler"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gn60900060aiheav1fpj7",
+    "name": "Khaled Hosseini",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:02:41.577Z",
+    "updatedAt": "2025-12-12T06:02:41.577Z",
+    "books": [
+      {
+        "id": "cmj2gn64m00070aih94m1t11j",
+        "title": "Bin Muhteşem Güneş"
+      },
+      {
+        "id": "cmj2gnij5000d0al7j8ct4caz",
+        "title": "Uçurtma Avcısı"
+      },
+      {
+        "id": "cmj2gnskd00080aih7nxmokb5",
+        "title": "Ve Dağlar Yankılandı"
+      }
+    ]
+  },
+  {
+    "id": "cmj2go9si000f0al7lufur3e7",
+    "name": "Jose Mauro De Vasconcelos",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:03:33.138Z",
+    "updatedAt": "2025-12-12T06:03:33.138Z",
+    "books": [
+      {
+        "id": "cmj2go9wp000g0al74u6tjzt9",
+        "title": "Şeker Portakalı (Ciltsiz)"
+      }
+    ]
+  },
+  {
+    "id": "cmj2goigp00090aihl6100h73",
+    "name": "Hüseyin Rahmi Gürpınar",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:03:44.377Z",
+    "updatedAt": "2025-12-12T06:03:44.377Z",
+    "books": [
+      {
+        "id": "cmj2goikv000a0aih0m1m49z9",
+        "title": "Gulyabani (Günümüz Türkçesiyle)"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gozef000b0aihv1b28xe8",
+    "name": "Virginia Woolf",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:04:06.327Z",
+    "updatedAt": "2025-12-12T06:04:06.327Z",
+    "books": [
+      {
+        "id": "cmj2gozin000d0aihirubh4vx",
+        "title": "Kendine Ait Bir Oda"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gpnbv00030ajsmvbqcrmm",
+    "name": "Cengiz Aytmatov",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:04:37.339Z",
+    "updatedAt": "2025-12-12T06:04:37.339Z",
+    "books": [
+      {
+        "id": "cmj2gpng100050ajs337lyw3o",
+        "title": "Beyaz Gemi"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gpwej000e0aih1ka1c4oh",
+    "name": "Forrest Carter",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:04:49.099Z",
+    "updatedAt": "2025-12-12T06:04:49.099Z",
+    "books": [
+      {
+        "id": "cmj2gpwiw000g0aihbrgbpg6j",
+        "title": "Küçük Ağaç'ın Eğitimi"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gqcqc000h0al71htjapoy",
+    "name": "Ahmed Cevdet Paşa",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:05:10.260Z",
+    "updatedAt": "2025-12-12T06:05:10.260Z",
+    "books": [
+      {
+        "id": "cmj2gqcuo000j0al7yx54bk0f",
+        "title": "Peygamber Efendimiz'in Muhtasar Hayatı"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gqmp8000h0aihdwrey1th",
+    "name": "Mustafa Armağan",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:05:23.180Z",
+    "updatedAt": "2025-12-12T06:05:23.180Z",
+    "books": [
+      {
+        "id": "cmj2gqmte000i0aih8wecp5lh",
+        "title": "Cumhuriyet Efsaneleri"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gqw7d00000al5zk1utf99",
+    "name": "Mustafa Budak",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:05:35.497Z",
+    "updatedAt": "2025-12-12T06:05:35.497Z",
+    "books": [
+      {
+        "id": "cmj2gqwbm00010al51hb41aab",
+        "title": "99 Soruda Lozan"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gr51d00020al5fdbteruc",
+    "name": "Prof. Dr. İlber Ortaylı",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:05:46.945Z",
+    "updatedAt": "2025-12-12T06:05:46.945Z",
+    "books": [
+      {
+        "id": "cmj2gr55k00030al5xcsjxef8",
+        "title": "Bir Ömür Nasıl Yaşanır?"
+      }
+    ]
+  },
+  {
+    "id": "cmj2grgqh000k0al7cban9b9q",
+    "name": "Eddi Anter",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:06:02.105Z",
+    "updatedAt": "2025-12-12T06:06:02.105Z",
+    "books": [
+      {
+        "id": "cmj2grgul000l0al70q9aaa3e",
+        "title": "Karanlıkta Yürüyen Yabancı"
+      }
+    ]
+  },
+  {
+    "id": "cmj2grs6x00060ajsrryal4en",
+    "name": "Prof. Dr. İbrahim Kafesoğlu",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:06:16.953Z",
+    "updatedAt": "2025-12-12T06:06:16.953Z",
+    "books": [
+      {
+        "id": "cmj2grsb700070ajsglitqato",
+        "title": "Türk Milli Kültürü"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gs1kz00080ajsj11egpg6",
+    "name": "Emin Demirel",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:06:29.123Z",
+    "updatedAt": "2025-12-12T06:06:29.123Z",
+    "books": [
+      {
+        "id": "cmj2gs1p200090ajsmij1ez6m",
+        "title": "Terör"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gsy4x000a0ajsqs6f0vll",
+    "name": "Hanefi Avcı",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T06:07:11.313Z",
+    "updatedAt": "2025-12-12T06:07:11.313Z",
+    "books": [
+      {
+        "id": "cmj2gsy99000c0ajs27bpu45z",
+        "title": "Cemaat'in İflası"
+      }
+    ]
+  },
+  {
+    "id": "cmj3dg66i00000bieyx3vbacy",
+    "name": "Andy Weir",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T21:21:02.538Z",
+    "updatedAt": "2025-12-12T21:21:02.538Z",
+    "books": [
+      {
+        "id": "cmj7dac2o00000biidpwk1yqv",
+        "title": "Marslı"
+      }
+    ]
+  },
+  {
+    "id": "cmj3emg1s00000al1byrjzxn3",
+    "name": "Blake Crouch",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T21:53:54.880Z",
+    "updatedAt": "2025-12-12T21:53:54.880Z",
+    "books": []
+  },
+  {
+    "id": "cmj3f0p7700000alapwrwdgpe",
+    "name": "Michael Crichton",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T22:04:59.923Z",
+    "updatedAt": "2025-12-12T22:04:59.923Z",
+    "books": []
+  },
+  {
+    "id": "cmj3fac7700000al2kk58mqmw",
+    "name": "Kurt Vonnegut",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-12T22:12:29.634Z",
+    "updatedAt": "2025-12-12T22:12:29.634Z",
+    "books": []
+  },
+  {
+    "id": "cmj7davnh00020biiw54jzywv",
+    "name": "Cem Say",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-15T16:28:00.317Z",
+    "updatedAt": "2025-12-15T16:28:00.317Z",
+    "books": [
+      {
+        "id": "cmj7davrv00040bii8cjty9ch",
+        "title": "50 Soruda Yapay Zeka"
+      }
+    ]
+  },
+  {
+    "id": "cmj7dbrdy00020ajv6fsarq46",
+    "name": "Kemal Tahir",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-15T16:28:41.446Z",
+    "updatedAt": "2025-12-15T16:28:41.446Z",
+    "books": [
+      {
+        "id": "cmj7dbri500030ajvticlol3b",
+        "title": "Devlet Ana"
+      }
+    ]
+  },
+  {
+    "id": "cmj7dc54r00060biii1hy5k5x",
+    "name": "Amin Maalouf",
+    "imageUrl": null,
+    "bio": null,
+    "createdAt": "2025-12-15T16:28:59.259Z",
+    "updatedAt": "2025-12-15T16:28:59.259Z",
+    "books": [
+      {
+        "id": "cmj7dc59400070biidqx45vxv",
+        "title": "Semerkant"
+      }
+    ]
+  }
+]

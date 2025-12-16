@@ -1,61 +1,85 @@
 "use client"
 
-import { useState, useMemo, useTransition } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Progress } from "@/components/ui/progress"
+import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import {
     Map,
     BookOpen,
     ChevronDown,
     ChevronUp,
-    Check,
     ArrowLeft,
-    CheckCircle2,
-    BookMarked,
     Search,
     X,
-    Loader2,
-    Unlink,
     Copy,
+    Plus,
+    MoreVertical,
+    Pencil,
+    Trash2,
+    ExternalLink,
+    Loader2,
+    Settings,
+    GripVertical,
+    Library,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { linkBookToReadingList, unlinkBookFromReadingList } from "@/actions/reading-lists"
 import { toast } from "sonner"
-
-type BookStatus = "not_added" | "added" | "reading" | "completed"
-
-interface UserBook {
-    id: string
-    title: string
-    coverUrl: string | null
-    status: string
-    author: { name: string } | null
-}
+import {
+    createLevel,
+    updateLevel,
+    deleteLevel,
+    updateReadingListBook,
+    removeBookFromLevel,
+    addBookFromKitapyurduToLevel,
+    addBookManuallyToLevel,
+    updateReadingList,
+} from "@/actions/reading-lists"
 
 interface ReadingListBook {
     id: string
-    title: string
-    author: string
+    bookId: string
     neden: string | null
-    pageCount: number | null
-    coverUrl: string | null
-    userStatus: BookStatus
-    userBook: {
+    sortOrder: number
+    book: {
         id: string
-        status: string
-        currentPage: number
-        pageCount: number | null
+        title: string
         coverUrl: string | null
-    } | null
+        pageCount: number | null
+        inLibrary: boolean
+        author: { id: string; name: string } | null
+        publisher: { id: string; name: string } | null
+    }
 }
 
 interface ReadingListLevel {
@@ -64,11 +88,6 @@ interface ReadingListLevel {
     name: string
     description: string | null
     books: ReadingListBook[]
-    progress: {
-        added: number
-        completed: number
-        total: number
-    }
 }
 
 interface ReadingListData {
@@ -76,28 +95,59 @@ interface ReadingListData {
     slug: string
     name: string
     description: string | null
+    coverUrl: string | null
+    sortOrder: number
     levels: ReadingListLevel[]
-    progress: {
-        total: number
-        added: number
-        completed: number
-    }
+    totalBooks: number
 }
 
 interface ReadingListClientProps {
     list: ReadingListData
-    userBooks: UserBook[]
 }
 
-export default function ReadingListClient({ list, userBooks }: ReadingListClientProps) {
+export default function ReadingListClient({ list: initialList }: ReadingListClientProps) {
+    const router = useRouter()
+    const [list, setList] = useState(initialList)
     const [expandedLevels, setExpandedLevels] = useState<Set<string>>(
         new Set(list.levels.map(l => l.id))
     )
     const [searchQuery, setSearchQuery] = useState("")
-    const [modalOpen, setModalOpen] = useState(false)
-    const [selectedReadingListBook, setSelectedReadingListBook] = useState<ReadingListBook | null>(null)
-    const [modalSearch, setModalSearch] = useState("")
-    const [isPending, startTransition] = useTransition()
+    const [isLoading, setIsLoading] = useState(false)
+
+    // Dialog states
+    const [levelDialog, setLevelDialog] = useState<{
+        open: boolean
+        mode: "create" | "edit"
+        levelId?: string
+        name: string
+        description: string
+    }>({ open: false, mode: "create", name: "", description: "" })
+
+    const [bookDialog, setBookDialog] = useState<{
+        open: boolean
+        mode: "kitapyurdu" | "manual" | "edit"
+        levelId: string
+        bookId?: string
+        url: string
+        title: string
+        author: string
+        pageCount: string
+        neden: string
+        inLibrary: boolean
+    }>({ open: false, mode: "kitapyurdu", levelId: "", url: "", title: "", author: "", pageCount: "", neden: "", inLibrary: false })
+
+    const [deleteDialog, setDeleteDialog] = useState<{
+        open: boolean
+        type: "level" | "book"
+        id: string
+        name: string
+    }>({ open: false, type: "level", id: "", name: "" })
+
+    const [listSettingsDialog, setListSettingsDialog] = useState<{
+        open: boolean
+        name: string
+        description: string
+    }>({ open: false, name: "", description: "" })
 
     const toggleLevel = (levelId: string) => {
         setExpandedLevels(prev => {
@@ -111,7 +161,7 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
         })
     }
 
-    // Arama filtreleme
+    // Filtering
     const filteredLevels = useMemo(() => {
         if (!searchQuery.trim()) return list.levels
 
@@ -119,8 +169,8 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
         return list.levels.map(level => ({
             ...level,
             books: level.books.filter(book =>
-                book.title.toLowerCase().includes(query) ||
-                book.author.toLowerCase().includes(query)
+                book.book.title.toLowerCase().includes(query) ||
+                (book.book.author?.name || "").toLowerCase().includes(query)
             )
         })).filter(level => level.books.length > 0)
     }, [list.levels, searchQuery])
@@ -129,48 +179,7 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
         return filteredLevels.reduce((sum, level) => sum + level.books.length, 0)
     }, [filteredLevels])
 
-    // Modal içindeki kitap filtreleme
-    const filteredUserBooks = useMemo(() => {
-        if (!modalSearch.trim()) return userBooks
-
-        const query = modalSearch.toLowerCase().trim()
-        return userBooks.filter(book =>
-            book.title.toLowerCase().includes(query) ||
-            book.author?.name.toLowerCase().includes(query)
-        )
-    }, [userBooks, modalSearch])
-
-    const overallProgress = list.progress.total > 0
-        ? Math.round((list.progress.completed / list.progress.total) * 100)
-        : 0
-
-    const openSelectModal = (book: ReadingListBook) => {
-        setSelectedReadingListBook(book)
-        setModalSearch("")
-        setModalOpen(true)
-    }
-
-    const handleSelectBook = (userBook: UserBook) => {
-        if (!selectedReadingListBook) return
-
-        startTransition(async () => {
-            const result = await linkBookToReadingList(
-                userBook.id,
-                selectedReadingListBook.id,
-                list.slug
-            )
-
-            if (result.success) {
-                toast.success(`"${userBook.title}" okuma listesine bağlandı`)
-                setModalOpen(false)
-                setSelectedReadingListBook(null)
-            } else {
-                toast.error(result.error || "Bir hata oluştu")
-            }
-        })
-    }
-
-    // JSON olarak kopyala
+    // Copy as JSON
     const handleCopyAsJson = () => {
         const jsonData = {
             list: {
@@ -182,11 +191,11 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
                 levelNumber: level.levelNumber,
                 name: level.name,
                 description: level.description,
-                books: level.books.map(book => ({
-                    title: book.title,
-                    author: book.author,
-                    neden: book.neden,
-                    pageCount: book.pageCount
+                books: level.books.map(rb => ({
+                    title: rb.book.title,
+                    author: rb.book.author?.name || "Bilinmeyen Yazar",
+                    neden: rb.neden,
+                    pageCount: rb.book.pageCount
                 }))
             }))
         }
@@ -196,16 +205,155 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
             .catch(() => toast.error("Kopyalama başarısız"))
     }
 
-    const handleUnlink = (book: ReadingListBook) => {
-        startTransition(async () => {
-            const result = await unlinkBookFromReadingList(book.id, list.slug)
+    // Level handlers
+    const handleLevelSubmit = async () => {
+        if (!levelDialog.name.trim()) {
+            toast.error("Seviye adı gerekli")
+            return
+        }
 
-            if (result.success) {
-                toast.success("Bağlantı kaldırıldı")
-            } else {
-                toast.error(result.error || "Bir hata oluştu")
+        setIsLoading(true)
+        try {
+            if (levelDialog.mode === "create") {
+                const result = await createLevel({
+                    readingListId: list.id,
+                    name: levelDialog.name,
+                    description: levelDialog.description || undefined
+                })
+                if (result.success) {
+                    toast.success("Seviye eklendi")
+                    router.refresh()
+                } else {
+                    toast.error(result.error)
+                }
+            } else if (levelDialog.levelId) {
+                const result = await updateLevel(levelDialog.levelId, {
+                    name: levelDialog.name,
+                    description: levelDialog.description || undefined
+                })
+                if (result.success) {
+                    toast.success("Seviye güncellendi")
+                    router.refresh()
+                } else {
+                    toast.error(result.error)
+                }
             }
-        })
+            setLevelDialog({ open: false, mode: "create", name: "", description: "" })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    // Book handlers
+    const handleBookSubmit = async () => {
+        setIsLoading(true)
+        try {
+            if (bookDialog.mode === "kitapyurdu") {
+                if (!bookDialog.url.trim()) {
+                    toast.error("URL gerekli")
+                    return
+                }
+                const result = await addBookFromKitapyurduToLevel({
+                    levelId: bookDialog.levelId,
+                    kitapyurduUrl: bookDialog.url,
+                    neden: bookDialog.neden || undefined,
+                    inLibrary: bookDialog.inLibrary
+                })
+                if (result.success) {
+                    toast.success(`"${result.bookTitle}" eklendi`)
+                    router.refresh()
+                } else {
+                    toast.error(result.error)
+                    return
+                }
+            } else if (bookDialog.mode === "manual") {
+                if (!bookDialog.title.trim() || !bookDialog.author.trim()) {
+                    toast.error("Kitap adı ve yazar gerekli")
+                    return
+                }
+                const result = await addBookManuallyToLevel({
+                    levelId: bookDialog.levelId,
+                    title: bookDialog.title,
+                    author: bookDialog.author,
+                    pageCount: bookDialog.pageCount ? parseInt(bookDialog.pageCount) : undefined,
+                    neden: bookDialog.neden || undefined,
+                    inLibrary: bookDialog.inLibrary
+                })
+                if (result.success) {
+                    toast.success("Kitap eklendi")
+                    router.refresh()
+                } else {
+                    toast.error(result.error)
+                    return
+                }
+            } else if (bookDialog.mode === "edit" && bookDialog.bookId) {
+                const result = await updateReadingListBook(bookDialog.bookId, {
+                    neden: bookDialog.neden || undefined
+                })
+                if (result.success) {
+                    toast.success("Kitap güncellendi")
+                    router.refresh()
+                } else {
+                    toast.error(result.error)
+                    return
+                }
+            }
+            setBookDialog({ open: false, mode: "kitapyurdu", levelId: "", url: "", title: "", author: "", pageCount: "", neden: "", inLibrary: false })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    // Delete handlers
+    const handleDelete = async () => {
+        setIsLoading(true)
+        try {
+            if (deleteDialog.type === "level") {
+                const result = await deleteLevel(deleteDialog.id)
+                if (result.success) {
+                    toast.success("Seviye silindi")
+                    router.refresh()
+                } else {
+                    toast.error(result.error)
+                }
+            } else {
+                const result = await removeBookFromLevel(deleteDialog.id)
+                if (result.success) {
+                    toast.success("Kitap listeden kaldırıldı")
+                    router.refresh()
+                } else {
+                    toast.error(result.error)
+                }
+            }
+            setDeleteDialog({ open: false, type: "level", id: "", name: "" })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    // List settings handler
+    const handleListSettingsSubmit = async () => {
+        if (!listSettingsDialog.name.trim()) {
+            toast.error("Liste adı gerekli")
+            return
+        }
+
+        setIsLoading(true)
+        try {
+            const result = await updateReadingList(list.id, {
+                name: listSettingsDialog.name,
+                description: listSettingsDialog.description || undefined
+            })
+            if (result.success) {
+                toast.success("Liste güncellendi")
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+            setListSettingsDialog({ open: false, name: "", description: "" })
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -219,15 +367,30 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
                     <ArrowLeft className="h-4 w-4" />
                     Tüm Listeler
                 </Link>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCopyAsJson}
-                    className="gap-2"
-                >
-                    <Copy className="h-4 w-4" />
-                    JSON Kopyala
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyAsJson}
+                        className="gap-2"
+                    >
+                        <Copy className="h-4 w-4" />
+                        <span className="hidden sm:inline">JSON</span>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setListSettingsDialog({
+                            open: true,
+                            name: list.name,
+                            description: list.description || ""
+                        })}
+                        className="gap-2"
+                    >
+                        <Settings className="h-4 w-4" />
+                        <span className="hidden sm:inline">Ayarlar</span>
+                    </Button>
+                </div>
             </div>
 
             {/* Header */}
@@ -242,29 +405,25 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
                     </p>
                 )}
 
-                {/* Overall Progress */}
-                <div className="mt-6 p-4 bg-muted/30 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">Genel İlerleme</span>
-                        <span className="text-sm text-muted-foreground">
-                            {list.progress.completed}/{list.progress.total} kitap tamamlandı
-                        </span>
-                    </div>
-                    <Progress value={overallProgress} className="h-2" />
-                    <div className="flex items-center gap-6 mt-3 text-sm">
+                {/* Stats */}
+                <div className="mt-6 p-4 bg-muted/30 rounded-lg flex items-center justify-between">
+                    <div className="flex items-center gap-6 text-sm">
                         <span className="flex items-center gap-1 text-muted-foreground">
                             <BookOpen className="h-4 w-4" />
                             {list.levels.length} seviye
                         </span>
-                        <span className="flex items-center gap-1 text-blue-600">
-                            <BookMarked className="h-4 w-4" />
-                            {list.progress.added} eklendi
-                        </span>
-                        <span className="flex items-center gap-1 text-green-600">
-                            <CheckCircle2 className="h-4 w-4" />
-                            {list.progress.completed} okundu
+                        <span className="font-medium">
+                            {list.totalBooks} kitap
                         </span>
                     </div>
+                    <Button
+                        size="sm"
+                        onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "" })}
+                        className="gap-2"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Seviye Ekle
+                    </Button>
                 </div>
 
                 {/* Search */}
@@ -295,6 +454,21 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
 
             {/* Levels */}
             <div className="space-y-6">
+                {list.levels.length === 0 && (
+                    <div className="text-center py-12 border border-dashed rounded-xl">
+                        <Map className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                        <p className="text-lg font-medium text-muted-foreground">Henüz seviye yok</p>
+                        <p className="text-sm text-muted-foreground mt-1">İlk seviyeyi ekleyerek başlayın</p>
+                        <Button
+                            className="mt-4"
+                            onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "" })}
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Seviye Ekle
+                        </Button>
+                    </div>
+                )}
+
                 {searchQuery && filteredLevels.length === 0 && (
                     <div className="text-center py-12 text-muted-foreground">
                         <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -302,52 +476,100 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
                         <p className="text-sm mt-1">&quot;{searchQuery}&quot; ile eşleşen kitap yok</p>
                     </div>
                 )}
+
                 {filteredLevels.map((level) => {
                     const isExpanded = expandedLevels.has(level.id)
-                    const levelProgress = level.progress.total > 0
-                        ? Math.round((level.progress.completed / level.progress.total) * 100)
-                        : 0
-                    const isLevelComplete = levelProgress === 100
 
                     return (
                         <div key={level.id} className="border rounded-xl overflow-hidden">
                             {/* Level Header */}
-                            <button
-                                onClick={() => toggleLevel(level.id)}
-                                className={cn(
-                                    "w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors",
-                                    isLevelComplete && "bg-green-50 dark:bg-green-900/10"
-                                )}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className={cn(
-                                        "w-10 h-10 rounded-full flex items-center justify-center font-bold",
-                                        isLevelComplete
-                                            ? "bg-green-500 text-white"
-                                            : "bg-primary text-primary-foreground"
-                                    )}>
-                                        {isLevelComplete ? <Check className="h-5 w-5" /> : level.levelNumber}
+                            <div className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+                                <button
+                                    onClick={() => toggleLevel(level.id)}
+                                    className="flex items-center gap-4 flex-1"
+                                >
+                                    <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-primary text-primary-foreground">
+                                        {level.levelNumber}
                                     </div>
                                     <div className="text-left">
                                         <h2 className="font-semibold">
                                             Seviye {level.levelNumber}: {level.name}
                                         </h2>
                                         <p className="text-sm text-muted-foreground">
-                                            {level.progress.completed}/{level.progress.total} kitap okundu
+                                            {level.books.length} kitap
                                         </p>
                                     </div>
+                                </button>
+                                <div className="flex items-center gap-2">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                <MoreVertical className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => setBookDialog({
+                                                open: true,
+                                                mode: "kitapyurdu",
+                                                levelId: level.id,
+                                                url: "",
+                                                title: "",
+                                                author: "",
+                                                pageCount: "",
+                                                neden: "",
+                                                inLibrary: false
+                                            })}>
+                                                <ExternalLink className="h-4 w-4 mr-2" />
+                                                Kitapyurdu&apos;ndan Ekle
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => setBookDialog({
+                                                open: true,
+                                                mode: "manual",
+                                                levelId: level.id,
+                                                url: "",
+                                                title: "",
+                                                author: "",
+                                                pageCount: "",
+                                                neden: "",
+                                                inLibrary: false
+                                            })}>
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Manuel Ekle
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem onClick={() => setLevelDialog({
+                                                open: true,
+                                                mode: "edit",
+                                                levelId: level.id,
+                                                name: level.name,
+                                                description: level.description || ""
+                                            })}>
+                                                <Pencil className="h-4 w-4 mr-2" />
+                                                Seviyeyi Düzenle
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                className="text-destructive"
+                                                onClick={() => setDeleteDialog({
+                                                    open: true,
+                                                    type: "level",
+                                                    id: level.id,
+                                                    name: level.name
+                                                })}
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Seviyeyi Sil
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                    <button onClick={() => toggleLevel(level.id)}>
+                                        {isExpanded ? (
+                                            <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                        ) : (
+                                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                        )}
+                                    </button>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="hidden sm:block w-32">
-                                        <Progress value={levelProgress} className="h-1.5" />
-                                    </div>
-                                    {isExpanded ? (
-                                        <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                                    ) : (
-                                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                                    )}
-                                </div>
-                            </button>
+                            </div>
 
                             {/* Level Content */}
                             {isExpanded && (
@@ -358,125 +580,124 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
                                         </p>
                                     )}
 
-                                    <div className="divide-y">
-                                        {level.books.map((book) => {
-                                            const isLinked = book.userStatus !== "not_added"
-                                            const coverUrl = book.userBook?.coverUrl || book.coverUrl
-
-                                            return (
+                                    {level.books.length === 0 ? (
+                                        <div className="p-8 text-center text-muted-foreground">
+                                            <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                            <p>Bu seviyede kitap yok</p>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="mt-3"
+                                                onClick={() => setBookDialog({
+                                                    open: true,
+                                                    mode: "kitapyurdu",
+                                                    levelId: level.id,
+                                                    url: "",
+                                                    title: "",
+                                                    author: "",
+                                                    pageCount: "",
+                                                    neden: "",
+                                                    inLibrary: false
+                                                })}
+                                            >
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Kitap Ekle
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <div className="divide-y">
+                                            {level.books.map((book) => (
                                                 <div
                                                     key={book.id}
-                                                    className={cn(
-                                                        "p-4 hover:bg-muted/30 transition-colors",
-                                                        book.userStatus === "completed" && "bg-green-50/50 dark:bg-green-900/5"
-                                                    )}
+                                                    className="p-4 hover:bg-muted/30 transition-colors group"
                                                 >
                                                     <div className="flex items-start gap-4">
                                                         {/* Book Cover */}
-                                                        {isLinked ? (
-                                                            <Link href={`/book/${book.userBook?.id}`} className="flex-shrink-0 group">
-                                                                <div className="relative h-20 w-14 overflow-hidden rounded-md border shadow-sm group-hover:shadow-md group-hover:ring-2 ring-primary transition-all">
-                                                                    {coverUrl ? (
-                                                                        <Image
-                                                                            src={coverUrl}
-                                                                            alt={book.title}
-                                                                            fill
-                                                                            className="object-cover"
-                                                                        />
-                                                                    ) : (
-                                                                        <div className="h-full w-full bg-muted flex items-center justify-center">
-                                                                            <BookOpen className="h-6 w-6 text-muted-foreground" />
-                                                                        </div>
-                                                                    )}
-                                                                    {/* Status indicator */}
-                                                                    <div className={cn(
-                                                                        "absolute bottom-0 left-0 right-0 py-0.5 text-center text-[10px] font-medium",
-                                                                        book.userStatus === "completed" && "bg-green-500 text-white",
-                                                                        book.userStatus === "reading" && "bg-yellow-500 text-white",
-                                                                        book.userStatus === "added" && "bg-blue-500 text-white"
-                                                                    )}>
-                                                                        {book.userStatus === "completed" && "Okundu"}
-                                                                        {book.userStatus === "reading" && "Okunuyor"}
-                                                                        {book.userStatus === "added" && "Eklendi"}
-                                                                    </div>
+                                                        <div className="relative flex-shrink-0 h-20 w-14 rounded-md border bg-muted/50 overflow-hidden">
+                                                            {book.book.coverUrl ? (
+                                                                <Image
+                                                                    src={book.book.coverUrl}
+                                                                    alt={book.book.title}
+                                                                    fill
+                                                                    className="object-cover"
+                                                                    unoptimized
+                                                                />
+                                                            ) : (
+                                                                <div className="flex items-center justify-center h-full">
+                                                                    <BookOpen className="h-6 w-6 text-muted-foreground/50" />
                                                                 </div>
-                                                            </Link>
-                                                        ) : (
-                                                            <div className="flex-shrink-0 h-20 w-14 rounded-md border bg-muted/50 flex items-center justify-center">
-                                                                <BookOpen className="h-6 w-6 text-muted-foreground/50" />
-                                                            </div>
-                                                        )}
+                                                            )}
+                                                            {book.book.inLibrary && (
+                                                                <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-primary-foreground text-[10px] text-center py-0.5">
+                                                                    <Library className="h-3 w-3 inline" />
+                                                                </div>
+                                                            )}
+                                                        </div>
 
                                                         {/* Book Info */}
                                                         <div className="flex-1 min-w-0">
-                                                            <div className="flex items-start justify-between gap-4">
-                                                                <div>
-                                                                    <h3 className="font-medium">
-                                                                        {isLinked ? (
-                                                                            <Link href={`/book/${book.userBook?.id}`} className="hover:underline hover:text-primary transition-colors">
-                                                                                {book.title}
-                                                                            </Link>
-                                                                        ) : (
-                                                                            book.title
-                                                                        )}
-                                                                    </h3>
-                                                                    <p className="text-sm text-muted-foreground">
-                                                                        {book.author}
-                                                                        {book.pageCount && ` • ${book.pageCount} sayfa`}
-                                                                    </p>
-                                                                </div>
-
-                                                                {/* Action Buttons */}
-                                                                <div className="flex items-center gap-2">
-                                                                    {isLinked ? (
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="sm"
-                                                                            onClick={() => handleUnlink(book)}
-                                                                            disabled={isPending}
-                                                                            className="text-muted-foreground hover:text-destructive"
-                                                                        >
-                                                                            <Unlink className="h-4 w-4" />
-                                                                        </Button>
-                                                                    ) : (
-                                                                        <Button
-                                                                            variant="outline"
-                                                                            size="sm"
-                                                                            onClick={() => openSelectModal(book)}
-                                                                            disabled={isPending}
-                                                                        >
-                                                                            Seç
-                                                                        </Button>
-                                                                    )}
-                                                                </div>
+                                                            <div>
+                                                                <h3 className="font-medium">
+                                                                    {book.book.title}
+                                                                </h3>
+                                                                <p className="text-sm text-muted-foreground">
+                                                                    {book.book.author?.name || "Bilinmeyen Yazar"}
+                                                                    {book.book.pageCount && ` • ${book.book.pageCount} sayfa`}
+                                                                </p>
                                                             </div>
 
-                                                            {/* Neden (Why) */}
                                                             {book.neden && (
                                                                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                                                                     <span className="font-medium text-foreground">Neden: </span>
                                                                     {book.neden}
                                                                 </p>
                                                             )}
+                                                        </div>
 
-                                                            {/* Reading Progress */}
-                                                            {book.userStatus === "reading" && book.userBook && book.userBook.pageCount && (
-                                                                <div className="mt-2 flex items-center gap-2">
-                                                                    <Progress
-                                                                        value={(book.userBook.currentPage / book.userBook.pageCount) * 100}
-                                                                        className="h-1 flex-1 max-w-32"
-                                                                    />
-                                                                    <span className="text-xs text-muted-foreground">
-                                                                        {book.userBook.currentPage}/{book.userBook.pageCount}
-                                                                    </span>
-                                                                </div>
-                                                            )}
+                                                        {/* Book Actions */}
+                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                                        <MoreVertical className="h-4 w-4" />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end">
+                                                                    <DropdownMenuItem onClick={() => setBookDialog({
+                                                                        open: true,
+                                                                        mode: "edit",
+                                                                        levelId: level.id,
+                                                                        bookId: book.id,
+                                                                        url: "",
+                                                                        title: book.book.title,
+                                                                        author: book.book.author?.name || "",
+                                                                        pageCount: book.book.pageCount?.toString() || "",
+                                                                        neden: book.neden || "",
+                                                                        inLibrary: book.book.inLibrary
+                                                                    })}>
+                                                                        <Pencil className="h-4 w-4 mr-2" />
+                                                                        Düzenle
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        className="text-destructive"
+                                                                        onClick={() => setDeleteDialog({
+                                                                            open: true,
+                                                                            type: "book",
+                                                                            id: book.id,
+                                                                            name: book.book.title
+                                                                        })}
+                                                                    >
+                                                                        <Trash2 className="h-4 w-4 mr-2" />
+                                                                        Listeden Kaldır
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            )
-                                        })}
-                                    </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -484,102 +705,215 @@ export default function ReadingListClient({ list, userBooks }: ReadingListClient
                 })}
             </div>
 
-            {/* Book Selection Modal */}
-            <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-                <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+            {/* Level Dialog */}
+            <Dialog open={levelDialog.open} onOpenChange={(open) => !open && setLevelDialog({ ...levelDialog, open: false })}>
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>
-                            Kütüphaneden Kitap Seç
+                            {levelDialog.mode === "create" ? "Yeni Seviye" : "Seviye Düzenle"}
                         </DialogTitle>
-                        {selectedReadingListBook && (
-                            <p className="text-sm text-muted-foreground">
-                                &quot;{selectedReadingListBook.title}&quot; için kütüphanenizden bir kitap seçin
-                            </p>
-                        )}
+                        <DialogDescription>
+                            {levelDialog.mode === "create"
+                                ? "Listeye yeni bir seviye ekleyin"
+                                : "Seviye bilgilerini güncelleyin"
+                            }
+                        </DialogDescription>
                     </DialogHeader>
-
-                    {/* Search in Modal */}
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="text"
-                            placeholder="Kitap ara..."
-                            value={modalSearch}
-                            onChange={(e) => setModalSearch(e.target.value)}
-                            className="pl-10"
-                        />
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="level-name">Seviye Adı</Label>
+                            <Input
+                                id="level-name"
+                                placeholder="Örn: Başlangıç"
+                                value={levelDialog.name}
+                                onChange={(e) => setLevelDialog({ ...levelDialog, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="level-description">Açıklama (Opsiyonel)</Label>
+                            <Textarea
+                                id="level-description"
+                                placeholder="Bu seviyede hangi kitaplar var?"
+                                value={levelDialog.description}
+                                onChange={(e) => setLevelDialog({ ...levelDialog, description: e.target.value })}
+                            />
+                        </div>
                     </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setLevelDialog({ ...levelDialog, open: false })}>
+                            Vazgeç
+                        </Button>
+                        <Button onClick={handleLevelSubmit} disabled={isLoading}>
+                            {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            {levelDialog.mode === "create" ? "Ekle" : "Kaydet"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
-                    {/* Book List */}
-                    <div className="flex-1 overflow-y-auto -mx-6 px-6">
-                        {userBooks.length === 0 ? (
-                            <div className="text-center py-12 text-muted-foreground">
-                                <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                <p className="text-lg font-medium">Kütüphaneniz boş</p>
-                                <p className="text-sm mt-1">Önce kütüphanenize kitap ekleyin</p>
-                                <Button asChild className="mt-4">
-                                    <Link href="/library/add">Kitap Ekle</Link>
-                                </Button>
+            {/* Book Dialog */}
+            <Dialog open={bookDialog.open} onOpenChange={(open) => !open && setBookDialog({ ...bookDialog, open: false })}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>
+                            {bookDialog.mode === "kitapyurdu" && "Kitapyurdu'ndan Ekle"}
+                            {bookDialog.mode === "manual" && "Manuel Kitap Ekle"}
+                            {bookDialog.mode === "edit" && "Kitap Düzenle"}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {bookDialog.mode === "kitapyurdu" && "Kitapyurdu linkini yapıştırın"}
+                            {bookDialog.mode === "manual" && "Kitap bilgilerini girin"}
+                            {bookDialog.mode === "edit" && "Kitap bilgilerini güncelleyin"}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        {bookDialog.mode === "kitapyurdu" && (
+                            <div className="space-y-2">
+                                <Label htmlFor="book-url">Kitapyurdu Linki</Label>
+                                <Input
+                                    id="book-url"
+                                    placeholder="https://www.kitapyurdu.com/kitap/..."
+                                    value={bookDialog.url}
+                                    onChange={(e) => setBookDialog({ ...bookDialog, url: e.target.value })}
+                                />
                             </div>
-                        ) : filteredUserBooks.length === 0 ? (
-                            <div className="text-center py-12 text-muted-foreground">
-                                <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                <p className="text-lg font-medium">Kitap bulunamadı</p>
-                                <p className="text-sm mt-1">&quot;{modalSearch}&quot; ile eşleşen kitap yok</p>
+                        )}
+
+                        {bookDialog.mode === "manual" && (
+                            <>
+                                <div className="space-y-2">
+                                    <Label htmlFor="book-title">Kitap Adı</Label>
+                                    <Input
+                                        id="book-title"
+                                        placeholder="Kitap adı"
+                                        value={bookDialog.title}
+                                        onChange={(e) => setBookDialog({ ...bookDialog, title: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="book-author">Yazar</Label>
+                                    <Input
+                                        id="book-author"
+                                        placeholder="Yazar adı"
+                                        value={bookDialog.author}
+                                        onChange={(e) => setBookDialog({ ...bookDialog, author: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="book-pages">Sayfa Sayısı (Opsiyonel)</Label>
+                                    <Input
+                                        id="book-pages"
+                                        type="number"
+                                        placeholder="300"
+                                        value={bookDialog.pageCount}
+                                        onChange={(e) => setBookDialog({ ...bookDialog, pageCount: e.target.value })}
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {bookDialog.mode === "edit" && (
+                            <div className="p-3 bg-muted/50 rounded-lg">
+                                <p className="font-medium">{bookDialog.title}</p>
+                                <p className="text-sm text-muted-foreground">{bookDialog.author}</p>
                             </div>
-                        ) : (
-                            <div className="space-y-2 py-2">
-                                {filteredUserBooks.map((book) => (
-                                    <button
-                                        key={book.id}
-                                        onClick={() => handleSelectBook(book)}
-                                        disabled={isPending}
-                                        className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 hover:border-primary transition-colors text-left disabled:opacity-50"
-                                    >
-                                        {/* Cover */}
-                                        <div className="relative h-16 w-11 flex-shrink-0 overflow-hidden rounded bg-muted">
-                                            {book.coverUrl ? (
-                                                <Image
-                                                    src={book.coverUrl}
-                                                    alt={book.title}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            ) : (
-                                                <div className="h-full w-full flex items-center justify-center">
-                                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                                </div>
-                                            )}
-                                        </div>
+                        )}
 
-                                        {/* Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-medium truncate">{book.title}</p>
-                                            <p className="text-sm text-muted-foreground truncate">
-                                                {book.author?.name || "Bilinmeyen Yazar"}
-                                            </p>
-                                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="book-neden">Bu Kitap Neden Okunmalı? (Opsiyonel)</Label>
+                            <Textarea
+                                id="book-neden"
+                                placeholder="Bu kitabı neden bu listeye eklediniz?"
+                                value={bookDialog.neden}
+                                onChange={(e) => setBookDialog({ ...bookDialog, neden: e.target.value })}
+                            />
+                        </div>
 
-                                        {/* Status Badge */}
-                                        <span className={cn(
-                                            "text-xs px-2 py-1 rounded-full font-medium flex-shrink-0",
-                                            book.status === "COMPLETED" && "bg-green-100 text-green-700",
-                                            book.status === "READING" && "bg-yellow-100 text-yellow-700",
-                                            book.status === "TO_READ" && "bg-blue-100 text-blue-700",
-                                            book.status === "DNF" && "bg-gray-100 text-gray-700"
-                                        )}>
-                                            {book.status === "COMPLETED" && "Okundu"}
-                                            {book.status === "READING" && "Okunuyor"}
-                                            {book.status === "TO_READ" && "Okunacak"}
-                                            {book.status === "DNF" && "Bırakıldı"}
-                                        </span>
-
-                                        {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                                    </button>
-                                ))}
+                        {bookDialog.mode !== "edit" && (
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="book-inLibrary"
+                                    checked={bookDialog.inLibrary}
+                                    onCheckedChange={(checked) => setBookDialog({ ...bookDialog, inLibrary: checked === true })}
+                                />
+                                <Label htmlFor="book-inLibrary" className="text-sm font-normal">
+                                    Bu kitap kütüphanemde var
+                                </Label>
                             </div>
                         )}
                     </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setBookDialog({ ...bookDialog, open: false })}>
+                            Vazgeç
+                        </Button>
+                        <Button onClick={handleBookSubmit} disabled={isLoading}>
+                            {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            {bookDialog.mode === "edit" ? "Kaydet" : "Ekle"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Dialog */}
+            <AlertDialog open={deleteDialog.open} onOpenChange={(open) => !open && setDeleteDialog({ ...deleteDialog, open: false })}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            {deleteDialog.type === "level" ? "Seviyeyi Sil" : "Kitabı Kaldır"}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {deleteDialog.type === "level"
+                                ? `"${deleteDialog.name}" seviyesini ve içindeki tüm kitapları silmek istediğinize emin misiniz?`
+                                : `"${deleteDialog.name}" kitabını bu listeden kaldırmak istediğinize emin misiniz?`
+                            }
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            Sil
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* List Settings Dialog */}
+            <Dialog open={listSettingsDialog.open} onOpenChange={(open) => !open && setListSettingsDialog({ ...listSettingsDialog, open: false })}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Liste Ayarları</DialogTitle>
+                        <DialogDescription>
+                            Liste bilgilerini güncelleyin
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="list-name">Liste Adı</Label>
+                            <Input
+                                id="list-name"
+                                value={listSettingsDialog.name}
+                                onChange={(e) => setListSettingsDialog({ ...listSettingsDialog, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="list-description">Açıklama</Label>
+                            <Textarea
+                                id="list-description"
+                                value={listSettingsDialog.description}
+                                onChange={(e) => setListSettingsDialog({ ...listSettingsDialog, description: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setListSettingsDialog({ ...listSettingsDialog, open: false })}>
+                            Vazgeç
+                        </Button>
+                        <Button onClick={handleListSettingsSubmit} disabled={isLoading}>
+                            {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            Kaydet
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

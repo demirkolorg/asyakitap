@@ -17,12 +17,12 @@ export async function GET() {
                     include: {
                         books: {
                             orderBy: { sortOrder: "asc" },
-                            select: {
-                                id: true,
-                                title: true,
-                                author: true,
-                                neden: true,
-                                pageCount: true
+                            include: {
+                                book: {
+                                    include: {
+                                        author: true
+                                    }
+                                }
                             }
                         }
                     }
@@ -40,11 +40,11 @@ export async function GET() {
                 levelNumber: level.levelNumber,
                 name: level.name,
                 description: level.description,
-                books: level.books.map(book => ({
-                    title: book.title,
-                    author: book.author,
-                    neden: book.neden,
-                    pageCount: book.pageCount
+                books: level.books.map(rb => ({
+                    title: rb.book.title,
+                    author: rb.book.author?.name || "Bilinmeyen Yazar",
+                    neden: rb.neden,
+                    pageCount: rb.book.pageCount
                 }))
             }))
         }))

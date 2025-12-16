@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
@@ -14,11 +14,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { updateBook, deleteBook, getLinkedChallengeBook, getLinkedChallengeBookWithDetails, getBookDependencies } from "@/actions/library"
-import { updateTakeaway } from "@/actions/challenge"
+import { updateBook, deleteBook } from "@/actions/library"
 import { analyzeTortu, analyzeImza } from "@/actions/ai"
 import { useRouter } from "next/navigation"
 import {
@@ -38,18 +36,12 @@ import {
     Plus,
     PenLine,
     Building2,
-    Map,
     Barcode,
-    Sparkles,
-    Layers,
     Bot,
     Loader2,
     RefreshCw,
-    Target,
-    Trophy,
-    Star,
 } from "lucide-react"
-import { addQuote, deleteQuote } from "@/actions/quotes"
+import { addQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
 import { toast } from "sonner"
 import {
@@ -88,54 +80,9 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
     ),
 })
 import { cn } from "@/lib/utils"
-import { getReadingListColor } from "@/lib/reading-list-colors"
 
 // Types
-import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, UserReadingListBook, ReadingListBook, ReadingListLevel, ReadingList } from "@prisma/client"
-
-type UserReadingListBookWithDetails = UserReadingListBook & {
-    readingListBook: ReadingListBook & {
-        level: ReadingListLevel & {
-            readingList: ReadingList
-        }
-    }
-}
-
-// Challenge bilgisi tipi
-type ChallengeInfo = {
-    id: string
-    status: string
-    takeaway: string | null
-    startedAt: Date | null
-    completedAt: Date | null
-    challengeBook: {
-        id: string
-        title: string
-        author: string
-        role: string
-        reason: string | null
-    }
-    month: {
-        monthNumber: number
-        monthName: string
-        theme: string
-        themeIcon: string | null
-    }
-    challenge: {
-        id: string
-        year: number
-        name: string
-    }
-    stats: {
-        totalBooks: number
-        completedBooks: number
-        mainBooks: number
-        bonusBooks: number
-        completedMainBooks: number
-        completedBonusBooks: number
-        percentage: number
-    }
-} | null
+import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher } from "@prisma/client"
 
 interface BookDetailClientProps {
     book: Book & {
@@ -143,12 +90,10 @@ interface BookDetailClientProps {
         readingLogs: ReadingLog[]
         author: Author | null
         publisher: Publisher | null
-        userReadingListBooks: UserReadingListBookWithDetails[]
     }
-    challengeInfo: ChallengeInfo
 }
 
-export default function BookDetailClient({ book, challengeInfo }: BookDetailClientProps) {
+export default function BookDetailClient({ book }: BookDetailClientProps) {
     const router = useRouter()
     const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "history">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
@@ -179,27 +124,11 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
     const [progressInput, setProgressInput] = useState(book.currentPage.toString())
     const [mounted, setMounted] = useState(false)
 
-    // Takeaway (Challenge için)
-    const [showTakeawayDialog, setShowTakeawayDialog] = useState(false)
-    const [takeawayText, setTakeawayText] = useState("")
-    const [isSavingTakeaway, setIsSavingTakeaway] = useState(false)
-    const [linkedChallengeBookId, setLinkedChallengeBookId] = useState<string | null>(null)
-
     // AI yorum state'leri - kaydedilmiş yorumları başlangıçta yükle
     const [tortuAiComment, setTortuAiComment] = useState<string | null>(book.tortuAiComment || null)
     const [imzaAiComment, setImzaAiComment] = useState<string | null>(book.imzaAiComment || null)
     const [isAnalyzingTortu, setIsAnalyzingTortu] = useState(false)
     const [isAnalyzingImza, setIsAnalyzingImza] = useState(false)
-
-    // Silme için bağımlılık kontrolü state'i
-    const [deleteConfirmState, setDeleteConfirmState] = useState<{
-        step: 'initial' | 'confirm-dependencies'
-        dependencies?: {
-            hasLinks: boolean
-            readingLists: { listName: string; bookTitle: string }[]
-            challenges: { challengeName: string; monthName: string; bookTitle: string }[]
-        }
-    }>({ step: 'initial' })
 
     useEffect(() => {
         setMounted(true)
@@ -209,19 +138,7 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
 
     const handleDeleteBook = async () => {
         setIsDeleting(true)
-
-        // İlk silme denemesi - bağımlılıkları kontrol et
-        const result = await deleteBook(book.id, false)
-
-        if (result.requiresConfirmation && result.dependencies) {
-            // Bağlantılar var - kullanıcıyı bilgilendir
-            setDeleteConfirmState({
-                step: 'confirm-dependencies',
-                dependencies: result.dependencies
-            })
-            setIsDeleting(false)
-            return
-        }
+        const result = await deleteBook(book.id)
 
         if (result.success) {
             toast.success("Kitap silindi")
@@ -230,22 +147,6 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
             toast.error(result.error || "Kitap silinemedi")
             setIsDeleting(false)
         }
-    }
-
-    const handleConfirmDeleteWithDependencies = async () => {
-        setIsDeleting(true)
-        const result = await deleteBook(book.id, true) // Force delete
-
-        if (result.success) {
-            toast.success("Kitap silindi (bağlantılar kaldırıldı)")
-            router.push("/library")
-        } else {
-            toast.error(result.error || "Kitap silinemedi")
-        }
-
-        setIsDeleting(false)
-        setShowDeleteDialog(false)
-        setDeleteConfirmState({ step: 'initial' })
     }
 
     const handleEditBook = async () => {
@@ -402,35 +303,11 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
             setCurrentStatus("COMPLETED")
             setCurrentPage(book.pageCount || currentPage)
             toast.success("Tebrikler! Kitabı bitirdin!")
-
-            // Challenge'a bağlı mı kontrol et
-            const linkedBook = await getLinkedChallengeBook(book.id)
-            if (linkedBook) {
-                setLinkedChallengeBookId(linkedBook.id)
-                setShowTakeawayDialog(true)
-            }
-
             router.refresh()
         } else {
             toast.error("Bir hata oluştu")
         }
         setIsUpdatingStatus(false)
-    }
-
-    const handleSaveTakeaway = async () => {
-        if (!linkedChallengeBookId) return
-
-        setIsSavingTakeaway(true)
-        const result = await updateTakeaway(linkedChallengeBookId, takeawayText)
-        if (result.success) {
-            toast.success("Aklında kalan kaydedildi!")
-        } else {
-            toast.error(result.error || "Kaydedilemedi")
-        }
-        setIsSavingTakeaway(false)
-        setShowTakeawayDialog(false)
-        setTakeawayText("")
-        setLinkedChallengeBookId(null)
     }
 
     const handleAbandonReading = async () => {
@@ -648,232 +525,6 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
                         </div>
                     )}
 
-                    {/* Reading List Motivation Card */}
-                    {book.userReadingListBooks.length > 0 && (
-                        <div className="mb-6 space-y-3">
-                            {book.userReadingListBooks.map((urlb) => {
-                                const list = urlb.readingListBook.level.readingList
-                                const level = urlb.readingListBook.level
-                                const listColor = getReadingListColor(list.slug) || "#8b5cf6"
-                                const neden = urlb.readingListBook.neden
-
-                                return (
-                                    <div
-                                        key={urlb.id}
-                                        className="relative overflow-hidden rounded-xl border"
-                                        style={{
-                                            background: `linear-gradient(135deg, ${listColor}05 0%, ${listColor}12 100%)`,
-                                            borderColor: `${listColor}25`
-                                        }}
-                                    >
-                                        {/* Sol kenar accent */}
-                                        <div
-                                            className="absolute top-0 left-0 w-1 h-full"
-                                            style={{ backgroundColor: listColor }}
-                                        />
-
-                                        <div className="p-4 pl-5">
-                                            {/* Liste Başlığı */}
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div className="flex-1 min-w-0">
-                                                    <Link
-                                                        href={`/reading-lists/${list.slug}`}
-                                                        className="inline-flex items-center gap-2 font-semibold hover:underline"
-                                                        style={{ color: listColor }}
-                                                    >
-                                                        <Map className="h-4 w-4 flex-shrink-0" />
-                                                        {list.name}
-                                                    </Link>
-                                                    {/* Liste Açıklaması */}
-                                                    {list.description && (
-                                                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                                            {list.description}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                                {/* Seviye Badge */}
-                                                <div
-                                                    className="flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium text-white"
-                                                    style={{ backgroundColor: listColor }}
-                                                >
-                                                    Seviye {level.levelNumber}
-                                                </div>
-                                            </div>
-
-                                            {/* Seviye Bilgisi */}
-                                            <div
-                                                className="mt-3 pt-3 border-t"
-                                                style={{ borderColor: `${listColor}15` }}
-                                            >
-                                                <div className="flex items-start gap-2">
-                                                    <Layers className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: listColor }} />
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-medium">
-                                                            {level.name}
-                                                        </p>
-                                                        {/* Seviye Açıklaması */}
-                                                        {level.description && (
-                                                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                                                                {level.description}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Neden (Kitap Motivasyonu) */}
-                                            {neden && (
-                                                <div
-                                                    className="mt-3 pt-3 border-t"
-                                                    style={{ borderColor: `${listColor}15` }}
-                                                >
-                                                    <div className="flex items-start gap-2">
-                                                        <Sparkles className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: listColor }} />
-                                                        <div className="flex-1">
-                                                            <p className="text-xs font-medium text-muted-foreground mb-1">
-                                                                Bu kitap neden okunmalı?
-                                                            </p>
-                                                            <p className="text-sm leading-relaxed">
-                                                                {neden}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )}
-
-                    {/* Reading Challenge Card */}
-                    {challengeInfo && (
-                        <div className="mb-6">
-                            <div
-                                className="relative overflow-hidden rounded-xl border"
-                                style={{
-                                    background: "linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(234, 88, 12, 0.12) 100%)",
-                                    borderColor: "rgba(245, 158, 11, 0.25)"
-                                }}
-                            >
-                                {/* Sol kenar accent */}
-                                <div
-                                    className="absolute top-0 left-0 w-1 h-full bg-amber-500"
-                                />
-
-                                <div className="p-4 pl-5">
-                                    {/* Challenge Başlığı */}
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div className="flex-1 min-w-0">
-                                            <Link
-                                                href={`/challenges/${challengeInfo.challenge.year}`}
-                                                className="inline-flex items-center gap-2 font-semibold text-amber-600 hover:underline"
-                                            >
-                                                <Target className="h-4 w-4 flex-shrink-0" />
-                                                {challengeInfo.challenge.name}
-                                            </Link>
-                                            {/* İlerleme Özeti */}
-                                            <p className="text-xs text-muted-foreground mt-1">
-                                                {challengeInfo.stats.completedBooks} / {challengeInfo.stats.totalBooks} kitap tamamlandı
-                                            </p>
-                                        </div>
-                                        {/* Rol Badge */}
-                                        <div
-                                            className={cn(
-                                                "flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium text-white",
-                                                challengeInfo.challengeBook.role === "MAIN" ? "bg-amber-500" : "bg-orange-500"
-                                            )}
-                                        >
-                                            {challengeInfo.challengeBook.role === "MAIN" ? (
-                                                <span className="flex items-center gap-1">
-                                                    <Star className="h-3 w-3" />
-                                                    Ana Kitap
-                                                </span>
-                                            ) : (
-                                                <span className="flex items-center gap-1">
-                                                    <Trophy className="h-3 w-3" />
-                                                    Bonus
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Ay ve Tema Bilgisi */}
-                                    <div
-                                        className="mt-3 pt-3 border-t"
-                                        style={{ borderColor: "rgba(245, 158, 11, 0.15)" }}
-                                    >
-                                        <div className="flex items-start gap-2">
-                                            <span className="text-lg flex-shrink-0">{challengeInfo.month.themeIcon || "📚"}</span>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium">
-                                                    {challengeInfo.month.monthName} - {challengeInfo.month.theme}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Kitap Seçilme Nedeni */}
-                                    {challengeInfo.challengeBook.reason && (
-                                        <div
-                                            className="mt-3 pt-3 border-t"
-                                            style={{ borderColor: "rgba(245, 158, 11, 0.15)" }}
-                                        >
-                                            <div className="flex items-start gap-2">
-                                                <Sparkles className="h-4 w-4 flex-shrink-0 mt-0.5 text-amber-500" />
-                                                <div className="flex-1">
-                                                    <p className="text-xs font-medium text-muted-foreground mb-1">
-                                                        Bu kitap neden seçildi?
-                                                    </p>
-                                                    <p className="text-sm leading-relaxed">
-                                                        {challengeInfo.challengeBook.reason}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* İlerleme Çubuğu */}
-                                    <div
-                                        className="mt-3 pt-3 border-t"
-                                        style={{ borderColor: "rgba(245, 158, 11, 0.15)" }}
-                                    >
-                                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                                            <span>Challenge İlerlemesi</span>
-                                            <span className="font-medium text-amber-600">%{challengeInfo.stats.percentage}</span>
-                                        </div>
-                                        <Progress value={challengeInfo.stats.percentage} className="h-2" />
-                                        <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                                            <span>{challengeInfo.stats.completedMainBooks}/{challengeInfo.stats.mainBooks} Ana</span>
-                                            <span>{challengeInfo.stats.completedBonusBooks}/{challengeInfo.stats.bonusBooks} Bonus</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Takeaway (eğer tamamlandıysa) */}
-                                    {challengeInfo.takeaway && (
-                                        <div
-                                            className="mt-3 pt-3 border-t"
-                                            style={{ borderColor: "rgba(245, 158, 11, 0.15)" }}
-                                        >
-                                            <div className="flex items-start gap-2">
-                                                <Quote className="h-4 w-4 flex-shrink-0 mt-0.5 text-amber-500" />
-                                                <div className="flex-1">
-                                                    <p className="text-xs font-medium text-muted-foreground mb-1">
-                                                        Bu kitaptan aklımda kalan
-                                                    </p>
-                                                    <p className="text-sm italic leading-relaxed">
-                                                        "{challengeInfo.takeaway}"
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
                     {/* Progress Bar (when reading) */}
                     {currentStatus === "READING" && book.pageCount && (
                         <div className="mb-6 p-4 bg-muted/50 rounded-lg">
@@ -1083,7 +734,7 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
                                                     <Link href={`/author/${book.author.id}`} className="text-primary hover:underline">
                                                         {book.author.name}
                                                     </Link>
-                                                    'in bu kitaptaki üslubu, tarzı ve dili hakkında notların
+                                                    &apos;in bu kitaptaki üslubu, tarzı ve dili hakkında notların
                                                 </>
                                             ) : (
                                                 "Yazarın bu kitaptaki üslubu, tarzı ve dili hakkında notların"
@@ -1175,7 +826,7 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
                                                 <Card key={quote.id}>
                                                     <CardContent className="pt-4">
                                                         <blockquote className="border-l-4 border-primary/30 pl-4 italic text-muted-foreground">
-                                                            "{quote.content}"
+                                                            &quot;{quote.content}&quot;
                                                         </blockquote>
                                                         {quote.page && (
                                                             <p className="text-xs text-muted-foreground mt-2 text-right">
@@ -1405,12 +1056,7 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
             </Dialog>
 
             {/* Delete Confirmation Dialog */}
-            <AlertDialog open={showDeleteDialog} onOpenChange={(open) => {
-                setShowDeleteDialog(open)
-                if (!open) {
-                    setDeleteConfirmState({ step: 'initial' })
-                }
-            }}>
+            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Kitabı silmek istediğinize emin misiniz?</AlertDialogTitle>
@@ -1418,126 +1064,20 @@ export default function BookDetailClient({ book, challengeInfo }: BookDetailClie
                             Bu işlem geri alınamaz. Kitap ve tüm alıntıları kalıcı olarak silinecektir.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-
-                    {/* Bağımlılık Uyarısı */}
-                    {deleteConfirmState.step === 'confirm-dependencies' && deleteConfirmState.dependencies && (
-                        <div className="space-y-3 my-4">
-                            <div className="rounded-lg bg-amber-50 dark:bg-amber-950/20 p-4 border border-amber-200 dark:border-amber-800">
-                                <p className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-3">
-                                    Bu kitap şu bağlantılara sahip:
-                                </p>
-
-                                {deleteConfirmState.dependencies.readingLists.length > 0 && (
-                                    <div className="space-y-1 mb-3">
-                                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1">
-                                            <Map className="h-3 w-3" />
-                                            Okuma Listeleri:
-                                        </p>
-                                        {deleteConfirmState.dependencies.readingLists.map((rl, i) => (
-                                            <p key={i} className="text-xs text-amber-600 dark:text-amber-400 ml-4">
-                                                • {rl.listName} - "{rl.bookTitle}"
-                                            </p>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {deleteConfirmState.dependencies.challenges.length > 0 && (
-                                    <div className="space-y-1">
-                                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1">
-                                            <Target className="h-3 w-3" />
-                                            Challenge'lar:
-                                        </p>
-                                        {deleteConfirmState.dependencies.challenges.map((ch, i) => (
-                                            <p key={i} className="text-xs text-amber-600 dark:text-amber-400 ml-4">
-                                                • {ch.challengeName} - {ch.monthName} - "{ch.bookTitle}"
-                                            </p>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            <p className="text-sm text-muted-foreground">
-                                Kitabı silerseniz, bu bağlantılar kaldırılacak. İlerlemeniz kaybolmayacak, sadece bağlantı kopacak.
-                            </p>
-                        </div>
-                    )}
-
                     <AlertDialogFooter>
                         <AlertDialogCancel>Vazgeç</AlertDialogCancel>
-                        {deleteConfirmState.step === 'initial' ? (
-                            <AlertDialogAction
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    handleDeleteBook()
-                                }}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                                {isDeleting ? "Kontrol ediliyor..." : "Evet, Sil"}
-                            </AlertDialogAction>
-                        ) : (
-                            <AlertDialogAction
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    handleConfirmDeleteWithDependencies()
-                                }}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                                {isDeleting ? "Siliniyor..." : "Bağlantıları Kaldır ve Sil"}
-                            </AlertDialogAction>
-                        )}
+                        <AlertDialogAction
+                            onClick={(e) => {
+                                e.preventDefault()
+                                handleDeleteBook()
+                            }}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            {isDeleting ? "Siliniyor..." : "Evet, Sil"}
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-
-            {/* Challenge Takeaway Dialog */}
-            <Dialog open={showTakeawayDialog} onOpenChange={(open) => {
-                if (!open) {
-                    setShowTakeawayDialog(false)
-                    setTakeawayText("")
-                    setLinkedChallengeBookId(null)
-                }
-            }}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-amber-500" />
-                            Tebrikler! 🎉
-                        </DialogTitle>
-                        <DialogDescription>
-                            "{book.title}" kitabını tamamladın! Bu kitaptan aklında kalan tek cümle veya düşünce ne?
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Textarea
-                        value={takeawayText}
-                        onChange={(e) => setTakeawayText(e.target.value)}
-                        placeholder="Bu kitaptan aklımda kalan..."
-                        rows={4}
-                        className="mt-2"
-                    />
-                    <DialogFooter className="gap-2 sm:gap-0">
-                        <Button
-                            variant="ghost"
-                            onClick={() => {
-                                setShowTakeawayDialog(false)
-                                setTakeawayText("")
-                                setLinkedChallengeBookId(null)
-                            }}
-                        >
-                            Geç
-                        </Button>
-                        <Button onClick={handleSaveTakeaway} disabled={isSavingTakeaway}>
-                            {isSavingTakeaway ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Kaydediliyor...
-                                </>
-                            ) : (
-                                "Kaydet"
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     )
 }

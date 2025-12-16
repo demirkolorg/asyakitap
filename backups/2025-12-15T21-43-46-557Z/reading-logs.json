@@ -1,0 +1,13 @@
+[
+  {
+    "id": "cmj4s1qax00000al2197wi4q8",
+    "bookId": "cmj2g1axm00040al5w7v2dwge",
+    "action": "STARTED",
+    "note": null,
+    "createdAt": "2025-12-13T20:57:29.192Z",
+    "book": {
+      "id": "cmj2g1axm00040al5w7v2dwge",
+      "title": "Uzun Hikaye"
+    }
+  }
+]

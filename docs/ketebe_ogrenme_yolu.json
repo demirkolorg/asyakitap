@@ -1,0 +1,1874 @@
+{
+  "ketebe_ogrenme_yolu": [
+    {
+      "seviye": 1,
+      "seviye_adi": "Kanca - Edebi Isınma ve Merak",
+      "amac": "Yayınevinin edebi ve akıcı yüzüyle tanışmak, okuma keyfiyle seriye bağlanmak.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Selvi Boylum Al Yazmalım",
+          "kitap_linki": "https://www.ketebe.com/selvi-boylum-al-yazmalim-cengiz-aytmatov",
+          "kapak_linki": "https://www.ketebe.com/selvi-boylum-al-yazmalim-cengiz-aytmatov-aytmatov-kitapligi-ketebe-cengiz-aytmatov-3482-56-K.jpg",
+          "yazar_adi": "Cengiz Aytmatov",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Uzakların Şarkısı",
+          "kitap_linki": "https://www.ketebe.com/uzaklarin-sarkisi-kaan-murat-yanik",
+          "kapak_linki": "https://www.ketebe.com/uzaklarin-sarkisi-kaan-murat-yanik-turk-romani-ketebe-kaan-murat-yanik-3116-12-K.jpg",
+          "yazar_adi": "Kaan Murat Yanık",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Müslüman’ın Diyeti",
+          "kitap_linki": "https://www.ketebe.com/muslumanin-diyeti-kemal-ozer",
+          "kapak_linki": "https://www.ketebe.com/muslumanin-diyeti-kemal-ozer-saglik-ketebe-keml-ozer-3317-11-K.jpg",
+          "yazar_adi": "Kemâl Özer",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sağlık"
+        },
+        {
+          "kitap_adi": "Mustafa",
+          "kitap_linki": "https://www.ketebe.com/mustafa-mustafa-kutlu",
+          "kapak_linki": "https://www.ketebe.com/mustafa-mustafa-kutlu-mustafa-kutlu-kitapligi-ketebe-mustafa-kutlu-1432-98-K.jpg",
+          "yazar_adi": "Mustafa Kutlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Mustafa Kutlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "Beyaz Geceler",
+          "kitap_linki": "https://www.ketebe.com/beyaz-geceler-fyodor-mihaylovic-dostoyevski",
+          "kapak_linki": "https://www.ketebe.com/beyaz-geceler-fyodor-mihaylovic-dostoyevski-rus-klasikleri-ketebe-fyodor-mihaylovic-dostoyevski-2722-16-K.jpg",
+          "yazar_adi": "Fyodor Mihayloviç Dostoyevski",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Bir Delinin Hatıra Defteri",
+          "kitap_linki": "https://www.ketebe.com/bir-delinin-hatira-defteri-nikolay-vasilyevic-gogol",
+          "kapak_linki": "https://www.ketebe.com/bir-delinin-hatira-defteri-nikolay-vasilyevic-gogol-rus-klasikleri-ketebe-nikolay-vasilyevic-gogol-2721-16-K.jpg",
+          "yazar_adi": "Nikolay Vasilyeviç Gogol",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Butimar",
+          "kitap_linki": "https://www.ketebe.com/butimar-kaan-murat-yanik",
+          "kapak_linki": "https://www.ketebe.com/butimar-kaan-murat-yanik-turk-romani-ketebe-kaan-murat-yanik-2388-92-K.jpg",
+          "yazar_adi": "Kaan Murat Yanık",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Huzursuzluğun Kitabı",
+          "kitap_linki": "https://www.ketebe.com/huzursuzlugun-kitabi-fernando-pessoa",
+          "kapak_linki": "https://www.ketebe.com/huzursuzlugun-kitabi-fernando-pessoa-ketebe-modern-ketebe-fernando-pessoa-930-75-K.jpg",
+          "yazar_adi": "Fernando Pessoa",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Ketebe Modern"
+        },
+        {
+          "kitap_adi": "Şeytan Ye Diyor!",
+          "kitap_linki": "https://www.ketebe.com/seytan-ye-diyor-kemal-ozer",
+          "kapak_linki": "https://www.ketebe.com/seytan-ye-diyor-kemal-ozer-saglik-ketebe-keml-ozer-1569-10-K.jpg",
+          "yazar_adi": "Kemâl Özer",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sağlık"
+        },
+        {
+          "kitap_adi": "Toprak Ana",
+          "kitap_linki": "https://www.ketebe.com/toprak-ana-cengiz-aymatov",
+          "kapak_linki": "https://www.ketebe.com/toprak-ana-cengiz-aymatov-aytmatov-kitapligi-ketebe-cengiz-aytmatov-647-57-K.jpg",
+          "yazar_adi": "Cengiz Aytmatov",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Satılık Adam",
+          "kitap_linki": "https://www.ketebe.com/satilik-adam-bulent-akyurek",
+          "kapak_linki": "https://www.ketebe.com/satilik-adam-bulent-akyurek-turk-romani-ketebe-bulent-akyurek-3414-19-K.jpg",
+          "yazar_adi": "Bülent Akyürek",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Cemile (Kutulu Özel Baskı)",
+          "kitap_linki": "https://www.ketebe.com/cemile-ozel-baski-cengiz-aytmatov",
+          "kapak_linki": "https://www.ketebe.com/cemile-ozel-baski-cengiz-aytmatov-ceviri-roman-ketebe-cengiz-aytmatov-3048-72-K.jpg",
+          "yazar_adi": "Cengiz Aytmatov",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Erken Gelen Turnalar",
+          "kitap_linki": "https://www.ketebe.com/erken-gelen-turnalar",
+          "kapak_linki": "https://www.ketebe.com/erken-gelen-turnalar-aytmatov-kitapligi-ketebe-cengiz-aytmatov-1919-56-K.jpg",
+          "yazar_adi": "Cengiz Aytmatov",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Büyük İnsanların Gizli Hayatları",
+          "kitap_linki": "https://www.ketebe.com/buyuk-insanlarin-gizli-hayatlari",
+          "kapak_linki": "https://www.ketebe.com/buyuk-insanlarin-gizli-hayatlari-populer-tarih-ketebe-kolektif-768-66-K.jpg",
+          "yazar_adi": "Kolektif",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Popüler Tarih"
+        },
+        {
+          "kitap_adi": "İnsanın Acayip Kısa Tarihi",
+          "kitap_linki": "https://www.ketebe.com/insanin-acayip-kisa-tarihi-guray-sungu",
+          "kapak_linki": "https://www.ketebe.com/insanin-acayip-kisa-tarihi-guray-sungu-turk-romani-ketebe-guray-sungu-2080-43-K.jpg",
+          "yazar_adi": "Güray Süngü",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Tren Rayları",
+          "kitap_linki": "https://www.ketebe.com/tren-raylari-john-berger-anne-michaels",
+          "kapak_linki": "https://www.ketebe.com/tren-raylari-john-berger-anne-michaels-kolektif-kitaplar-ketebe-john-berger-anne-michaels-1276-91-K.jpg",
+          "yazar_adi": "John Berger, Anne Michaels",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Şifrelerin Gizemli Serüveni",
+          "kitap_linki": "https://www.ketebe.com/sifrelerin-gizemli-seruveni",
+          "kapak_linki": "https://www.ketebe.com/sifrelerin-gizemli-seruveni-kolektif-kitaplar-ketebe-stephen-pincock-mark-frary-677-58-K.jpg",
+          "yazar_adi": "Stephen Pincock & Mark Frary",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Uzun Hikaye",
+          "kitap_linki": "https://www.ketebe.com/uzun-hikaye-mustafa-kutlu",
+          "kapak_linki": "https://www.ketebe.com/uzun-hikaye-mustafa-kutlu-mustafa-kutlu-kitapligi-ketebe-mustafa-kutlu-1437-98-K.jpg",
+          "yazar_adi": "Mustafa Kutlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Mustafa Kutlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "Hasta Değil Susuzsunuz",
+          "kitap_linki": "https://www.ketebe.com/hasta-degil-susuzsunuz-kemal-ozer",
+          "kapak_linki": "https://www.ketebe.com/hasta-degil-susuzsunuz-kemal-ozer-saglik-ketebe-keml-ozer-1455-68-K.jpg",
+          "yazar_adi": "Kemâl Özer",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sağlık"
+        },
+        {
+          "kitap_adi": "Blucin Devrinin Çocukları",
+          "kitap_linki": "https://www.ketebe.com/blucin-devrinin-cocuklari-dato-turasvili",
+          "kapak_linki": "https://www.ketebe.com/blucin-devrinin-cocuklari-dato-turasvili-ceviri-roman-ketebe-dato-turasvili-1372-95-K.jpg",
+          "yazar_adi": "Dato Turaşvili",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        }
+      ]
+    },
+    {
+      "seviye": 2,
+      "seviye_adi": "Giriş - Popüler ve Akıcı Eserler",
+      "amac": "Yayınevinin popüler tarih, gezi ve deneme alanlarındaki gücünü keşfetmek.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Yakın Tarihin Gerçekleri",
+          "kitap_linki": "https://www.ketebe.com/yakin-tarihin-gercekleri-ilber-ortayli",
+          "kapak_linki": "https://www.ketebe.com/yakin-tarihin-gercekleri-ilber-ortayli-ilber-ortayli-kitapligi-ketebe-ilber-ortayli-472-13-K.jpg",
+          "yazar_adi": "İlber Ortaylı",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İlber Ortaylı Kitaplığı"
+        },
+        {
+          "kitap_adi": "Orta Doğu’dan Notlar",
+          "kitap_linki": "https://www.ketebe.com/orta-dogudan-notlar-taha-kilinc",
+          "kapak_linki": "https://www.ketebe.com/orta-dogudan-notlar-taha-kilinc-taha-kilinc-kitapligi-ketebe-taha-kilinc-477-44-K.jpg",
+          "yazar_adi": "Taha Kılınç",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Taha Kılınç Kitaplığı"
+        },
+        {
+          "kitap_adi": "Martin Eden",
+          "kitap_linki": "https://www.ketebe.com/martin-eden-jack-london",
+          "kapak_linki": "https://www.ketebe.com/martin-eden-jack-london-amerikan-klasikleri-ketebe-jack-london-3076-18-K.jpg",
+          "yazar_adi": "Jack London",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Bu Böyledir",
+          "kitap_linki": "https://www.ketebe.com/bu-boyledir-mustafa-kutlu",
+          "kapak_linki": "https://www.ketebe.com/bu-boyledir-mustafa-kutlu-mustafa-kutlu-kitapligi-ketebe-mustafa-kutlu-1419-98-K.jpg",
+          "yazar_adi": "Mustafa Kutlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Mustafa Kutlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "Ayaşlı İle Kiracıları",
+          "kitap_linki": "https://www.ketebe.com/ayasli-ile-kiracilari-memduh-sevket-esendal",
+          "kapak_linki": "https://www.ketebe.com/ayasli-ile-kiracilari-memduh-sevket-esendal-klasikler-ketebe-memduh-sevket-esendal-1487-10-K.jpg",
+          "yazar_adi": "Memduh Şevket Esendal",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Evrene Hoş Geldin",
+          "kitap_linki": "https://www.ketebe.com/evrene-hos-geldin-neil-degrasse-tyson-michael-a-strauss-j-richard-gott",
+          "kapak_linki": "https://www.ketebe.com/evrene-hos-geldin-neil-degrasse-tyson-michael-a-strauss-j-richard-gott-kolektif-kitaplar-ketebe-neil-degrasse-tyson-michael-a-strauss-j-richard-gott-2275-14-K.jpg",
+          "yazar_adi": "Neil deGrasse Tyson, Michael A. Strauss, J. Richard Gott",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Kudüs Yazıları",
+          "kitap_linki": "https://www.ketebe.com/kudus-yazilari-sefer-turan",
+          "kapak_linki": "https://www.ketebe.com/kudus-yazilari-sefer-turan-tarih-ketebe-sefer-turan-1755-11-K.jpg",
+          "yazar_adi": "Sefer Turan",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Yoksulluk İçimizde",
+          "kitap_linki": "https://www.ketebe.com/yoksulluk-icimizde-mustafa-kutlu",
+          "kapak_linki": "https://www.ketebe.com/yoksulluk-icimizde-mustafa-kutlu-mustafa-kutlu-kitapligi-ketebe-mustafa-kutlu-1434-98-K.jpg",
+          "yazar_adi": "Mustafa Kutlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Mustafa Kutlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "Gezgin Dervişin Kamburu",
+          "kitap_linki": "https://www.ketebe.com/gezgin-dervisin-kamburu",
+          "kapak_linki": "https://www.ketebe.com/gezgin-dervisin-kamburu-turk-romani-ketebe-mustafa-ibakorkmaz-206-20-K.jpg",
+          "yazar_adi": "Mustafa İbakorkmaz",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Tirende Bir Keman",
+          "kitap_linki": "https://www.ketebe.com/tirende-bir-keman-mustafa-kutlu",
+          "kapak_linki": "https://www.ketebe.com/tirende-bir-keman-mustafa-kutlu-mustafa-kutlu-kitapligi-ketebe-mustafa-kutlu-1433-98-K.jpg",
+          "yazar_adi": "Mustafa Kutlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Mustafa Kutlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "Şehir Mektupları",
+          "kitap_linki": "https://www.ketebe.com/sehir-mektuplari-ahmet-rasim",
+          "kapak_linki": "https://www.ketebe.com/sehir-mektuplari-ahmet-rasim-klasikler-ketebe-ahmet-rasim-1875-12-K.jpg",
+          "yazar_adi": "Ahmet Rasim",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Klasikler"
+        },
+        {
+          "kitap_adi": "Afrika Notları",
+          "kitap_linki": "https://www.ketebe.com/afrika-notlari-taha-kilinc",
+          "kapak_linki": "https://www.ketebe.com/afrika-notlari-taha-kilinc-taha-kilinc-kitapligi-ketebe-taha-kilinc-481-44-K.jpg",
+          "yazar_adi": "Taha Kılınç",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Taha Kılınç Kitaplığı"
+        },
+        {
+          "kitap_adi": "Osmanlı’yı Yeniden Keşfetmek",
+          "kitap_linki": "https://www.ketebe.com/osmanliyi-yeniden-kesfetmek-ilber-ortayli",
+          "kapak_linki": "https://www.ketebe.com/osmanliyi-yeniden-kesfetmek-ilber-ortayli-ilber-ortayli-kitapligi-ketebe-ilber-ortayli-2651-14-K.jpg",
+          "yazar_adi": "İlber Ortaylı",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İlber Ortaylı Kitaplığı"
+        },
+        {
+          "kitap_adi": "Mai ve Siyah",
+          "kitap_linki": "https://www.ketebe.com/mai-ve-siyah-halid-ziya-usakligil",
+          "kapak_linki": "https://www.ketebe.com/mai-ve-siyah-halid-ziya-usakligil-klasikler-ketebe-halid-ziya-usakligil-1911-12-K.jpg",
+          "yazar_adi": "Halid Ziya Uşaklıgil",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Yeryüzü Blues",
+          "kitap_linki": "https://www.ketebe.com/yeryuzu-blues-kadir-danis",
+          "kapak_linki": "https://www.ketebe.com/yeryuzu-blues-kadir-danis-turk-romani-ketebe-kadir-danis-1195-16-K.jpg",
+          "yazar_adi": "Kadir Daniş",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Savaş Ritimleri",
+          "kitap_linki": "https://www.ketebe.com/savas-ritimleri",
+          "kapak_linki": "https://www.ketebe.com/savas-ritimleri-cahit-zarifoglu-kitapligi-ketebe-cahit-zarifoglu-1157-86-K.jpg",
+          "yazar_adi": "Cahit Zarifoğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Sular Üstünde Gökler Altında",
+          "kitap_linki": "https://www.ketebe.com/sular-ustunde-gokler-altinda-kaan-murat-yanik",
+          "kapak_linki": "https://www.ketebe.com/sular-ustunde-gokler-altinda-kaan-murat-yanik-turk-romani-ketebe-kaan-murat-yanik-1552-10-K.jpg",
+          "yazar_adi": "Kaan Murat Yanık",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Aşk ve Başka Şeyler",
+          "kitap_linki": "https://www.ketebe.com/ask-ve-baska-seyler-mustafa-mestur",
+          "kapak_linki": "https://www.ketebe.com/ask-ve-baska-seyler-mustafa-mestur-ceviri-roman-ketebe-mustafa-mestur-3013-18-K.jpg",
+          "yazar_adi": "Mustafa Mestur",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Mektup Ağacı",
+          "kitap_linki": "https://www.ketebe.com/mektup-agaci-rebecca-lim-kate-gordon",
+          "kapak_linki": "https://www.ketebe.com/mektup-agaci-rebecca-lim-kate-gordon-kolektif-kitaplar-ketebe-genc-rebecca-lim-kate-gordon-2165-13-K.jpg",
+          "yazar_adi": "Rebecca Lim, Kate Gordon",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Gül Yetiştiren Adam",
+          "kitap_linki": "https://www.ketebe.com/gul-yetistiren-adam-rasim-ozdenoren",
+          "kapak_linki": "https://www.ketebe.com/gul-yetistiren-adam-rasim-ozdenoren-rasim-ozdenoren-kitapligi-ketebe-rasim-ozdenoren-203-20-K.jpg",
+          "yazar_adi": "Rasim Özdenören",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Rasim Özdenören Kitaplığı"
+        }
+      ]
+    },
+    {
+      "seviye": 3,
+      "seviye_adi": "Temel Atma - Kavramlarla Tanışma",
+      "amac": "Popüler eserlerden daha derinlikli deneme, sosyoloji ve felsefeye yumuşak bir geçiş yapmak.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Ötekini Kovmak",
+          "kitap_linki": "https://www.ketebe.com/otekini-kovmak-byung-chul-han",
+          "kapak_linki": "https://www.ketebe.com/otekini-kovmak-byung-chul-han-kolektif-kitaplar-ketebe-byung-chul-han-2655-11-K.jpg",
+          "yazar_adi": "Byung-Chul Han",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Şeffaflık Toplumu",
+          "kitap_linki": "https://www.ketebe.com/seffaflik-toplumu-byung-chul-han",
+          "kapak_linki": "https://www.ketebe.com/seffaflik-toplumu-byung-chul-han-byung-chul-han-kitapligi-ketebe-byung-chul-han-465-43-K.jpg",
+          "yazar_adi": "Byung-Chul Han",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Byung-Chul Han Kitaplığı"
+        },
+        {
+          "kitap_adi": "Esir Şehrin İnsanları",
+          "kitap_linki": "https://www.ketebe.com/esir-sehrin-insanlari-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/esir-sehrin-insanlari-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-2520-10-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Bir Film Nasıl Okunur?",
+          "kitap_linki": "https://www.ketebe.com/bir-film-nasil-okunur-jacques-aumont-michel-marie",
+          "kapak_linki": "https://www.ketebe.com/bir-film-nasil-okunur-jacques-aumont-michel-marie-kolektif-kitaplar-ketebe-jacques-aumont-michel-marie-3216-18-K.jpg",
+          "yazar_adi": "Jacques Aumont, Michel Marie",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Türk’ün Altın Kitabı",
+          "kitap_linki": "https://www.ketebe.com/turkun-altin-kitabi-ziya-gokalp",
+          "kapak_linki": "https://www.ketebe.com/turkun-altin-kitabi-ziya-gokalp-klasikler-ketebe-ziya-gokalp-2068-13-K.jpg",
+          "yazar_adi": "Ziya Gökalp",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Klasikler"
+        },
+        {
+          "kitap_adi": "Teşhir Toplumu",
+          "kitap_linki": "https://www.ketebe.com/teshir-toplumu",
+          "kapak_linki": "https://www.ketebe.com/teshir-toplumu-kolektif-kitaplar-ketebe-islam-can-ejder-ulutas-592-52-K.jpg",
+          "yazar_adi": "İslam Can - Ejder Ulutaş",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Kurt Kanunu",
+          "kitap_linki": "https://www.ketebe.com/kurt-kanunu-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/kurt-kanunu-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1450-10-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Zamanın Kokusu",
+          "kitap_linki": "https://www.ketebe.com/zamanin-kokusu-byung-chul-han",
+          "kapak_linki": "https://www.ketebe.com/zamanin-kokusu-byung-chul-han-byung-chul-han-kitapligi-ketebe-byung-chul-han-462-43-K.jpg",
+          "yazar_adi": "Byung-Chul Han",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Byung-Chul Han Kitaplığı"
+        },
+        {
+          "kitap_adi": "Anlatının Krizi",
+          "kitap_linki": "https://www.ketebe.com/anlatinin-krizi-byung-chul-han",
+          "kapak_linki": "https://www.ketebe.com/anlatinin-krizi-byung-chul-han-kolektif-kitaplar-ketebe-byung-chul-han-2533-14-K.jpg",
+          "yazar_adi": "Byung-Chul Han",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Psikanaliz ve Zen Budizm",
+          "kitap_linki": "https://www.ketebe.com/psikanaliz-ve-zen-budizm-erich-fromm-d-t-suzuki",
+          "kapak_linki": "https://www.ketebe.com/psikanaliz-ve-zen-budizm-erich-fromm-d-t-suzuki-psikoloji-ketebe-erich-fromm-d-t-suzuki-2287-14-K.jpg",
+          "yazar_adi": "Erich Fromm, D. T. Suzuki",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Psikoloji"
+        },
+        {
+          "kitap_adi": "Enfokrasi",
+          "kitap_linki": "https://www.ketebe.com/enfokrasi-byung-chul-han",
+          "kapak_linki": "https://www.ketebe.com/enfokrasi-byung-chul-han-kolektif-kitaplar-ketebe-byung-chul-han-2534-93-K.jpg",
+          "yazar_adi": "Byung-Chul Han",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Selahaddin Şarkın Kartalı",
+          "kitap_linki": "https://www.ketebe.com/selahaddin-sarkin-kartali",
+          "kapak_linki": "https://www.ketebe.com/selahaddin-sarkin-kartali-turk-romani-ketebe-ali-emre-308-29-K.jpg",
+          "yazar_adi": "Ali Emre",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Gün Olur Asra Bedel",
+          "kitap_linki": "https://www.ketebe.com/gun-olur-asra-bedel",
+          "kapak_linki": "https://www.ketebe.com/gun-olur-asra-bedel-aytmatov-kitapligi-ketebe-cengiz-aytmatov-651-57-K.jpg",
+          "yazar_adi": "Cengiz Aytmatov",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Yorgun Savaşçı",
+          "kitap_linki": "https://www.ketebe.com/yorgun-savasci-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/yorgun-savasci-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1449-10-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Sanatçının Genç Bir Adam Olarak Portresi",
+          "kitap_linki": "https://www.ketebe.com/sanatcinin-genc-bir-adam-olarak-portresi-james-joyce",
+          "kapak_linki": "https://www.ketebe.com/sanatcinin-genc-bir-adam-olarak-portresi-james-joyce-ketebe-modern-ketebe-james-joyce-1689-11-K.jpg",
+          "yazar_adi": "James Joyce",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Savaş Sanatı",
+          "kitap_linki": "https://www.ketebe.com/savas-sanati-sun-tzu",
+          "kapak_linki": "https://www.ketebe.com/savas-sanati-sun-tzu-strateji-ketebe-sun-tzu-2016-13-K.jpg",
+          "yazar_adi": "Sun Tzu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Strateji"
+        },
+        {
+          "kitap_adi": "Müşâhedat",
+          "kitap_linki": "https://www.ketebe.com/musahedat-ahmet-mithat-efendi",
+          "kapak_linki": "https://www.ketebe.com/musahedat-ahmet-mithat-efendi-klasikler-ketebe-ahmet-mithat-efendi-2202-14-K.jpg",
+          "yazar_adi": "Ahmet Mithat Efendi",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Yemen Ah Yemen",
+          "kitap_linki": "https://www.ketebe.com/yemen-ah-yemen-taha-kilinc",
+          "kapak_linki": "https://www.ketebe.com/yemen-ah-yemen-taha-kilinc-taha-kilinc-kitapligi-ketebe-taha-kilinc-476-44-K.jpg",
+          "yazar_adi": "Taha Kılınç",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Taha Kılınç Kitaplığı"
+        },
+        {
+          "kitap_adi": "İyi Hissetmek",
+          "kitap_linki": "https://www.ketebe.com/iyi-hissetmek-david-d-burns",
+          "kapak_linki": "https://www.ketebe.com/iyi-hissetmek-david-d-burns-psikoloji-ketebe-david-d-burns-1753-11-K.jpg",
+          "yazar_adi": "David D. Burns",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Psikoloji"
+        },
+        {
+          "kitap_adi": "Ritüellerin Yok Oluşu",
+          "kitap_linki": "https://www.ketebe.com/rituelin-yok-olusu-byung-chul-han",
+          "kapak_linki": "https://www.ketebe.com/rituelin-yok-olusu-byung-chul-han-byung-chul-han-kitapligi-ketebe-byung-chul-han-1279-91-K.jpg",
+          "yazar_adi": "Byung-Chul Han",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Byung-Chul Han Kitaplığı"
+        }
+      ]
+    },
+    {
+      "seviye": 4,
+      "seviye_adi": "Omurga - Yayınevinin Kimliğini Anlama",
+      "amac": "Ketebe'nin tarih, düşünce ve edebiyat alanındaki temel taşlarını ve duruşunu kavramak.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Devlet Ana",
+          "kitap_linki": "https://www.ketebe.com/devlet-ana-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/devlet-ana-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1451-10-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Mottolar",
+          "kitap_linki": "https://www.ketebe.com/mottolar-ducane-cundioglu",
+          "kapak_linki": "https://www.ketebe.com/mottolar-ducane-cundioglu-ducane-cundioglu-kitapligi-ketebe-ducane-cundioglu-266-26-K.jpg",
+          "yazar_adi": "Dücane Cündioğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dücane Cündioğlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "İslâmcıların Yüzyılı",
+          "kitap_linki": "https://www.ketebe.com/islamcilarin-yuzyili-taha-kilinc-tugrul-calis",
+          "kapak_linki": "https://www.ketebe.com/islamcilarin-yuzyili-taha-kilinc-tugrul-calis-taha-kilinc-kitapligi-ketebe-taha-kilinc-tugrul-calis-1659-11-K.jpg",
+          "yazar_adi": "Taha Kılınç, Tuğrul Çalış",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Taha Kılınç Kitaplığı"
+        },
+        {
+          "kitap_adi": "İslâm Sanatı Dil ve Anlam",
+          "kitap_linki": "https://www.ketebe.com/islam-sanati-dil-ve-anlam-titus-burckhardt",
+          "kapak_linki": "https://www.ketebe.com/islam-sanati-dil-ve-anlam-titus-burckhardt-sanat-ketebe-titus-burckhardt-705-60-K.jpg",
+          "yazar_adi": "Titus Burckhardt",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sanat"
+        },
+        {
+          "kitap_adi": "Walden-İki",
+          "kitap_linki": "https://www.ketebe.com/walden-iki-b-f-skinner",
+          "kapak_linki": "https://www.ketebe.com/walden-iki-b-f-skinner-ceviri-roman-ketebe-b-f-skinner-2019-13-K.jpg",
+          "yazar_adi": "B. F. Skinner",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Kurtların Gölgesinde",
+          "kitap_linki": "https://www.ketebe.com/kurtlarin-golgesinde-alvydas-slepikas-ketebe",
+          "kapak_linki": "https://www.ketebe.com/kurtlarin-golgesinde-alvydas-slepikas-ketebe-ceviri-roman-ketebe-alvydas-lepikas-2455-15-K.jpg",
+          "yazar_adi": "Alvydas Šlepikas",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Kültür ve Medeniyet",
+          "kitap_linki": "https://www.ketebe.com/kultur-ve-medeniyet-ziya-gokalp",
+          "kapak_linki": "https://www.ketebe.com/kultur-ve-medeniyet-ziya-gokalp-klasikler-ketebe-ziya-gokalp-2069-13-K.jpg",
+          "yazar_adi": "Ziya Gökalp",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Klasikler"
+        },
+        {
+          "kitap_adi": "Yol Ayrımı",
+          "kitap_linki": "https://www.ketebe.com/yol-ayrimi-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/yol-ayrimi-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1446-99-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Şebek Romanı",
+          "kitap_linki": "https://www.ketebe.com/sebek-romani-ayse-sasa",
+          "kapak_linki": "https://www.ketebe.com/sebek-romani-ayse-sasa-turk-romani-ketebe-ayse-sasa-2637-12-K.jpg",
+          "yazar_adi": "Ayşe Şasa",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Herkes Tek Başına Ölür",
+          "kitap_linki": "https://www.ketebe.com/herkes-tek-basina-olur-hans-fallada",
+          "kapak_linki": "https://www.ketebe.com/herkes-tek-basina-olur-hans-fallada-ketebe-modern-ketebe-hans-fallada-2667-16-K.jpg",
+          "yazar_adi": "Hans Fallada",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Teknoloji Felsefesi",
+          "kitap_linki": "https://www.ketebe.com/teknoloji-felsefesi-stig-borsen-hansen",
+          "kapak_linki": "https://www.ketebe.com/teknoloji-felsefesi-stig-borsen-hansen-kolektif-kitaplar-ketebe-stig-brsen-hansen-1711-11-K.jpg",
+          "yazar_adi": "Stig Børsen Hansen",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Nureddin Zengi",
+          "kitap_linki": "https://www.ketebe.com/nureddin-zengi",
+          "kapak_linki": "https://www.ketebe.com/nureddin-zengi-turk-romani-ketebe-ali-emre-100-10-K.jpg",
+          "yazar_adi": "Ali Emre",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Esir Şehrin Mahpusu",
+          "kitap_linki": "https://www.ketebe.com/esir-sehrin-mahpusu-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/esir-sehrin-mahpusu-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1452-10-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Kapitalizm, Sosyalizm ve Demokrasi",
+          "kitap_linki": "https://www.ketebe.com/kapitalizm-sosyalizm-ve-demokrasi-joseph-a-schumpeter",
+          "kapak_linki": "https://www.ketebe.com/kapitalizm-sosyalizm-ve-demokrasi-joseph-a-schumpeter-siyaset-dusuncesi-ketebe-joseph-a-schumpeter-1701-11-K.jpg",
+          "yazar_adi": "Joseph A. Schumpeter",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Siyaset Düşüncesi"
+        },
+        {
+          "kitap_adi": "İslâm Tıp Tarihi",
+          "kitap_linki": "https://www.ketebe.com/islam-tip-tarihi-ahmet-agirakca",
+          "kapak_linki": "https://www.ketebe.com/islam-tip-tarihi-ahmet-agirakca-tarih-ketebe-ahmet-agirakca-2162-13-K.jpg",
+          "yazar_adi": "Ahmet Ağırakça",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sağlık"
+        },
+        {
+          "kitap_adi": "Sanat ve Hakikat",
+          "kitap_linki": "https://www.ketebe.com/sanat-ve-hakikat-ducane-cundioglu",
+          "kapak_linki": "https://www.ketebe.com/sanat-ve-hakikat-ducane-cundioglu-ducane-cundioglu-kitapligi-ketebe-ducane-cundioglu-263-26-K.jpg",
+          "yazar_adi": "Dücane Cündioğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dücane Cündioğlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "Boğaziçi Mehtapları",
+          "kitap_linki": "https://www.ketebe.com/bogazici-mehtaplari-abdulhak-sinasi-hisar",
+          "kapak_linki": "https://www.ketebe.com/bogazici-mehtaplari-abdulhak-sinasi-hisar-klasikler-ketebe-abdulhak-sinasi-hisar-1725-11-K.jpg",
+          "yazar_adi": "Abdülhak Şinasi Hisar",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Klasikler"
+        },
+        {
+          "kitap_adi": "Baybars",
+          "kitap_linki": "https://www.ketebe.com/baybars-ali-emre",
+          "kapak_linki": "https://www.ketebe.com/baybars-ali-emre-turk-romani-ketebe-ali-emre-33-45-K.jpg",
+          "yazar_adi": "Ali Emre",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Gündelik Hayat Sosyolojisi",
+          "kitap_linki": "https://www.ketebe.com/gundelik-hayat-sosyolojisi-kolektif",
+          "kapak_linki": "https://www.ketebe.com/gundelik-hayat-sosyolojisi-kolektif-sosyoloji-ketebe-kolektif-1871-12-K.jpg",
+          "yazar_adi": "Kolektif",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sosyoloji"
+        },
+        {
+          "kitap_adi": "Kurtlar Sofrasında",
+          "kitap_linki": "https://www.ketebe.com/kurtlar-sofrasinda-hans-fallada",
+          "kapak_linki": "https://www.ketebe.com/kurtlar-sofrasinda-hans-fallada-ketebe-modern-ketebe-hans-fallada-1720-11-K.jpg",
+          "yazar_adi": "Hans Fallada",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        }
+      ]
+    },
+    {
+      "seviye": 5,
+      "seviye_adi": "Genişleme - Farklı Disiplinlere Açılım",
+      "amac": "Edebiyat ve tarihin yanına sanat, psikoloji ve daha niş felsefi konuları eklemek.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Düşünce Düşlenir",
+          "kitap_linki": "https://www.ketebe.com/dusunce-duslenir-ducane-cundioglu",
+          "kapak_linki": "https://www.ketebe.com/dusunce-duslenir-ducane-cundioglu-ducane-cundioglu-kitapligi-ketebe-ducane-cundioglu-262-26-K.jpg",
+          "yazar_adi": "Dücane Cündioğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dücane Cündioğlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "Her Şeyin Teorisi",
+          "kitap_linki": "https://www.ketebe.com/her-seyin-teorisi-stephen-w-hawking",
+          "kapak_linki": "https://www.ketebe.com/her-seyin-teorisi-stephen-w-hawking-bilim-ketebe-stephen-w-hawking-503-46-K.jpg",
+          "yazar_adi": "Stephen W. Hawking",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Bilim"
+        },
+        {
+          "kitap_adi": "Görmenin Dili",
+          "kitap_linki": "https://www.ketebe.com/gormenin-dili-kolektif",
+          "kapak_linki": "https://www.ketebe.com/gormenin-dili-kolektif-sanat-ketebe-kolektif-2101-13-K.jpg",
+          "yazar_adi": "Kolektif",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sanat"
+        },
+        {
+          "kitap_adi": "Bir Bunalım Çağında Toplum Felsefesi",
+          "kitap_linki": "https://www.ketebe.com/bir-bunalim-caginda-toplum-felsefesi-pitirim-a-sorokin",
+          "kapak_linki": "https://www.ketebe.com/bir-bunalim-caginda-toplum-felsefesi-pitirim-a-sorokin-sosyoloji-ketebe-pitirim-a-sorokin-1748-11-K.jpg",
+          "yazar_adi": "Pitirim A. Sorokin",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sosyoloji"
+        },
+        {
+          "kitap_adi": "Dişi Kurdun Rüyaları",
+          "kitap_linki": "https://www.ketebe.com/disi-kurdun-ruyalari-cengiz-aytmatov",
+          "kapak_linki": "https://www.ketebe.com/disi-kurdun-ruyalari-cengiz-aytmatov-ceviri-roman-ketebe-cengiz-aytmatov-1390-62-K.jpg",
+          "yazar_adi": "Cengiz Aytmatov",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Hekaton'la Son Tango (Ciltli)",
+          "kitap_linki": "https://www.ketebe.com/hekatonla-son-tango-ciltli-mustafa-merter",
+          "kapak_linki": "https://www.ketebe.com/hekatonla-son-tango-ciltli-mustafa-merter-psikoloji-ketebe-mustafa-merter-2405-15-K.jpg",
+          "yazar_adi": "Mustafa Merter",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sağlık"
+        },
+        {
+          "kitap_adi": "Rahmet Yolları Kesti",
+          "kitap_linki": "https://www.ketebe.com/rahmet-yollari-kesti-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/rahmet-yollari-kesti-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1444-99-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Müziğin Yedi Dokunuşu",
+          "kitap_linki": "https://www.ketebe.com/muzigin-yedi-dokunusu-zoran-zivkovic",
+          "kapak_linki": "https://www.ketebe.com/muzigin-yedi-dokunusu-zoran-zivkovic-ceviri-roman-ketebe-zoran-zivkovic-1805-12-K.jpg",
+          "yazar_adi": "Zoran Zivkovic",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Fakir Sanat",
+          "kitap_linki": "https://www.ketebe.com/fakir-sanat-leo-bersani-ulysse-dutoit",
+          "kapak_linki": "https://www.ketebe.com/fakir-sanat-leo-bersani-ulysse-dutoit-kolektif-kitaplar-ketebe-leo-bersani-ulysse-dutoit-2102-13-K.jpg",
+          "yazar_adi": "Leo Bersani, Ulysse Dutoit",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Ahlak ve Sanat",
+          "kitap_linki": "https://www.ketebe.com/ahlak-ve-sanat-ducane-cundioglu",
+          "kapak_linki": "https://www.ketebe.com/ahlak-ve-sanat-ducane-cundioglu-ducane-cundioglu-kitapligi-ketebe-ducane-cundioglu-261-26-K.jpg",
+          "yazar_adi": "Dücane Cündioğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dücane Cündioğlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "Türkiye’de Sosyolojinin Yüz Yıllık Birikimi",
+          "kitap_linki": "https://www.ketebe.com/turkiyede-sosyolojinin-yuz-yillik-birikimi",
+          "kapak_linki": "https://www.ketebe.com/turkiyede-sosyolojinin-yuz-yillik-birikimi-kolektif-kitaplar-ketebe-erkan-cav-elif-sureyya-genc-385-36-K.jpg",
+          "yazar_adi": "Erkan Çav - Elif Süreyya Genç",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Bozkırdaki Çekirdek",
+          "kitap_linki": "https://www.ketebe.com/bozkirdaki-cekirdek-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/bozkirdaki-cekirdek-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1441-99-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Sanat ve Propaganda",
+          "kitap_linki": "https://www.ketebe.com/sanat-ve-propaganda-george-orwell",
+          "kapak_linki": "https://www.ketebe.com/sanat-ve-propaganda-george-orwell-deneme-ketebe-george-orwell-2200-14-K.jpg",
+          "yazar_adi": "George Orwell",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Deneme"
+        },
+        {
+          "kitap_adi": "Müze Bekçisi",
+          "kitap_linki": "https://www.ketebe.com/muze-bekcisi-howard-norman",
+          "kapak_linki": "https://www.ketebe.com/muze-bekcisi-howard-norman-ceviri-roman-ketebe-howard-norman-1249-90-K.jpg",
+          "yazar_adi": "Howard Norman",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Çağdaş Fizik Düşüncesi",
+          "kitap_linki": "https://www.ketebe.com/cagdas-fizik-dusuncesi",
+          "kapak_linki": "https://www.ketebe.com/cagdas-fizik-dusuncesi-kolektif-kitaplar-ketebe-albert-einstein-gaston-bachelard-henri-bergson-paul-valry-2659-16-K.jpg",
+          "yazar_adi": "Albert Einstein, Gaston Bachelard, Henri Bergson, Paul Valéry",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "İbrahim'in Kaybettiğini Bulmasıdır",
+          "kitap_linki": "https://www.ketebe.com/ibrahimin-kaybettigini-bulmasidir-guray-sungu",
+          "kapak_linki": "https://www.ketebe.com/ibrahimin-kaybettigini-bulmasidir-guray-sungu-turk-romani-ketebe-guray-sungu-2082-88-K.jpg",
+          "yazar_adi": "Güray Süngü",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Kültür. Sanat. Yönetim",
+          "kitap_linki": "https://www.ketebe.com/kultur-sanat-yonetim-marcus-graf-ali-guney",
+          "kapak_linki": "https://www.ketebe.com/kultur-sanat-yonetim-marcus-graf-ali-guney-kolektif-kitaplar-ketebe-ed-marcus-graf-ali-guney-1062-77-K.png",
+          "yazar_adi": "Ed. Marcus Graf, Ali Güney",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Mimarlar Neden Bachelard Okur?",
+          "kitap_linki": "https://www.ketebe.com/mimarlar-neden-bachelard-okur-mtaha-tunc-sumeyye-yildiz",
+          "kapak_linki": "https://www.ketebe.com/mimarlar-neden-bachelard-okur-mtaha-tunc-sumeyye-yildiz-kolektif-kitaplar-ketebe-m-taha-tunc-sumeyye-yildiz-769-66-K.jpg",
+          "yazar_adi": "M. Taha Tunç, Sümeyye Yıldız",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Piramit",
+          "kitap_linki": "https://www.ketebe.com/piramit-ismail-kadare",
+          "kapak_linki": "https://www.ketebe.com/piramit-ismail-kadare-ketebe-modern-ketebe-ismail-kadare-1250-90-K.jpg",
+          "yazar_adi": "İsmail Kadare",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Türkistan Geceleri",
+          "kitap_linki": "https://www.ketebe.com/turkistan-geceleri-necib-el-kilani",
+          "kapak_linki": "https://www.ketebe.com/turkistan-geceleri-necib-el-kilani-ceviri-roman-ketebe-necb-el-kln-2613-15-K.jpg",
+          "yazar_adi": "Necîb el-Kîlânî",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        }
+      ]
+    },
+    {
+      "seviye": 6,
+      "seviye_adi": "Derinleşme - Soyut ve Teorik Sular",
+      "amac": "Konfor alanından çıkıp, yayınevinin ağır toplarıyla ve teorik metinlerle yüzleşmeye başlamak.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Felsefenin Tesellisi",
+          "kitap_linki": "https://www.ketebe.com/felsefenin-tesellisi-boethius",
+          "kapak_linki": "https://www.ketebe.com/felsefenin-tesellisi-boethius-felsefe-ketebe-boethius-2018-13-K.jpg",
+          "yazar_adi": "Boethius",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "Kassandra Damgası",
+          "kitap_linki": "https://www.ketebe.com/kassandra-damgasi-cengiz-aytmatov",
+          "kapak_linki": "https://www.ketebe.com/kassandra-damgasi-cengiz-aytmatov-ceviri-roman-ketebe-cengiz-aytmatov-2654-70-K.jpg",
+          "yazar_adi": "Cengiz Aytmatov",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Ölümcül Hastalık Umutsuzluk",
+          "kitap_linki": "https://www.ketebe.com/olumcul-hastalik-umutsuzluk-soren-kierkegaard",
+          "kapak_linki": "https://www.ketebe.com/olumcul-hastalik-umutsuzluk-soren-kierkegaard-felsefe-ketebe-sren-kierkegaard-1718-11-K.jpg",
+          "yazar_adi": "Søren Kierkegaard",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "Yediçınar Yaylası",
+          "kitap_linki": "https://www.ketebe.com/yedicinar-yaylasi-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/yedicinar-yaylasi-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1442-99-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "İslam ve Bilim Tartışmaları",
+          "kitap_linki": "https://www.ketebe.com/islam-ve-bilim-tartismalari",
+          "kapak_linki": "https://www.ketebe.com/islam-ve-bilim-tartismalari-kolektif-kitaplar-ketebe-seyyid-huseyin-nasr-ziyauddin-serdar-seyyid-naki-521-47-K.jpg",
+          "yazar_adi": "Seyyid Hüseyin Nasr, Ziyaüddin Serdar, Seyyid Naki",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Kelleci Memet",
+          "kitap_linki": "https://www.ketebe.com/kelleci-memet-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/kelleci-memet-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1445-99-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Anlam ve Anlamsızlık",
+          "kitap_linki": "https://www.ketebe.com/anlam-ve-anlamsizlik-paul-ricoeur",
+          "kapak_linki": "https://www.ketebe.com/anlam-ve-anlamsizlik-paul-ricoeur-felsefe-ketebe-paul-ricoeur-2459-15-K.jpg",
+          "yazar_adi": "Paul Ricoeur",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "Köyün Kamburu",
+          "kitap_linki": "https://www.ketebe.com/koyun-kamburu-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/koyun-kamburu-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1438-99-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Savaş ve İlyada",
+          "kitap_linki": "https://www.ketebe.com/savas-ve-ilyada-simone-weil-rachel-bespaloff-hermann-broch",
+          "kapak_linki": "https://www.ketebe.com/savas-ve-ilyada-simone-weil-rachel-bespaloff-hermann-broch-kolektif-kitaplar-ketebe-simone-weil-rachel-bespaloff-hermann-broch-2104-13-K.jpg",
+          "yazar_adi": "Simone Weil, Rachel Bespaloff, Hermann Broch",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Sanatın Kuralları",
+          "kitap_linki": "https://www.ketebe.com/sanatin-kurallari-pierre-bourdieu",
+          "kapak_linki": "https://www.ketebe.com/sanatin-kurallari-pierre-bourdieu-sanat-ketebe-pierre-bourdieu-1865-12-K.jpg",
+          "yazar_adi": "Pierre Bourdieu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sanat"
+        },
+        {
+          "kitap_adi": "İktidarın Üç Yüzü",
+          "kitap_linki": "https://www.ketebe.com/iktidarin-uc-yuzu-steven-lukes",
+          "kapak_linki": "https://www.ketebe.com/iktidarin-uc-yuzu-steven-lukes-siyaset-dusuncesi-ketebe-steven-lukes-1549-10-K.jpg",
+          "yazar_adi": "Steven Lukes",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Siyaset Düşüncesi"
+        },
+        {
+          "kitap_adi": "İslâm Ahlâk Düşüncesi Sözlüğü",
+          "kitap_linki": "https://www.ketebe.com/islam-ahlak-dusuncesi-sozlugu-abdulkadir-el-fakihi",
+          "kapak_linki": "https://www.ketebe.com/islam-ahlak-dusuncesi-sozlugu-abdulkadir-el-fakihi-kolektif-kitaplar-ketebe-abdulkdir-el-fkih-1554-10-K.jpg",
+          "yazar_adi": "Abdülkâdir el-Fâkihî",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Küçük Bir Ölüm",
+          "kitap_linki": "https://www.ketebe.com/kucuk-bir-olum-muhammed-hasan-alvan",
+          "kapak_linki": "https://www.ketebe.com/kucuk-bir-olum-muhammed-hasan-alvan-ceviri-roman-ketebe-muhammed-hasan-alvn-2156-13-K.jpg",
+          "yazar_adi": "Muhammed Hasan Alvân",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Çalınan Poe",
+          "kitap_linki": "https://www.ketebe.com/calinan-poe-jacques-derrida-jacques-lacan",
+          "kapak_linki": "https://www.ketebe.com/calinan-poe-jacques-derrida-jacques-lacan-kolektif-kitaplar-ketebe-jacques-derrida-jacques-lacan-271-27-K.jpg",
+          "yazar_adi": "Jacques Derrida - Jacques Lacan",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Körduman",
+          "kitap_linki": "https://www.ketebe.com/korduman-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/korduman-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1439-99-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Cennetin Keşfi",
+          "kitap_linki": "https://www.ketebe.com/cennetin-kesfi-harry-mulisch",
+          "kapak_linki": "https://www.ketebe.com/cennetin-kesfi-harry-mulisch-ketebe-modern-ketebe-harry-mulisch-1246-90-K.jpg",
+          "yazar_adi": "Harry Mulisch",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Ketebe Modern"
+        },
+        {
+          "kitap_adi": "Gelenek ve Modernlik Arasında",
+          "kitap_linki": "https://www.ketebe.com/gelenek-ve-modernlik-arasinda-halil-inalcik",
+          "kapak_linki": "https://www.ketebe.com/gelenek-ve-modernlik-arasinda-halil-inalcik-tarih-ketebe-halil-inalcik-1891-12-K.jpg",
+          "yazar_adi": "Halil İnalcık",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Edebiyat Kuramı",
+          "kitap_linki": "https://www.ketebe.com/edebiyat-kurami-terry-eagleton",
+          "kapak_linki": "https://www.ketebe.com/edebiyat-kurami-terry-eagleton-edebiyat-elestirisi-ketebe-terry-eagleton-1678-11-K.jpg",
+          "yazar_adi": "Terry Eagleton",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Edebiyat Eleştirisi"
+        },
+        {
+          "kitap_adi": "Tekil Nesneler",
+          "kitap_linki": "https://www.ketebe.com/tekil-nesneler-jean-baudrillard-jean-nouvel",
+          "kapak_linki": "https://www.ketebe.com/tekil-nesneler-jean-baudrillard-jean-nouvel-kolektif-kitaplar-ketebe-jean-baudrillard-jean-nouvel-3233-18-K.jpg",
+          "yazar_adi": "Jean Baudrillard - Jean Nouvel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Büyük Mal",
+          "kitap_linki": "https://www.ketebe.com/buyuk-mal-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/buyuk-mal-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-1448-10-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        }
+      ]
+    },
+    {
+      "seviye": 7,
+      "seviye_adi": "Sorgulama - Ağır Romanlar ve Kuram",
+      "amac": "Felsefi ve edebi metinlerin en yoğun katmanlarına inmek, metinler arası bağlantılar kurmak.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Üç Şehir",
+          "kitap_linki": "https://www.ketebe.com/uc-sehir-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/uc-sehir-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-96-10-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        },
+        {
+          "kitap_adi": "Savaş ve Barış (2 Cilt Takım)",
+          "kitap_linki": "https://www.ketebe.com/savas-ve-baris-2-cilt-takim-lev-tolstoy",
+          "kapak_linki": "https://www.ketebe.com/savas-ve-baris-2-cilt-takim-lev-tolstoy-rus-klasikleri-ketebe-lev-tolstoy-2732-16-K.jpg",
+          "yazar_adi": "Lev Tolstoy",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Rus Klasikleri"
+        },
+        {
+          "kitap_adi": "İdrisîlerin Evi",
+          "kitap_linki": "https://www.ketebe.com/idrisilerin-evi-gazale-alizade",
+          "kapak_linki": "https://www.ketebe.com/idrisilerin-evi-gazale-alizade-ceviri-roman-ketebe-gazale-alizade-1396-95-K.png",
+          "yazar_adi": "Gazale Alizade",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Metafizik Nedir?",
+          "kitap_linki": "https://www.ketebe.com/metafizik-nedir-martin-heidegger",
+          "kapak_linki": "https://www.ketebe.com/metafizik-nedir-martin-heidegger-felsefe-ketebe-martin-heidegger-2144-13-K.jpg",
+          "yazar_adi": "Martin Heidegger",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "Waldo Sen Neden Orada Değilsin?",
+          "kitap_linki": "https://www.ketebe.com/waldo-sen-neden-orada-degilsin-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/waldo-sen-neden-orada-degilsin-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-97-10-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        },
+        {
+          "kitap_adi": "Uyurgezerler Üçlemesi (3 Cilt - Kutulu)",
+          "kitap_linki": "https://www.ketebe.com/uyurgezerler-uclemesi-hermann-broch",
+          "kapak_linki": "https://www.ketebe.com/uyurgezerler-uclemesi-hermann-broch-ceviri-roman-ketebe-hermann-broch-1130-84-K.jpg",
+          "yazar_adi": "Hermann Broch",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Suskunluk",
+          "kitap_linki": "https://www.ketebe.com/suskunluk-susaku-endo",
+          "kapak_linki": "https://www.ketebe.com/suskunluk-susaku-endo-ketebe-modern-ketebe-susaku-endo-867-72-K.jpg",
+          "yazar_adi": "Şusaku Endo",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Ketebe Modern"
+        },
+        {
+          "kitap_adi": "İslâm Klasiklerini Yeniden Keşfetmek",
+          "kitap_linki": "https://www.ketebe.com/islam-klasiklerini-yeniden-kesfetmek-ahmed-el-shamsy",
+          "kapak_linki": "https://www.ketebe.com/islam-klasiklerini-yeniden-kesfetmek-ahmed-el-shamsy-kolektif-kitaplar-ketebe-ahmed-el-shamsy-1710-11-K.jpg",
+          "yazar_adi": "Ahmed el-Shamsy",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Descartes’ın Muradı",
+          "kitap_linki": "https://www.ketebe.com/descartesin-muradi-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/descartesin-muradi-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-88-10-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        },
+        {
+          "kitap_adi": "Âfâkta ve Enfüste",
+          "kitap_linki": "https://www.ketebe.com/afakta-ve-enfuste-asiye-aykit-mustakim-arici",
+          "kapak_linki": "https://www.ketebe.com/afakta-ve-enfuste-asiye-aykit-mustakim-arici-kolektif-kitaplar-ketebe-asiye-aykit-mustakim-arici-2103-13-K.jpg",
+          "yazar_adi": "Asiye Aykıt, Mustakim Arıcı",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Bir Mülkiyet Kalesi",
+          "kitap_linki": "https://www.ketebe.com/bir-mulkiyet-kalesi-kemal-tahir",
+          "kapak_linki": "https://www.ketebe.com/bir-mulkiyet-kalesi-kemal-tahir-kemal-tahir-kitapligi-ketebe-kemal-tahir-2980-99-K.jpg",
+          "yazar_adi": "Kemal Tahir",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Geleceği Gören Dürbünüm",
+          "kitap_linki": "https://www.ketebe.com/gelecegi-goren-durbunum-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/gelecegi-goren-durbunum-ismet-ozel-siir-ketebe-ismet-ozel-2438-15-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Şiir"
+        },
+        {
+          "kitap_adi": "Gazâlî’nin İktisat Felsefesi",
+          "kitap_linki": "https://www.ketebe.com/gazalinin-iktisat-felsefesi-sabri-orman",
+          "kapak_linki": "https://www.ketebe.com/gazalinin-iktisat-felsefesi-sabri-orman-iktisat-ketebe-sabri-orman-3418-19-K.jpg",
+          "yazar_adi": "Sabri Orman",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İktisat"
+        },
+        {
+          "kitap_adi": "Cuma Mektupları 1",
+          "kitap_linki": "https://www.ketebe.com/cuma-mektuplari-1-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/cuma-mektuplari-1-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-83-9-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        },
+        {
+          "kitap_adi": "Görüntü ve Temsil",
+          "kitap_linki": "https://www.ketebe.com/goruntu-ve-temsil-hans-belting",
+          "kapak_linki": "https://www.ketebe.com/goruntu-ve-temsil-hans-belting-sanat-ketebe-hans-belting-1869-12-K.jpg",
+          "yazar_adi": "Hans Belting",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sanat"
+        },
+        {
+          "kitap_adi": "Şiir Okuma Kılavuzu",
+          "kitap_linki": "https://www.ketebe.com/siir-okuma-kilavuzu-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/siir-okuma-kilavuzu-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-94-10-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        },
+        {
+          "kitap_adi": "Cümel",
+          "kitap_linki": "https://www.ketebe.com/cumel-ducane-cundioglu",
+          "kapak_linki": "https://www.ketebe.com/cumel-ducane-cundioglu-ducane-cundioglu-kitapligi-ketebe-ducane-cundioglu-264-26-K.jpg",
+          "yazar_adi": "Dücane Cündioğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dücane Cündioğlu Kitaplığı"
+        },
+        {
+          "kitap_adi": "Mürted Julianus",
+          "kitap_linki": "https://www.ketebe.com/murted-julianus-dimitri-merejkovski",
+          "kapak_linki": "https://www.ketebe.com/murted-julianus-dimitri-merejkovski-ketebe-modern-ketebe-dimitri-merejkovski-2279-14-K.jpg",
+          "yazar_adi": "Dimitri Merejkovski",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Çeviri Roman"
+        },
+        {
+          "kitap_adi": "Michel Foucault’nun Yazar Nedir’i",
+          "kitap_linki": "https://www.ketebe.com/michel-foucaultnun-yazar-nediri-tim-smith-laing",
+          "kapak_linki": "https://www.ketebe.com/michel-foucaultnun-yazar-nediri-tim-smith-laing-kolektif-kitaplar-ketebe-tim-smith-laing-1676-11-K.png",
+          "yazar_adi": "Tim Smith - Laing",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Bakanlar ve Görenler",
+          "kitap_linki": "https://www.ketebe.com/bakanlar-ve-gorenler-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/bakanlar-ve-gorenler-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-84-9-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        }
+      ]
+    },
+    {
+      "seviye": 8,
+      "seviye_adi": "Uzmanlaşma - Disiplinlerarası Zirveler",
+      "amac": "Farklı alanlardaki en derinlikli metinleri bir araya getirerek entelektüel bir sentez oluşturmak.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Zor Zamanda Konuşmak",
+          "kitap_linki": "https://www.ketebe.com/zor-zamanda-konusmak-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/zor-zamanda-konusmak-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-98-10-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        },
+        {
+          "kitap_adi": "Suç ve Ceza (2 Cilt Takım)",
+          "kitap_linki": "https://www.ketebe.com/suc-ve-ceza-2-cilt-takim-fyodor-mihaylovic-dostoyevski",
+          "kapak_linki": "https://www.ketebe.com/suc-ve-ceza-2-cilt-takim-fyodor-mihaylovic-dostoyevski-rus-klasikleri-ketebe-fyodor-mihaylovic-dostoyevski-2725-16-K.jpg",
+          "yazar_adi": "Fyodor Mihayloviç Dostoyevski",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Rus Klasikleri"
+        },
+        {
+          "kitap_adi": "Hikmetü'l İşrak (Ciltli)",
+          "kitap_linki": "https://www.ketebe.com/hikmetul-israk-sihabuddin-es-suhreverdi",
+          "kapak_linki": "https://www.ketebe.com/hikmetul-israk-sihabuddin-es-suhreverdi-kolektif-kitaplar-ketebe-sihabuddin-es-suhreverdi-795-66-K.png",
+          "yazar_adi": "Şihabüddin Es-Sühreverdi",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Tarih ve Tin",
+          "kitap_linki": "https://www.ketebe.com/tarih-ve-tin-r-g-collingwood",
+          "kapak_linki": "https://www.ketebe.com/tarih-ve-tin-r-g-collingwood-tarih-felsefesi-ketebe-r-g-collingwood-1971-12-K.jpg",
+          "yazar_adi": "R. G. Collingwood",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih Felsefesi"
+        },
+        {
+          "kitap_adi": "Henry James’in Özel Hayatı",
+          "kitap_linki": "https://www.ketebe.com/henry-jamesin-ozel-hayati-kolektif",
+          "kapak_linki": "https://www.ketebe.com/henry-jamesin-ozel-hayati-kolektif-edebiyat-elestirisi-ketebe-kolektif-2178-14-K.jpg",
+          "yazar_adi": "Kolektif",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Edebiyat Eleştirisi"
+        },
+        {
+          "kitap_adi": "İbn Haldun",
+          "kitap_linki": "https://www.ketebe.com/ibn-haldun-yves-lacoste",
+          "kapak_linki": "https://www.ketebe.com/ibn-haldun-yves-lacoste-tarih-ketebe-yves-lacoste-1571-10-K.jpg",
+          "yazar_adi": "Yves Lacoste",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Of Not Being A Jew",
+          "kitap_linki": "https://www.ketebe.com/of-not-being-a-jew-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/of-not-being-a-jew-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-92-10-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        },
+        {
+          "kitap_adi": "Tefsir Anlayışı",
+          "kitap_linki": "https://www.ketebe.com/tefsir-anlayisi-ismail-cerrahoglu",
+          "kapak_linki": "https://www.ketebe.com/tefsir-anlayisi-ismail-cerrahoglu-dini-eserler-ketebe-ismail-cerrahoglu-1860-12-K.jpg",
+          "yazar_adi": "İsmail Cerrahoğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dini Eserler"
+        },
+        {
+          "kitap_adi": "Kâinatın Doğuşu",
+          "kitap_linki": "https://www.ketebe.com/kainatin-dogusu-muhyiddin-ibnul-arabi",
+          "kapak_linki": "https://www.ketebe.com/kainatin-dogusu-muhyiddin-ibnul-arabi-kolektif-kitaplar-ketebe-muhyiddin-ibnul-arab-2354-48-K.jpg",
+          "yazar_adi": "Muhyiddin İbnü’l-Arabî",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Ahlak Metafiziğinin Temellendirilmesi",
+          "kitap_linki": "https://www.ketebe.com/ahlak-metafiziginin-temellendirilmesi-immanuel-kant",
+          "kapak_linki": "https://www.ketebe.com/ahlak-metafiziginin-temellendirilmesi-immanuel-kant-felsefe-ketebe-immanuel-kant-2017-13-K.jpg",
+          "yazar_adi": "Immanuel Kant",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "Fütuhat-ı Mekkiyye’den",
+          "kitap_linki": "https://www.ketebe.com/futuhat-i-mekkiyyeden-muhyiddin-ibnul-arabi",
+          "kapak_linki": "https://www.ketebe.com/futuhat-i-mekkiyyeden-muhyiddin-ibnul-arabi-tasavvuf-ketebe-muhyiddin-ibnul-arab-794-67-K.jpg",
+          "yazar_adi": "Muhyiddin İbnü'l-Arabî",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tasavvuf"
+        },
+        {
+          "kitap_adi": "Peygamber’in Evinde",
+          "kitap_linki": "https://www.ketebe.com/peygamberin-evinde-hasan-muhaddisi-bijen-abdulkerimi",
+          "kapak_linki": "https://www.ketebe.com/peygamberin-evinde-hasan-muhaddisi-bijen-abdulkerimi-kolektif-kitaplar-ketebe-hasan-muhaddisi-bijen-abdulkerimi-1403-96-K.jpg",
+          "yazar_adi": "Hasan Muhaddisi – Bijen Abdulkerimi",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "İslâmî İktisat, Değerler ve Modernleşme Üzerine",
+          "kitap_linki": "https://www.ketebe.com/islâmî-iktisat-degerler-ve-modernlesme-uzerine-sabri-orman",
+          "kapak_linki": "https://www.ketebe.com/islm-iktisat-degerler-ve-modernlesme-uzerine-sabri-orman-iktisat-ketebe-sabri-orman-3419-19-K.jpg",
+          "yazar_adi": "Sabri Orman",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İktisat"
+        },
+        {
+          "kitap_adi": "Dil ve Sinema",
+          "kitap_linki": "https://www.ketebe.com/dil-ve-sinema-christian-metz",
+          "kapak_linki": "https://www.ketebe.com/dil-ve-sinema-christian-metz-sanat-ketebe-christian-metz-1868-12-K.jpg",
+          "yazar_adi": "Christian Metz",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Sanat"
+        },
+        {
+          "kitap_adi": "Osmanlı Tarihinde Efsaneler ve Gerçekler",
+          "kitap_linki": "https://www.ketebe.com/osmanli-tarihinde-efsaneler-ve-gercekler-halil-inalcik",
+          "kapak_linki": "https://www.ketebe.com/osmanli-tarihinde-efsaneler-ve-gercekler-halil-inalcik-tarih-ketebe-halil-inalcik-1892-12-K.jpg",
+          "yazar_adi": "Halil İnalcık",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Toplum Sözleşmesi",
+          "kitap_linki": "https://www.ketebe.com/toplum-sozlesmesi-jean-jacques-rousseau",
+          "kapak_linki": "https://www.ketebe.com/toplum-sozlesmesi-jean-jacques-rousseau-siyaset-dusuncesi-ketebe-jean-jacques-rousseau-2029-13-K.jpg",
+          "yazar_adi": "Jean-Jacques Rousseau",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Siyaset Düşüncesi"
+        },
+        {
+          "kitap_adi": "İnşâu'd - Devâir",
+          "kitap_linki": "https://www.ketebe.com/insaud-devair-muhyiddin-ibnul-arabi",
+          "kapak_linki": "https://www.ketebe.com/insaud-devair-muhyiddin-ibnul-arabi-kolektif-kitaplar-ketebe-muhyiddin-ibnul-arab-791-67-K.jpg",
+          "yazar_adi": "Muhyiddin İbnü’l-Arabî",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Ayasofya Risaleleri",
+          "kitap_linki": "https://www.ketebe.com/ayasofya-risaleleri-cihan-okuyucu-belkis-uluoglu",
+          "kapak_linki": "https://www.ketebe.com/ayasofya-risaleleri-cihan-okuyucu-belkis-uluoglu-sanat-ketebe-cihan-okuyucu-belkis-uluoglu-1309-93-K.jpg",
+          "yazar_adi": "Cihan Okuyucu, Belkıs Uluoğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Büyük Inka",
+          "kitap_linki": "https://www.ketebe.com/buyuk-inka-vitold-de-szyszlo",
+          "kapak_linki": "https://www.ketebe.com/buyuk-inka-vitold-de-szyszlo-tarih-ketebe-vitold-de-szyszlo-1570-10-K.jpg",
+          "yazar_adi": "Vitold de Szyszlo",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Ve'l-Asr",
+          "kitap_linki": "https://www.ketebe.com/vel-asr-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/vel-asr-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-93-10-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        }
+      ]
+    },
+    {
+      "seviye": 9,
+      "seviye_adi": "Otorite - Referans Eserler ve Külliyatlar",
+      "amac": "Konunun 'baba' kitaplarına ve temel referans metinlerine hakim olmak.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Devlet",
+          "kitap_linki": "https://www.ketebe.com/devlet-platon",
+          "kapak_linki": "https://www.ketebe.com/devlet-platon-siyaset-dusuncesi-ketebe-platon-2028-13-K.jpg",
+          "yazar_adi": "Platon",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Siyaset Düşüncesi"
+        },
+        {
+          "kitap_adi": "Karamazov Kardeşler (2 Cilt Takım)",
+          "kitap_linki": "https://www.ketebe.com/karamazov-kardesler-2-cilt-takim-fyodor-mihaylovic-dostoyevski",
+          "kapak_linki": "https://www.ketebe.com/karamazov-kardesler-2-cilt-takim-fyodor-mihaylovic-dostoyevski-rus-klasikleri-ketebe-fyodor-mihaylovic-dostoyevski-2726-16-K.jpg",
+          "yazar_adi": "Fyodor Mihayloviç Dostoyevski",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Rus Klasikleri"
+        },
+        {
+          "kitap_adi": "Tarih Musahabeleri",
+          "kitap_linki": "https://www.ketebe.com/tarih-musahabeleri-yahya-kemal-beyatli",
+          "kapak_linki": "https://www.ketebe.com/tarih-musahabeleri-yahya-kemal-beyatli-tarih-ketebe-yahya-kemal-beyatli-1726-11-K.jpg",
+          "yazar_adi": "Yahya Kemal Beyatlı",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Modern Arap Düşüncesi",
+          "kitap_linki": "https://www.ketebe.com/modern-arap-dusuncesi-albert-hourani",
+          "kapak_linki": "https://www.ketebe.com/modern-arap-dusuncesi-albert-hourani-siyaset-dusuncesi-ketebe-albert-hourani-1700-11-K.jpg",
+          "yazar_adi": "Albert Hourani",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Siyaset Düşüncesi"
+        },
+        {
+          "kitap_adi": "Safahat (Osmanlıca)",
+          "kitap_linki": "https://www.ketebe.com/safahat-osmanlica",
+          "kapak_linki": "https://www.ketebe.com/safahat-osmanlica-osmanli-klasikleri-ketebe-mehmet-akif-ersoy-329-31-K.jpg",
+          "yazar_adi": "Mehmet Akif Ersoy",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Türk Romanı"
+        },
+        {
+          "kitap_adi": "Poetika",
+          "kitap_linki": "https://www.ketebe.com/poetika-aristoteles",
+          "kapak_linki": "https://www.ketebe.com/poetika-aristoteles-felsefe-ketebe-aristoteles-2143-13-K.jpg",
+          "yazar_adi": "Aristoteles",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "Yolun Öteki Yüzü (2 Cilt)",
+          "kitap_linki": "https://www.ketebe.com/yolun-oteki-yuzu-musa-duman-ilhami-danis",
+          "kapak_linki": "https://www.ketebe.com/yolun-oteki-yuzu-musa-duman-ilhami-danis-kolektif-kitaplar-ketebe-musa-duman-ilhami-danis-3241-18-K.jpg",
+          "yazar_adi": "Musa Duman, İlhami Danış",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Türk Tefsir Tarihi",
+          "kitap_linki": "https://www.ketebe.com/turk-tefsir-tarihi-ismail-cerrahoglu",
+          "kapak_linki": "https://www.ketebe.com/turk-tefsir-tarihi-ismail-cerrahoglu-dini-eserler-ketebe-ismail-cerrahoglu-1859-12-K.jpg",
+          "yazar_adi": "İsmail Cerrahoğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dini Eserler"
+        },
+        {
+          "kitap_adi": "Hadis Tarihi",
+          "kitap_linki": "https://www.ketebe.com/hadis-tarihi-fuat-sezgin",
+          "kapak_linki": "https://www.ketebe.com/hadis-tarihi-fuat-sezgin-dini-eserler-ketebe-fuat-sezgin-1752-11-K.jpg",
+          "yazar_adi": "Fuat Sezgin",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dini Eserler"
+        },
+        {
+          "kitap_adi": "Haçlı Seferleri",
+          "kitap_linki": "https://www.ketebe.com/hacli-seferi-jonathan-riley-smithy-susanna-a-throop",
+          "kapak_linki": "https://www.ketebe.com/hacli-seferi-jonathan-riley-smithy-susanna-a-throop-kolektif-kitaplar-ketebe-jonathan-riley-smith-susanna-a-throop-2950-17-K.jpg",
+          "yazar_adi": "Jonathan Riley-Smith, Susanna A. Throop",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Osman Turan'a Armağan",
+          "kitap_linki": "https://www.ketebe.com/osman-turana-armagan-ali-birinci-yunus-emre-kaleli",
+          "kapak_linki": "https://www.ketebe.com/osman-turana-armagan-ali-birinci-yunus-emre-kaleli-kolektif-kitaplar-ketebe-ali-birinci-yunus-emre-kaleli-1306-93-K.jpg",
+          "yazar_adi": "Ali Birinci, Yunus Emre Kaleli",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Buhari’nin Kaynakları",
+          "kitap_linki": "https://www.ketebe.com/buharinin-kaynaklari-fuat-sezgin",
+          "kapak_linki": "https://www.ketebe.com/buharinin-kaynaklari-fuat-sezgin-dini-eserler-ketebe-fuat-sezgin-1751-11-K.jpg",
+          "yazar_adi": "Fuat Sezgin",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dini Eserler"
+        },
+        {
+          "kitap_adi": "Endülüs'te Tıp",
+          "kitap_linki": "https://www.ketebe.com/enduluste-tip-ayten-altintas",
+          "kapak_linki": "https://www.ketebe.com/enduluste-tip-ayten-altintas-tarih-ketebe-ayten-altintas-1824-12-K.jpg",
+          "yazar_adi": "Ayten Altıntaş",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Felsefe Tarihi",
+          "kitap_linki": "https://www.ketebe.com/felsefe-tarihi-macit-gokberk",
+          "kapak_linki": "https://www.ketebe.com/felsefe-tarihi-macit-gokberk-felsefe-ketebe-macit-gokberk-3101-18-K.jpg",
+          "yazar_adi": "Macit Gökberk",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "İhya-u Ulûmi’d-dîn (1. Cilt)",
+          "kitap_linki": "https://www.ketebe.com/ihya-u-ulumid-din-1-cilt-imam-gazzali",
+          "kapak_linki": "https://www.ketebe.com/ihya-u-ulumid-din-1-cilt-imam-gazzali-dini-eserler-ketebe-imam-gazzal-1738-11-K.jpg",
+          "yazar_adi": "İmam Gazzâlî",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dini Eserler"
+        },
+        {
+          "kitap_adi": "İlmin Işığında Osmanlıdan Cumhuriyete Tıbbiyenin Evrimi",
+          "kitap_linki": "https://www.ketebe.com/ilmin-isiginda-osmanlidan-cumhuriyete-tibbiyenin-evrimi-ayten-altintas",
+          "kapak_linki": "https://www.ketebe.com/ilmin-isiginda-osmanlidan-cumhuriyete-tibbiyenin-evrimi-ayten-altintas-tarih-ketebe-ayten-altintas-1822-12-K.jpg",
+          "yazar_adi": "Ayten Altıntaş",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Salerno Tıp Okulu",
+          "kitap_linki": "https://www.ketebe.com/salerno-tip-okulu-gussun-gunes-yasemin-polat",
+          "kapak_linki": "https://www.ketebe.com/salerno-tip-okulu-gussun-gunes-yasemin-polat-kolektif-kitaplar-ketebe-gussun-gunes-yasemin-polat-3010-16-K.jpg",
+          "yazar_adi": "Güssün Güneş, Yasemin Polat",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Kolektif Kitaplar"
+        },
+        {
+          "kitap_adi": "Felsefeye Giriş",
+          "kitap_linki": "https://www.ketebe.com/felsefeye-giris-ahmet-arslan",
+          "kapak_linki": "https://www.ketebe.com/felsefeye-giris-ahmet-arslan-felsefe-ketebe-ahmet-arslan-3103-18-K.jpg",
+          "yazar_adi": "Ahmet Arslan",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "Metafizik Nedir?",
+          "kitap_linki": "https://www.ketebe.com/metafizik-nedir-martin-heidegger",
+          "kapak_linki": "https://www.ketebe.com/metafizik-nedir-martin-heidegger-felsefe-ketebe-martin-heidegger-2144-13-K.jpg",
+          "yazar_adi": "Martin Heidegger",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "Üç Zor Mesele",
+          "kitap_linki": "https://www.ketebe.com/uc-zor-mesele-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/uc-zor-mesele-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-95-10-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        }
+      ]
+    },
+    {
+      "seviye": 10,
+      "seviye_adi": "Zirve - Entelektüel Hakimiyet",
+      "amac": "Yayınevinin ve temsil ettiği düşünce dünyasının kodlarına tam anlamıyla vakıf olmak, bağımsız analiz yapabilmek.",
+      "kitaplar": [
+        {
+          "kitap_adi": "Ulysses",
+          "kitap_linki": "https://www.ketebe.com/ulysses-james-joyce",
+          "kapak_linki": "https://www.ketebe.com/ulysses-james-joyce-ketebe-modern-ketebe-james-joyce-1691-11-K.jpg",
+          "yazar_adi": "James Joyce",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Ketebe Modern"
+        },
+        {
+          "kitap_adi": "Kayıp Zamanın İzinde - Swann'ların Tarafı",
+          "kitap_linki": "https://www.ketebe.com/kayip-zamanin-izinde-swannlarin-tarafi-marcel-proust",
+          "kapak_linki": "https://www.ketebe.com/kayip-zamanin-izinde-swannlarin-tarafi-marcel-proust-ketebe-modern-ketebe-marcel-proust-1534-10-K.jpg",
+          "yazar_adi": "Marcel Proust",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Ketebe Modern"
+        },
+        {
+          "kitap_adi": "Taşları Yemek Yasak",
+          "kitap_linki": "https://www.ketebe.com/taslari-yemek-yasak-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/taslari-yemek-yasak-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-90-9-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        },
+        {
+          "kitap_adi": "Tarih Felsefesi",
+          "kitap_linki": "https://www.ketebe.com/tarih-felsefesi-georg-wilhelm-friedrich-hegel",
+          "kapak_linki": "https://www.ketebe.com/tarih-felsefesi-georg-wilhelm-friedrich-hegel-tarih-felsefesi-ketebe-georg-wilhelm-friedrich-hegel-2015-13-K.jpg",
+          "yazar_adi": "Georg Wilhelm Friedrich Hegel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih Felsefesi"
+        },
+        {
+          "kitap_adi": "Annales Okulu",
+          "kitap_linki": "https://www.ketebe.com/annales-okulu-peter-burke",
+          "kapak_linki": "https://www.ketebe.com/annales-okulu-peter-burke-tarih-ketebe-peter-burke-1900-12-K.jpg",
+          "yazar_adi": "Peter Burke",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Kapital 1. Cilt",
+          "kitap_linki": "https://www.ketebe.com/kapital-1-cilt-karl-marx",
+          "kapak_linki": "https://www.ketebe.com/kapital-1-cilt-karl-marx-siyaset-dusuncesi-ketebe-karl-marx-2280-14-K.jpg",
+          "yazar_adi": "Karl Marx",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Siyaset Düşüncesi"
+        },
+        {
+          "kitap_adi": "Modernleşen Türkiye'nin Tarihi",
+          "kitap_linki": "https://www.ketebe.com/modernlesen-turkiyenin-tarihi-erik-jan-zurcher",
+          "kapak_linki": "https://www.ketebe.com/modernlesen-turkiyenin-tarihi-erik-jan-zurcher-tarih-ketebe-erik-jan-zurcher-1672-11-K.jpg",
+          "yazar_adi": "Erik Jan Zürcher",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Hukuk ve Meşruiyet",
+          "kitap_linki": "https://www.ketebe.com/hukuk-ve-mesruiyet-carl-schmitt",
+          "kapak_linki": "https://www.ketebe.com/hukuk-ve-mesruiyet-carl-schmitt-siyaset-dusuncesi-ketebe-carl-schmitt-1548-10-K.jpg",
+          "yazar_adi": "Carl Schmitt",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Siyaset Düşüncesi"
+        },
+        {
+          "kitap_adi": "Osmanlı İmparatorluğu'nun Ekonomik ve Sosyal Tarihi - 1",
+          "kitap_linki": "https://www.ketebe.com/osmanli-imparatorlugunun-ekonomik-ve-sosyal-tarihi-1-halil-inalcik",
+          "kapak_linki": "https://www.ketebe.com/osmanli-imparatorlugunun-ekonomik-ve-sosyal-tarihi-1-halil-inalcik-tarih-ketebe-halil-inalcik-1896-12-K.jpg",
+          "yazar_adi": "Halil İnalcık",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "İslam Medeniyeti Tarihi (10 Cilt Takım)",
+          "kitap_linki": "https://www.ketebe.com/islam-medeniyeti-tarihi-10-cilt-takim-corci-zeydan",
+          "kapak_linki": "https://www.ketebe.com/islam-medeniyeti-tarihi-10-cilt-takim-corci-zeydan-tarih-ketebe-corci-zeydan-2281-14-K.jpg",
+          "yazar_adi": "Corci Zeydan",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Doğu-Batı Divanı",
+          "kitap_linki": "https://www.ketebe.com/dogu-bati-divani-johann-wolfgang-von-goethe",
+          "kapak_linki": "https://www.ketebe.com/dogu-bati-divani-johann-wolfgang-von-goethe-siir-ketebe-johann-wolfgang-von-goethe-2030-13-K.jpg",
+          "yazar_adi": "Johann Wolfgang von Goethe",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Şiir"
+        },
+        {
+          "kitap_adi": "Siyasal Kavramı",
+          "kitap_linki": "https://www.ketebe.com/siyasal-kavrami-carl-schmitt",
+          "kapak_linki": "https://www.ketebe.com/siyasal-kavrami-carl-schmitt-siyaset-dusuncesi-ketebe-carl-schmitt-1547-10-K.jpg",
+          "yazar_adi": "Carl Schmitt",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Siyaset Düşüncesi"
+        },
+        {
+          "kitap_adi": "Modern Dünyanın Kökenleri",
+          "kitap_linki": "https://www.ketebe.com/modern-dunyanin-kokenleri-robert-b-marks",
+          "kapak_linki": "https://www.ketebe.com/modern-dunyanin-kokenleri-robert-b-marks-tarih-ketebe-robert-b-marks-1572-10-K.jpg",
+          "yazar_adi": "Robert B. Marks",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih"
+        },
+        {
+          "kitap_adi": "Tractatus Logico-Philosophicus",
+          "kitap_linki": "https://www.ketebe.com/tractatus-logico-philosophicus-ludwig-wittgenstein",
+          "kapak_linki": "https://www.ketebe.com/tractatus-logico-philosophicus-ludwig-wittgenstein-felsefe-ketebe-ludwig-wittgenstein-2142-13-K.jpg",
+          "yazar_adi": "Ludwig Wittgenstein",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Felsefe"
+        },
+        {
+          "kitap_adi": "Bilimsel Devrimlerin Yapısı",
+          "kitap_linki": "https://www.ketebe.com/bilimsel-devrimlerin-yapisi-thomas-s-kuhn",
+          "kapak_linki": "https://www.ketebe.com/bilimsel-devrimlerin-yapisi-thomas-s-kuhn-bilim-ketebe-thomas-s-kuhn-1715-11-K.jpg",
+          "yazar_adi": "Thomas S. Kuhn",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Bilim"
+        },
+        {
+          "kitap_adi": "Despair",
+          "kitap_linki": "https://www.ketebe.com/despair-ismet-ozel",
+          "kapak_linki": "https://www.ketebe.com/despair-ismet-ozel-ismet-ozel-kitapligi-ketebe-ismet-ozel-1262-91-K.jpg",
+          "yazar_adi": "İsmet Özel",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "İsmet Özel Kitaplığı"
+        },
+        {
+          "kitap_adi": "Türk Düşünce Tarihi 1",
+          "kitap_linki": "https://www.ketebe.com/turk-dusunce-tarihi-1-kolektif",
+          "kapak_linki": "https://www.ketebe.com/turk-dusunce-tarihi-1-kolektif-dusunce-ketebe-kolektif-2131-13-K.jpg",
+          "yazar_adi": "Kolektif",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Düşünce"
+        },
+        {
+          "kitap_adi": "Tarihin Anlamı ve Önemi",
+          "kitap_linki": "https://www.ketebe.com/tarihin-anlami-ve-onemi-nicolas-berdyaev",
+          "kapak_linki": "https://www.ketebe.com/tarihin-anlami-ve-onemi-nicolas-berdyaev-tarih-felsefesi-ketebe-nicolas-berdyaev-1972-12-K.jpg",
+          "yazar_adi": "Nicolas Berdyaev",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Tarih Felsefesi"
+        },
+        {
+          "kitap_adi": "Büyük Dönüşüm",
+          "kitap_linki": "https://www.ketebe.com/buyuk-donusum-karl-polanyi",
+          "kapak_linki": "https://www.ketebe.com/buyuk-donusum-karl-polanyi-siyaset-dusuncesi-ketebe-karl-polanyi-1699-11-K.jpg",
+          "yazar_adi": "Karl Polanyi",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Siyaset Düşüncesi"
+        },
+        {
+          "kitap_adi": "İşaretler",
+          "kitap_linki": "https://www.ketebe.com/isaretler-ducane-cundioglu",
+          "kapak_linki": "https://www.ketebe.com/isaretler-ducane-cundioglu-ducane-cundioglu-kitapligi-ketebe-ducane-cundioglu-265-26-K.jpg",
+          "yazar_adi": "Dücane Cündioğlu",
+          "kitap_aciklamasi": "",
+          "sayfa_sayisi": null,
+          "kategori": "Dücane Cündioğlu Kitaplığı"
+        }
+      ]
+    }
+  ]
+}

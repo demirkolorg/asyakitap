@@ -62,18 +62,19 @@ import {
     createLevel,
     updateLevel,
     deleteLevel,
-    createReadingListBook,
+    addBookToLevel,
     updateReadingListBook,
-    deleteReadingListBook,
+    removeBookFromLevel,
     reorderLevels,
-    reorderBooks,
-    getReadingListForAdmin,
+    reorderBooksInLevel,
+    getReadingListById,
 } from "@/actions/reading-lists"
 import { cn } from "@/lib/utils"
 
 // Types
 interface ReadingListBook {
     id: string
+    bookId: string
     title: string
     author: string
     neden: string | null
@@ -346,12 +347,33 @@ export function ManageClient({ initialLists }: ManageClientProps) {
 
     // Refresh selected list data
     const refreshSelectedList = async (listId: string) => {
-        const data = await getReadingListForAdmin(listId)
+        const data = await getReadingListById(listId)
         if (data) {
-            const updatedList = {
-                ...data,
-                totalBooks: data.levels.reduce((acc: number, l: typeof data.levels[number]) => acc + l.books.length, 0),
-                levelCount: data.levels.length,
+            // Transform data to match our local types
+            const transformedLevels: ReadingListLevel[] = data.levels.map(level => ({
+                id: level.id,
+                levelNumber: level.levelNumber,
+                name: level.name,
+                description: level.description,
+                books: level.books.map(rb => ({
+                    id: rb.id,
+                    bookId: rb.bookId,
+                    title: rb.book.title,
+                    author: rb.book.author?.name || "Bilinmeyen Yazar",
+                    neden: rb.neden,
+                    pageCount: rb.book.pageCount,
+                    sortOrder: rb.sortOrder
+                }))
+            }))
+
+            const updatedList: ReadingList = {
+                id: data.id,
+                slug: data.slug,
+                name: data.name,
+                description: data.description,
+                levels: transformedLevels,
+                totalBooks: transformedLevels.reduce((acc, l) => acc + l.books.length, 0),
+                levelCount: transformedLevels.length,
             }
             setSelectedList(updatedList)
             setLists((prev) =>
@@ -481,15 +503,11 @@ export function ManageClient({ initialLists }: ManageClientProps) {
         if (!selectedList || !editingLevelId) return
         setLoading(true)
         try {
-            const data = {
-                title: bookForm.title,
-                author: bookForm.author,
-                neden: bookForm.neden || undefined,
-                pageCount: bookForm.pageCount ? parseInt(bookForm.pageCount) : undefined,
-            }
-
             if (editingBook) {
-                const res = await updateReadingListBook(editingBook.id, data)
+                // Sadece neden alanı güncellenebilir
+                const res = await updateReadingListBook(editingBook.id, {
+                    neden: bookForm.neden || undefined,
+                })
                 if (res.success) {
                     toast.success("Kitap güncellendi")
                     await refreshSelectedList(selectedList.id)
@@ -497,16 +515,9 @@ export function ManageClient({ initialLists }: ManageClientProps) {
                     toast.error(res.error)
                 }
             } else {
-                const res = await createReadingListBook({
-                    levelId: editingLevelId,
-                    ...data,
-                })
-                if (res.success) {
-                    toast.success("Kitap eklendi")
-                    await refreshSelectedList(selectedList.id)
-                } else {
-                    toast.error(res.error)
-                }
+                // Yeni kitap ekleme için önce Book oluşturulmalı
+                // Bu özellik admin paneli için yeniden tasarlanacak
+                toast.error("Yeni kitap ekleme özelliği yakında gelecek")
             }
             setBookDialogOpen(false)
         } finally {
@@ -543,7 +554,7 @@ export function ManageClient({ initialLists }: ManageClientProps) {
                     toast.success("Seviye silindi")
                 }
             } else {
-                res = await deleteReadingListBook(deleteTarget.id)
+                res = await removeBookFromLevel(deleteTarget.id)
                 if (res.success && selectedList) {
                     await refreshSelectedList(selectedList.id)
                     toast.success("Kitap silindi")
@@ -603,7 +614,7 @@ export function ManageClient({ initialLists }: ManageClientProps) {
             ),
         })
 
-        const res = await reorderBooks(levelId, bookIds)
+        const res = await reorderBooksInLevel(levelId, bookIds)
         if (!res.success) {
             toast.error("Sıralama güncellenemedi")
             await refreshSelectedList(selectedList.id)

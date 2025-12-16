@@ -4,89 +4,99 @@ import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { unstable_cache } from "next/cache"
-import { CACHE_TAGS, CACHE_DURATION, invalidateLinkCaches } from "@/lib/cache"
-import { matchBookScore, isAutoLinkable, isSuggestionWorthy, getMatchConfidence, type MatchConfidence } from "@/lib/string-utils"
+import { CACHE_TAGS, CACHE_DURATION } from "@/lib/cache"
+import { scrapeKitapyurdu } from "./kitapyurdu"
 
-// Cached reading lists (static data - long cache)
-const getCachedReadingLists = unstable_cache(
-    async () => {
+// ==========================================
+// Types
+// ==========================================
+
+export interface ReadingListSummary {
+    id: string
+    slug: string
+    name: string
+    description: string | null
+    coverUrl: string | null
+    levelCount: number
+    totalBooks: number
+}
+
+export interface ReadingListBook {
+    id: string
+    bookId: string
+    neden: string | null
+    sortOrder: number
+    book: {
+        id: string
+        title: string
+        coverUrl: string | null
+        pageCount: number | null
+        inLibrary: boolean
+        author: { id: string; name: string } | null
+        publisher: { id: string; name: string } | null
+    }
+}
+
+export interface ReadingListLevel {
+    id: string
+    levelNumber: number
+    name: string
+    description: string | null
+    books: ReadingListBook[]
+}
+
+export interface ReadingListDetail {
+    id: string
+    slug: string
+    name: string
+    description: string | null
+    coverUrl: string | null
+    sortOrder: number
+    levels: ReadingListLevel[]
+    totalBooks: number
+}
+
+// ==========================================
+// READ Operations
+// ==========================================
+
+// Get all reading lists summary (for browse page)
+export async function getReadingListsSummary(): Promise<ReadingListSummary[]> {
+    try {
         const lists = await prisma.readingList.findMany({
             orderBy: { sortOrder: "asc" },
             include: {
                 levels: {
-                    orderBy: { levelNumber: "asc" },
                     include: {
-                        books: {
-                            orderBy: { sortOrder: "asc" }
+                        _count: {
+                            select: { books: true }
                         }
                     }
                 }
             }
         })
 
-        return lists.map((list: typeof lists[number]) => ({
-            ...list,
-            totalBooks: list.levels.reduce((acc: number, level: typeof list.levels[number]) => acc + level.books.length, 0),
-            levelCount: list.levels.length
-        }))
-    },
-    ['reading-lists-all'],
-    {
-        tags: [CACHE_TAGS.readingLists],
-        revalidate: CACHE_DURATION.STATIC, // 24 hours - rarely changes
-    }
-)
+        return lists.map(list => {
+            const totalBooks = list.levels.reduce((sum, level) => sum + level._count.books, 0)
 
-// Get all reading lists with counts
-export async function getReadingLists() {
-    try {
-        return await getCachedReadingLists()
+            return {
+                id: list.id,
+                slug: list.slug,
+                name: list.name,
+                description: list.description,
+                coverUrl: list.coverUrl,
+                levelCount: list.levels.length,
+                totalBooks
+            }
+        })
     } catch (error) {
-        console.error("Failed to fetch reading lists:", error)
+        console.error("Failed to fetch reading lists summary:", error)
         return []
     }
 }
 
-// Cached single reading list
-const getCachedReadingList = (slug: string) =>
-    unstable_cache(
-        async () => {
-            return prisma.readingList.findUnique({
-                where: { slug },
-                include: {
-                    levels: {
-                        orderBy: { levelNumber: "asc" },
-                        include: {
-                            books: {
-                                orderBy: { sortOrder: "asc" }
-                            }
-                        }
-                    }
-                }
-            })
-        },
-        [`reading-list-${slug}`],
-        {
-            tags: [CACHE_TAGS.readingList(slug), CACHE_TAGS.readingLists],
-            revalidate: CACHE_DURATION.STATIC,
-        }
-    )()
-
-// Get single reading list with all details
-export async function getReadingList(slug: string) {
-    try {
-        return await getCachedReadingList(slug)
-    } catch (error) {
-        console.error("Failed to fetch reading list:", error)
-        return null
-    }
-}
-
-// Get reading list with user's progress
-export async function getReadingListWithProgress(slug: string) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
+// Get single reading list with full details
+export async function getReadingListDetail(slug: string): Promise<ReadingListDetail | null> {
     try {
         const list = await prisma.readingList.findUnique({
             where: { slug },
@@ -97,20 +107,12 @@ export async function getReadingListWithProgress(slug: string) {
                         books: {
                             orderBy: { sortOrder: "asc" },
                             include: {
-                                userLinks: user ? {
-                                    where: { userId: user.id },
+                                book: {
                                     include: {
-                                        book: {
-                                            select: {
-                                                id: true,
-                                                status: true,
-                                                currentPage: true,
-                                                pageCount: true,
-                                                coverUrl: true
-                                            }
-                                        }
+                                        author: { select: { id: true, name: true } },
+                                        publisher: { select: { id: true, name: true } }
                                     }
-                                } : false
+                                }
                             }
                         }
                     }
@@ -120,257 +122,125 @@ export async function getReadingListWithProgress(slug: string) {
 
         if (!list) return null
 
-        // Calculate progress
         let totalBooks = 0
-        let addedBooks = 0
-        let completedBooks = 0
-
-        const levelsWithProgress = list.levels.map((level: typeof list.levels[number]) => {
-            let levelAdded = 0
-            let levelCompleted = 0
-
-            const booksWithStatus = level.books.map((book: typeof level.books[number]) => {
-                totalBooks++
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const userLink = (book as any).userLinks?.[0]
-                const userBook = userLink?.book
-
-                let status: "not_added" | "added" | "reading" | "completed" = "not_added"
-
-                if (userBook) {
-                    addedBooks++
-                    levelAdded++
-
-                    if (userBook.status === "COMPLETED") {
-                        status = "completed"
-                        completedBooks++
-                        levelCompleted++
-                    } else if (userBook.status === "READING") {
-                        status = "reading"
-                    } else {
-                        status = "added"
-                    }
-                }
-
-                return {
-                    ...book,
-                    userStatus: status,
-                    userBook: userBook || null,
-                    userLinkId: userLink?.id || null
-                }
-            })
+        const levels = list.levels.map(level => {
+            totalBooks += level.books.length
 
             return {
-                ...level,
-                books: booksWithStatus,
-                progress: {
-                    added: levelAdded,
-                    completed: levelCompleted,
-                    total: level.books.length
-                }
+                id: level.id,
+                levelNumber: level.levelNumber,
+                name: level.name,
+                description: level.description,
+                books: level.books.map(rb => ({
+                    id: rb.id,
+                    bookId: rb.bookId,
+                    neden: rb.neden,
+                    sortOrder: rb.sortOrder,
+                    book: {
+                        id: rb.book.id,
+                        title: rb.book.title,
+                        coverUrl: rb.book.coverUrl,
+                        pageCount: rb.book.pageCount,
+                        inLibrary: rb.book.inLibrary,
+                        author: rb.book.author,
+                        publisher: rb.book.publisher
+                    }
+                }))
             }
         })
 
         return {
-            ...list,
-            levels: levelsWithProgress,
-            progress: {
-                total: totalBooks,
-                added: addedBooks,
-                completed: completedBooks
-            }
+            id: list.id,
+            slug: list.slug,
+            name: list.name,
+            description: list.description,
+            coverUrl: list.coverUrl,
+            sortOrder: list.sortOrder,
+            levels,
+            totalBooks
         }
     } catch (error) {
-        console.error("Failed to fetch reading list with progress:", error)
+        console.error("Failed to fetch reading list detail:", error)
         return null
     }
 }
 
-// Link a book from user's library to reading list
-export async function linkBookToReadingList(bookId: string, readingListBookId: string, listSlug: string) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) throw new Error("Unauthorized")
-
+// Get reading list by ID (for admin)
+export async function getReadingListById(id: string) {
     try {
-        // Verify book belongs to user
-        const book = await prisma.book.findFirst({
-            where: { id: bookId, userId: user.id },
-            select: { id: true }
-        })
-
-        if (!book) {
-            return { success: false, error: "Kitap bulunamadı" }
-        }
-
-        // Upsert - create or update
-        await prisma.userReadingListBook.upsert({
-            where: {
-                userId_readingListBookId: {
-                    userId: user.id,
-                    readingListBookId
-                }
-            },
-            create: {
-                userId: user.id,
-                readingListBookId,
-                bookId
-            },
-            update: {
-                bookId
-            }
-        })
-
-        // Cache invalidation
-        invalidateLinkCaches(user.id, bookId)
-        revalidateTag(CACHE_TAGS.readingList(listSlug), 'max')
-        revalidatePath(`/reading-lists/${listSlug}`)
-        revalidatePath('/library')
-
-        return { success: true }
-    } catch (error) {
-        console.error("Failed to link book:", error)
-        return { success: false, error: "Kitap bağlanamadı" }
-    }
-}
-
-// Unlink a book from reading list
-export async function unlinkBookFromReadingList(readingListBookId: string, listSlug: string) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) throw new Error("Unauthorized")
-
-    try {
-        // Önce bağlı kitap ID'sini al (cache invalidation için)
-        const existingLink = await prisma.userReadingListBook.findUnique({
-            where: {
-                userId_readingListBookId: {
-                    userId: user.id,
-                    readingListBookId
-                }
-            },
-            select: { bookId: true }
-        })
-
-        await prisma.userReadingListBook.delete({
-            where: {
-                userId_readingListBookId: {
-                    userId: user.id,
-                    readingListBookId
-                }
-            }
-        })
-
-        // Cache invalidation
-        invalidateLinkCaches(user.id, existingLink?.bookId || undefined)
-        revalidateTag(CACHE_TAGS.readingList(listSlug), 'max')
-        revalidatePath(`/reading-lists/${listSlug}`)
-        revalidatePath('/library')
-
-        return { success: true }
-    } catch (error) {
-        console.error("Failed to unlink book:", error)
-        return { success: false, error: "Bağlantı kaldırılamadı" }
-    }
-}
-
-// Return type for reading lists with progress
-export interface ReadingListWithProgress {
-    id: string
-    slug: string
-    name: string
-    description: string | null
-    coverUrl: string | null
-    levelCount: number
-    totalBooks: number
-    progress: {
-        added: number
-        completed: number
-        total: number
-    }
-}
-
-// Get reading lists with user progress for browse page
-export async function getReadingListsWithProgress(): Promise<ReadingListWithProgress[]> {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    try {
-        const lists = await prisma.readingList.findMany({
-            orderBy: { sortOrder: "asc" },
+        return await prisma.readingList.findUnique({
+            where: { id },
             include: {
                 levels: {
+                    orderBy: { levelNumber: "asc" },
                     include: {
                         books: {
+                            orderBy: { sortOrder: "asc" },
                             include: {
-                                userLinks: user ? {
-                                    where: { userId: user.id },
+                                book: {
                                     include: {
-                                        book: {
-                                            select: { status: true }
-                                        }
+                                        author: true,
+                                        publisher: true
                                     }
-                                } : false
+                                }
                             }
                         }
                     }
                 }
             }
         })
-
-        return lists.map((list: typeof lists[number]) => {
-            let totalBooks = 0
-            let addedBooks = 0
-            let completedBooks = 0
-
-            list.levels.forEach((level: typeof list.levels[number]) => {
-                level.books.forEach((book: typeof level.books[number]) => {
-                    totalBooks++
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const userLink = (book as any).userLinks?.[0]
-                    if (userLink?.book) {
-                        addedBooks++
-                        if (userLink.book.status === "COMPLETED") {
-                            completedBooks++
-                        }
-                    }
-                })
-            })
-
-            return {
-                id: list.id,
-                slug: list.slug,
-                name: list.name,
-                description: list.description,
-                coverUrl: list.coverUrl,
-                levelCount: list.levels.length,
-                totalBooks,
-                progress: {
-                    added: addedBooks,
-                    completed: completedBooks,
-                    total: totalBooks
-                }
-            }
-        })
     } catch (error) {
-        console.error("Failed to fetch reading lists with progress:", error)
-        return []
+        console.error("Failed to fetch reading list by id:", error)
+        return null
     }
 }
 
-// =====================
-// ADMIN ACTIONS
-// =====================
+// ==========================================
+// CREATE Operations
+// ==========================================
+
+// Helper function to generate slug
+function generateSlug(name: string): string {
+    return name
+        .toLowerCase()
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ş/g, 's')
+        .replace(/ı/g, 'i')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+}
 
 // Create a new reading list
 export async function createReadingList(data: {
     name: string
-    slug: string
+    slug?: string
     description?: string
+    coverUrl?: string
 }) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
     try {
+        // Generate slug from name if not provided
+        let slug = data.slug || generateSlug(data.name)
+
+        // Check if slug exists, add suffix if needed
+        let existing = await prisma.readingList.findUnique({
+            where: { slug }
+        })
+        let suffix = 1
+        while (existing) {
+            slug = `${generateSlug(data.name)}-${suffix}`
+            existing = await prisma.readingList.findUnique({
+                where: { slug }
+            })
+            suffix++
+        }
+
         const maxOrder = await prisma.readingList.aggregate({
             _max: { sortOrder: true }
         })
@@ -378,13 +248,15 @@ export async function createReadingList(data: {
         const list = await prisma.readingList.create({
             data: {
                 name: data.name,
-                slug: data.slug,
+                slug: slug,
                 description: data.description || null,
+                coverUrl: data.coverUrl || null,
                 sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
             }
         })
 
         revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
         return { success: true, list }
     } catch (error) {
         console.error("Failed to create reading list:", error)
@@ -392,50 +264,17 @@ export async function createReadingList(data: {
     }
 }
 
-// Update a reading list
-export async function updateReadingList(id: string, data: {
-    name?: string
-    slug?: string
-    description?: string
-}) {
-    try {
-        const list = await prisma.readingList.update({
-            where: { id },
-            data
-        })
-
-        revalidatePath("/reading-lists")
-        revalidateTag(CACHE_TAGS.readingLists, 'max')
-        return { success: true, list }
-    } catch (error) {
-        console.error("Failed to update reading list:", error)
-        return { success: false, error: "Liste güncellenemedi" }
-    }
-}
-
-// Delete a reading list
-export async function deleteReadingList(id: string) {
-    try {
-        await prisma.readingList.delete({
-            where: { id }
-        })
-
-        revalidatePath("/reading-lists")
-        return { success: true }
-    } catch (error) {
-        console.error("Failed to delete reading list:", error)
-        return { success: false, error: "Liste silinemedi" }
-    }
-}
-
-// Create a level
+// Create a level in reading list
 export async function createLevel(data: {
     readingListId: string
     name: string
     description?: string
 }) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
     try {
-        // Get max level number for this list
         const maxLevel = await prisma.readingListLevel.aggregate({
             where: { readingListId: data.readingListId },
             _max: { levelNumber: true }
@@ -451,6 +290,7 @@ export async function createLevel(data: {
         })
 
         revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
         return { success: true, level }
     } catch (error) {
         console.error("Failed to create level:", error)
@@ -458,11 +298,113 @@ export async function createLevel(data: {
     }
 }
 
-// Update a level
+// Add book to level (requires existing Book record)
+export async function addBookToLevel(data: {
+    levelId: string
+    bookId: string
+    neden?: string
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // Check if book already exists in this level
+        const existing = await prisma.readingListBook.findUnique({
+            where: {
+                levelId_bookId: {
+                    levelId: data.levelId,
+                    bookId: data.bookId
+                }
+            }
+        })
+        if (existing) {
+            return { success: false, error: "Bu kitap zaten bu seviyede mevcut" }
+        }
+
+        const maxOrder = await prisma.readingListBook.aggregate({
+            where: { levelId: data.levelId },
+            _max: { sortOrder: true }
+        })
+
+        const readingListBook = await prisma.readingListBook.create({
+            data: {
+                levelId: data.levelId,
+                bookId: data.bookId,
+                neden: data.neden || null,
+                sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
+            },
+            include: {
+                book: {
+                    include: {
+                        author: true,
+                        publisher: true
+                    }
+                }
+            }
+        })
+
+        revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
+        return { success: true, readingListBook }
+    } catch (error) {
+        console.error("Failed to add book to level:", error)
+        return { success: false, error: "Kitap eklenemedi" }
+    }
+}
+
+// ==========================================
+// UPDATE Operations
+// ==========================================
+
+// Update reading list
+export async function updateReadingList(id: string, data: {
+    name?: string
+    slug?: string
+    description?: string
+    coverUrl?: string
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // If slug is being changed, check it doesn't conflict
+        if (data.slug) {
+            const existing = await prisma.readingList.findFirst({
+                where: {
+                    slug: data.slug,
+                    NOT: { id }
+                }
+            })
+            if (existing) {
+                return { success: false, error: "Bu slug zaten kullanılıyor" }
+            }
+        }
+
+        const list = await prisma.readingList.update({
+            where: { id },
+            data
+        })
+
+        revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
+        return { success: true, list }
+    } catch (error) {
+        console.error("Failed to update reading list:", error)
+        return { success: false, error: "Liste güncellenemedi" }
+    }
+}
+
+// Update level
 export async function updateLevel(id: string, data: {
     name?: string
     description?: string
 }) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
     try {
         const level = await prisma.readingListLevel.update({
             where: { id },
@@ -470,6 +412,7 @@ export async function updateLevel(id: string, data: {
         })
 
         revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
         return { success: true, level }
     } catch (error) {
         console.error("Failed to update level:", error)
@@ -477,62 +420,14 @@ export async function updateLevel(id: string, data: {
     }
 }
 
-// Delete a level
-export async function deleteLevel(id: string) {
-    try {
-        await prisma.readingListLevel.delete({
-            where: { id }
-        })
-
-        revalidatePath("/reading-lists")
-        return { success: true }
-    } catch (error) {
-        console.error("Failed to delete level:", error)
-        return { success: false, error: "Seviye silinemedi" }
-    }
-}
-
-// Create a book in reading list
-export async function createReadingListBook(data: {
-    levelId: string
-    title: string
-    author: string
-    neden?: string
-    pageCount?: number
-}) {
-    try {
-        // Get max sort order for this level
-        const maxOrder = await prisma.readingListBook.aggregate({
-            where: { levelId: data.levelId },
-            _max: { sortOrder: true }
-        })
-
-        const book = await prisma.readingListBook.create({
-            data: {
-                levelId: data.levelId,
-                title: data.title,
-                author: data.author,
-                neden: data.neden || null,
-                pageCount: data.pageCount || null,
-                sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
-            }
-        })
-
-        revalidatePath("/reading-lists")
-        return { success: true, book }
-    } catch (error) {
-        console.error("Failed to create book:", error)
-        return { success: false, error: "Kitap oluşturulamadı" }
-    }
-}
-
-// Update a book in reading list
+// Update reading list book (neden field)
 export async function updateReadingListBook(id: string, data: {
-    title?: string
-    author?: string
     neden?: string
-    pageCount?: number
 }) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
     try {
         const book = await prisma.readingListBook.update({
             where: { id },
@@ -540,30 +435,20 @@ export async function updateReadingListBook(id: string, data: {
         })
 
         revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
         return { success: true, book }
     } catch (error) {
-        console.error("Failed to update book:", error)
+        console.error("Failed to update reading list book:", error)
         return { success: false, error: "Kitap güncellenemedi" }
-    }
-}
-
-// Delete a book from reading list
-export async function deleteReadingListBook(id: string) {
-    try {
-        await prisma.readingListBook.delete({
-            where: { id }
-        })
-
-        revalidatePath("/reading-lists")
-        return { success: true }
-    } catch (error) {
-        console.error("Failed to delete book:", error)
-        return { success: false, error: "Kitap silinemedi" }
     }
 }
 
 // Reorder levels
 export async function reorderLevels(listId: string, levelIds: string[]) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
     try {
         await prisma.$transaction(
             levelIds.map((id, index) =>
@@ -575,6 +460,7 @@ export async function reorderLevels(listId: string, levelIds: string[]) {
         )
 
         revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
         return { success: true }
     } catch (error) {
         console.error("Failed to reorder levels:", error)
@@ -583,7 +469,11 @@ export async function reorderLevels(listId: string, levelIds: string[]) {
 }
 
 // Reorder books within a level
-export async function reorderBooks(levelId: string, bookIds: string[]) {
+export async function reorderBooksInLevel(levelId: string, bookIds: string[]) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
     try {
         await prisma.$transaction(
             bookIds.map((id, index) =>
@@ -595,6 +485,7 @@ export async function reorderBooks(levelId: string, bookIds: string[]) {
         )
 
         revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
         return { success: true }
     } catch (error) {
         console.error("Failed to reorder books:", error)
@@ -602,43 +493,119 @@ export async function reorderBooks(levelId: string, bookIds: string[]) {
     }
 }
 
-// Get reading list for admin (with full details for editing)
-export async function getReadingListForAdmin(id: string) {
-    try {
-        const list = await prisma.readingList.findUnique({
-            where: { id },
-            include: {
-                levels: {
-                    orderBy: { levelNumber: "asc" },
-                    include: {
-                        books: {
-                            orderBy: { sortOrder: "asc" }
-                        }
-                    }
-                }
-            }
-        })
+// Reorder reading lists
+export async function reorderReadingLists(listIds: string[]) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
 
-        return list
+    try {
+        await prisma.$transaction(
+            listIds.map((id, index) =>
+                prisma.readingList.update({
+                    where: { id },
+                    data: { sortOrder: index }
+                })
+            )
+        )
+
+        revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
+        return { success: true }
     } catch (error) {
-        console.error("Failed to fetch reading list for admin:", error)
-        return null
+        console.error("Failed to reorder reading lists:", error)
+        return { success: false, error: "Sıralama güncellenemedi" }
     }
 }
 
-// ReadingListBook arama (kitap ekleme ekranı için)
+// ==========================================
+// DELETE Operations
+// ==========================================
+
+// Delete reading list
+export async function deleteReadingList(id: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        await prisma.readingList.delete({
+            where: { id }
+        })
+
+        revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to delete reading list:", error)
+        return { success: false, error: "Liste silinemedi" }
+    }
+}
+
+// Delete level
+export async function deleteLevel(id: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        await prisma.readingListLevel.delete({
+            where: { id }
+        })
+
+        revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to delete level:", error)
+        return { success: false, error: "Seviye silinemedi" }
+    }
+}
+
+// Remove book from level
+export async function removeBookFromLevel(id: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        await prisma.readingListBook.delete({
+            where: { id }
+        })
+
+        revalidatePath("/reading-lists")
+        revalidatePath("/admin/reading-lists")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to remove book from level:", error)
+        return { success: false, error: "Kitap kaldırılamadı" }
+    }
+}
+
+// ==========================================
+// Search & Utility
+// ==========================================
+
+// Search books that are already in reading lists
 export async function searchReadingListBooks(query: string) {
     if (!query || query.length < 2) return []
 
     try {
         const books = await prisma.readingListBook.findMany({
             where: {
-                OR: [
-                    { title: { contains: query, mode: "insensitive" } },
-                    { author: { contains: query, mode: "insensitive" } }
-                ]
+                book: {
+                    OR: [
+                        { title: { contains: query, mode: "insensitive" } },
+                        { author: { name: { contains: query, mode: "insensitive" } } }
+                    ]
+                }
             },
             include: {
+                book: {
+                    include: {
+                        author: true
+                    }
+                },
                 level: {
                     include: { readingList: true }
                 }
@@ -651,13 +618,15 @@ export async function searchReadingListBooks(query: string) {
             take: 20
         })
 
-        return books.map(book => ({
-            id: book.id,
-            title: book.title,
-            author: book.author,
-            listName: book.level.readingList.name,
-            levelName: book.level.name,
-            listSlug: book.level.readingList.slug
+        return books.map(rb => ({
+            id: rb.id,
+            bookId: rb.bookId,
+            title: rb.book.title,
+            author: rb.book.author?.name || "Bilinmeyen Yazar",
+            listName: rb.level.readingList.name,
+            levelName: rb.level.name,
+            levelNumber: rb.level.levelNumber,
+            listSlug: rb.level.readingList.slug
         }))
     } catch (error) {
         console.error("Search reading list books failed:", error)
@@ -665,152 +634,261 @@ export async function searchReadingListBooks(query: string) {
     }
 }
 
-// =====================
-// AUTO-MATCH FONKSİYONLARI
-// =====================
-
-export type ReadingListMatchCandidate = {
-    bookId: string
-    bookTitle: string
-    score: number
-    confidence: MatchConfidence
-}
-
-export type ReadingListMatchSuggestion = {
-    readingListBookId: string
-    readingListBookTitle: string
-    readingListBookAuthor: string
-    listName: string
-    listSlug: string
-    candidates: ReadingListMatchCandidate[]
-}
-
-/**
- * Kullanıcının kütüphanesindeki kitapları belirli bir okuma listesiyle otomatik eşleştir
- */
-export async function autoMatchUserBooksToReadingList(
-    listSlug: string
-): Promise<{
-    success: boolean
-    autoLinked: number
-    suggestions: ReadingListMatchSuggestion[]
-}> {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-        return { success: false, autoLinked: 0, suggestions: [] }
-    }
-
+// Get all reading lists (for admin)
+export async function getAllReadingLists() {
     try {
-        // Okuma listesini al
-        const list = await prisma.readingList.findUnique({
-            where: { slug: listSlug },
+        return await prisma.readingList.findMany({
+            orderBy: { sortOrder: "asc" },
             include: {
+                _count: {
+                    select: {
+                        levels: true
+                    }
+                },
                 levels: {
                     include: {
-                        books: {
-                            include: {
-                                userLinks: {
-                                    where: { userId: user.id }
-                                }
-                            }
+                        _count: {
+                            select: { books: true }
                         }
                     }
                 }
             }
         })
-
-        if (!list) {
-            return { success: false, autoLinked: 0, suggestions: [] }
-        }
-
-        // Kullanıcının tüm kitaplarını al
-        const userBooks = await prisma.book.findMany({
-            where: { userId: user.id },
-            include: { author: { select: { name: true } } }
-        })
-
-        let autoLinked = 0
-        const suggestions: ReadingListMatchSuggestion[] = []
-
-        for (const level of list.levels) {
-            for (const rlBook of level.books) {
-                // Zaten bağlantı varsa atla
-                const existingLink = rlBook.userLinks.find(l => l.bookId !== null)
-                if (existingLink) continue
-
-                const candidates: ReadingListMatchCandidate[] = []
-                let bestStrongMatch: { bookId: string; score: number } | null = null
-
-                for (const userBook of userBooks) {
-                    const authorName = userBook.author?.name || ""
-                    const score = matchBookScore(
-                        rlBook.title,
-                        rlBook.author,
-                        userBook.title,
-                        authorName
-                    )
-
-                    if (isAutoLinkable(score)) {
-                        if (!bestStrongMatch || score > bestStrongMatch.score) {
-                            bestStrongMatch = { bookId: userBook.id, score }
-                        }
-                    } else if (isSuggestionWorthy(score)) {
-                        candidates.push({
-                            bookId: userBook.id,
-                            bookTitle: userBook.title,
-                            score,
-                            confidence: getMatchConfidence(score)
-                        })
-                    }
-                }
-
-                if (bestStrongMatch) {
-                    // Otomatik bağla
-                    await prisma.userReadingListBook.upsert({
-                        where: {
-                            userId_readingListBookId: {
-                                userId: user.id,
-                                readingListBookId: rlBook.id
-                            }
-                        },
-                        create: {
-                            userId: user.id,
-                            readingListBookId: rlBook.id,
-                            bookId: bestStrongMatch.bookId
-                        },
-                        update: {
-                            bookId: bestStrongMatch.bookId
-                        }
-                    })
-                    autoLinked++
-                } else if (candidates.length > 0) {
-                    // Önerileri kaydet
-                    const topCandidates = candidates
-                        .sort((a, b) => b.score - a.score)
-                        .slice(0, 3)
-
-                    suggestions.push({
-                        readingListBookId: rlBook.id,
-                        readingListBookTitle: rlBook.title,
-                        readingListBookAuthor: rlBook.author,
-                        listName: list.name,
-                        listSlug: list.slug,
-                        candidates: topCandidates
-                    })
-                }
-            }
-        }
-
-        // Cache invalidation
-        invalidateLinkCaches(user.id)
-        revalidateTag(CACHE_TAGS.readingList(listSlug), 'max')
-        revalidatePath(`/reading-lists/${listSlug}`)
-
-        return { success: true, autoLinked, suggestions }
     } catch (error) {
-        console.error("Auto-match reading list books error:", error)
-        return { success: false, autoLinked: 0, suggestions: [] }
+        console.error("Failed to fetch all reading lists:", error)
+        return []
+    }
+}
+
+// ==========================================
+// Kitapyurdu Integration
+// ==========================================
+
+// Add book from Kitapyurdu URL to a level
+export async function addBookFromKitapyurduToLevel(data: {
+    levelId: string
+    kitapyurduUrl: string
+    neden?: string
+    inLibrary?: boolean
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // Scrape book data from Kitapyurdu
+        const scrapeResult = await scrapeKitapyurdu(data.kitapyurduUrl)
+        if (!scrapeResult.success || !scrapeResult.data) {
+            return { success: false, error: scrapeResult.error || "Kitap bilgileri alınamadı" }
+        }
+
+        const bookData = scrapeResult.data
+
+        // Check if book already exists in DB (by title and author)
+        let book = await prisma.book.findFirst({
+            where: {
+                title: { equals: bookData.title, mode: "insensitive" },
+                author: { name: { equals: bookData.author, mode: "insensitive" } }
+            }
+        })
+
+        if (!book) {
+            // Create author if not exists
+            let author = await prisma.author.findFirst({
+                where: { name: { equals: bookData.author, mode: "insensitive" } }
+            })
+            if (!author) {
+                author = await prisma.author.create({
+                    data: {
+                        name: bookData.author,
+                        imageUrl: bookData.authorImageUrl
+                    }
+                })
+            }
+
+            // Create publisher if not exists
+            let publisher = null
+            if (bookData.publisher) {
+                publisher = await prisma.publisher.findFirst({
+                    where: { name: { equals: bookData.publisher, mode: "insensitive" } }
+                })
+                if (!publisher) {
+                    publisher = await prisma.publisher.create({
+                        data: {
+                            name: bookData.publisher,
+                            imageUrl: bookData.publisherImageUrl
+                        }
+                    })
+                }
+            }
+
+            // Create the book
+            book = await prisma.book.create({
+                data: {
+                    userId: user.id,
+                    title: bookData.title,
+                    authorId: author.id,
+                    publisherId: publisher?.id,
+                    coverUrl: bookData.coverUrl,
+                    pageCount: bookData.pageCount,
+                    isbn: bookData.isbn,
+                    publishedDate: bookData.publishedDate,
+                    description: bookData.description,
+                    inLibrary: data.inLibrary ?? false,
+                    status: "TO_READ"
+                }
+            })
+        }
+
+        // Check if book already exists in this level
+        const existing = await prisma.readingListBook.findUnique({
+            where: {
+                levelId_bookId: {
+                    levelId: data.levelId,
+                    bookId: book.id
+                }
+            }
+        })
+        if (existing) {
+            return { success: false, error: "Bu kitap zaten bu seviyede mevcut" }
+        }
+
+        // Get max sort order
+        const maxOrder = await prisma.readingListBook.aggregate({
+            where: { levelId: data.levelId },
+            _max: { sortOrder: true }
+        })
+
+        // Add book to level
+        const readingListBook = await prisma.readingListBook.create({
+            data: {
+                levelId: data.levelId,
+                bookId: book.id,
+                neden: data.neden || null,
+                sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
+            },
+            include: {
+                book: {
+                    include: {
+                        author: true,
+                        publisher: true
+                    }
+                }
+            }
+        })
+
+        revalidatePath("/reading-lists")
+        return { success: true, readingListBook, bookTitle: bookData.title }
+    } catch (error) {
+        console.error("Failed to add book from Kitapyurdu:", error)
+        return { success: false, error: "Kitap eklenirken hata oluştu" }
+    }
+}
+
+// Add book manually to a level (creates Book record first)
+export async function addBookManuallyToLevel(data: {
+    levelId: string
+    title: string
+    author: string
+    pageCount?: number
+    coverUrl?: string
+    publisher?: string
+    neden?: string
+    inLibrary?: boolean
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // Check if book already exists in DB
+        let book = await prisma.book.findFirst({
+            where: {
+                title: { equals: data.title, mode: "insensitive" },
+                author: { name: { equals: data.author, mode: "insensitive" } }
+            }
+        })
+
+        if (!book) {
+            // Create author if not exists
+            let author = await prisma.author.findFirst({
+                where: { name: { equals: data.author, mode: "insensitive" } }
+            })
+            if (!author) {
+                author = await prisma.author.create({
+                    data: { name: data.author }
+                })
+            }
+
+            // Create publisher if provided
+            let publisher = null
+            if (data.publisher) {
+                publisher = await prisma.publisher.findFirst({
+                    where: { name: { equals: data.publisher, mode: "insensitive" } }
+                })
+                if (!publisher) {
+                    publisher = await prisma.publisher.create({
+                        data: { name: data.publisher }
+                    })
+                }
+            }
+
+            // Create the book
+            book = await prisma.book.create({
+                data: {
+                    userId: user.id,
+                    title: data.title,
+                    authorId: author.id,
+                    publisherId: publisher?.id,
+                    coverUrl: data.coverUrl,
+                    pageCount: data.pageCount,
+                    inLibrary: data.inLibrary ?? false,
+                    status: "TO_READ"
+                }
+            })
+        }
+
+        // Check if book already exists in this level
+        const existing = await prisma.readingListBook.findUnique({
+            where: {
+                levelId_bookId: {
+                    levelId: data.levelId,
+                    bookId: book.id
+                }
+            }
+        })
+        if (existing) {
+            return { success: false, error: "Bu kitap zaten bu seviyede mevcut" }
+        }
+
+        // Get max sort order
+        const maxOrder = await prisma.readingListBook.aggregate({
+            where: { levelId: data.levelId },
+            _max: { sortOrder: true }
+        })
+
+        // Add book to level
+        const readingListBook = await prisma.readingListBook.create({
+            data: {
+                levelId: data.levelId,
+                bookId: book.id,
+                neden: data.neden || null,
+                sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
+            },
+            include: {
+                book: {
+                    include: {
+                        author: true,
+                        publisher: true
+                    }
+                }
+            }
+        })
+
+        revalidatePath("/reading-lists")
+        return { success: true, readingListBook }
+    } catch (error) {
+        console.error("Failed to add book manually:", error)
+        return { success: false, error: "Kitap eklenirken hata oluştu" }
     }
 }

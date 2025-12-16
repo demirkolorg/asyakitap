@@ -1,0 +1,17 @@
+[
+  {
+    "id": "cmj0k60wz00010bi61jvpfkjx",
+    "bookId": "cmj0k56zf00000bi6cps72pib",
+    "content": "Tüm İslam dünyasına bir sesleniş...",
+    "page": 1,
+    "createdAt": "2025-12-10T22:05:47.938Z",
+    "updatedAt": "2025-12-10T22:05:47.938Z",
+    "book": {
+      "id": "cmj0k56zf00000bi6cps72pib",
+      "title": "İslam Deklarasyonu ve Tarihi Savunma",
+      "author": {
+        "name": "Aliya İzzetbegoviç"
+      }
+    }
+  }
+]

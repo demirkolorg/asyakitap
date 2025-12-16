@@ -91,12 +91,19 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
         // Search reading list books
         prisma.readingListBook.findMany({
             where: {
-                OR: [
-                    { title: { contains: searchTerm, mode: "insensitive" } },
-                    { author: { contains: searchTerm, mode: "insensitive" } },
-                ],
+                book: {
+                    OR: [
+                        { title: { contains: searchTerm, mode: "insensitive" } },
+                        { author: { name: { contains: searchTerm, mode: "insensitive" } } },
+                    ],
+                },
             },
             include: {
+                book: {
+                    include: {
+                        author: true,
+                    },
+                },
                 level: {
                     include: {
                         readingList: true,
@@ -104,7 +111,7 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
                 },
             },
             take: 8,
-            orderBy: { title: "asc" },
+            orderBy: { book: { title: "asc" } },
         }),
 
         // Search quotes
@@ -152,13 +159,13 @@ export async function globalSearch(query: string): Promise<GroupedSearchResults>
             imageUrl: list.coverUrl,
             href: `/reading-lists/${list.slug}`,
         })),
-        readingListBooks: readingListBooks.map((book: typeof readingListBooks[number]) => ({
-            id: book.id,
+        readingListBooks: readingListBooks.map((rb: typeof readingListBooks[number]) => ({
+            id: rb.id,
             type: "reading-list-book" as const,
-            title: book.title,
-            subtitle: `${book.author} • ${book.level.readingList.name}`,
-            imageUrl: book.coverUrl,
-            href: `/reading-lists/${book.level.readingList.slug}`,
+            title: rb.book.title,
+            subtitle: `${rb.book.author?.name || "Bilinmeyen Yazar"} • ${rb.level.readingList.name}`,
+            imageUrl: rb.book.coverUrl,
+            href: `/reading-lists/${rb.level.readingList.slug}`,
         })),
         quotes: quotes.map((quote: typeof quotes[number]) => ({
             id: quote.id,

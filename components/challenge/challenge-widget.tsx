@@ -15,7 +15,6 @@ import {
     ChevronRight,
     Trophy,
     Loader2,
-    ExternalLink
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { joinChallenge } from "@/actions/challenge"
@@ -30,7 +29,6 @@ type ChallengeBook = {
     pageCount: number | null
     reason: string | null
     status: ChallengeBookStatus | null
-    linkedBookId?: string | null
 }
 
 type ChallengeWidgetProps = {
@@ -158,46 +156,26 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                         ? "border-green-500 bg-green-50 dark:bg-green-950/20"
                                         : "border-primary/30 bg-background"
                                 )}>
-                                    {/* Kapak - tıklanabilir */}
-                                    {currentMonth.mainBook.linkedBookId ? (
-                                        <Link
-                                            href={`/book/${currentMonth.mainBook.linkedBookId}`}
-                                            className="relative h-24 w-16 flex-shrink-0 rounded overflow-hidden bg-muted group"
-                                        >
-                                            {currentMonth.mainBook.coverUrl ? (
-                                                <Image
-                                                    src={currentMonth.mainBook.coverUrl}
-                                                    alt={currentMonth.mainBook.title}
-                                                    fill
-                                                    className="object-cover group-hover:scale-105 transition-transform"
-                                                />
-                                            ) : (
-                                                <div className="flex items-center justify-center h-full">
-                                                    <BookOpen className="h-6 w-6 text-muted-foreground" />
-                                                </div>
-                                            )}
-                                            {currentMonth.mainBook.status === "COMPLETED" && (
-                                                <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                                                    <CheckCircle2 className="h-8 w-8 text-green-600" />
-                                                </div>
-                                            )}
-                                        </Link>
-                                    ) : (
-                                        <div className="relative h-24 w-16 flex-shrink-0 rounded overflow-hidden bg-muted">
-                                            {currentMonth.mainBook.coverUrl ? (
-                                                <Image
-                                                    src={currentMonth.mainBook.coverUrl}
-                                                    alt={currentMonth.mainBook.title}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            ) : (
-                                                <div className="flex items-center justify-center h-full">
-                                                    <BookOpen className="h-6 w-6 text-muted-foreground" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
+                                    {/* Kapak */}
+                                    <div className="relative h-24 w-16 flex-shrink-0 rounded overflow-hidden bg-muted">
+                                        {currentMonth.mainBook.coverUrl ? (
+                                            <Image
+                                                src={currentMonth.mainBook.coverUrl}
+                                                alt={currentMonth.mainBook.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full">
+                                                <BookOpen className="h-6 w-6 text-muted-foreground" />
+                                            </div>
+                                        )}
+                                        {currentMonth.mainBook.status === "COMPLETED" && (
+                                            <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                                                <CheckCircle2 className="h-8 w-8 text-green-600" />
+                                            </div>
+                                        )}
+                                    </div>
 
                                     {/* Bilgi */}
                                     <div className="flex-1 min-w-0">
@@ -225,21 +203,10 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                                     <BookOpen className="h-3 w-3" />
                                                     Okunuyor
                                                 </span>
-                                            ) : currentMonth.mainBook.linkedBookId ? (
-                                                <Link
-                                                    href={`/book/${currentMonth.mainBook.linkedBookId}`}
-                                                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                                                >
-                                                    <ExternalLink className="h-3 w-3" />
-                                                    Kitaba Git
-                                                </Link>
                                             ) : (
-                                                <Link
-                                                    href="/challenges"
-                                                    className="inline-flex items-center gap-1 text-xs text-amber-600 hover:underline"
-                                                >
-                                                    Eşleştir →
-                                                </Link>
+                                                <span className="text-xs text-muted-foreground">
+                                                    Bekliyor
+                                                </span>
                                             )}
                                         </div>
                                     </div>

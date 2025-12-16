@@ -1,0 +1,1059 @@
+[
+  {
+    "id": "cmj0g158300010aju860wik5c",
+    "name": "CAN YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T20:10:01.779Z",
+    "updatedAt": "2025-12-10T20:10:01.779Z",
+    "books": [
+      {
+        "id": "cmj0kf62i00000ajvh431ccnz",
+        "title": "Gülün Adı (Ciltsiz)"
+      },
+      {
+        "id": "cmj2go24k000e0al7dqnz4n1w",
+        "title": "1984"
+      },
+      {
+        "id": "cmj2fxhw900010al5i97lxcwm",
+        "title": "Hayvan Çiftliği (Ciltsiz)"
+      },
+      {
+        "id": "cmj2go9wp000g0al74u6tjzt9",
+        "title": "Şeker Portakalı (Ciltsiz)"
+      }
+    ]
+  },
+  {
+    "id": "cmj0jfm6n00010al5n7iclreg",
+    "name": "KETEBE YAYINEVİ",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T21:45:15.791Z",
+    "updatedAt": "2025-12-10T21:45:15.791Z",
+    "books": [
+      {
+        "id": "cmj0k56zf00000bi6cps72pib",
+        "title": "İslam Deklarasyonu ve Tarihi Savunma"
+      },
+      {
+        "id": "cmj0lft7e001oxsizuhokub4k",
+        "title": "İslami Yeniden Doğuşun Meseleleri"
+      },
+      {
+        "id": "cmj2gn02u000c0al7s0j3zi77",
+        "title": "Ortadoğu'ya Dair Yirmi Tez"
+      },
+      {
+        "id": "cmj7dbri500030ajvticlol3b",
+        "title": "Devlet Ana"
+      },
+      {
+        "id": "cmj2gqwbm00010al51hb41aab",
+        "title": "99 Soruda Lozan"
+      },
+      {
+        "id": "cmj2gm58d000a0al75tjkj48j",
+        "title": "Babamın Şarkısı"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lea8w0001xsizjfa6lr7d",
+    "name": "İTHAKİ YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:40:12.896Z",
+    "updatedAt": "2025-12-10T22:40:12.896Z",
+    "books": [
+      {
+        "id": "cmj0leah60002xsizc90vc2uz",
+        "title": "Dune"
+      },
+      {
+        "id": "cmj0lec0g0003xsiz252gujt2",
+        "title": "Dune Mesihi"
+      },
+      {
+        "id": "cmj0ledl70004xsizfn9hjx5n",
+        "title": "Dune Çocukları"
+      },
+      {
+        "id": "cmj0leojk000bxsiz0fwj772w",
+        "title": "Cesur Yeni Dünya"
+      },
+      {
+        "id": "cmj0leqbg000dxsiza2w52f5y",
+        "title": "Kıyamete Bir Milyar Yıl"
+      },
+      {
+        "id": "cmj0lehr40005xsizhmo117q9",
+        "title": "Dune Tanrı İmparatoru"
+      },
+      {
+        "id": "cmj0lejak0006xsizd7rgwx0p",
+        "title": "Dune Sapkınları"
+      },
+      {
+        "id": "cmj0lekvj0007xsizt6fbuqch",
+        "title": "Dune Rahibeler Meclisi"
+      },
+      {
+        "id": "cmj0les3w000fxsizbdizsmv3",
+        "title": "Salgın"
+      },
+      {
+        "id": "cmj0letvl000hxsiz7h2wq2t2",
+        "title": "Kum"
+      },
+      {
+        "id": "cmj0lemqh0009xsizitn6q334",
+        "title": "Fahrenheit 451"
+      },
+      {
+        "id": "cmj7dac2o00000biidpwk1yqv",
+        "title": "Marslı"
+      }
+    ]
+  },
+  {
+    "id": "cmj0levp3000jxsizto1zmh52",
+    "name": "TÜRKİYE İŞ BANKASI KÜLTÜR YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:40:40.695Z",
+    "updatedAt": "2025-12-10T22:40:40.695Z",
+    "books": [
+      {
+        "id": "cmj0lf5dk000wxsizx1l6a4p3",
+        "title": "Beyaz Diş (Karton Kapak)"
+      },
+      {
+        "id": "cmj2goikv000a0aih0m1m49z9",
+        "title": "Gulyabani (Günümüz Türkçesiyle)"
+      },
+      {
+        "id": "cmj0levx9000kxsiz43l6jotv",
+        "title": "Zaman Makinesi"
+      },
+      {
+        "id": "cmj2g3qtk000c0al5uey1kpsm",
+        "title": "Kürk Mantolu Madonna"
+      },
+      {
+        "id": "cmj0lf3tr000vxsizfjy33n8c",
+        "title": "Martin Eden"
+      },
+      {
+        "id": "cmj2g793p00000al2uofc2861",
+        "title": "İçimizdeki Şeytan"
+      },
+      {
+        "id": "cmj2fy6g700030al55ntr5nyr",
+        "title": "Dönüşüm (Karton Kapak)"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lexqp000mxsizfyqj0ae6",
+    "name": "APRIL YAYINCILIK",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:40:43.345Z",
+    "updatedAt": "2025-12-10T22:40:43.345Z",
+    "books": [
+      {
+        "id": "cmj0lexyv000nxsizdjch4sre",
+        "title": "Olasılıksız"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lezs2000pxsizwukwvz79",
+    "name": "İLETİŞİM YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:40:45.986Z",
+    "updatedAt": "2025-12-10T22:40:45.986Z",
+    "books": [
+      {
+        "id": "cmj0lf009000qxsizc2nzkbqr",
+        "title": "Puslu Kıtalar Atlası"
+      },
+      {
+        "id": "cmj0lfkrp001hxsizbkp3fa32",
+        "title": "Bu Ülke"
+      },
+      {
+        "id": "cmj2fvssj00010ajmgmukglph",
+        "title": "Bangır Bangır Ferdi Çalıyor Evde..."
+      },
+      {
+        "id": "cmj2ftjc300020ajy528m7x4x",
+        "title": "Drina Köprüsü"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lf1sr000sxsiz4w3yhz8x",
+    "name": "KORİDOR YAYINCILIK",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:40:48.603Z",
+    "updatedAt": "2025-12-10T22:40:48.603Z",
+    "books": [
+      {
+        "id": "cmj0lf20x000txsizqsgtj9ns",
+        "title": "Fedailerin Kalesi Alamut"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lf76a000yxsiz7u89uufn",
+    "name": "KIRMIZI KEDİ YAYINEVİ",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:40:55.570Z",
+    "updatedAt": "2025-12-10T22:40:55.570Z",
+    "books": [
+      {
+        "id": "cmj0lf7eh000zxsizlh5zb9dj",
+        "title": "Sakkara'nın Kumları"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lf9610011xsiz6mwhw2m9",
+    "name": "DOĞAN KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:40:58.153Z",
+    "updatedAt": "2025-12-10T22:40:58.153Z",
+    "books": [
+      {
+        "id": "cmj0lf9e80012xsizmeq3cdlh",
+        "title": "Leyleklerin Uçuşu"
+      },
+      {
+        "id": "cmj0lgaa90028xsiz1uwglvlo",
+        "title": "Darbeye Geçit yok"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfb670014xsizbapcibj4",
+    "name": "ALTIN KİTAPLAR",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:00.751Z",
+    "updatedAt": "2025-12-10T22:41:00.751Z",
+    "books": [
+      {
+        "id": "cmj0lfbee0015xsiz7njwpfkc",
+        "title": "Suç Ortakları"
+      },
+      {
+        "id": "cmj1tush300000ajreeuu8gr5",
+        "title": "Beklenmeyen Misafir"
+      },
+      {
+        "id": "cmj2fsqwh00000ajye2gvxt40",
+        "title": "On Kişiydiler (On Küçük Zenci)"
+      },
+      {
+        "id": "cmj2gjf5400010aihg7uwlyon",
+        "title": "Cehennem (Karton Kapak)"
+      },
+      {
+        "id": "cmj2gllim00020aiheczex8gz",
+        "title": "Doğu Ekspresinde Cinayet"
+      },
+      {
+        "id": "cmj2gsoa400040al574wrdbfr",
+        "title": "Da Vinci Şifresi"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfd6r0017xsizul39udjv",
+    "name": "DERGAH YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:03.363Z",
+    "updatedAt": "2025-12-10T22:41:03.363Z",
+    "books": [
+      {
+        "id": "cmj0lfdey0018xsizvsb3xjhd",
+        "title": "Sır"
+      },
+      {
+        "id": "cmj2g1xvj00060al55jf9k5eq",
+        "title": "Ya Tahammül Ya Sefer"
+      },
+      {
+        "id": "cmj2g510h00010ajyq4a79b9n",
+        "title": "Beş Şehir"
+      },
+      {
+        "id": "cmj2g1axm00040al5w7v2dwge",
+        "title": "Uzun Hikaye"
+      },
+      {
+        "id": "cmj2g2n0u00080al5a4tta5xz",
+        "title": "Selam Olsun"
+      },
+      {
+        "id": "cmj2fwbfk00020ajm30ptkvs7",
+        "title": "Yoksulluk Kitabı"
+      },
+      {
+        "id": "cmj2g1lm000050al5kzf0q376",
+        "title": "Bu Böyledir"
+      },
+      {
+        "id": "cmj2g29lo00070al56hofs25v",
+        "title": "Yoksulluk İçimizde"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lff75001axsiz4v3eoss5",
+    "name": "TİYO YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:05.969Z",
+    "updatedAt": "2025-12-10T22:41:05.969Z",
+    "books": [
+      {
+        "id": "cmj0lfffc001bxsizihm84bfg",
+        "title": "Erbain"
+      },
+      {
+        "id": "cmj0lfgyu001cxsizkrwi42h2",
+        "title": "Üç Zor Mesele"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfir5001exsizo1e9z8mk",
+    "name": "BÜYÜK DOĞU YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:10.577Z",
+    "updatedAt": "2025-12-10T22:41:10.577Z",
+    "books": [
+      {
+        "id": "cmj0lfizc001fxsizce00genn",
+        "title": "İdeolocya Örgüsü (kod36)"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfmm1001jxsizresgm9ge",
+    "name": "DİRİLİŞ YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:15.577Z",
+    "updatedAt": "2025-12-10T22:41:15.577Z",
+    "books": [
+      {
+        "id": "cmj0lfmu8001kxsizs0hfavg9",
+        "title": "Diriliş Neslinin Amentüsü"
+      },
+      {
+        "id": "cmj0lfrl6001nxsizil9kjwt0",
+        "title": "Yitik Cennet"
+      },
+      {
+        "id": "cmj0lfodn001lxsiz0rf4gwzk",
+        "title": "İnsanlığın Dirilişi"
+      },
+      {
+        "id": "cmj0lfq17001mxsizkzeqrnru",
+        "title": "İslamın Dirilişi"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfv08001qxsizyv6e22l5",
+    "name": "AGORA KİTAPLIĞI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:26.456Z",
+    "updatedAt": "2025-12-10T22:41:26.456Z",
+    "books": [
+      {
+        "id": "cmj0lfv8e001rxsizpfbqy43v",
+        "title": "Modern Ortadoğu Tarihi"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lfx03001txsiz33s0lp88",
+    "name": "TİMAŞ YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:29.043Z",
+    "updatedAt": "2025-12-10T22:41:29.043Z",
+    "books": [
+      {
+        "id": "cmj0lfys4001vxsiztr2xmd00",
+        "title": "İnsanlığın Medeniyet Destanı"
+      },
+      {
+        "id": "cmj0lfx8a001uxsizrw820u91",
+        "title": "İslam'ın Vadettikleri"
+      },
+      {
+        "id": "cmj2gqmte000i0aih8wecp5lh",
+        "title": "Cumhuriyet Efsaneleri"
+      },
+      {
+        "id": "cmj7dba4300000ajvyjhf5f3y",
+        "title": "Minyeli Abdullah (50. Yıl Özel İlk Baskı Kapak)"
+      },
+      {
+        "id": "cmj2gfl97000a0ak3qki73vcy",
+        "title": "Modern Ortadoğu Tarihi 1453-2015 (Ciltli)"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lg0k7001xxsiz3d1mqa9t",
+    "name": "YAĞMUR YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:33.655Z",
+    "updatedAt": "2025-12-10T22:41:33.655Z",
+    "books": [
+      {
+        "id": "cmj0lg0se001yxsizf2actqm2",
+        "title": "Gençlerle Başbaşa"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lg2b7001zxsizkr62937s",
+    "name": "KUBBEALTI NEŞRİYAT",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:35.923Z",
+    "updatedAt": "2025-12-10T22:41:35.923Z",
+    "books": [
+      {
+        "id": "cmj0lg2k10020xsizd13ei2vb",
+        "title": "Hatıralar"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lg4xm0022xsiz541fkgao",
+    "name": "KRONİK KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:39.322Z",
+    "updatedAt": "2025-12-10T22:41:39.322Z",
+    "books": [
+      {
+        "id": "cmj0lg8he0026xsizyr4lcj4j",
+        "title": "İstihbarat Savaşları"
+      },
+      {
+        "id": "cmj0lg55t0023xsiz2dptet5d",
+        "title": "Türklerin Serüveni"
+      },
+      {
+        "id": "cmj0lg6pt0024xsizugmvzptn",
+        "title": "Türklerin Büyükleri"
+      },
+      {
+        "id": "cmj2gf7ts00080ajlxf2chobj",
+        "title": "19. Yüzyıl Siyasi Tarihi, 1789-1914 (Ciltli)"
+      },
+      {
+        "id": "cmj2gr55k00030al5xcsjxef8",
+        "title": "Bir Ömür Nasıl Yaşanır?"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lgc2p002axsizq9zmdya3",
+    "name": "İNSAN YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:48.577Z",
+    "updatedAt": "2025-12-10T22:41:48.577Z",
+    "books": [
+      {
+        "id": "cmj1tswb500010ald671jbz9x",
+        "title": "Hz. Muhammed'in Hayatı (Ciltsiz)"
+      },
+      {
+        "id": "cmj0lgcaw002bxsiz736vgqio",
+        "title": "Sabredenler ve Şükredenler"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lge27002dxsizsy0svi92",
+    "name": "ÇIRA YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:51.151Z",
+    "updatedAt": "2025-12-10T22:41:51.151Z",
+    "books": [
+      {
+        "id": "cmj0lgeae002exsize9a6f2xs",
+        "title": "Namaz Çağrısı"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lgg3n002gxsizak5fdk3t",
+    "name": "PEGASUS YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:53.795Z",
+    "updatedAt": "2025-12-10T22:41:53.795Z",
+    "books": [
+      {
+        "id": "cmj0lggbu002hxsizpwa3d3ib",
+        "title": "Atomik Alışkanlıklar"
+      },
+      {
+        "id": "cmj2g6aea00040ajl7zja2swu",
+        "title": "Momo"
+      },
+      {
+        "id": "cmj2g0fnf00010ajosq2qb1tn",
+        "title": "Ferrari'sini Satan Bilge"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lgi3z002jxsizbaqcvchd",
+    "name": "MEDİACAT KİTAPLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:56.399Z",
+    "updatedAt": "2025-12-10T22:41:56.399Z",
+    "books": [
+      {
+        "id": "cmj0lgic8002kxsizrew410hz",
+        "title": "Outliers (Çizginin Dışındakiler)"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lgk76002mxsiz81d07nb8",
+    "name": "KARAKUM YAYINEVİ",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:41:59.106Z",
+    "updatedAt": "2025-12-10T22:41:59.106Z",
+    "books": [
+      {
+        "id": "cmj0lgkfc002nxsizrgizu24w",
+        "title": "Stratejik İletişim"
+      }
+    ]
+  },
+  {
+    "id": "cmj0lgm6m002pxsizslt0hmk3",
+    "name": "MAYA KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-10T22:42:01.678Z",
+    "updatedAt": "2025-12-10T22:42:01.678Z",
+    "books": [
+      {
+        "id": "cmj0lgmes002qxsizptf378f6",
+        "title": "Hafıza Koçu"
+      }
+    ]
+  },
+  {
+    "id": "cmj15hi9800010ald90j0up5x",
+    "name": "DİYOJEN YAYINCILIK",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-11T08:02:35.564Z",
+    "updatedAt": "2025-12-11T08:02:35.564Z",
+    "books": [
+      {
+        "id": "cmj15hidk00020ald54zw1onm",
+        "title": "Bilinçaltının Gücü"
+      }
+    ]
+  },
+  {
+    "id": "cmj1jsdpq00010akzo5tobxwk",
+    "name": "BOYNER YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-11T14:42:57.518Z",
+    "updatedAt": "2025-12-11T14:42:57.518Z",
+    "books": [
+      {
+        "id": "cmj1jsdu200020akz6026i6b6",
+        "title": "Alışkanlıkların Gücü"
+      }
+    ]
+  },
+  {
+    "id": "cmj1jtnph00010bl45zlzy30t",
+    "name": "SCALA YAYINCILIK",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-11T14:43:57.125Z",
+    "updatedAt": "2025-12-11T14:43:57.125Z",
+    "books": [
+      {
+        "id": "cmj1jtntp00020bl4as5yzls9",
+        "title": "Trend Takipçisi"
+      }
+    ]
+  },
+  {
+    "id": "cmj2fynsq00010alhgaxgm6hi",
+    "name": "İZ YAYINCILIK",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:43:38.234Z",
+    "updatedAt": "2025-12-12T05:43:38.234Z",
+    "books": [
+      {
+        "id": "cmj2fynx600020alhb2qvyo83",
+        "title": "Müslümanca Düşünme Üzerine Denemeler"
+      },
+      {
+        "id": "cmj2fzkhk00000al515tdkp2o",
+        "title": "İmkansız Öyküler"
+      },
+      {
+        "id": "cmj2fz4ry00030alhlwl6vfso",
+        "title": "Gül Yetiştiren Adam"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g00we00020al58c9zq39w",
+    "name": "NESİL YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:44:41.870Z",
+    "updatedAt": "2025-12-12T05:44:41.870Z",
+    "books": [
+      {
+        "id": "cmj2gmfe6000b0al7vyprihxg",
+        "title": "İtbarak"
+      },
+      {
+        "id": "cmj2g010o00030al5fblitzud",
+        "title": "Allah İçin Sevmek"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g33br000a0al5hrfvomrr",
+    "name": "YAPI KREDİ YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:47:04.983Z",
+    "updatedAt": "2025-12-12T05:47:04.983Z",
+    "books": [
+      {
+        "id": "cmj2gmn0000050aih1oa2dr4y",
+        "title": "Doppler"
+      },
+      {
+        "id": "cmj2g33g0000b0al5qdlm7j4t",
+        "title": "Kuyucaklı Yusuf"
+      },
+      {
+        "id": "cmj2g7t6d00020al2uhlpjg8e",
+        "title": "İnce Memed 1"
+      },
+      {
+        "id": "cmj7dc59400070biidqx45vxv",
+        "title": "Semerkant"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g4tvp00010ajp2m44af1f",
+    "name": "PROFİL KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:48:26.053Z",
+    "updatedAt": "2025-12-12T05:48:26.053Z",
+    "books": [
+      {
+        "id": "cmj2g7l5200060ajld1kemz0g",
+        "title": "Sevmek Bu Kadar Güzelken"
+      },
+      {
+        "id": "cmj2g4u0200020ajpmjnnr3x1",
+        "title": "Fabrika Ayarı"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g5rme00010aldweu3h6ti",
+    "name": "DESTEK YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:49:09.782Z",
+    "updatedAt": "2025-12-12T05:49:09.782Z",
+    "books": [
+      {
+        "id": "cmj2g5rqs00020aldqtju23s9",
+        "title": "Eyvallah - Seyyah"
+      },
+      {
+        "id": "cmj2grgul000l0al70q9aaa3e",
+        "title": "Karanlıkta Yürüyen Yabancı"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g63e700010ajl4mfb371s",
+    "name": "JAGUAR KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:49:25.039Z",
+    "updatedAt": "2025-12-12T05:49:25.039Z",
+    "books": [
+      {
+        "id": "cmj2g63ih00020ajl31tef3ny",
+        "title": "Yaşamak"
+      }
+    ]
+  },
+  {
+    "id": "cmj2g9b2200010ak39tcbdpim",
+    "name": "EKİN YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:51:54.938Z",
+    "updatedAt": "2025-12-12T05:51:54.938Z",
+    "books": [
+      {
+        "id": "cmj2g9ob200030ald8c1eme8z",
+        "title": "Yoldaki Mühendis 2"
+      },
+      {
+        "id": "cmj2g9b6e00020ak3nrwpyha4",
+        "title": "Yoldaki Mühendis"
+      }
+    ]
+  },
+  {
+    "id": "cmj2ga68e00040ak3phf51fqv",
+    "name": "REN KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:52:35.342Z",
+    "updatedAt": "2025-12-12T05:52:35.342Z",
+    "books": [
+      {
+        "id": "cmj2gallq00060ak3wjw6u5ej",
+        "title": "Sherlock Holmes - Oyun Başladı / Bütün Hikayeler 2"
+      },
+      {
+        "id": "cmj2gbhe900090aldn45tvkvz",
+        "title": "Sherlock Holmes - Gölge Koleksiyonu / Bütün Hikayeler 5"
+      },
+      {
+        "id": "cmj2gb14h00070alduhtujp5z",
+        "title": "Sherlock Holmes – Suç Uyanıyor / Bütün Hikayeler 1"
+      },
+      {
+        "id": "cmj2gb9pj00080aldaev8jzqu",
+        "title": "Sherlock Holmes – Şüphenin İzinde / Bütün Hikayeler 3"
+      },
+      {
+        "id": "cmj2ga6co00050ak3jaosahnh",
+        "title": "Sherlock Holmes - Bir Suçun Portresi / Bütün Hikayeler 4"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gasob00050aldbfnw333p",
+    "name": "IQ KÜLTÜR SANAT YAYINCILIK",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:53:04.427Z",
+    "updatedAt": "2025-12-12T05:53:04.427Z",
+    "books": [
+      {
+        "id": "cmj2gs1p200090ajsmij1ez6m",
+        "title": "Terör"
+      },
+      {
+        "id": "cmj2gassn00060aldx6m9ma4c",
+        "title": "Milliyetçilik Nedir, Ne Değildir?"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gbpj4000b0aldem0uf759",
+    "name": "PANAMA YAYINCILIK",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:53:47.008Z",
+    "updatedAt": "2025-12-12T05:53:47.008Z",
+    "books": [
+      {
+        "id": "cmj2gbxl100070ak3qdhnblp3",
+        "title": "Metro 2034"
+      },
+      {
+        "id": "cmj2gbpnh000c0aldivxxl59n",
+        "title": "Metro 2033"
+      },
+      {
+        "id": "cmj2gt5bu00050al57jnq3y18",
+        "title": "Yafes'in Kılıcı"
+      },
+      {
+        "id": "cmj2gc6cq00080ak3t4el4e5f",
+        "title": "Metro 2035"
+      },
+      {
+        "id": "cmj2gim6h00010ajuy0xtgv7g",
+        "title": "Atalar Cengi"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gcyc9000e0ald8jna4rmb",
+    "name": "AŞİNA",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:54:45.081Z",
+    "updatedAt": "2025-12-12T05:54:45.081Z",
+    "books": [
+      {
+        "id": "cmj2gcygj000f0ald6te0has7",
+        "title": "Kudüs Yazıları"
+      },
+      {
+        "id": "cmj2glx3v00030aiheo99ez9z",
+        "title": "Kırmadan İncitmeden"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gd9ru000h0aldlulcnxhv",
+    "name": "EVEREST YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:54:59.898Z",
+    "updatedAt": "2025-12-12T05:54:59.898Z",
+    "books": [
+      {
+        "id": "cmj2gn64m00070aih94m1t11j",
+        "title": "Bin Muhteşem Güneş"
+      },
+      {
+        "id": "cmj2gnij5000d0al7j8ct4caz",
+        "title": "Uçurtma Avcısı"
+      },
+      {
+        "id": "cmj2gnskd00080aih7nxmokb5",
+        "title": "Ve Dağlar Yankılandı"
+      },
+      {
+        "id": "cmj2gd9w3000i0aldpmpf4jt6",
+        "title": "İstanbul Hatırası"
+      }
+    ]
+  },
+  {
+    "id": "cmj2geas9000k0aldcfdg8sjj",
+    "name": "YENİ ZAMANLAR SAHAF (2. El Kitaplar)",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:55:47.865Z",
+    "updatedAt": "2025-12-12T05:55:47.865Z",
+    "books": [
+      {
+        "id": "cmj2geawd000l0ald0evj2qd1",
+        "title": "Bir Gizli Servisin Tarihi-MİT 2-F-63"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gfu4u000n0aldcuk8ub85",
+    "name": "SÖZ BASIM YAYIN REK.SAN.LTD.ŞTİ.",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:56:59.598Z",
+    "updatedAt": "2025-12-12T05:56:59.598Z",
+    "books": [
+      {
+        "id": "cmj2gfu91000o0aldhvi9oz15",
+        "title": "Lem'alar (Çanta Boy İki Renk)"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gjopq00010al7yt8xlyu9",
+    "name": "EPSİLON YAYINEVİ",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T05:59:59.198Z",
+    "updatedAt": "2025-12-12T05:59:59.198Z",
+    "books": [
+      {
+        "id": "cmj2gjotz00020al7j8751otj",
+        "title": "Martı Jonathan Livingston"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gkr0v00010ajsc0oxaxai",
+    "name": "EFTALYA KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T06:00:48.847Z",
+    "updatedAt": "2025-12-12T06:00:48.847Z",
+    "books": [
+      {
+        "id": "cmj2gkr5600020ajs3vypja12",
+        "title": "Haarp Silahı ve Nicola Tesla"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gl4mm00040al7jw6rsnjs",
+    "name": "İNDİGO KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T06:01:06.478Z",
+    "updatedAt": "2025-12-12T06:01:06.478Z",
+    "books": []
+  },
+  {
+    "id": "cmj2glbyg00070al7v5xclmuy",
+    "name": "NEMESİS KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T06:01:15.976Z",
+    "updatedAt": "2025-12-12T06:01:15.976Z",
+    "books": [
+      {
+        "id": "cmj2glc2q00080al7mintjifw",
+        "title": "Bir Çift Yürek"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gozeg000c0aihwss2mt4x",
+    "name": "KAPRA YAYINCILIK",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T06:04:06.328Z",
+    "updatedAt": "2025-12-12T06:04:06.328Z",
+    "books": [
+      {
+        "id": "cmj2gozin000d0aihirubh4vx",
+        "title": "Kendine Ait Bir Oda"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gpnbv00040ajs993mv8m3",
+    "name": "ÖTÜKEN NEŞRİYAT",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T06:04:37.339Z",
+    "updatedAt": "2025-12-12T06:04:37.339Z",
+    "books": [
+      {
+        "id": "cmj2gpng100050ajs337lyw3o",
+        "title": "Beyaz Gemi"
+      },
+      {
+        "id": "cmj2grsb700070ajsglitqato",
+        "title": "Türk Milli Kültürü"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gpwek000f0aihyjh8t79v",
+    "name": "SAY YAYINLARI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T06:04:49.100Z",
+    "updatedAt": "2025-12-12T06:04:49.100Z",
+    "books": [
+      {
+        "id": "cmj2gpwiw000g0aihbrgbpg6j",
+        "title": "Küçük Ağaç'ın Eğitimi"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gqcqd000i0al7cgmpais2",
+    "name": "ÇAMLICA BASIM YAYIN",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T06:05:10.261Z",
+    "updatedAt": "2025-12-12T06:05:10.261Z",
+    "books": [
+      {
+        "id": "cmj2gqcuo000j0al7yx54bk0f",
+        "title": "Peygamber Efendimiz'in Muhtasar Hayatı"
+      }
+    ]
+  },
+  {
+    "id": "cmj2gsy4x000b0ajsg03my4cj",
+    "name": "TEKİN YAYINEVİ-KELEPİR",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T06:07:11.313Z",
+    "updatedAt": "2025-12-12T06:07:11.313Z",
+    "books": [
+      {
+        "id": "cmj2gsy99000c0ajs27bpu45z",
+        "title": "Cemaat'in İflası"
+      }
+    ]
+  },
+  {
+    "id": "cmj3f0p7800010alabx6jqz2g",
+    "name": "İNKILAP KİTABEVİ",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T22:04:59.924Z",
+    "updatedAt": "2025-12-12T22:04:59.924Z",
+    "books": []
+  },
+  {
+    "id": "cmj3fr7n600000al4aagtsvfy",
+    "name": "DEX KİTAP",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-12T22:25:36.882Z",
+    "updatedAt": "2025-12-12T22:25:36.882Z",
+    "books": []
+  },
+  {
+    "id": "cmj7davni00030bii5i1k6vee",
+    "name": "BİLİM VE GELECEK KİTAPLIĞI",
+    "imageUrl": null,
+    "website": null,
+    "createdAt": "2025-12-15T16:28:00.318Z",
+    "updatedAt": "2025-12-15T16:28:00.318Z",
+    "books": [
+      {
+        "id": "cmj7davrv00040bii8cjty9ch",
+        "title": "50 Soruda Yapay Zeka"
+      }
+    ]
+  }
+]
