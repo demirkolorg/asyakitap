@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Input } from "@/components/ui/input"
@@ -50,14 +51,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {
     Target,
-    Lock,
-    CheckCircle2,
     BookOpen,
     Sparkles,
     Trophy,
     Loader2,
-    Play,
-    Quote,
     Calendar,
     Plus,
     MoreVertical,
@@ -67,13 +64,10 @@ import {
     Link as LinkIcon,
     Library,
     Book,
+    ExternalLink,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
-    joinChallenge,
-    markChallengeBookAsRead,
-    updateChallengeBookStatus,
-    updateTakeaway,
     createChallengeMonth,
     updateChallengeMonth,
     deleteChallengeMonth,
@@ -84,10 +78,11 @@ import {
     updateChallenge,
     deleteChallenge,
     type ChallengeOverview,
-    type ChallengeBook as ChallengeBookType
+    type ChallengeBook as ChallengeBookType,
+    type ChallengeMonth as ChallengeMonthType
 } from "@/actions/challenge"
 import { toast } from "sonner"
-import { ChallengeBookStatus, ChallengeBookRole } from "@prisma/client"
+import { ChallengeBookRole } from "@prisma/client"
 
 type ChallengePageClientProps = {
     challenge: ChallengeOverview
@@ -103,17 +98,7 @@ const MONTH_ICONS = ["❄️", "💕", "🌸", "🌷", "🌺", "☀️", "🌴",
 export function ChallengePageClient({ challenge: initialChallenge }: ChallengePageClientProps) {
     const router = useRouter()
     const [challenge, setChallenge] = useState(initialChallenge)
-    const [isUpdating, setIsUpdating] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
-
-    // Takeaway Dialog
-    const [takeawayDialog, setTakeawayDialog] = useState<{
-        open: boolean
-        bookId: string
-        bookTitle: string
-        currentTakeaway: string
-    }>({ open: false, bookId: "", bookTitle: "", currentTakeaway: "" })
-    const [takeawayInput, setTakeawayInput] = useState("")
 
     // Month Dialog
     const [monthDialog, setMonthDialog] = useState<{
@@ -150,7 +135,7 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
         pageCount: "",
         coverUrl: "",
         publisher: "",
-        role: "BONUS",
+        role: "MAIN",  // Default to MAIN
         reason: "",
         inLibrary: false
     })
@@ -179,108 +164,6 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
     const [deleteChallengeDialog, setDeleteChallengeDialog] = useState(false)
 
     const currentMonthNumber = new Date().getMonth() + 1
-
-    // ==========================================
-    // User Progress Handlers
-    // ==========================================
-
-    const handleStartReading = async (bookId: string) => {
-        setIsUpdating(bookId)
-        const result = await updateChallengeBookStatus(bookId, "IN_PROGRESS")
-        if (result.success) {
-            toast.success("Okumaya başladınız!")
-            setChallenge(prev => ({
-                ...prev,
-                months: prev.months.map(month => ({
-                    ...month,
-                    books: month.books.map(book =>
-                        book.id === bookId ? { ...book, userStatus: "IN_PROGRESS" as ChallengeBookStatus } : book
-                    )
-                }))
-            }))
-        } else {
-            toast.error(result.error)
-        }
-        setIsUpdating(null)
-    }
-
-    const handleComplete = async (bookId: string, monthId: string) => {
-        setIsUpdating(bookId)
-        const result = await markChallengeBookAsRead(bookId)
-        if (result.success) {
-            toast.success(result.message)
-
-            setChallenge(prev => ({
-                ...prev,
-                months: prev.months.map(month => {
-                    if (month.id !== monthId) return month
-
-                    const updatedBooks = month.books.map(book => {
-                        if (book.id === bookId) {
-                            return { ...book, userStatus: "COMPLETED" as ChallengeBookStatus, completedAt: new Date() }
-                        }
-                        if (result.wasMain && book.role === "BONUS" && book.userStatus === "LOCKED") {
-                            return { ...book, userStatus: "NOT_STARTED" as ChallengeBookStatus }
-                        }
-                        return book
-                    })
-
-                    const completedCount = updatedBooks.filter(b => b.userStatus === "COMPLETED").length
-                    const mainCompleted = updatedBooks.some(b => b.role === "MAIN" && b.userStatus === "COMPLETED")
-                    const total = month.progress?.total || updatedBooks.length
-
-                    return {
-                        ...month,
-                        books: updatedBooks,
-                        isMainCompleted: mainCompleted,
-                        progress: {
-                            total,
-                            completed: completedCount,
-                            percentage: Math.round((completedCount / total) * 100)
-                        }
-                    }
-                })
-            }))
-
-            const book = challenge.months.flatMap(m => m.books).find(b => b.id === bookId)
-            if (book) {
-                setTakeawayDialog({
-                    open: true,
-                    bookId,
-                    bookTitle: book.book.title,
-                    currentTakeaway: ""
-                })
-                setTakeawayInput("")
-            }
-        } else {
-            toast.error(result.error)
-        }
-        setIsUpdating(null)
-    }
-
-    const handleSaveTakeaway = async () => {
-        if (!takeawayInput.trim()) {
-            setTakeawayDialog({ ...takeawayDialog, open: false })
-            return
-        }
-
-        const result = await updateTakeaway(takeawayDialog.bookId, takeawayInput)
-        if (result.success) {
-            toast.success("Notunuz kaydedildi!")
-            setChallenge(prev => ({
-                ...prev,
-                months: prev.months.map(month => ({
-                    ...month,
-                    books: month.books.map(book =>
-                        book.id === takeawayDialog.bookId
-                            ? { ...book, takeaway: takeawayInput }
-                            : book
-                    )
-                }))
-            }))
-        }
-        setTakeawayDialog({ ...takeawayDialog, open: false })
-    }
 
     // ==========================================
     // Month CRUD Handlers
@@ -322,9 +205,27 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                 themeIcon: monthDialog.themeIcon || undefined
             })
 
-            if (result.success) {
+            if (result.success && result.month) {
                 toast.success("Ay eklendi")
-                router.refresh()
+                // State'i güncelle - yeni ayı ekle
+                const newMonth: ChallengeMonthType = {
+                    id: result.month.id,
+                    monthNumber: result.month.monthNumber,
+                    monthName: result.month.monthName,
+                    theme: result.month.theme,
+                    themeIcon: result.month.themeIcon,
+                    books: [],
+                    progress: {
+                        total: 0,
+                        completed: 0,
+                        percentage: 0
+                    },
+                    isMainCompleted: false
+                }
+                setChallenge(prev => ({
+                    ...prev,
+                    months: [...prev.months, newMonth].sort((a, b) => a.monthNumber - b.monthNumber)
+                }))
             } else {
                 toast.error(result.error || "Ay eklenemedi")
             }
@@ -386,7 +287,7 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
             pageCount: "",
             coverUrl: "",
             publisher: "",
-            role: "BONUS",
+            role: "MAIN",  // Default to MAIN
             reason: "",
             inLibrary: false
         })
@@ -428,11 +329,54 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                 inLibrary: bookDialog.inLibrary
             })
 
-            if (result.success) {
+            if (result.success && result.challengeBook) {
                 toast.success(`"${result.bookTitle}" eklendi`)
-                router.refresh()
+                // State'i güncelle - yeni kitabı ekle
+                const newBook: ChallengeBookType = {
+                    id: result.challengeBook.id,
+                    bookId: result.challengeBook.bookId,
+                    role: result.challengeBook.role,
+                    reason: result.challengeBook.reason,
+                    sortOrder: result.challengeBook.sortOrder,
+                    book: {
+                        id: result.challengeBook.book.id,
+                        title: result.challengeBook.book.title,
+                        coverUrl: result.challengeBook.book.coverUrl,
+                        pageCount: result.challengeBook.book.pageCount,
+                        inLibrary: result.challengeBook.book.inLibrary,
+                        author: result.challengeBook.book.author ? {
+                            id: result.challengeBook.book.author.id,
+                            name: result.challengeBook.book.author.name
+                        } : null,
+                        publisher: result.challengeBook.book.publisher ? {
+                            id: result.challengeBook.book.publisher.id,
+                            name: result.challengeBook.book.publisher.name
+                        } : null
+                    }
+                }
+                setChallenge(prev => ({
+                    ...prev,
+                    months: prev.months.map(month =>
+                        month.id === bookDialog.monthId
+                            ? {
+                                ...month,
+                                books: [...month.books, newBook],
+                                progress: {
+                                    ...month.progress!,
+                                    total: (month.progress?.total || 0) + 1
+                                }
+                            }
+                            : month
+                    ),
+                    totalProgress: prev.totalProgress ? {
+                        ...prev.totalProgress,
+                        totalBooks: prev.totalProgress.totalBooks + 1
+                    } : undefined
+                }))
             } else {
                 toast.error(result.error || "Kitap eklenemedi")
+                setIsLoading(false)
+                return
             }
         } else if (bookDialog.mode === "manual") {
             if (!bookDialog.title.trim() || !bookDialog.author.trim()) {
@@ -453,11 +397,54 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                 inLibrary: bookDialog.inLibrary
             })
 
-            if (result.success) {
+            if (result.success && result.challengeBook) {
                 toast.success("Kitap eklendi")
-                router.refresh()
+                // State'i güncelle - yeni kitabı ekle
+                const newBook: ChallengeBookType = {
+                    id: result.challengeBook.id,
+                    bookId: result.challengeBook.bookId,
+                    role: result.challengeBook.role,
+                    reason: result.challengeBook.reason,
+                    sortOrder: result.challengeBook.sortOrder,
+                    book: {
+                        id: result.challengeBook.book.id,
+                        title: result.challengeBook.book.title,
+                        coverUrl: result.challengeBook.book.coverUrl,
+                        pageCount: result.challengeBook.book.pageCount,
+                        inLibrary: result.challengeBook.book.inLibrary,
+                        author: result.challengeBook.book.author ? {
+                            id: result.challengeBook.book.author.id,
+                            name: result.challengeBook.book.author.name
+                        } : null,
+                        publisher: result.challengeBook.book.publisher ? {
+                            id: result.challengeBook.book.publisher.id,
+                            name: result.challengeBook.book.publisher.name
+                        } : null
+                    }
+                }
+                setChallenge(prev => ({
+                    ...prev,
+                    months: prev.months.map(month =>
+                        month.id === bookDialog.monthId
+                            ? {
+                                ...month,
+                                books: [...month.books, newBook],
+                                progress: {
+                                    ...month.progress!,
+                                    total: (month.progress?.total || 0) + 1
+                                }
+                            }
+                            : month
+                    ),
+                    totalProgress: prev.totalProgress ? {
+                        ...prev.totalProgress,
+                        totalBooks: prev.totalProgress.totalBooks + 1
+                    } : undefined
+                }))
             } else {
                 toast.error(result.error || "Kitap eklenemedi")
+                setIsLoading(false)
+                return
             }
         } else if (bookDialog.mode === "edit") {
             const result = await updateChallengeBook(bookDialog.bookId!, {
@@ -480,6 +467,8 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                 }))
             } else {
                 toast.error(result.error || "Kitap güncellenemedi")
+                setIsLoading(false)
+                return
             }
         }
 
@@ -497,8 +486,18 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                 ...prev,
                 months: prev.months.map(month => ({
                     ...month,
-                    books: month.books.filter(b => b.id !== deleteBookDialog.bookId)
-                }))
+                    books: month.books.filter(b => b.id !== deleteBookDialog.bookId),
+                    progress: month.books.some(b => b.id === deleteBookDialog.bookId)
+                        ? {
+                            ...month.progress!,
+                            total: Math.max(0, (month.progress?.total || 0) - 1)
+                        }
+                        : month.progress
+                })),
+                totalProgress: prev.totalProgress ? {
+                    ...prev.totalProgress,
+                    totalBooks: Math.max(0, prev.totalProgress.totalBooks - 1)
+                } : undefined
             }))
         } else {
             toast.error(result.error || "Kitap kaldırılamadı")
@@ -606,8 +605,8 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                             </div>
                             <Progress value={challenge.totalProgress?.percentage ?? 0} className="h-2" />
                             <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                                <span>Ana: {challenge.totalProgress?.mainCompleted ?? 0}/12</span>
-                                <span>Bonus: {challenge.totalProgress?.bonusCompleted ?? 0}/24</span>
+                                <span>Ana: {challenge.totalProgress?.mainCompleted ?? 0}</span>
+                                <span>Bonus: {challenge.totalProgress?.bonusCompleted ?? 0}</span>
                             </div>
                         </div>
                     </div>
@@ -623,8 +622,7 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
             >
                 {challenge.months.map((month) => {
                     const isCurrentMonth = month.monthNumber === currentMonthNumber
-                    const isPastMonth = month.monthNumber < currentMonthNumber
-                    const mainBook = month.books.find(b => b.role === "MAIN")
+                    const mainBooks = month.books.filter(b => b.role === "MAIN")
                     const bonusBooks = month.books.filter(b => b.role === "BONUS")
 
                     return (
@@ -633,8 +631,7 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                             value={`month-${month.monthNumber}`}
                             className={cn(
                                 "border rounded-xl overflow-hidden",
-                                isCurrentMonth && "border-primary/50 shadow-md",
-                                (month.progress?.percentage ?? 0) === 100 && "border-green-500/50"
+                                isCurrentMonth && "border-primary/50 shadow-md"
                             )}
                         >
                             <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50">
@@ -649,18 +646,14 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                                                         BU AY
                                                     </span>
                                                 )}
-                                                {(month.progress?.percentage ?? 0) === 100 && (
-                                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                                )}
                                             </div>
                                             <span className="text-xs text-muted-foreground">{month.theme}</span>
                                         </div>
                                     </div>
 
                                     <div className="ml-auto mr-4 flex items-center gap-3">
-                                        <Progress value={month.progress?.percentage ?? 0} className="w-24 h-2" />
-                                        <span className="text-sm text-muted-foreground w-12">
-                                            {month.progress?.completed ?? 0}/{month.progress?.total ?? 0}
+                                        <span className="text-sm text-muted-foreground">
+                                            {month.books.length} kitap
                                         </span>
                                     </div>
                                 </div>
@@ -716,291 +709,214 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                                 </div>
 
                                 <div className="space-y-4">
-                                    {/* Main Book */}
-                                    {mainBook && (
-                                        <div className="relative">
-                                            <div className="absolute -top-2 left-3 z-10">
-                                                <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                                    ANA HEDEF
-                                                </span>
+                                    {/* Main Books */}
+                                    {mainBooks.length > 0 && (
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-2 px-1">
+                                                <Target className="h-4 w-4 text-primary" />
+                                                <span className="text-sm font-medium">Ana Hedefler</span>
+                                                <span className="text-xs text-muted-foreground">({mainBooks.length} kitap)</span>
                                             </div>
-                                            <Card className={cn(
-                                                "border-2",
-                                                mainBook.userStatus === "COMPLETED"
-                                                    ? "border-green-500 bg-green-50/50 dark:bg-green-950/20"
-                                                    : "border-primary/30"
-                                            )}>
-                                                <CardContent className="p-4">
-                                                    <div className="flex gap-4">
-                                                        <div className="relative h-32 w-20 flex-shrink-0 rounded-lg overflow-hidden bg-muted shadow-md">
-                                                            {mainBook.book.coverUrl ? (
-                                                                <Image
-                                                                    src={mainBook.book.coverUrl}
-                                                                    alt={mainBook.book.title}
-                                                                    fill
-                                                                    className="object-cover"
-                                                                />
-                                                            ) : (
-                                                                <div className="flex items-center justify-center h-full">
-                                                                    <BookOpen className="h-8 w-8 text-muted-foreground" />
-                                                                </div>
-                                                            )}
-                                                            {mainBook.userStatus === "COMPLETED" && (
-                                                                <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                                                                    <CheckCircle2 className="h-10 w-10 text-green-600" />
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                            <div className="grid md:grid-cols-2 gap-3">
+                                                {mainBooks.map((book) => (
+                                                    <Card key={book.id} className="border-2 border-primary/30">
+                                                        <CardContent className="p-4">
+                                                            <div className="flex gap-4">
+                                                                {/* Book Cover - Clickable */}
+                                                                <Link
+                                                                    href={`/book/${book.book.id}`}
+                                                                    className="relative h-24 w-16 flex-shrink-0 rounded-lg overflow-hidden bg-muted shadow-md hover:ring-2 hover:ring-primary transition-all"
+                                                                >
+                                                                    {book.book.coverUrl ? (
+                                                                        <Image
+                                                                            src={book.book.coverUrl}
+                                                                            alt={book.book.title}
+                                                                            fill
+                                                                            className="object-cover"
+                                                                        />
+                                                                    ) : (
+                                                                        <div className="flex items-center justify-center h-full">
+                                                                            <BookOpen className="h-6 w-6 text-muted-foreground" />
+                                                                        </div>
+                                                                    )}
+                                                                    {book.book.inLibrary && (
+                                                                        <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-primary-foreground text-[10px] text-center py-0.5">
+                                                                            <Library className="h-3 w-3 inline" />
+                                                                        </div>
+                                                                    )}
+                                                                </Link>
 
-                                                        <div className="flex-1">
-                                                            <div className="flex items-start justify-between">
-                                                                <div>
-                                                                    <h3 className="font-bold text-lg">{mainBook.book.title}</h3>
-                                                                    <p className="text-sm text-muted-foreground">{mainBook.book.author?.name || "Bilinmeyen Yazar"}</p>
-                                                                    {mainBook.book.pageCount && (
-                                                                        <p className="text-xs text-muted-foreground mt-1">
-                                                                            {mainBook.book.pageCount} sayfa
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-start justify-between">
+                                                                        <Link
+                                                                            href={`/book/${book.book.id}`}
+                                                                            className="hover:text-primary transition-colors"
+                                                                        >
+                                                                            <h3 className="font-bold line-clamp-2">{book.book.title}</h3>
+                                                                            <p className="text-sm text-muted-foreground">{book.book.author?.name || "Bilinmeyen Yazar"}</p>
+                                                                            {book.book.pageCount && (
+                                                                                <p className="text-xs text-muted-foreground mt-1">
+                                                                                    {book.book.pageCount} sayfa
+                                                                                </p>
+                                                                            )}
+                                                                        </Link>
+                                                                        <DropdownMenu>
+                                                                            <DropdownMenuTrigger asChild>
+                                                                                <Button size="icon" variant="ghost" className="h-8 w-8 flex-shrink-0">
+                                                                                    <MoreVertical className="h-4 w-4" />
+                                                                                </Button>
+                                                                            </DropdownMenuTrigger>
+                                                                            <DropdownMenuContent align="end">
+                                                                                <DropdownMenuItem asChild>
+                                                                                    <Link href={`/book/${book.book.id}`}>
+                                                                                        <ExternalLink className="h-4 w-4 mr-2" />
+                                                                                        Kitap Detayı
+                                                                                    </Link>
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuSeparator />
+                                                                                <DropdownMenuItem onClick={() => openEditBookDialog(book, month.id)}>
+                                                                                    <Edit className="h-4 w-4 mr-2" />
+                                                                                    Düzenle
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem
+                                                                                    className="text-destructive"
+                                                                                    onClick={() => setDeleteBookDialog({
+                                                                                        open: true,
+                                                                                        bookId: book.id,
+                                                                                        bookTitle: book.book.title
+                                                                                    })}
+                                                                                >
+                                                                                    <Trash2 className="h-4 w-4 mr-2" />
+                                                                                    Kaldır
+                                                                                </DropdownMenuItem>
+                                                                            </DropdownMenuContent>
+                                                                        </DropdownMenu>
+                                                                    </div>
+
+                                                                    {book.reason && (
+                                                                        <p className="text-sm mt-2 text-muted-foreground italic line-clamp-2">
+                                                                            "{book.reason}"
                                                                         </p>
                                                                     )}
-                                                                    {mainBook.book.inLibrary && (
-                                                                        <span className="inline-flex items-center gap-1 text-xs text-green-600 mt-1">
-                                                                            <Library className="h-3 w-3" />
-                                                                            Kütüphanemde
-                                                                        </span>
-                                                                    )}
                                                                 </div>
-                                                                <DropdownMenu>
-                                                                    <DropdownMenuTrigger asChild>
-                                                                        <Button size="icon" variant="ghost" className="h-8 w-8">
-                                                                            <MoreVertical className="h-4 w-4" />
-                                                                        </Button>
-                                                                    </DropdownMenuTrigger>
-                                                                    <DropdownMenuContent align="end">
-                                                                        <DropdownMenuItem onClick={() => openEditBookDialog(mainBook, month.id)}>
-                                                                            <Edit className="h-4 w-4 mr-2" />
-                                                                            Düzenle
-                                                                        </DropdownMenuItem>
-                                                                        <DropdownMenuSeparator />
-                                                                        <DropdownMenuItem
-                                                                            className="text-destructive"
-                                                                            onClick={() => setDeleteBookDialog({
-                                                                                open: true,
-                                                                                bookId: mainBook.id,
-                                                                                bookTitle: mainBook.book.title
-                                                                            })}
-                                                                        >
-                                                                            <Trash2 className="h-4 w-4 mr-2" />
-                                                                            Kaldır
-                                                                        </DropdownMenuItem>
-                                                                    </DropdownMenuContent>
-                                                                </DropdownMenu>
                                                             </div>
-
-                                                            {mainBook.reason && (
-                                                                <p className="text-sm mt-2 text-muted-foreground italic">
-                                                                    "{mainBook.reason}"
-                                                                </p>
-                                                            )}
-
-                                                            {mainBook.takeaway && (
-                                                                <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                                                                    <div className="flex items-start gap-2">
-                                                                        <Quote className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                                                                        <p className="text-sm">{mainBook.takeaway}</p>
-                                                                    </div>
-                                                                </div>
-                                                            )}
-
-                                                            <div className="mt-3 flex items-center gap-2">
-                                                                {mainBook.userStatus === "NOT_STARTED" && (
-                                                                    <Button
-                                                                        size="sm"
-                                                                        variant="outline"
-                                                                        onClick={() => handleStartReading(mainBook.id)}
-                                                                        disabled={isUpdating === mainBook.id}
-                                                                    >
-                                                                        {isUpdating === mainBook.id ? (
-                                                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                                                        ) : (
-                                                                            <>
-                                                                                <Play className="h-4 w-4 mr-1" />
-                                                                                Okumaya Başla
-                                                                            </>
-                                                                        )}
-                                                                    </Button>
-                                                                )}
-                                                                {mainBook.userStatus === "IN_PROGRESS" && (
-                                                                    <Button
-                                                                        size="sm"
-                                                                        onClick={() => handleComplete(mainBook.id, month.id)}
-                                                                        disabled={isUpdating === mainBook.id}
-                                                                    >
-                                                                        {isUpdating === mainBook.id ? (
-                                                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                                                        ) : (
-                                                                            <>
-                                                                                <CheckCircle2 className="h-4 w-4 mr-1" />
-                                                                                Tamamladım
-                                                                            </>
-                                                                        )}
-                                                                    </Button>
-                                                                )}
-                                                                {mainBook.userStatus === "COMPLETED" && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <span className="inline-flex items-center gap-1 text-sm text-green-600 font-medium">
-                                                                            <CheckCircle2 className="h-4 w-4" />
-                                                                            Tamamlandı
-                                                                        </span>
-                                                                        {mainBook.completedAt && (
-                                                                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                                                                <Calendar className="h-3 w-3" />
-                                                                                {new Date(mainBook.completedAt).toLocaleDateString("tr-TR")}
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
+                                                        </CardContent>
+                                                    </Card>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
 
                                     {/* Bonus Books */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 px-1">
-                                            <Sparkles className="h-4 w-4 text-amber-500" />
-                                            <span className="text-sm font-medium">Bonus Kitaplar</span>
-                                            {!month.isMainCompleted && (
-                                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                                    <Lock className="h-3 w-3" />
-                                                    Ana kitabı tamamlayınca açılır
-                                                </span>
-                                            )}
-                                        </div>
+                                    {bonusBooks.length > 0 && (
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-2 px-1">
+                                                <Sparkles className="h-4 w-4 text-amber-500" />
+                                                <span className="text-sm font-medium">Bonus Kitaplar</span>
+                                                <span className="text-xs text-muted-foreground">({bonusBooks.length} kitap)</span>
+                                            </div>
 
-                                        <div className="grid md:grid-cols-2 gap-3">
-                                            {bonusBooks.map((book) => (
-                                                <Card
-                                                    key={book.id}
-                                                    className={cn(
-                                                        "relative transition-all",
-                                                        book.userStatus === "LOCKED" && "opacity-60",
-                                                        book.userStatus === "COMPLETED" && "border-green-500/50 bg-green-50/30 dark:bg-green-950/10"
-                                                    )}
-                                                >
-                                                    {book.userStatus === "LOCKED" && (
-                                                        <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-lg z-10">
-                                                            <Lock className="h-6 w-6 text-muted-foreground" />
-                                                        </div>
-                                                    )}
-
-                                                    <CardContent className="p-3">
-                                                        <div className="flex gap-3">
-                                                            <div className="relative h-20 w-14 flex-shrink-0 rounded overflow-hidden bg-muted">
-                                                                {book.book.coverUrl ? (
-                                                                    <Image
-                                                                        src={book.book.coverUrl}
-                                                                        alt={book.book.title}
-                                                                        fill
-                                                                        className="object-cover"
-                                                                    />
-                                                                ) : (
-                                                                    <div className="flex items-center justify-center h-full">
-                                                                        <BookOpen className="h-5 w-5 text-muted-foreground" />
-                                                                    </div>
-                                                                )}
-                                                            </div>
-
-                                                            <div className="flex-1 min-w-0">
-                                                                <div className="flex items-start justify-between">
-                                                                    <div className="min-w-0 flex-1">
-                                                                        <h4 className="font-semibold text-sm line-clamp-1">{book.book.title}</h4>
-                                                                        <p className="text-xs text-muted-foreground">{book.book.author?.name || "Bilinmeyen Yazar"}</p>
-                                                                        {book.book.inLibrary && (
-                                                                            <span className="inline-flex items-center gap-1 text-xs text-green-600">
-                                                                                <Library className="h-3 w-3" />
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                    <DropdownMenu>
-                                                                        <DropdownMenuTrigger asChild>
-                                                                            <Button size="icon" variant="ghost" className="h-6 w-6 flex-shrink-0">
-                                                                                <MoreVertical className="h-3 w-3" />
-                                                                            </Button>
-                                                                        </DropdownMenuTrigger>
-                                                                        <DropdownMenuContent align="end">
-                                                                            <DropdownMenuItem onClick={() => openEditBookDialog(book, month.id)}>
-                                                                                <Edit className="h-4 w-4 mr-2" />
-                                                                                Düzenle
-                                                                            </DropdownMenuItem>
-                                                                            <DropdownMenuSeparator />
-                                                                            <DropdownMenuItem
-                                                                                className="text-destructive"
-                                                                                onClick={() => setDeleteBookDialog({
-                                                                                    open: true,
-                                                                                    bookId: book.id,
-                                                                                    bookTitle: book.book.title
-                                                                                })}
-                                                                            >
-                                                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                                                Kaldır
-                                                                            </DropdownMenuItem>
-                                                                        </DropdownMenuContent>
-                                                                    </DropdownMenu>
-                                                                </div>
-
-                                                                {book.takeaway && (
-                                                                    <p className="text-xs mt-1 text-amber-700 dark:text-amber-400 line-clamp-2">
-                                                                        "{book.takeaway}"
-                                                                    </p>
-                                                                )}
-
-                                                                <div className="mt-2">
-                                                                    {book.userStatus === "NOT_STARTED" && (
-                                                                        <Button
-                                                                            size="sm"
-                                                                            variant="ghost"
-                                                                            className="h-7 text-xs"
-                                                                            onClick={() => handleStartReading(book.id)}
-                                                                            disabled={isUpdating === book.id}
-                                                                        >
-                                                                            {isUpdating === book.id ? (
-                                                                                <Loader2 className="h-3 w-3 animate-spin" />
-                                                                            ) : (
-                                                                                "Başla"
-                                                                            )}
-                                                                        </Button>
+                                            <div className="grid md:grid-cols-2 gap-3">
+                                                {bonusBooks.map((book) => (
+                                                    <Card key={book.id} className="relative">
+                                                        <CardContent className="p-3">
+                                                            <div className="flex gap-3">
+                                                                {/* Book Cover - Clickable */}
+                                                                <Link
+                                                                    href={`/book/${book.book.id}`}
+                                                                    className="relative h-20 w-14 flex-shrink-0 rounded overflow-hidden bg-muted hover:ring-2 hover:ring-primary transition-all"
+                                                                >
+                                                                    {book.book.coverUrl ? (
+                                                                        <Image
+                                                                            src={book.book.coverUrl}
+                                                                            alt={book.book.title}
+                                                                            fill
+                                                                            className="object-cover"
+                                                                        />
+                                                                    ) : (
+                                                                        <div className="flex items-center justify-center h-full">
+                                                                            <BookOpen className="h-5 w-5 text-muted-foreground" />
+                                                                        </div>
                                                                     )}
-                                                                    {book.userStatus === "IN_PROGRESS" && (
-                                                                        <Button
-                                                                            size="sm"
-                                                                            className="h-7 text-xs"
-                                                                            onClick={() => handleComplete(book.id, month.id)}
-                                                                            disabled={isUpdating === book.id}
-                                                                        >
-                                                                            {isUpdating === book.id ? (
-                                                                                <Loader2 className="h-3 w-3 animate-spin" />
-                                                                            ) : (
-                                                                                "Tamamla"
-                                                                            )}
-                                                                        </Button>
+                                                                    {book.book.inLibrary && (
+                                                                        <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-primary-foreground text-[8px] text-center py-0.5">
+                                                                            <Library className="h-2 w-2 inline" />
+                                                                        </div>
                                                                     )}
-                                                                    {book.userStatus === "COMPLETED" && (
-                                                                        <span className="text-xs text-green-600 flex items-center gap-1">
-                                                                            <CheckCircle2 className="h-3 w-3" />
-                                                                            Tamamlandı
-                                                                        </span>
+                                                                </Link>
+
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-start justify-between">
+                                                                        <Link
+                                                                            href={`/book/${book.book.id}`}
+                                                                            className="min-w-0 flex-1 hover:text-primary transition-colors"
+                                                                        >
+                                                                            <h4 className="font-semibold text-sm line-clamp-1">{book.book.title}</h4>
+                                                                            <p className="text-xs text-muted-foreground">{book.book.author?.name || "Bilinmeyen Yazar"}</p>
+                                                                        </Link>
+                                                                        <DropdownMenu>
+                                                                            <DropdownMenuTrigger asChild>
+                                                                                <Button size="icon" variant="ghost" className="h-6 w-6 flex-shrink-0">
+                                                                                    <MoreVertical className="h-3 w-3" />
+                                                                                </Button>
+                                                                            </DropdownMenuTrigger>
+                                                                            <DropdownMenuContent align="end">
+                                                                                <DropdownMenuItem asChild>
+                                                                                    <Link href={`/book/${book.book.id}`}>
+                                                                                        <ExternalLink className="h-4 w-4 mr-2" />
+                                                                                        Kitap Detayı
+                                                                                    </Link>
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuSeparator />
+                                                                                <DropdownMenuItem onClick={() => openEditBookDialog(book, month.id)}>
+                                                                                    <Edit className="h-4 w-4 mr-2" />
+                                                                                    Düzenle
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem
+                                                                                    className="text-destructive"
+                                                                                    onClick={() => setDeleteBookDialog({
+                                                                                        open: true,
+                                                                                        bookId: book.id,
+                                                                                        bookTitle: book.book.title
+                                                                                    })}
+                                                                                >
+                                                                                    <Trash2 className="h-4 w-4 mr-2" />
+                                                                                    Kaldır
+                                                                                </DropdownMenuItem>
+                                                                            </DropdownMenuContent>
+                                                                        </DropdownMenu>
+                                                                    </div>
+
+                                                                    {book.reason && (
+                                                                        <p className="text-xs mt-1 text-muted-foreground italic line-clamp-2">
+                                                                            "{book.reason}"
+                                                                        </p>
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </CardContent>
-                                                </Card>
-                                            ))}
+                                                        </CardContent>
+                                                    </Card>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
+
+                                    {/* Empty State */}
+                                    {month.books.length === 0 && (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                            <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                            <p>Bu ayda kitap yok</p>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="mt-3"
+                                                onClick={() => openBookDialog(month.id, "kitapyurdu")}
+                                            >
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Kitap Ekle
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -1022,36 +938,6 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
             )}
 
             {/* ==================== DIALOGS ==================== */}
-
-            {/* Takeaway Dialog */}
-            <Dialog open={takeawayDialog.open} onOpenChange={(open) => setTakeawayDialog({ ...takeawayDialog, open })}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Quote className="h-5 w-5 text-amber-500" />
-                            Aklında Kalan
-                        </DialogTitle>
-                        <DialogDescription>
-                            "{takeawayDialog.bookTitle}" kitabından aklında kalan tek bir cümle veya düşünce neydi?
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Input
-                        placeholder="Bu kitaptan öğrendiğim en önemli şey..."
-                        value={takeawayInput}
-                        onChange={(e) => setTakeawayInput(e.target.value)}
-                        maxLength={280}
-                    />
-                    <p className="text-xs text-muted-foreground text-right">{takeawayInput.length}/280</p>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setTakeawayDialog({ ...takeawayDialog, open: false })}>
-                            Atla
-                        </Button>
-                        <Button onClick={handleSaveTakeaway}>
-                            Kaydet
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
 
             {/* Month Dialog */}
             <Dialog open={monthDialog.open} onOpenChange={(open) => setMonthDialog({ ...monthDialog, open })}>

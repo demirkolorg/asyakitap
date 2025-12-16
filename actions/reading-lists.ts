@@ -634,24 +634,68 @@ export async function searchReadingListBooks(query: string) {
     }
 }
 
-// Get all reading lists (for admin)
-export async function getAllReadingLists() {
+// Get all reading lists (for admin and library views)
+export async function getAllReadingLists(): Promise<ReadingListDetail[]> {
     try {
-        return await prisma.readingList.findMany({
+        const lists = await prisma.readingList.findMany({
             orderBy: { sortOrder: "asc" },
             include: {
-                _count: {
-                    select: {
-                        levels: true
-                    }
-                },
                 levels: {
+                    orderBy: { levelNumber: "asc" },
                     include: {
-                        _count: {
-                            select: { books: true }
+                        books: {
+                            orderBy: { sortOrder: "asc" },
+                            include: {
+                                book: {
+                                    include: {
+                                        author: { select: { id: true, name: true } },
+                                        publisher: { select: { id: true, name: true } }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
+            }
+        })
+
+        return lists.map(list => {
+            let totalBooks = 0
+            const levels = list.levels.map(level => {
+                totalBooks += level.books.length
+
+                return {
+                    id: level.id,
+                    levelNumber: level.levelNumber,
+                    name: level.name,
+                    description: level.description,
+                    books: level.books.map(rb => ({
+                        id: rb.id,
+                        bookId: rb.bookId,
+                        neden: rb.neden,
+                        sortOrder: rb.sortOrder,
+                        book: {
+                            id: rb.book.id,
+                            title: rb.book.title,
+                            coverUrl: rb.book.coverUrl,
+                            pageCount: rb.book.pageCount,
+                            inLibrary: rb.book.inLibrary,
+                            author: rb.book.author,
+                            publisher: rb.book.publisher
+                        }
+                    }))
+                }
+            })
+
+            return {
+                id: list.id,
+                slug: list.slug,
+                name: list.name,
+                description: list.description,
+                coverUrl: list.coverUrl,
+                sortOrder: list.sortOrder,
+                levels,
+                totalBooks
             }
         })
     } catch (error) {

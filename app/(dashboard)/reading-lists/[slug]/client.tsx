@@ -121,7 +121,8 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
         levelId?: string
         name: string
         description: string
-    }>({ open: false, mode: "create", name: "", description: "" })
+        coverUrl: string
+    }>({ open: false, mode: "create", name: "", description: "", coverUrl: "" })
 
     const [bookDialog, setBookDialog] = useState<{
         open: boolean
@@ -132,9 +133,10 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
         title: string
         author: string
         pageCount: string
+        coverUrl: string
         neden: string
         inLibrary: boolean
-    }>({ open: false, mode: "kitapyurdu", levelId: "", url: "", title: "", author: "", pageCount: "", neden: "", inLibrary: false })
+    }>({ open: false, mode: "kitapyurdu", levelId: "", url: "", title: "", author: "", pageCount: "", coverUrl: "", neden: "", inLibrary: false })
 
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean
@@ -147,7 +149,8 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
         open: boolean
         name: string
         description: string
-    }>({ open: false, name: "", description: "" })
+        coverUrl: string
+    }>({ open: false, name: "", description: "", coverUrl: "" })
 
     const toggleLevel = (levelId: string) => {
         setExpandedLevels(prev => {
@@ -220,9 +223,22 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                     name: levelDialog.name,
                     description: levelDialog.description || undefined
                 })
-                if (result.success) {
+                if (result.success && result.level) {
                     toast.success("Seviye eklendi")
-                    router.refresh()
+                    // State'i güncelle - yeni seviyeyi ekle
+                    const newLevel: ReadingListLevel = {
+                        id: result.level.id,
+                        levelNumber: result.level.levelNumber,
+                        name: result.level.name,
+                        description: result.level.description,
+                        books: []
+                    }
+                    setList(prev => ({
+                        ...prev,
+                        levels: [...prev.levels, newLevel]
+                    }))
+                    // Yeni seviyeyi expand et
+                    setExpandedLevels(prev => new Set([...prev, result.level!.id]))
                 } else {
                     toast.error(result.error)
                 }
@@ -233,12 +249,20 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 })
                 if (result.success) {
                     toast.success("Seviye güncellendi")
-                    router.refresh()
+                    // State'i güncelle
+                    setList(prev => ({
+                        ...prev,
+                        levels: prev.levels.map(l =>
+                            l.id === levelDialog.levelId
+                                ? { ...l, name: levelDialog.name, description: levelDialog.description || null }
+                                : l
+                        )
+                    }))
                 } else {
                     toast.error(result.error)
                 }
             }
-            setLevelDialog({ open: false, mode: "create", name: "", description: "" })
+            setLevelDialog({ open: false, mode: "create", name: "", description: "", coverUrl: "" })
         } finally {
             setIsLoading(false)
         }
@@ -251,6 +275,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
             if (bookDialog.mode === "kitapyurdu") {
                 if (!bookDialog.url.trim()) {
                     toast.error("URL gerekli")
+                    setIsLoading(false)
                     return
                 }
                 const result = await addBookFromKitapyurduToLevel({
@@ -259,16 +284,48 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                     neden: bookDialog.neden || undefined,
                     inLibrary: bookDialog.inLibrary
                 })
-                if (result.success) {
+                if (result.success && result.readingListBook) {
                     toast.success(`"${result.bookTitle}" eklendi`)
-                    router.refresh()
+                    // State'i güncelle - yeni kitabı ekle
+                    const newBook: ReadingListBook = {
+                        id: result.readingListBook.id,
+                        bookId: result.readingListBook.bookId,
+                        neden: result.readingListBook.neden,
+                        sortOrder: result.readingListBook.sortOrder,
+                        book: {
+                            id: result.readingListBook.book.id,
+                            title: result.readingListBook.book.title,
+                            coverUrl: result.readingListBook.book.coverUrl,
+                            pageCount: result.readingListBook.book.pageCount,
+                            inLibrary: result.readingListBook.book.inLibrary,
+                            author: result.readingListBook.book.author ? {
+                                id: result.readingListBook.book.author.id,
+                                name: result.readingListBook.book.author.name
+                            } : null,
+                            publisher: result.readingListBook.book.publisher ? {
+                                id: result.readingListBook.book.publisher.id,
+                                name: result.readingListBook.book.publisher.name
+                            } : null
+                        }
+                    }
+                    setList(prev => ({
+                        ...prev,
+                        totalBooks: prev.totalBooks + 1,
+                        levels: prev.levels.map(level =>
+                            level.id === bookDialog.levelId
+                                ? { ...level, books: [...level.books, newBook] }
+                                : level
+                        )
+                    }))
                 } else {
                     toast.error(result.error)
+                    setIsLoading(false)
                     return
                 }
             } else if (bookDialog.mode === "manual") {
                 if (!bookDialog.title.trim() || !bookDialog.author.trim()) {
                     toast.error("Kitap adı ve yazar gerekli")
+                    setIsLoading(false)
                     return
                 }
                 const result = await addBookManuallyToLevel({
@@ -276,14 +333,46 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                     title: bookDialog.title,
                     author: bookDialog.author,
                     pageCount: bookDialog.pageCount ? parseInt(bookDialog.pageCount) : undefined,
+                    coverUrl: bookDialog.coverUrl || undefined,
                     neden: bookDialog.neden || undefined,
                     inLibrary: bookDialog.inLibrary
                 })
-                if (result.success) {
+                if (result.success && result.readingListBook) {
                     toast.success("Kitap eklendi")
-                    router.refresh()
+                    // State'i güncelle - yeni kitabı ekle
+                    const newBook: ReadingListBook = {
+                        id: result.readingListBook.id,
+                        bookId: result.readingListBook.bookId,
+                        neden: result.readingListBook.neden,
+                        sortOrder: result.readingListBook.sortOrder,
+                        book: {
+                            id: result.readingListBook.book.id,
+                            title: result.readingListBook.book.title,
+                            coverUrl: result.readingListBook.book.coverUrl,
+                            pageCount: result.readingListBook.book.pageCount,
+                            inLibrary: result.readingListBook.book.inLibrary,
+                            author: result.readingListBook.book.author ? {
+                                id: result.readingListBook.book.author.id,
+                                name: result.readingListBook.book.author.name
+                            } : null,
+                            publisher: result.readingListBook.book.publisher ? {
+                                id: result.readingListBook.book.publisher.id,
+                                name: result.readingListBook.book.publisher.name
+                            } : null
+                        }
+                    }
+                    setList(prev => ({
+                        ...prev,
+                        totalBooks: prev.totalBooks + 1,
+                        levels: prev.levels.map(level =>
+                            level.id === bookDialog.levelId
+                                ? { ...level, books: [...level.books, newBook] }
+                                : level
+                        )
+                    }))
                 } else {
                     toast.error(result.error)
+                    setIsLoading(false)
                     return
                 }
             } else if (bookDialog.mode === "edit" && bookDialog.bookId) {
@@ -292,13 +381,25 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 })
                 if (result.success) {
                     toast.success("Kitap güncellendi")
-                    router.refresh()
+                    // State'i güncelle
+                    setList(prev => ({
+                        ...prev,
+                        levels: prev.levels.map(level => ({
+                            ...level,
+                            books: level.books.map(book =>
+                                book.id === bookDialog.bookId
+                                    ? { ...book, neden: bookDialog.neden || null }
+                                    : book
+                            )
+                        }))
+                    }))
                 } else {
                     toast.error(result.error)
+                    setIsLoading(false)
                     return
                 }
             }
-            setBookDialog({ open: false, mode: "kitapyurdu", levelId: "", url: "", title: "", author: "", pageCount: "", neden: "", inLibrary: false })
+            setBookDialog({ open: false, mode: "kitapyurdu", levelId: "", url: "", title: "", author: "", pageCount: "", coverUrl: "", neden: "", inLibrary: false })
         } finally {
             setIsLoading(false)
         }
@@ -312,7 +413,14 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 const result = await deleteLevel(deleteDialog.id)
                 if (result.success) {
                     toast.success("Seviye silindi")
-                    router.refresh()
+                    // State'i güncelle
+                    const deletedLevel = list.levels.find(l => l.id === deleteDialog.id)
+                    const deletedBookCount = deletedLevel?.books.length || 0
+                    setList(prev => ({
+                        ...prev,
+                        totalBooks: prev.totalBooks - deletedBookCount,
+                        levels: prev.levels.filter(l => l.id !== deleteDialog.id)
+                    }))
                 } else {
                     toast.error(result.error)
                 }
@@ -320,7 +428,15 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 const result = await removeBookFromLevel(deleteDialog.id)
                 if (result.success) {
                     toast.success("Kitap listeden kaldırıldı")
-                    router.refresh()
+                    // State'i güncelle
+                    setList(prev => ({
+                        ...prev,
+                        totalBooks: prev.totalBooks - 1,
+                        levels: prev.levels.map(level => ({
+                            ...level,
+                            books: level.books.filter(b => b.id !== deleteDialog.id)
+                        }))
+                    }))
                 } else {
                     toast.error(result.error)
                 }
@@ -342,15 +458,22 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
         try {
             const result = await updateReadingList(list.id, {
                 name: listSettingsDialog.name,
-                description: listSettingsDialog.description || undefined
+                description: listSettingsDialog.description || undefined,
+                coverUrl: listSettingsDialog.coverUrl || undefined
             })
             if (result.success) {
                 toast.success("Liste güncellendi")
-                router.refresh()
+                // State'i güncelle
+                setList(prev => ({
+                    ...prev,
+                    name: listSettingsDialog.name,
+                    description: listSettingsDialog.description || null,
+                    coverUrl: listSettingsDialog.coverUrl || null
+                }))
             } else {
                 toast.error(result.error)
             }
-            setListSettingsDialog({ open: false, name: "", description: "" })
+            setListSettingsDialog({ open: false, name: "", description: "", coverUrl: "" })
         } finally {
             setIsLoading(false)
         }
@@ -383,7 +506,8 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                         onClick={() => setListSettingsDialog({
                             open: true,
                             name: list.name,
-                            description: list.description || ""
+                            description: list.description || "",
+                            coverUrl: list.coverUrl || ""
                         })}
                         className="gap-2"
                     >
@@ -418,7 +542,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                     </div>
                     <Button
                         size="sm"
-                        onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "" })}
+                        onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "", coverUrl: "" })}
                         className="gap-2"
                     >
                         <Plus className="h-4 w-4" />
@@ -461,7 +585,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                         <p className="text-sm text-muted-foreground mt-1">İlk seviyeyi ekleyerek başlayın</p>
                         <Button
                             className="mt-4"
-                            onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "" })}
+                            onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "", coverUrl: "" })}
                         >
                             <Plus className="h-4 w-4 mr-2" />
                             Seviye Ekle
@@ -516,6 +640,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                 title: "",
                                                 author: "",
                                                 pageCount: "",
+                                                coverUrl: "",
                                                 neden: "",
                                                 inLibrary: false
                                             })}>
@@ -530,6 +655,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                 title: "",
                                                 author: "",
                                                 pageCount: "",
+                                                coverUrl: "",
                                                 neden: "",
                                                 inLibrary: false
                                             })}>
@@ -542,7 +668,8 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                 mode: "edit",
                                                 levelId: level.id,
                                                 name: level.name,
-                                                description: level.description || ""
+                                                description: level.description || "",
+                                                coverUrl: ""
                                             })}>
                                                 <Pencil className="h-4 w-4 mr-2" />
                                                 Seviyeyi Düzenle
@@ -596,6 +723,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                     title: "",
                                                     author: "",
                                                     pageCount: "",
+                                                    coverUrl: "",
                                                     neden: "",
                                                     inLibrary: false
                                                 })}
@@ -612,8 +740,11 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                     className="p-4 hover:bg-muted/30 transition-colors group"
                                                 >
                                                     <div className="flex items-start gap-4">
-                                                        {/* Book Cover */}
-                                                        <div className="relative flex-shrink-0 h-20 w-14 rounded-md border bg-muted/50 overflow-hidden">
+                                                        {/* Book Cover - Clickable */}
+                                                        <Link
+                                                            href={`/book/${book.book.id}`}
+                                                            className="relative flex-shrink-0 h-20 w-14 rounded-md border bg-muted/50 overflow-hidden hover:ring-2 hover:ring-primary transition-all"
+                                                        >
                                                             {book.book.coverUrl ? (
                                                                 <Image
                                                                     src={book.book.coverUrl}
@@ -632,10 +763,13 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                                     <Library className="h-3 w-3 inline" />
                                                                 </div>
                                                             )}
-                                                        </div>
+                                                        </Link>
 
-                                                        {/* Book Info */}
-                                                        <div className="flex-1 min-w-0">
+                                                        {/* Book Info - Clickable */}
+                                                        <Link
+                                                            href={`/book/${book.book.id}`}
+                                                            className="flex-1 min-w-0 hover:text-primary transition-colors"
+                                                        >
                                                             <div>
                                                                 <h3 className="font-medium">
                                                                     {book.book.title}
@@ -652,7 +786,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                                     {book.neden}
                                                                 </p>
                                                             )}
-                                                        </div>
+                                                        </Link>
 
                                                         {/* Book Actions */}
                                                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -663,6 +797,13 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
                                                                 <DropdownMenuContent align="end">
+                                                                    <DropdownMenuItem asChild>
+                                                                        <Link href={`/book/${book.book.id}`}>
+                                                                            <ExternalLink className="h-4 w-4 mr-2" />
+                                                                            Kitap Detayı
+                                                                        </Link>
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuSeparator />
                                                                     <DropdownMenuItem onClick={() => setBookDialog({
                                                                         open: true,
                                                                         mode: "edit",
@@ -672,6 +813,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                                         title: book.book.title,
                                                                         author: book.book.author?.name || "",
                                                                         pageCount: book.book.pageCount?.toString() || "",
+                                                                        coverUrl: book.book.coverUrl || "",
                                                                         neden: book.neden || "",
                                                                         inLibrary: book.book.inLibrary
                                                                     })}>
@@ -809,6 +951,15 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                         onChange={(e) => setBookDialog({ ...bookDialog, pageCount: e.target.value })}
                                     />
                                 </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="book-cover-url">Kapak URL (Opsiyonel)</Label>
+                                    <Input
+                                        id="book-cover-url"
+                                        placeholder="https://..."
+                                        value={bookDialog.coverUrl}
+                                        onChange={(e) => setBookDialog({ ...bookDialog, coverUrl: e.target.value })}
+                                    />
+                                </div>
                             </>
                         )}
 
@@ -902,6 +1053,15 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                 id="list-description"
                                 value={listSettingsDialog.description}
                                 onChange={(e) => setListSettingsDialog({ ...listSettingsDialog, description: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="list-cover-url">Kapak URL</Label>
+                            <Input
+                                id="list-cover-url"
+                                placeholder="https://..."
+                                value={listSettingsDialog.coverUrl}
+                                onChange={(e) => setListSettingsDialog({ ...listSettingsDialog, coverUrl: e.target.value })}
                             />
                         </div>
                     </div>
