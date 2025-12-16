@@ -43,6 +43,7 @@ import {
     Map,
     Target,
     Sparkles,
+    Library,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -159,6 +160,8 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [showAddAuthorModal, setShowAddAuthorModal] = useState(false)
     const [progressInput, setProgressInput] = useState(book.currentPage.toString())
     const [mounted, setMounted] = useState(false)
+    const [inLibrary, setInLibrary] = useState(book.inLibrary)
+    const [isUpdatingLibrary, setIsUpdatingLibrary] = useState(false)
 
     // AI yorum state'leri - kaydedilmiş yorumları başlangıçta yükle
     const [tortuAiComment, setTortuAiComment] = useState<string | null>(book.tortuAiComment || null)
@@ -307,6 +310,19 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         setShowQuoteDialog(false)
         toast.success("Alıntı eklendi")
         router.refresh()
+    }
+
+    const handleToggleLibrary = async () => {
+        setIsUpdatingLibrary(true)
+        const newValue = !inLibrary
+        const result = await updateBook(book.id, { inLibrary: newValue })
+        if (result.success) {
+            setInLibrary(newValue)
+            toast.success(newValue ? "Kütüphanene eklendi" : "Kütüphaneden çıkarıldı")
+        } else {
+            toast.error("Bir hata oluştu")
+        }
+        setIsUpdatingLibrary(false)
     }
 
     const handleStartReading = async (isRestart = false) => {
@@ -548,9 +564,9 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         </p>
                     </div>
 
-                    {/* Publisher Badge */}
-                    {book.publisher && (
-                        <div className="flex flex-wrap gap-2 md:gap-3 mb-4 justify-center md:justify-start">
+                    {/* Publisher Badge & Library Toggle */}
+                    <div className="flex flex-wrap gap-2 md:gap-3 mb-4 justify-center md:justify-start">
+                        {book.publisher && (
                             <Link
                                 href={`/publisher/${book.publisher.id}`}
                                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted hover:bg-muted/80 text-sm transition-colors"
@@ -558,8 +574,21 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 <Building2 className="h-3.5 w-3.5" />
                                 {book.publisher.name}
                             </Link>
-                        </div>
-                    )}
+                        )}
+                        <button
+                            onClick={handleToggleLibrary}
+                            disabled={isUpdatingLibrary}
+                            className={cn(
+                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm transition-colors",
+                                inLibrary
+                                    ? "bg-green-500/10 text-green-700 hover:bg-green-500/20 border border-green-500/30"
+                                    : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                            )}
+                        >
+                            <Library className="h-3.5 w-3.5" />
+                            {isUpdatingLibrary ? "..." : inLibrary ? "Kütüphanemde" : "Kütüphaneme Ekle"}
+                        </button>
+                    </div>
 
                     {/* Reading Lists & Challenges */}
                     {(book.readingListBooks.length > 0 || book.challengeBooks.length > 0) && (

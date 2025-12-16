@@ -36,6 +36,9 @@ import { cn } from "@/lib/utils"
 import { Book, BookStatus, Author, Publisher } from "@prisma/client"
 import type { ChallengeTimeline } from "@/actions/challenge"
 import type { ReadingListDetail } from "@/actions/reading-lists"
+import { updateBook } from "@/actions/library"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 type BookWithRelations = Book & {
     author: Author | null
@@ -66,10 +69,28 @@ const statusBadgeConfig: Record<BookStatus, { label: string; bgColor: string }> 
     DNF: { label: "Yarım Bırakıldı", bgColor: "bg-red-600" },
 }
 
-export default function LibraryClient({ books, readingLists, challengeTimeline }: LibraryClientProps) {
+export default function LibraryClient({ books: initialBooks, readingLists, challengeTimeline }: LibraryClientProps) {
+    const router = useRouter()
+    const [books, setBooks] = useState(initialBooks)
     const [activeView, setActiveView] = useState<ViewMode>("cards")
     const [activeStatus, setActiveStatus] = useState<StatusFilter>("ALL")
     const [searchQuery, setSearchQuery] = useState("")
+    const [highlightInLibrary, setHighlightInLibrary] = useState(false)
+
+    const handleToggleLibrary = async (bookId: string, currentValue: boolean) => {
+        const newValue = !currentValue
+        // Optimistic update
+        setBooks(prev => prev.map(b => b.id === bookId ? { ...b, inLibrary: newValue } : b))
+
+        const result = await updateBook(bookId, { inLibrary: newValue })
+        if (result.success) {
+            toast.success(newValue ? "Kütüphanene eklendi" : "Kütüphaneden çıkarıldı")
+        } else {
+            // Revert on error
+            setBooks(prev => prev.map(b => b.id === bookId ? { ...b, inLibrary: currentValue } : b))
+            toast.error("Bir hata oluştu")
+        }
+    }
 
     // Calculate stats
     const stats = useMemo(() => {
@@ -111,51 +132,60 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
     }
 
     // Book Card Component with Context Menu
-    const BookCard = ({ book }: { book: BookWithRelations }) => (
-        <ContextMenu>
-            <ContextMenuTrigger asChild>
-                <div className="group relative">
-                    <Link href={`/book/${book.id}`}>
-                        <div className="relative aspect-[2/3] rounded-sm overflow-hidden bg-muted shadow group-hover:shadow-lg transition-shadow">
-                            {book.coverUrl ? (
-                                <Image
-                                    src={book.coverUrl.replace("http:", "https:")}
-                                    alt={book.title}
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <div className="flex items-center justify-center h-full bg-gradient-to-br from-muted to-muted-foreground/20 text-muted-foreground">
-                                    <BookOpen className="h-6 w-6" />
-                                </div>
-                            )}
-                            {/* Status badge */}
+    const BookCard = ({ book }: { book: BookWithRelations }) => {
+        const isGrayscale = highlightInLibrary && !book.inLibrary
+
+        return (
+            <ContextMenu>
+                <ContextMenuTrigger asChild>
+                    <div className="group relative">
+                        <Link href={`/book/${book.id}`}>
                             <div className={cn(
-                                "absolute top-1 right-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-white shadow-sm",
-                                statusBadgeConfig[book.status].bgColor
+                                "relative aspect-[2/3] rounded-sm overflow-hidden bg-muted shadow group-hover:shadow-lg transition-all",
+                                isGrayscale && "grayscale opacity-60"
                             )}>
-                                {statusBadgeConfig[book.status].label}
-                            </div>
-                            {/* Reading progress */}
-                            {book.status === "READING" && book.pageCount && (
-                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                                    <div className="text-white text-[10px] text-center mb-0.5">
-                                        {Math.round((book.currentPage / book.pageCount) * 100)}%
+                                {book.coverUrl ? (
+                                    <Image
+                                        src={book.coverUrl.replace("http:", "https:")}
+                                        alt={book.title}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex items-center justify-center h-full bg-gradient-to-br from-muted to-muted-foreground/20 text-muted-foreground">
+                                        <BookOpen className="h-6 w-6" />
                                     </div>
-                                    <div className="h-0.5 bg-white/30 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-white rounded-full transition-all"
-                                            style={{ width: `${(book.currentPage / book.pageCount) * 100}%` }}
-                                        />
-                                    </div>
+                                )}
+                                {/* Status badge */}
+                                <div className={cn(
+                                    "absolute top-1 right-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-white shadow-sm",
+                                    statusBadgeConfig[book.status].bgColor
+                                )}>
+                                    {statusBadgeConfig[book.status].label}
                                 </div>
-                            )}
-                        </div>
-                        <div className="mt-1.5">
-                            <h3 className="text-xs font-medium line-clamp-1 group-hover:text-primary transition-colors">
-                                {book.title}
-                            </h3>
-                            <p className="text-[11px] text-muted-foreground line-clamp-1">
+                                {/* Reading progress */}
+                                {book.status === "READING" && book.pageCount && (
+                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                                        <div className="text-white text-[10px] text-center mb-0.5">
+                                            {Math.round((book.currentPage / book.pageCount) * 100)}%
+                                        </div>
+                                        <div className="h-0.5 bg-white/30 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-white rounded-full transition-all"
+                                                style={{ width: `${(book.currentPage / book.pageCount) * 100}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="mt-1.5">
+                                <h3 className={cn(
+                                    "text-xs font-medium line-clamp-1 group-hover:text-primary transition-colors",
+                                    isGrayscale && "text-muted-foreground"
+                                )}>
+                                    {book.title}
+                                </h3>
+                                <p className="text-[11px] text-muted-foreground line-clamp-1">
                                 {book.author?.name || "Bilinmiyor"}
                             </p>
                         </div>
@@ -169,9 +199,17 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                         Kitap Detayı
                     </Link>
                 </ContextMenuItem>
+                <ContextMenuItem
+                    onClick={() => handleToggleLibrary(book.id, book.inLibrary)}
+                    className="flex items-center"
+                >
+                    <Library className={cn("h-4 w-4 mr-2", book.inLibrary && "text-green-600")} />
+                    {book.inLibrary ? "Kütüphaneden Çıkar" : "Kütüphaneme Ekle"}
+                </ContextMenuItem>
             </ContextMenuContent>
         </ContextMenu>
-    )
+        )
+    }
 
     // Mini Book Card for Reading Lists and Challenges
     const MiniBookCard = ({ book, showInLibrary = false }: { book: { id: string; title: string; coverUrl: string | null; inLibrary?: boolean; author?: { name: string } | null }, showInLibrary?: boolean }) => (
@@ -469,7 +507,7 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                         </button>
                     </div>
 
-                    {/* Status Filters (only for cards/list views) */}
+                    {/* Status Filters (only for cards view) */}
                     {activeView === "cards" && (
                         <div className="space-y-1">
                             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
@@ -500,6 +538,29 @@ export default function LibraryClient({ books, readingLists, challengeTimeline }
                                     </span>
                                 </button>
                             ))}
+                        </div>
+                    )}
+
+                    {/* Library Highlight Filter (only for cards view) */}
+                    {activeView === "cards" && (
+                        <div className="mt-6">
+                            <button
+                                onClick={() => setHighlightInLibrary(!highlightInLibrary)}
+                                className={cn(
+                                    "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
+                                    highlightInLibrary
+                                        ? "bg-green-500/10 text-green-700 border border-green-500/30"
+                                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                <Library className={cn("h-4 w-4", highlightInLibrary && "text-green-600")} />
+                                Kütüphanemde Vurgula
+                            </button>
+                            {highlightInLibrary && (
+                                <p className="text-[10px] text-muted-foreground mt-1 px-3">
+                                    Kütüphanende olmayan kitaplar siyah-beyaz gösterilir
+                                </p>
+                            )}
                         </div>
                     )}
 
