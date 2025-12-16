@@ -212,42 +212,52 @@ export default function LibraryClient({ books: initialBooks, readingLists, chall
     }
 
     // Mini Book Card for Reading Lists and Challenges
-    const MiniBookCard = ({ book, showInLibrary = false }: { book: { id: string; title: string; coverUrl: string | null; inLibrary?: boolean; author?: { name: string } | null }, showInLibrary?: boolean }) => (
-        <Link
-            href={`/book/${book.id}`}
-            className="group relative block"
-        >
-            <div className="relative aspect-[2/3] rounded-sm overflow-hidden bg-muted shadow group-hover:shadow-lg transition-all group-hover:ring-2 group-hover:ring-primary">
-                {book.coverUrl ? (
-                    <Image
-                        src={book.coverUrl.replace("http:", "https:")}
-                        alt={book.title}
-                        fill
-                        className="object-cover"
-                    />
-                ) : (
-                    <div className="flex items-center justify-center h-full bg-gradient-to-br from-muted to-muted-foreground/20 text-muted-foreground">
-                        <BookOpen className="h-4 w-4" />
-                    </div>
-                )}
-                {showInLibrary && book.inLibrary && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-primary-foreground text-[8px] text-center py-0.5">
-                        <Library className="h-2 w-2 inline" />
-                    </div>
-                )}
-            </div>
-            <div className="mt-1">
-                <h4 className="text-[10px] font-medium line-clamp-2 group-hover:text-primary transition-colors">
-                    {book.title}
-                </h4>
-                {book.author && (
-                    <p className="text-[9px] text-muted-foreground line-clamp-1">
-                        {book.author.name}
-                    </p>
-                )}
-            </div>
-        </Link>
-    )
+    const MiniBookCard = ({ book, showInLibrary = false }: { book: { id: string; title: string; coverUrl: string | null; inLibrary?: boolean; author?: { name: string } | null }, showInLibrary?: boolean }) => {
+        const isGrayscale = highlightInLibrary && !book.inLibrary
+
+        return (
+            <Link
+                href={`/book/${book.id}`}
+                className="group relative block"
+            >
+                <div className={cn(
+                    "relative aspect-[2/3] rounded-sm overflow-hidden bg-muted shadow group-hover:shadow-lg transition-all group-hover:ring-2 group-hover:ring-primary",
+                    isGrayscale && "grayscale opacity-60"
+                )}>
+                    {book.coverUrl ? (
+                        <Image
+                            src={book.coverUrl.replace("http:", "https:")}
+                            alt={book.title}
+                            fill
+                            className="object-cover"
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center h-full bg-gradient-to-br from-muted to-muted-foreground/20 text-muted-foreground">
+                            <BookOpen className="h-4 w-4" />
+                        </div>
+                    )}
+                    {showInLibrary && book.inLibrary && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-primary-foreground text-[8px] text-center py-0.5">
+                            <Library className="h-2 w-2 inline" />
+                        </div>
+                    )}
+                </div>
+                <div className="mt-1">
+                    <h4 className={cn(
+                        "text-[10px] font-medium line-clamp-2 group-hover:text-primary transition-colors",
+                        isGrayscale && "text-muted-foreground"
+                    )}>
+                        {book.title}
+                    </h4>
+                    {book.author && (
+                        <p className="text-[9px] text-muted-foreground line-clamp-1">
+                            {book.author.name}
+                        </p>
+                    )}
+                </div>
+            </Link>
+        )
+    }
 
     // Reading Lists View
     const ReadingListsView = () => (
@@ -509,7 +519,7 @@ export default function LibraryClient({ books: initialBooks, readingLists, chall
 
                     {/* Status Filters (only for cards view) */}
                     {activeView === "cards" && (
-                        <div className="space-y-1">
+                        <div className="space-y-1 mb-6">
                             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                                 Durum
                             </h3>
@@ -541,28 +551,29 @@ export default function LibraryClient({ books: initialBooks, readingLists, chall
                         </div>
                     )}
 
-                    {/* Library Highlight Filter (only for cards view) */}
-                    {activeView === "cards" && (
-                        <div className="mt-6">
-                            <button
-                                onClick={() => setHighlightInLibrary(!highlightInLibrary)}
-                                className={cn(
-                                    "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
-                                    highlightInLibrary
-                                        ? "bg-green-500/10 text-green-700 border border-green-500/30"
-                                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <Library className={cn("h-4 w-4", highlightInLibrary && "text-green-600")} />
-                                Kütüphanemde Vurgula
-                            </button>
-                            {highlightInLibrary && (
-                                <p className="text-[10px] text-muted-foreground mt-1 px-3">
-                                    Kütüphanende olmayan kitaplar siyah-beyaz gösterilir
-                                </p>
+                    {/* Library Highlight Filter (all views) */}
+                    <div className="space-y-1">
+                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                            Kütüphane
+                        </h3>
+                        <button
+                            onClick={() => setHighlightInLibrary(!highlightInLibrary)}
+                            className={cn(
+                                "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
+                                highlightInLibrary
+                                    ? "bg-green-500/10 text-green-700 border border-green-500/30"
+                                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
                             )}
-                        </div>
-                    )}
+                        >
+                            <Library className={cn("h-4 w-4", highlightInLibrary && "text-green-600")} />
+                            Kütüphanemde Vurgula
+                        </button>
+                        {highlightInLibrary && (
+                            <p className="text-[10px] text-muted-foreground mt-1 px-3">
+                                Kütüphanende olmayan kitaplar siyah-beyaz gösterilir
+                            </p>
+                        )}
+                    </div>
 
                     {/* Quick Stats */}
                     <div className="mt-8 p-4 bg-muted/50 rounded-lg">
