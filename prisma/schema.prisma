@@ -178,13 +178,11 @@ model BookRating {
   baskiTasarim    Int      // Baskı/Tasarım: Kapak, kağıt kalitesi, punto, sayfa düzeni
 
   // Genel (1-10)
+  tavsiyeEderim   Int      @default(5) // Tavsiye Eder misin?: Başkalarına önerir misin? (1-10)
   genelPuan       Int      // Genel Puan: Tüm değerlendirmelerin özeti
 
   // Hesaplanan ortalama (otomatik)
-  ortalamaPuan    Float    // 9 kategorinin ortalaması
-
-  // Ek bilgiler
-  tapivsiyeEderim Boolean  @default(false) // Tavsiye eder misin?
+  ortalamaPuan    Float    // 10 kategorinin ortalaması
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

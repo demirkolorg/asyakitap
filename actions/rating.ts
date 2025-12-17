@@ -18,8 +18,8 @@ export interface BookRatingData {
     karakterAnlatim: number
     ozgunluk: number
     baskiTasarim: number
+    tavsiyeEderim: number
     genelPuan: number
-    tapivsiyeEderim: boolean
 }
 
 export interface BookRatingWithMeta extends BookRatingData {
@@ -41,6 +41,7 @@ function calculateAverage(data: BookRatingData): number {
         data.karakterAnlatim,
         data.ozgunluk,
         data.baskiTasarim,
+        data.tavsiyeEderim,
         data.genelPuan
     ]
     const sum = values.reduce((a, b) => a + b, 0)
@@ -80,6 +81,7 @@ export async function saveBookRating(bookId: string, data: BookRatingData) {
         data.karakterAnlatim,
         data.ozgunluk,
         data.baskiTasarim,
+        data.tavsiyeEderim,
         data.genelPuan
     ]
 

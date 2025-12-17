@@ -49,6 +49,12 @@ export const RATING_CATEGORIES = [
         group: "Teknik & Üretim"
     },
     {
+        key: "tavsiyeEderim",
+        label: "Tavsiye Eder misin?",
+        description: "Bu kitabı başkalarına önerir misin?",
+        group: "Genel"
+    },
+    {
         key: "genelPuan",
         label: "Genel Puan",
         description: "Tüm değerlendirmelerin özeti, kitabın genel değeri",

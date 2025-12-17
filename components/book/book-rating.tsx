@@ -4,14 +4,12 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import {
     Star,
     Loader2,
     Save,
     Trash2,
-    ThumbsUp,
     ChevronDown,
     ChevronUp,
 } from "lucide-react"
@@ -51,8 +49,8 @@ export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookR
         karakterAnlatim: rating?.karakterAnlatim ?? 5,
         ozgunluk: rating?.ozgunluk ?? 5,
         baskiTasarim: rating?.baskiTasarim ?? 5,
+        tavsiyeEderim: rating?.tavsiyeEderim ?? 5,
         genelPuan: rating?.genelPuan ?? 5,
-        tapivsiyeEderim: rating?.tapivsiyeEderim ?? false,
     })
 
     const [currentRating, setCurrentRating] = useState<BookRatingType | null>(rating)
@@ -77,6 +75,7 @@ export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookR
             formData.karakterAnlatim,
             formData.ozgunluk,
             formData.baskiTasarim,
+            formData.tavsiyeEderim,
             formData.genelPuan
         ]
         return (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1)
@@ -116,8 +115,8 @@ export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookR
                     karakterAnlatim: 5,
                     ozgunluk: 5,
                     baskiTasarim: 5,
+                    tavsiyeEderim: 5,
                     genelPuan: 5,
-                    tapivsiyeEderim: false,
                 })
             } else {
                 toast.error(result.error)
@@ -129,7 +128,7 @@ export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookR
         }
     }
 
-    const updateRating = (key: keyof BookRatingData, value: number | boolean) => {
+    const updateRating = (key: keyof BookRatingData, value: number) => {
         setFormData(prev => ({ ...prev, [key]: value }))
     }
 
@@ -187,21 +186,6 @@ export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookR
                     </div>
                 </div>
             ))}
-
-            {/* Tavsiye */}
-            <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                <div className="flex items-center gap-3">
-                    <ThumbsUp className={cn("h-5 w-5", formData.tapivsiyeEderim ? "text-green-500" : "text-muted-foreground")} />
-                    <div>
-                        <Label className="text-sm font-medium">Tavsiye Eder misin?</Label>
-                        <p className="text-xs text-muted-foreground">Bu kitabı başkalarına önerir misin?</p>
-                    </div>
-                </div>
-                <Switch
-                    checked={formData.tapivsiyeEderim}
-                    onCheckedChange={(checked) => updateRating("tapivsiyeEderim", checked)}
-                />
-            </div>
 
             {/* Ortalama ve Kaydet */}
             <div className="flex items-center justify-between pt-4 border-t">
