@@ -44,6 +44,7 @@ import {
     Target,
     Sparkles,
     Library,
+    Star,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -140,7 +141,7 @@ interface BookDetailClientProps {
 
 export default function BookDetailClient({ book }: BookDetailClientProps) {
     const router = useRouter()
-    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "history">("tortu")
+    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "rating" | "history">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
     const [isSavingImza, setIsSavingImza] = useState(false)
@@ -819,15 +820,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         </div>
                     </div>
 
-                    {/* Book Rating - Sadece okunan kitaplar için */}
-                    <div className="mt-6">
-                        <BookRatingComponent
-                            bookId={book.id}
-                            rating={book.rating}
-                            isCompleted={currentStatus === "COMPLETED"}
-                        />
-                    </div>
-
                     {/* Tabs/Sections */}
                     <div className="mt-4 md:mt-6">
                         <div className="flex gap-0.5 md:gap-1 border-b overflow-x-auto">
@@ -867,6 +859,20 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 <Quote className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
                                 Alıntı ({book.quotes.length})
                             </button>
+                            {currentStatus === "COMPLETED" && (
+                                <button
+                                    onClick={() => setActiveSection("rating")}
+                                    className={cn(
+                                        "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
+                                        activeSection === "rating"
+                                            ? "border-primary text-primary"
+                                            : "border-transparent text-muted-foreground hover:text-foreground"
+                                    )}
+                                >
+                                    <Star className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
+                                    Puanlama
+                                </button>
+                            )}
                             <button
                                 onClick={() => setActiveSection("history")}
                                 className={cn(
@@ -1071,6 +1077,16 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         </div>
                                     )}
                                 </div>
+                            )}
+
+                            {/* Rating Section - Sadece tamamlanan kitaplar için */}
+                            {activeSection === "rating" && currentStatus === "COMPLETED" && (
+                                <BookRatingComponent
+                                    bookId={book.id}
+                                    rating={book.rating}
+                                    isCompleted={true}
+                                    inTab={true}
+                                />
                             )}
 
                             {/* History Section */}

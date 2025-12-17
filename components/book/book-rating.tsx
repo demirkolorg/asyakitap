@@ -25,6 +25,7 @@ interface BookRatingProps {
     bookId: string
     rating: BookRatingType | null
     isCompleted: boolean
+    inTab?: boolean // Tab içinde gösteriliyorsa card wrapper olmadan
 }
 
 // Gruplar için ikonlar ve renkler
@@ -35,8 +36,8 @@ const GROUP_CONFIG: Record<string, { icon: string; color: string }> = {
     "Genel": { icon: "⭐", color: "text-yellow-500" },
 }
 
-export function BookRating({ bookId, rating, isCompleted }: BookRatingProps) {
-    const [isExpanded, setIsExpanded] = useState(!!rating)
+export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookRatingProps) {
+    const [isExpanded, setIsExpanded] = useState(inTab || !!rating)
     const [isSaving, setIsSaving] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
 
@@ -137,6 +138,130 @@ export function BookRating({ bookId, rating, isCompleted }: BookRatingProps) {
         return null
     }
 
+    // İçerik kısmı - hem tab içi hem card için ortak
+    const ratingContent = (
+        <div className="space-y-6">
+            {/* Grupları render et */}
+            {Object.entries(groupedCategories).map(([group, categories]) => (
+                <div key={group} className="space-y-4">
+                    <h3 className={cn("text-sm font-semibold flex items-center gap-2", GROUP_CONFIG[group]?.color)}>
+                        <span>{GROUP_CONFIG[group]?.icon}</span>
+                        {group}
+                    </h3>
+                    <div className="space-y-4 pl-4 border-l-2 border-muted">
+                        {categories.map((category) => (
+                            <div key={category.key} className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <Label className="text-sm font-medium">{category.label}</Label>
+                                        <p className="text-xs text-muted-foreground">{category.description}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-lg font-bold w-8 text-right">
+                                            {formData[category.key as keyof BookRatingData] as number}
+                                        </span>
+                                    </div>
+                                </div>
+                                <Slider
+                                    value={[formData[category.key as keyof BookRatingData] as number]}
+                                    onValueChange={([value]) => updateRating(category.key as keyof BookRatingData, value)}
+                                    min={1}
+                                    max={10}
+                                    step={1}
+                                    className="w-full"
+                                />
+                                <div className="flex justify-between text-[10px] text-muted-foreground">
+                                    <span>1</span>
+                                    <span>2</span>
+                                    <span>3</span>
+                                    <span>4</span>
+                                    <span>5</span>
+                                    <span>6</span>
+                                    <span>7</span>
+                                    <span>8</span>
+                                    <span>9</span>
+                                    <span>10</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+
+            {/* Tavsiye */}
+            <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-3">
+                    <ThumbsUp className={cn("h-5 w-5", formData.tapivsiyeEderim ? "text-green-500" : "text-muted-foreground")} />
+                    <div>
+                        <Label className="text-sm font-medium">Tavsiye Eder misin?</Label>
+                        <p className="text-xs text-muted-foreground">Bu kitabı başkalarına önerir misin?</p>
+                    </div>
+                </div>
+                <Switch
+                    checked={formData.tapivsiyeEderim}
+                    onCheckedChange={(checked) => updateRating("tapivsiyeEderim", checked)}
+                />
+            </div>
+
+            {/* Ortalama ve Kaydet */}
+            <div className="flex items-center justify-between pt-4 border-t">
+                <div className="flex items-center gap-3">
+                    <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Ortalama</p>
+                        <p className="text-2xl font-bold text-yellow-500">{calculateAverage()}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    {currentRating && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleDelete}
+                            disabled={isDeleting || isSaving}
+                            className="text-destructive hover:text-destructive"
+                        >
+                            {isDeleting ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <Trash2 className="h-4 w-4" />
+                            )}
+                        </Button>
+                    )}
+                    <Button
+                        onClick={handleSave}
+                        disabled={isSaving || isDeleting}
+                    >
+                        {isSaving ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                            <Save className="h-4 w-4 mr-2" />
+                        )}
+                        {currentRating ? "Güncelle" : "Kaydet"}
+                    </Button>
+                </div>
+            </div>
+
+            {/* Son güncelleme */}
+            {currentRating && (
+                <p className="text-xs text-muted-foreground text-right">
+                    Son güncelleme: {new Date(currentRating.updatedAt).toLocaleDateString("tr-TR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    })}
+                </p>
+            )}
+        </div>
+    )
+
+    // Tab içinde ise direkt içeriği göster
+    if (inTab) {
+        return ratingContent
+    }
+
+    // Standalone card olarak göster
     return (
         <Card className="border-yellow-500/20">
             <CardHeader
@@ -162,119 +287,8 @@ export function BookRating({ bookId, rating, isCompleted }: BookRatingProps) {
             </CardHeader>
 
             {isExpanded && (
-                <CardContent className="space-y-6">
-                    {/* Grupları render et */}
-                    {Object.entries(groupedCategories).map(([group, categories]) => (
-                        <div key={group} className="space-y-4">
-                            <h3 className={cn("text-sm font-semibold flex items-center gap-2", GROUP_CONFIG[group]?.color)}>
-                                <span>{GROUP_CONFIG[group]?.icon}</span>
-                                {group}
-                            </h3>
-                            <div className="space-y-4 pl-4 border-l-2 border-muted">
-                                {categories.map((category) => (
-                                    <div key={category.key} className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <Label className="text-sm font-medium">{category.label}</Label>
-                                                <p className="text-xs text-muted-foreground">{category.description}</p>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-lg font-bold w-8 text-right">
-                                                    {formData[category.key as keyof BookRatingData] as number}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <Slider
-                                            value={[formData[category.key as keyof BookRatingData] as number]}
-                                            onValueChange={([value]) => updateRating(category.key as keyof BookRatingData, value)}
-                                            min={1}
-                                            max={10}
-                                            step={1}
-                                            className="w-full"
-                                        />
-                                        <div className="flex justify-between text-[10px] text-muted-foreground">
-                                            <span>1</span>
-                                            <span>2</span>
-                                            <span>3</span>
-                                            <span>4</span>
-                                            <span>5</span>
-                                            <span>6</span>
-                                            <span>7</span>
-                                            <span>8</span>
-                                            <span>9</span>
-                                            <span>10</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-
-                    {/* Tavsiye */}
-                    <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                        <div className="flex items-center gap-3">
-                            <ThumbsUp className={cn("h-5 w-5", formData.tapivsiyeEderim ? "text-green-500" : "text-muted-foreground")} />
-                            <div>
-                                <Label className="text-sm font-medium">Tavsiye Eder misin?</Label>
-                                <p className="text-xs text-muted-foreground">Bu kitabı başkalarına önerir misin?</p>
-                            </div>
-                        </div>
-                        <Switch
-                            checked={formData.tapivsiyeEderim}
-                            onCheckedChange={(checked) => updateRating("tapivsiyeEderim", checked)}
-                        />
-                    </div>
-
-                    {/* Ortalama ve Kaydet */}
-                    <div className="flex items-center justify-between pt-4 border-t">
-                        <div className="flex items-center gap-3">
-                            <div className="text-center">
-                                <p className="text-xs text-muted-foreground">Ortalama</p>
-                                <p className="text-2xl font-bold text-yellow-500">{calculateAverage()}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {currentRating && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleDelete}
-                                    disabled={isDeleting || isSaving}
-                                    className="text-destructive hover:text-destructive"
-                                >
-                                    {isDeleting ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <Trash2 className="h-4 w-4" />
-                                    )}
-                                </Button>
-                            )}
-                            <Button
-                                onClick={handleSave}
-                                disabled={isSaving || isDeleting}
-                            >
-                                {isSaving ? (
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                ) : (
-                                    <Save className="h-4 w-4 mr-2" />
-                                )}
-                                {currentRating ? "Güncelle" : "Kaydet"}
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* Son güncelleme */}
-                    {currentRating && (
-                        <p className="text-xs text-muted-foreground text-right">
-                            Son güncelleme: {new Date(currentRating.updatedAt).toLocaleDateString("tr-TR", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit"
-                            })}
-                        </p>
-                    )}
+                <CardContent>
+                    {ratingContent}
                 </CardContent>
             )}
         </Card>
