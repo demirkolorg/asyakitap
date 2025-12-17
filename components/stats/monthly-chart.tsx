@@ -18,17 +18,20 @@ interface MonthlyChartProps {
 const MONTHS_TO_SHOW = 12
 
 export function MonthlyChart({ data }: MonthlyChartProps) {
+    // data array değilse veya boşsa boş array kullan
+    const safeData = Array.isArray(data) ? data : []
+
     // Varsayılan olarak en son 12 ayı göster (data'nın sonundan başla)
-    const [startIndex, setStartIndex] = useState(() => Math.max(0, data.length - MONTHS_TO_SHOW))
+    const [startIndex, setStartIndex] = useState(() => Math.max(0, safeData.length - MONTHS_TO_SHOW))
 
     // Görüntülenecek aylar
     const visibleData = useMemo(() => {
-        return data.slice(startIndex, startIndex + MONTHS_TO_SHOW)
-    }, [data, startIndex])
+        return safeData.slice(startIndex, startIndex + MONTHS_TO_SHOW)
+    }, [safeData, startIndex])
 
     // Navigasyon durumları
     const canGoBack = startIndex > 0
-    const canGoForward = startIndex + MONTHS_TO_SHOW < data.length
+    const canGoForward = startIndex + MONTHS_TO_SHOW < safeData.length
 
     // Görüntülenen dönem aralığı
     const periodText = useMemo(() => {
@@ -46,10 +49,31 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
     }
 
     const handleForward = () => {
-        setStartIndex(prev => Math.min(data.length - MONTHS_TO_SHOW, prev + MONTHS_TO_SHOW))
+        setStartIndex(prev => Math.min(safeData.length - MONTHS_TO_SHOW, prev + MONTHS_TO_SHOW))
     }
 
-    const maxBooks = Math.max(...visibleData.map(d => d.booksCompleted), 1)
+    const maxBooks = visibleData.length > 0
+        ? Math.max(...visibleData.map(d => d.booksCompleted), 1)
+        : 1
+
+    // Veri yoksa mesaj göster
+    if (safeData.length === 0) {
+        return (
+            <Card>
+                <CardHeader className="pb-2">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                        <BarChart3 className="h-5 w-5" />
+                        Aylık Okuma Grafiği
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-center h-48 text-muted-foreground">
+                        Henüz veri yok
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
 
     return (
         <Card>
