@@ -190,7 +190,15 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
 
                                                         {/* Bilgi */}
                                                         <div className="flex-1 min-w-0">
-                                                            <h4 className="font-semibold text-sm line-clamp-1">{mainBook.book.title}</h4>
+                                                            <div className="flex items-center gap-2">
+                                                                <h4 className="font-semibold text-sm line-clamp-1">{mainBook.book.title}</h4>
+                                                                {mainBook.book.status === "COMPLETED" && (
+                                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500 text-white">Okudum</span>
+                                                                )}
+                                                                {mainBook.book.status === "READING" && (
+                                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500 text-white">Okunuyor</span>
+                                                                )}
+                                                            </div>
                                                             <p className="text-xs text-muted-foreground">{mainBook.book.author?.name || "Bilinmeyen Yazar"}</p>
                                                             {mainBook.reason && (
                                                                 <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
@@ -241,7 +249,15 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                                                         </div>
 
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-medium line-clamp-1">{book.book.title}</p>
+                                                            <div className="flex items-center gap-2">
+                                                                <p className="text-sm font-medium line-clamp-1">{book.book.title}</p>
+                                                                {book.book.status === "COMPLETED" && (
+                                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500 text-white">Okudum</span>
+                                                                )}
+                                                                {book.book.status === "READING" && (
+                                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500 text-white">Okunuyor</span>
+                                                                )}
+                                                            </div>
                                                             <p className="text-xs text-muted-foreground">{book.book.author?.name || "Bilinmeyen Yazar"}</p>
                                                             {book.reason && (
                                                                 <p className="text-xs text-muted-foreground mt-1 line-clamp-1">

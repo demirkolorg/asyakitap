@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath, revalidateTag } from "next/cache"
-import { ChallengeBookStatus, ChallengeBookRole } from "@prisma/client"
+import { ChallengeBookStatus, ChallengeBookRole, BookStatus } from "@prisma/client"
 import { CACHE_TAGS } from "@/lib/cache"
 import { scrapeKitapyurdu } from "./kitapyurdu"
 
@@ -23,6 +23,7 @@ export interface ChallengeBook {
         coverUrl: string | null
         pageCount: number | null
         inLibrary: boolean
+        status: BookStatus
         author: { id: string; name: string } | null
         publisher: { id: string; name: string } | null
     }
@@ -144,7 +145,13 @@ export async function getChallengeDetail(year: number): Promise<ChallengeDetail 
                             ],
                             include: {
                                 book: {
-                                    include: {
+                                    select: {
+                                        id: true,
+                                        title: true,
+                                        coverUrl: true,
+                                        pageCount: true,
+                                        inLibrary: true,
+                                        status: true,
                                         author: { select: { id: true, name: true } },
                                         publisher: { select: { id: true, name: true } }
                                     }
@@ -176,6 +183,7 @@ export async function getChallengeDetail(year: number): Promise<ChallengeDetail 
                     coverUrl: cb.book.coverUrl,
                     pageCount: cb.book.pageCount,
                     inLibrary: cb.book.inLibrary,
+                    status: cb.book.status,
                     author: cb.book.author,
                     publisher: cb.book.publisher
                 }
@@ -280,6 +288,7 @@ export async function getChallengeWithProgress(year: number): Promise<ChallengeD
                         coverUrl: cb.book.coverUrl,
                         pageCount: cb.book.pageCount,
                         inLibrary: cb.book.inLibrary,
+                        status: cb.book.status,
                         author: cb.book.author,
                         publisher: cb.book.publisher
                     },
@@ -1030,7 +1039,13 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                             ],
                             include: {
                                 book: {
-                                    include: {
+                                    select: {
+                                        id: true,
+                                        title: true,
+                                        coverUrl: true,
+                                        pageCount: true,
+                                        inLibrary: true,
+                                        status: true,
                                         author: { select: { id: true, name: true } },
                                         publisher: { select: { id: true, name: true } }
                                     }
@@ -1093,6 +1108,7 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                             coverUrl: cb.book.coverUrl,
                             pageCount: cb.book.pageCount,
                             inLibrary: cb.book.inLibrary,
+                            status: cb.book.status,
                             author: cb.book.author,
                             publisher: cb.book.publisher
                         },

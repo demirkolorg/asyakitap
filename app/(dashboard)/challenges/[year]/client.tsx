@@ -344,6 +344,7 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                         coverUrl: result.challengeBook.book.coverUrl,
                         pageCount: result.challengeBook.book.pageCount,
                         inLibrary: result.challengeBook.book.inLibrary,
+                        status: result.challengeBook.book.status,
                         author: result.challengeBook.book.author ? {
                             id: result.challengeBook.book.author.id,
                             name: result.challengeBook.book.author.name
@@ -412,6 +413,7 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                         coverUrl: result.challengeBook.book.coverUrl,
                         pageCount: result.challengeBook.book.pageCount,
                         inLibrary: result.challengeBook.book.inLibrary,
+                        status: result.challengeBook.book.status,
                         author: result.challengeBook.book.author ? {
                             id: result.challengeBook.book.author.id,
                             name: result.challengeBook.book.author.name
