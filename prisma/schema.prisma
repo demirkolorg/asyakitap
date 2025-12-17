@@ -80,6 +80,7 @@ model Book {
   aiComments           AIComment[]           // AI yorumları
   readingListBooks     ReadingListBook[]     // Bu kitabın bulunduğu okuma listeleri
   challengeBooks       ChallengeBook[]       // Bu kitabın bulunduğu challenge'lar
+  rating               BookRating?           // Kitap puanlaması (1-1 ilişki)
   startDate            DateTime?
   endDate              DateTime?
   createdAt            DateTime              @default(now())
@@ -151,6 +152,45 @@ model Quote {
 
   @@index([bookId])
   @@index([bookId, createdAt]) // Sıralı alıntılar için
+}
+
+// ==========================================
+// Kitap Puanlama Sistemi
+// ==========================================
+
+model BookRating {
+  id              String   @id @default(cuid())
+  bookId          String   @unique // Her kitapta sadece bir puanlama olabilir
+  book            Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  // İçerik & Hikaye (1-10)
+  konuFikir       Int      // Konu/Fikir: Ana tema, mesaj veya fikrin özgünlüğü ve derinliği
+  akicilik        Int      // Akıcılık: Okuma hızı, sayfa çevirme isteği
+  derinlik        Int      // Derinlik: Konunun işlenme seviyesi, detay zenginliği
+  etki            Int      // Etki: Kitabın bıraktığı iz, düşündürme gücü
+
+  // Yazarlık & Üslup (1-10)
+  dilUslup        Int      // Dil & Üslup: Yazarın anlatım gücü, kelime seçimi
+  karakterAnlatim Int      // Karakter/Anlatım: Karakter derinliği veya anlatım tutarlılığı
+  ozgunluk        Int      // Özgünlük: Yazarın kendine has sesi
+
+  // Teknik & Üretim (1-10)
+  baskiTasarim    Int      // Baskı/Tasarım: Kapak, kağıt kalitesi, punto, sayfa düzeni
+
+  // Genel (1-10)
+  genelPuan       Int      // Genel Puan: Tüm değerlendirmelerin özeti
+
+  // Hesaplanan ortalama (otomatik)
+  ortalamaPuan    Float    // 9 kategorinin ortalaması
+
+  // Ek bilgiler
+  tapivsiyeEderim Boolean  @default(false) // Tavsiye eder misin?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([bookId])
+  @@index([ortalamaPuan])
 }
 
 // ==========================================

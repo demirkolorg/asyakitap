@@ -160,7 +160,8 @@ export async function getBook(id: string) {
                             }
                         }
                     }
-                }
+                },
+                rating: true
             }
         })
         return book

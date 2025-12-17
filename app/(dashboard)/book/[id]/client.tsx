@@ -86,7 +86,8 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
 import { cn } from "@/lib/utils"
 
 // Types
-import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, ChallengeBookRole } from "@prisma/client"
+import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, ChallengeBookRole, BookRating } from "@prisma/client"
+import { BookRating as BookRatingComponent } from "@/components/book/book-rating"
 
 interface ReadingListBookInfo {
     id: string
@@ -133,6 +134,7 @@ interface BookDetailClientProps {
         publisher: Publisher | null
         readingListBooks: ReadingListBookInfo[]
         challengeBooks: ChallengeBookInfo[]
+        rating: BookRating | null
     }
 }
 
@@ -815,6 +817,15 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 <strong>{book.quotes.length}</strong> alıntı
                             </span>
                         </div>
+                    </div>
+
+                    {/* Book Rating - Sadece okunan kitaplar için */}
+                    <div className="mt-6">
+                        <BookRatingComponent
+                            bookId={book.id}
+                            rating={book.rating}
+                            isCompleted={currentStatus === "COMPLETED"}
+                        />
                     </div>
 
                     {/* Tabs/Sections */}
