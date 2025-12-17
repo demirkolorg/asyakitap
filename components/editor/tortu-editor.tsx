@@ -54,6 +54,9 @@ export default function TortuEditor({ initialContent, onChange }: TortuEditorPro
                 heading: {
                     levels: [1, 2, 3],
                 },
+                // Duplicate extension hatası için devre dışı bırak
+                link: false,
+                underline: false,
             }),
             Placeholder.configure({
                 placeholder: "Tortu yazmaya başla... (Kitaptan aklında kalanlar, düşünceler, notlar)",

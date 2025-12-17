@@ -44,7 +44,9 @@
       "Bash(xargs ls:*)",
       "Bash(git grep:*)",
       "Bash(git log:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(npx prisma:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
