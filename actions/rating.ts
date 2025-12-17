@@ -1,5 +1,6 @@
 "use server"
 
+// Rating actions - v2
 import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath, revalidateTag } from "next/cache"
