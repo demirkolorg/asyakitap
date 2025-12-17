@@ -54,9 +54,11 @@ type ChallengeWidgetProps = {
             monthName: string
             theme: string
             themeIcon: string | null
-            mainBook: MainBook | null
+            mainBooks: MainBook[] // Çoklu ana kitap desteği
             bonusBooks: BonusBook[]
-            isMainCompleted: boolean
+            mainCompletedCount: number
+            mainTotalCount: number
+            isAllMainCompleted: boolean
         }
     } | null
 }
@@ -84,9 +86,8 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
     }
 
     // İlerleme sadece ana hedef kitaplarına göre hesaplanır (bonus kitaplar sayılmaz)
-    const mainCompleted = currentMonth.mainBook?.bookStatus === "COMPLETED" ? 1 : 0
-    const totalMainBooks = currentMonth.mainBook ? 1 : 0
-    const progressPercentage = totalMainBooks > 0 ? Math.round((mainCompleted / totalMainBooks) * 100) : 0
+    const { mainCompletedCount, mainTotalCount, isAllMainCompleted } = currentMonth
+    const progressPercentage = mainTotalCount > 0 ? Math.round((mainCompletedCount / mainTotalCount) * 100) : 0
 
     return (
         <Card className={cn(
@@ -144,83 +145,87 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                         {/* İlerleme çubuğu - sadece ana hedefler */}
                         <div className="space-y-1">
                             <div className="flex justify-between text-xs">
-                                <span className="text-muted-foreground">Ana Hedef</span>
+                                <span className="text-muted-foreground">Ana Hedefler</span>
                                 <span className="font-medium">
-                                    {mainCompleted}/{totalMainBooks} {progressPercentage === 100 ? "✓" : ""}
+                                    {mainCompletedCount}/{mainTotalCount} {isAllMainCompleted ? "✓" : ""}
                                 </span>
                             </div>
                             <Progress value={progressPercentage} className="h-2" />
                         </div>
 
-                        {/* Ana Kitap */}
-                        {currentMonth.mainBook && (
-                            <div className="relative">
-                                <div className="absolute -top-2 left-2 z-10">
-                                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                        ANA HEDEF
-                                    </span>
-                                </div>
-                                <div className={cn(
-                                    "flex gap-3 p-3 rounded-lg border-2 transition-all",
-                                    currentMonth.mainBook.bookStatus === "COMPLETED"
-                                        ? "border-green-500 bg-green-50 dark:bg-green-950/20"
-                                        : "border-primary/30 bg-background"
-                                )}>
-                                    {/* Kapak */}
-                                    <div className="relative h-24 w-16 flex-shrink-0 rounded overflow-hidden bg-muted">
-                                        {currentMonth.mainBook.coverUrl ? (
-                                            <Image
-                                                src={currentMonth.mainBook.coverUrl}
-                                                alt={currentMonth.mainBook.title}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        ) : (
-                                            <div className="flex items-center justify-center h-full">
-                                                <BookOpen className="h-6 w-6 text-muted-foreground" />
+                        {/* Ana Kitaplar */}
+                        {currentMonth.mainBooks.length > 0 && (
+                            <div className="space-y-3">
+                                {currentMonth.mainBooks.map((mainBook, index) => (
+                                    <div key={mainBook.id} className="relative">
+                                        <div className="absolute -top-2 left-2 z-10">
+                                            <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                                ANA HEDEF {currentMonth.mainBooks.length > 1 ? index + 1 : ""}
+                                            </span>
+                                        </div>
+                                        <div className={cn(
+                                            "flex gap-3 p-3 rounded-lg border-2 transition-all",
+                                            mainBook.bookStatus === "COMPLETED"
+                                                ? "border-green-500 bg-green-50 dark:bg-green-950/20"
+                                                : "border-primary/30 bg-background"
+                                        )}>
+                                            {/* Kapak */}
+                                            <div className="relative h-24 w-16 flex-shrink-0 rounded overflow-hidden bg-muted">
+                                                {mainBook.coverUrl ? (
+                                                    <Image
+                                                        src={mainBook.coverUrl}
+                                                        alt={mainBook.title}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="flex items-center justify-center h-full">
+                                                        <BookOpen className="h-6 w-6 text-muted-foreground" />
+                                                    </div>
+                                                )}
+                                                {mainBook.bookStatus === "COMPLETED" && (
+                                                    <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                                                        <CheckCircle2 className="h-8 w-8 text-green-600" />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                        {currentMonth.mainBook.bookStatus === "COMPLETED" && (
-                                            <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                                                <CheckCircle2 className="h-8 w-8 text-green-600" />
+
+                                            {/* Bilgi */}
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-semibold text-sm line-clamp-1">
+                                                    {mainBook.title}
+                                                </h4>
+                                                <p className="text-xs text-muted-foreground line-clamp-1">
+                                                    {mainBook.author}
+                                                </p>
+                                                {mainBook.pageCount && (
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        {mainBook.pageCount} sayfa
+                                                    </p>
+                                                )}
+
+                                                {/* Durum göstergesi - Kitabın gerçek durumu */}
+                                                <div className="mt-2">
+                                                    {mainBook.bookStatus === "COMPLETED" ? (
+                                                        <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+                                                            <CheckCircle2 className="h-3 w-3" />
+                                                            Okudum
+                                                        </span>
+                                                    ) : mainBook.bookStatus === "READING" ? (
+                                                        <span className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium">
+                                                            <BookOpen className="h-3 w-3" />
+                                                            Okunuyor
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-xs text-muted-foreground">
+                                                            Okunacak
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-
-                                    {/* Bilgi */}
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="font-semibold text-sm line-clamp-1">
-                                            {currentMonth.mainBook.title}
-                                        </h4>
-                                        <p className="text-xs text-muted-foreground line-clamp-1">
-                                            {currentMonth.mainBook.author}
-                                        </p>
-                                        {currentMonth.mainBook.pageCount && (
-                                            <p className="text-xs text-muted-foreground mt-1">
-                                                {currentMonth.mainBook.pageCount} sayfa
-                                            </p>
-                                        )}
-
-                                        {/* Durum göstergesi - Kitabın gerçek durumu */}
-                                        <div className="mt-2">
-                                            {currentMonth.mainBook.bookStatus === "COMPLETED" ? (
-                                                <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
-                                                    <CheckCircle2 className="h-3 w-3" />
-                                                    Okudum
-                                                </span>
-                                            ) : currentMonth.mainBook.bookStatus === "READING" ? (
-                                                <span className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium">
-                                                    <BookOpen className="h-3 w-3" />
-                                                    Okunuyor
-                                                </span>
-                                            ) : (
-                                                <span className="text-xs text-muted-foreground">
-                                                    Okunacak
-                                                </span>
-                                            )}
                                         </div>
                                     </div>
-                                </div>
+                                ))}
                             </div>
                         )}
 
@@ -231,7 +236,7 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                 <span className="text-xs font-medium text-muted-foreground">
                                     Bonus Kitaplar
                                 </span>
-                                {!currentMonth.isMainCompleted && (
+                                {!isAllMainCompleted && (
                                     <Lock className="h-3 w-3 text-muted-foreground" />
                                 )}
                             </div>

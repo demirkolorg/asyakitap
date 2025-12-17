@@ -399,11 +399,12 @@ export async function getActiveChallenge() {
             userProgress?.books.map(b => [b.challengeBookId, b]) || []
         )
 
-        const mainBook = currentMonthData.books.find(b => b.role === "MAIN")
+        const mainBooks = currentMonthData.books.filter(b => b.role === "MAIN")
         const bonusBooks = currentMonthData.books.filter(b => b.role === "BONUS")
 
-        // Kitabın gerçek durumunu kullan (book.status)
-        const isMainCompleted = mainBook?.book.status === "COMPLETED"
+        // Tüm ana kitapların tamamlanıp tamamlanmadığını kontrol et
+        const mainCompletedCount = mainBooks.filter(b => b.book.status === "COMPLETED").length
+        const isAllMainCompleted = mainBooks.length > 0 && mainCompletedCount === mainBooks.length
 
         return {
             challengeId: challenge.id,
@@ -415,15 +416,15 @@ export async function getActiveChallenge() {
                 monthName: currentMonthData.monthName,
                 theme: currentMonthData.theme,
                 themeIcon: currentMonthData.themeIcon,
-                mainBook: mainBook ? {
-                    id: mainBook.id,
-                    title: mainBook.book.title,
-                    author: mainBook.book.author?.name || "Bilinmeyen Yazar",
-                    coverUrl: mainBook.book.coverUrl,
-                    pageCount: mainBook.book.pageCount,
-                    reason: mainBook.reason,
-                    bookStatus: mainBook.book.status // Kitabın gerçek durumu
-                } : null,
+                mainBooks: mainBooks.map(book => ({
+                    id: book.id,
+                    title: book.book.title,
+                    author: book.book.author?.name || "Bilinmeyen Yazar",
+                    coverUrl: book.book.coverUrl,
+                    pageCount: book.book.pageCount,
+                    reason: book.reason,
+                    bookStatus: book.book.status
+                })),
                 bonusBooks: bonusBooks.map(book => {
                     return {
                         id: book.id,
@@ -432,11 +433,13 @@ export async function getActiveChallenge() {
                         coverUrl: book.book.coverUrl,
                         pageCount: book.book.pageCount,
                         reason: book.reason,
-                        bookStatus: book.book.status, // Kitabın gerçek durumu
-                        isLocked: !isMainCompleted // Ana kitap tamamlanmadıysa kilitli
+                        bookStatus: book.book.status,
+                        isLocked: !isAllMainCompleted // Tüm ana kitaplar tamamlanmadıysa kilitli
                     }
                 }),
-                isMainCompleted
+                mainCompletedCount,
+                mainTotalCount: mainBooks.length,
+                isAllMainCompleted
             }
         }
     } catch (error) {
