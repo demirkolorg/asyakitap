@@ -67,8 +67,8 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
         }
     }
 
-    // Eğer timeline varsa ve challenges varsa, timeline göster
-    if (timeline && timeline.challenges.length > 0) {
+    // Eğer challenge varsa göster
+    if (allChallenges.length > 0) {
         return (
             <>
                 {/* Header with create button */}
@@ -97,8 +97,45 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                     </Button>
                 </div>
 
-                {/* Timeline */}
-                <ChallengeTimelineClient timeline={timeline} />
+                {/* Challenge Cards */}
+                <div className="grid gap-4 mb-8">
+                    {allChallenges.map((challenge) => (
+                        <Link
+                            key={challenge.id}
+                            href={`/challenges/${challenge.year}`}
+                            className="block border rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <Trophy className="h-6 w-6 text-primary" />
+                                    </div>
+                                    <div>
+                                        <h2 className="font-semibold text-lg">{challenge.name}</h2>
+                                        <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                                            <span className="flex items-center gap-1">
+                                                <Calendar className="h-4 w-4" />
+                                                {challenge.year}
+                                            </span>
+                                            <span>
+                                                {challenge._count.months} ay
+                                            </span>
+                                            <span>
+                                                {challenge.months.reduce((sum: number, m: { _count: { books: number } }) => sum + m._count.books, 0)} kitap
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+
+                {/* Timeline (if has months) */}
+                {timeline && timeline.challenges.some(c => c.months.length > 0) && (
+                    <ChallengeTimelineClient timeline={timeline} />
+                )}
 
                 {/* Create Dialog */}
                 <Dialog open={createDialog.open} onOpenChange={(open) => !open && setCreateDialog({ ...createDialog, open: false })}>
