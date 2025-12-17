@@ -77,6 +77,7 @@ interface ReadingListBook {
         coverUrl: string | null
         pageCount: number | null
         inLibrary: boolean
+        status: "TO_READ" | "READING" | "COMPLETED" | "DNF"
         author: { id: string; name: string } | null
         publisher: { id: string; name: string } | null
     }
@@ -298,6 +299,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                             coverUrl: result.readingListBook.book.coverUrl,
                             pageCount: result.readingListBook.book.pageCount,
                             inLibrary: result.readingListBook.book.inLibrary,
+                            status: result.readingListBook.book.status,
                             author: result.readingListBook.book.author ? {
                                 id: result.readingListBook.book.author.id,
                                 name: result.readingListBook.book.author.name
@@ -351,6 +353,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                             coverUrl: result.readingListBook.book.coverUrl,
                             pageCount: result.readingListBook.book.pageCount,
                             inLibrary: result.readingListBook.book.inLibrary,
+                            status: result.readingListBook.book.status,
                             author: result.readingListBook.book.author ? {
                                 id: result.readingListBook.book.author.id,
                                 name: result.readingListBook.book.author.name
@@ -771,9 +774,17 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                                             className="flex-1 min-w-0 hover:text-primary transition-colors"
                                                         >
                                                             <div>
-                                                                <h3 className="font-medium">
-                                                                    {book.book.title}
-                                                                </h3>
+                                                                <div className="flex items-center gap-2">
+                                                                    <h3 className="font-medium">
+                                                                        {book.book.title}
+                                                                    </h3>
+                                                                    {book.book.status === "COMPLETED" && (
+                                                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500 text-white flex-shrink-0">Okudum</span>
+                                                                    )}
+                                                                    {book.book.status === "READING" && (
+                                                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500 text-white flex-shrink-0">Okunuyor</span>
+                                                                    )}
+                                                                </div>
                                                                 <p className="text-sm text-muted-foreground">
                                                                     {book.book.author?.name || "Bilinmeyen Yazar"}
                                                                     {book.book.pageCount && ` • ${book.book.pageCount} sayfa`}

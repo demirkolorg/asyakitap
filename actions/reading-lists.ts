@@ -32,6 +32,7 @@ export interface ReadingListBook {
         coverUrl: string | null
         pageCount: number | null
         inLibrary: boolean
+        status: "TO_READ" | "READING" | "COMPLETED" | "DNF"
         author: { id: string; name: string } | null
         publisher: { id: string; name: string } | null
     }
@@ -142,6 +143,7 @@ export async function getReadingListDetail(slug: string): Promise<ReadingListDet
                         coverUrl: rb.book.coverUrl,
                         pageCount: rb.book.pageCount,
                         inLibrary: rb.book.inLibrary,
+                        status: rb.book.status,
                         author: rb.book.author,
                         publisher: rb.book.publisher
                     }
@@ -680,6 +682,7 @@ export async function getAllReadingLists(): Promise<ReadingListDetail[]> {
                             coverUrl: rb.book.coverUrl,
                             pageCount: rb.book.pageCount,
                             inLibrary: rb.book.inLibrary,
+                            status: rb.book.status,
                             author: rb.book.author,
                             publisher: rb.book.publisher
                         }
