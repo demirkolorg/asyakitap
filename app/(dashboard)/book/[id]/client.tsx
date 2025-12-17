@@ -601,10 +601,9 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <div className="space-y-3 mb-6">
                             {/* Reading Lists */}
                             {book.readingListBooks.map((rlb) => (
-                                <Link
+                                <div
                                     key={rlb.id}
-                                    href={`/reading-lists/${rlb.level.readingList.slug}`}
-                                    className="block p-4 rounded-xl bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all"
+                                    className="p-4 rounded-xl bg-primary/5 border border-primary/20"
                                 >
                                     <div className="flex items-start gap-3">
                                         {/* Liste Kapağı */}
@@ -619,12 +618,20 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                             </div>
                                         )}
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <Map className="h-4 w-4 text-primary flex-shrink-0" />
-                                                <h4 className="font-semibold text-sm">{rlb.level.readingList.name}</h4>
+                                            <div className="flex items-center justify-between gap-2 mb-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Map className="h-4 w-4 text-primary flex-shrink-0" />
+                                                    <h4 className="font-semibold text-sm">{rlb.level.readingList.name}</h4>
+                                                </div>
+                                                <Link
+                                                    href={`/reading-lists/${rlb.level.readingList.slug}`}
+                                                    className="text-xs px-2 py-1 rounded bg-primary/10 hover:bg-primary/20 text-primary font-medium transition-colors flex-shrink-0"
+                                                >
+                                                    Listeye Git →
+                                                </Link>
                                             </div>
                                             {rlb.level.readingList.description && (
-                                                <p className="text-xs text-muted-foreground line-clamp-1 mb-2">
+                                                <p className="text-xs text-muted-foreground mb-2">
                                                     {rlb.level.readingList.description}
                                                 </p>
                                             )}
@@ -634,7 +641,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                                 </span>
                                             </div>
                                             {rlb.level.description && (
-                                                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                                <p className="text-xs text-muted-foreground mt-1">
                                                     {rlb.level.description}
                                                 </p>
                                             )}
@@ -646,19 +653,18 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                             )}
                                         </div>
                                     </div>
-                                </Link>
+                                </div>
                             ))}
 
                             {/* Challenges */}
                             {book.challengeBooks.map((cb) => (
-                                <Link
+                                <div
                                     key={cb.id}
-                                    href={`/challenges/${cb.month.challenge.year}`}
                                     className={cn(
-                                        "block p-4 rounded-xl border transition-all",
+                                        "p-4 rounded-xl border",
                                         cb.role === "MAIN"
-                                            ? "bg-amber-500/5 hover:bg-amber-500/10 border-amber-500/20"
-                                            : "bg-purple-500/5 hover:bg-purple-500/10 border-purple-500/20"
+                                            ? "bg-amber-500/5 border-amber-500/20"
+                                            : "bg-purple-500/5 border-purple-500/20"
                                     )}
                                 >
                                     <div className="flex items-start gap-3">
@@ -670,24 +676,37 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                             {cb.month.themeIcon || "📚"}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                {cb.role === "MAIN" ? (
-                                                    <Target className="h-4 w-4 text-amber-600 flex-shrink-0" />
-                                                ) : (
-                                                    <Sparkles className="h-4 w-4 text-purple-600 flex-shrink-0" />
-                                                )}
-                                                <h4 className="font-semibold text-sm">{cb.month.challenge.name}</h4>
-                                                <span className={cn(
-                                                    "text-[10px] px-1.5 py-0.5 rounded font-medium",
-                                                    cb.role === "MAIN"
-                                                        ? "bg-amber-500/20 text-amber-700 dark:text-amber-400"
-                                                        : "bg-purple-500/20 text-purple-700 dark:text-purple-400"
-                                                )}>
-                                                    {cb.role === "MAIN" ? "Ana Hedef" : "Bonus"}
-                                                </span>
+                                            <div className="flex items-center justify-between gap-2 mb-1">
+                                                <div className="flex items-center gap-2">
+                                                    {cb.role === "MAIN" ? (
+                                                        <Target className="h-4 w-4 text-amber-600 flex-shrink-0" />
+                                                    ) : (
+                                                        <Sparkles className="h-4 w-4 text-purple-600 flex-shrink-0" />
+                                                    )}
+                                                    <h4 className="font-semibold text-sm">{cb.month.challenge.name}</h4>
+                                                    <span className={cn(
+                                                        "text-[10px] px-1.5 py-0.5 rounded font-medium",
+                                                        cb.role === "MAIN"
+                                                            ? "bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                                                            : "bg-purple-500/20 text-purple-700 dark:text-purple-400"
+                                                    )}>
+                                                        {cb.role === "MAIN" ? "Ana Hedef" : "Bonus"}
+                                                    </span>
+                                                </div>
+                                                <Link
+                                                    href={`/challenges/${cb.month.challenge.year}`}
+                                                    className={cn(
+                                                        "text-xs px-2 py-1 rounded font-medium transition-colors flex-shrink-0",
+                                                        cb.role === "MAIN"
+                                                            ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                                                            : "bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-400"
+                                                    )}
+                                                >
+                                                    Hedefe Git →
+                                                </Link>
                                             </div>
                                             {cb.month.challenge.description && (
-                                                <p className="text-xs text-muted-foreground line-clamp-1 mb-2">
+                                                <p className="text-xs text-muted-foreground mb-2">
                                                     {cb.month.challenge.description}
                                                 </p>
                                             )}
@@ -722,7 +741,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                             )}
                                         </div>
                                     </div>
-                                </Link>
+                                </div>
                             ))}
                         </div>
                     )}
