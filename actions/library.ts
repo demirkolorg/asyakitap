@@ -115,14 +115,21 @@ export async function getBook(id: string) {
                     take: 20
                 },
                 readingListBooks: {
-                    include: {
+                    select: {
+                        id: true,
+                        neden: true,
                         level: {
-                            include: {
+                            select: {
+                                id: true,
+                                levelNumber: true,
+                                name: true,
+                                description: true,
                                 readingList: {
                                     select: {
                                         id: true,
                                         name: true,
                                         slug: true,
+                                        description: true,
                                         coverUrl: true
                                     }
                                 }
@@ -131,14 +138,23 @@ export async function getBook(id: string) {
                     }
                 },
                 challengeBooks: {
-                    include: {
+                    select: {
+                        id: true,
+                        role: true,
+                        reason: true,
                         month: {
-                            include: {
+                            select: {
+                                id: true,
+                                monthNumber: true,
+                                monthName: true,
+                                theme: true,
+                                themeIcon: true,
                                 challenge: {
                                     select: {
                                         id: true,
                                         name: true,
-                                        year: true
+                                        year: true,
+                                        description: true
                                     }
                                 }
                             }
