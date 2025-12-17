@@ -1,14 +1,9 @@
 "use server"
 
-// Rating actions - v2
 import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { CACHE_TAGS } from "@/lib/cache"
-import { RATING_CATEGORIES, type RatingCategoryKey } from "@/lib/rating-categories"
-
-// Re-export for backwards compatibility
-export { RATING_CATEGORIES, type RatingCategoryKey }
 
 export interface BookRatingData {
     konuFikir: number
