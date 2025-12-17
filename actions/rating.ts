@@ -94,15 +94,35 @@ export async function saveBookRating(bookId: string, data: BookRatingData) {
     try {
         const ortalamaPuan = calculateAverage(data)
 
+        console.log("Saving rating for book:", bookId, "Data:", JSON.stringify(data), "Average:", ortalamaPuan)
+
         const rating = await prisma.bookRating.upsert({
             where: { bookId },
             create: {
                 bookId,
-                ...data,
+                konuFikir: data.konuFikir,
+                akicilik: data.akicilik,
+                derinlik: data.derinlik,
+                etki: data.etki,
+                dilUslup: data.dilUslup,
+                karakterAnlatim: data.karakterAnlatim,
+                ozgunluk: data.ozgunluk,
+                baskiTasarim: data.baskiTasarim,
+                tavsiyeEderim: data.tavsiyeEderim,
+                genelPuan: data.genelPuan,
                 ortalamaPuan
             },
             update: {
-                ...data,
+                konuFikir: data.konuFikir,
+                akicilik: data.akicilik,
+                derinlik: data.derinlik,
+                etki: data.etki,
+                dilUslup: data.dilUslup,
+                karakterAnlatim: data.karakterAnlatim,
+                ozgunluk: data.ozgunluk,
+                baskiTasarim: data.baskiTasarim,
+                tavsiyeEderim: data.tavsiyeEderim,
+                genelPuan: data.genelPuan,
                 ortalamaPuan
             }
         })
