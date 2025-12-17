@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -35,6 +36,7 @@ const GROUP_CONFIG: Record<string, { icon: string; color: string }> = {
 }
 
 export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookRatingProps) {
+    const router = useRouter()
     const [isExpanded, setIsExpanded] = useState(inTab || !!rating)
     const [isSaving, setIsSaving] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -88,8 +90,9 @@ export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookR
             if (result.success) {
                 toast.success("Puanlama kaydedildi")
                 setCurrentRating(result.rating as BookRatingType)
+                router.refresh()
             } else {
-                toast.error(result.error)
+                toast.error(result.error || "Bir hata oluştu")
             }
         } catch {
             toast.error("Bir hata oluştu")
@@ -105,6 +108,7 @@ export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookR
             if (result.success) {
                 toast.success("Puanlama silindi")
                 setCurrentRating(null)
+                router.refresh()
                 // Reset form to defaults
                 setFormData({
                     konuFikir: 5,

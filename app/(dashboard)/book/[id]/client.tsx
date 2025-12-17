@@ -765,6 +765,15 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
 
                     {/* Book Stats */}
                     <div className="flex flex-wrap gap-3 md:gap-6 py-4 border-y text-sm justify-center md:justify-start">
+                        {/* Rating Badge - Puanlama varsa göster */}
+                        {book.rating && (
+                            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/30">
+                                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                                <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
+                                    {book.rating.ortalamaPuan.toFixed(1)}/10
+                                </span>
+                            </div>
+                        )}
                         {book.pageCount && (
                             <div className="flex items-center gap-2">
                                 <BookOpen className="h-4 w-4 text-muted-foreground" />
