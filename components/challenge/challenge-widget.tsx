@@ -19,16 +19,27 @@ import {
 import { cn } from "@/lib/utils"
 import { joinChallenge } from "@/actions/challenge"
 import { toast } from "sonner"
-import { ChallengeBookStatus } from "@prisma/client"
+import { BookStatus } from "@prisma/client"
 
-type ChallengeBook = {
+type MainBook = {
     id: string
     title: string
     author: string
     coverUrl: string | null
     pageCount: number | null
     reason: string | null
-    status: ChallengeBookStatus | null
+    bookStatus: BookStatus // Kitabın gerçek durumu
+}
+
+type BonusBook = {
+    id: string
+    title: string
+    author: string
+    coverUrl: string | null
+    pageCount: number | null
+    reason: string | null
+    bookStatus: BookStatus // Kitabın gerçek durumu
+    isLocked: boolean // Ana kitap tamamlanmadıysa kilitli
 }
 
 type ChallengeWidgetProps = {
@@ -43,8 +54,8 @@ type ChallengeWidgetProps = {
             monthName: string
             theme: string
             themeIcon: string | null
-            mainBook: ChallengeBook | null
-            bonusBooks: ChallengeBook[]
+            mainBook: MainBook | null
+            bonusBooks: BonusBook[]
             isMainCompleted: boolean
         }
     } | null
@@ -73,8 +84,8 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
     }
 
     const completedCount = [
-        currentMonth.mainBook?.status === "COMPLETED" ? 1 : 0,
-        ...currentMonth.bonusBooks.map(b => b.status === "COMPLETED" ? 1 : 0)
+        currentMonth.mainBook?.bookStatus === "COMPLETED" ? 1 : 0,
+        ...currentMonth.bonusBooks.map(b => b.bookStatus === "COMPLETED" ? 1 : 0)
     ].reduce((a, b) => a + b, 0)
 
     const totalBooks = 1 + currentMonth.bonusBooks.length
@@ -152,7 +163,7 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                 </div>
                                 <div className={cn(
                                     "flex gap-3 p-3 rounded-lg border-2 transition-all",
-                                    currentMonth.mainBook.status === "COMPLETED"
+                                    currentMonth.mainBook.bookStatus === "COMPLETED"
                                         ? "border-green-500 bg-green-50 dark:bg-green-950/20"
                                         : "border-primary/30 bg-background"
                                 )}>
@@ -170,7 +181,7 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                                 <BookOpen className="h-6 w-6 text-muted-foreground" />
                                             </div>
                                         )}
-                                        {currentMonth.mainBook.status === "COMPLETED" && (
+                                        {currentMonth.mainBook.bookStatus === "COMPLETED" && (
                                             <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
                                                 <CheckCircle2 className="h-8 w-8 text-green-600" />
                                             </div>
@@ -191,21 +202,21 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                             </p>
                                         )}
 
-                                        {/* Durum göstergesi */}
+                                        {/* Durum göstergesi - Kitabın gerçek durumu */}
                                         <div className="mt-2">
-                                            {currentMonth.mainBook.status === "COMPLETED" ? (
+                                            {currentMonth.mainBook.bookStatus === "COMPLETED" ? (
                                                 <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
                                                     <CheckCircle2 className="h-3 w-3" />
-                                                    Tamamlandı
+                                                    Okudum
                                                 </span>
-                                            ) : currentMonth.mainBook.status === "IN_PROGRESS" ? (
+                                            ) : currentMonth.mainBook.bookStatus === "READING" ? (
                                                 <span className="inline-flex items-center gap-1 text-xs text-blue-600 font-medium">
                                                     <BookOpen className="h-3 w-3" />
                                                     Okunuyor
                                                 </span>
                                             ) : (
                                                 <span className="text-xs text-muted-foreground">
-                                                    Bekliyor
+                                                    Okunacak
                                                 </span>
                                             )}
                                         </div>
@@ -232,14 +243,14 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                         key={book.id}
                                         className={cn(
                                             "relative flex gap-2 p-2 rounded-lg border transition-all",
-                                            book.status === "LOCKED"
+                                            book.isLocked
                                                 ? "opacity-50 border-dashed bg-muted/50"
-                                                : book.status === "COMPLETED"
+                                                : book.bookStatus === "COMPLETED"
                                                     ? "border-green-500/50 bg-green-50/50 dark:bg-green-950/10"
                                                     : "border-muted-foreground/20 bg-background"
                                         )}
                                     >
-                                        {book.status === "LOCKED" && (
+                                        {book.isLocked && (
                                             <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-lg z-10">
                                                 <Lock className="h-5 w-5 text-muted-foreground" />
                                             </div>
@@ -269,7 +280,7 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                                             </p>
                                         </div>
 
-                                        {book.status === "COMPLETED" && (
+                                        {book.bookStatus === "COMPLETED" && (
                                             <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
                                         )}
                                     </div>

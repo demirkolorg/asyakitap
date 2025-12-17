@@ -263,9 +263,12 @@ export async function getChallengeWithProgress(year: number): Promise<ChallengeD
             const books = month.books.map(cb => {
                 totalBooks++
                 const userBook = userBooksMap.get(cb.id)
-                const status = userBook?.status || "NOT_STARTED"
 
-                if (status === "COMPLETED") {
+                // Kitabın gerçek durumunu kullan
+                const bookStatus = cb.book.status
+                const isCompleted = bookStatus === "COMPLETED"
+
+                if (isCompleted) {
                     totalCompleted++
                     monthCompleted++
                     if (cb.role === "MAIN") {
@@ -275,6 +278,11 @@ export async function getChallengeWithProgress(year: number): Promise<ChallengeD
                         bonusCompleted++
                     }
                 }
+
+                // userStatus'u book.status'tan türet
+                let userStatus: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" = "NOT_STARTED"
+                if (bookStatus === "COMPLETED") userStatus = "COMPLETED"
+                else if (bookStatus === "READING") userStatus = "IN_PROGRESS"
 
                 return {
                     id: cb.id,
@@ -292,7 +300,7 @@ export async function getChallengeWithProgress(year: number): Promise<ChallengeD
                         author: cb.book.author,
                         publisher: cb.book.publisher
                     },
-                    userStatus: status,
+                    userStatus,
                     completedAt: userBook?.completedAt || null,
                     takeaway: userBook?.takeaway || null
                 }
@@ -393,9 +401,8 @@ export async function getActiveChallenge() {
         const mainBook = currentMonthData.books.find(b => b.role === "MAIN")
         const bonusBooks = currentMonthData.books.filter(b => b.role === "BONUS")
 
-        const mainUserBook = mainBook ? userBooksMap.get(mainBook.id) : null
-        const mainStatus = mainUserBook?.status || "NOT_STARTED"
-        const isMainCompleted = mainStatus === "COMPLETED"
+        // Kitabın gerçek durumunu kullan (book.status)
+        const isMainCompleted = mainBook?.book.status === "COMPLETED"
 
         return {
             challengeId: challenge.id,
@@ -414,10 +421,9 @@ export async function getActiveChallenge() {
                     coverUrl: mainBook.book.coverUrl,
                     pageCount: mainBook.book.pageCount,
                     reason: mainBook.reason,
-                    status: mainStatus
+                    bookStatus: mainBook.book.status // Kitabın gerçek durumu
                 } : null,
                 bonusBooks: bonusBooks.map(book => {
-                    const userBook = userBooksMap.get(book.id)
                     return {
                         id: book.id,
                         title: book.book.title,
@@ -425,7 +431,8 @@ export async function getActiveChallenge() {
                         coverUrl: book.book.coverUrl,
                         pageCount: book.book.pageCount,
                         reason: book.reason,
-                        status: userBook?.status || "LOCKED"
+                        bookStatus: book.book.status, // Kitabın gerçek durumu
+                        isLocked: !isMainCompleted // Ana kitap tamamlanmadıysa kilitli
                     }
                 }),
                 isMainCompleted
@@ -1083,9 +1090,12 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                 const books = month.books.map(cb => {
                     totalBooks++
                     const userBook = userBooksMap.get(cb.id)
-                    const status = userBook?.status || "NOT_STARTED"
 
-                    if (status === "COMPLETED") {
+                    // Kitabın gerçek durumunu kullan
+                    const bookStatus = cb.book.status
+                    const isCompleted = bookStatus === "COMPLETED"
+
+                    if (isCompleted) {
                         totalCompleted++
                         monthCompleted++
                         if (cb.role === "MAIN") {
@@ -1095,6 +1105,11 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                             bonusCompleted++
                         }
                     }
+
+                    // userStatus'u book.status'tan türet
+                    let userStatus: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" = "NOT_STARTED"
+                    if (bookStatus === "COMPLETED") userStatus = "COMPLETED"
+                    else if (bookStatus === "READING") userStatus = "IN_PROGRESS"
 
                     return {
                         id: cb.id,
@@ -1112,7 +1127,7 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                             author: cb.book.author,
                             publisher: cb.book.publisher
                         },
-                        userStatus: status,
+                        userStatus,
                         completedAt: userBook?.completedAt || null,
                         takeaway: userBook?.takeaway || null
                     }
