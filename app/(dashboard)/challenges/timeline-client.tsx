@@ -31,13 +31,17 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
     const [localTimeline, setLocalTimeline] = useState(timeline)
     const [isJoining, setIsJoining] = useState<string | null>(null)
 
-    const { challenges, currentPeriod } = localTimeline
+    const { challenges: rawChallenges, currentPeriod } = localTimeline
+
+    // challenges array değilse boş array kullan
+    const challenges = Array.isArray(rawChallenges) ? rawChallenges : []
 
     // Tüm ayları birleştir
     const allMonths: { year: number; month: ChallengeMonthWithBooks; challengeId: string; challengeName: string }[] = []
 
     challenges.forEach(challenge => {
-        challenge.months.forEach(month => {
+        const months = Array.isArray(challenge.months) ? challenge.months : []
+        months.forEach(month => {
             allMonths.push({
                 year: challenge.year,
                 month,
@@ -48,7 +52,7 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
     })
 
     // Aktif ay için default açık accordion
-    const defaultOpenValue = `${currentPeriod.year}-${currentPeriod.month}`
+    const defaultOpenValue = `${currentPeriod?.year ?? new Date().getFullYear()}-${currentPeriod?.month ?? new Date().getMonth() + 1}`
 
     const handleJoin = async (challengeId: string) => {
         setIsJoining(challengeId)

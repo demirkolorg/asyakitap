@@ -121,7 +121,7 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                                                 {challenge._count.months} ay
                                             </span>
                                             <span>
-                                                {challenge.months.reduce((sum: number, m: { _count: { books: number } }) => sum + m._count.books, 0)} kitap
+                                                {(Array.isArray(challenge.months) ? challenge.months : []).reduce((sum: number, m: { _count: { books: number } }) => sum + m._count.books, 0)} kitap
                                             </span>
                                         </div>
                                     </div>
@@ -262,7 +262,7 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                                                 {challenge._count.months} ay
                                             </span>
                                             <span>
-                                                {challenge.months.reduce((sum: number, m: { _count: { books: number } }) => sum + m._count.books, 0)} kitap
+                                                {(Array.isArray(challenge.months) ? challenge.months : []).reduce((sum: number, m: { _count: { books: number } }) => sum + m._count.books, 0)} kitap
                                             </span>
                                         </div>
                                     </div>
