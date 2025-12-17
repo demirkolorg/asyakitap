@@ -83,24 +83,24 @@ export function ChallengeTimelineClient({ timeline }: ChallengeTimelineClientPro
                     </div>
                 </div>
 
-                {/* Genel İlerleme */}
+                {/* Genel İlerleme - Sadece ana hedefler sayılır */}
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium">Toplam İlerleme</span>
+                            <span className="text-sm font-medium">Ana Hedefler</span>
                             <span className="text-sm text-muted-foreground">
-                                {completedBooks}/{totalBooks} kitap ({overallProgress}%)
+                                {completedBooks}/{totalBooks} tamamlandı ({overallProgress}%)
                             </span>
                         </div>
                         <Progress value={overallProgress} className="h-3" />
                         <div className="flex justify-between mt-2 text-xs text-muted-foreground">
                             <span>
                                 <Trophy className="h-3 w-3 inline mr-1" />
-                                {challenges.reduce((acc, c) => acc + (c.totalProgress?.mainCompleted ?? 0), 0)} ana kitap
+                                {challenges.reduce((acc, c) => acc + (c.totalProgress?.mainCompleted ?? 0), 0)} ana hedef okudum
                             </span>
                             <span>
                                 <Sparkles className="h-3 w-3 inline mr-1" />
-                                {challenges.reduce((acc, c) => acc + (c.totalProgress?.bonusCompleted ?? 0), 0)} bonus kitap
+                                {challenges.reduce((acc, c) => acc + (c.totalProgress?.bonusCompleted ?? 0), 0)} bonus okudum
                             </span>
                         </div>
                     </CardContent>

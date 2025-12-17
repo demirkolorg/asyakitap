@@ -251,32 +251,33 @@ export async function getChallengeWithProgress(year: number): Promise<ChallengeD
             userProgress?.books.map(b => [b.challengeBookId, b]) || []
         )
 
-        let totalCompleted = 0
+        // İlerleme sadece MAIN kitaplara göre hesaplanır (bonus kitaplar sayılmaz)
+        let totalMainBooks = 0
         let mainCompleted = 0
         let bonusCompleted = 0
-        let totalBooks = 0
 
         const months: ChallengeMonth[] = challenge.months.map(month => {
-            let monthCompleted = 0
+            let monthMainCompleted = 0
+            let monthMainTotal = 0
             let isMainCompleted = false
 
             const books = month.books.map(cb => {
-                totalBooks++
                 const userBook = userBooksMap.get(cb.id)
 
                 // Kitabın gerçek durumunu kullan
                 const bookStatus = cb.book.status
                 const isCompleted = bookStatus === "COMPLETED"
 
-                if (isCompleted) {
-                    totalCompleted++
-                    monthCompleted++
-                    if (cb.role === "MAIN") {
+                if (cb.role === "MAIN") {
+                    totalMainBooks++
+                    monthMainTotal++
+                    if (isCompleted) {
                         mainCompleted++
+                        monthMainCompleted++
                         isMainCompleted = true
-                    } else {
-                        bonusCompleted++
                     }
+                } else if (isCompleted) {
+                    bonusCompleted++
                 }
 
                 // userStatus'u book.status'tan türet
@@ -314,9 +315,9 @@ export async function getChallengeWithProgress(year: number): Promise<ChallengeD
                 themeIcon: month.themeIcon,
                 books,
                 progress: {
-                    total: books.length,
-                    completed: monthCompleted,
-                    percentage: books.length > 0 ? Math.round((monthCompleted / books.length) * 100) : 0
+                    total: monthMainTotal, // Sadece ana hedefler
+                    completed: monthMainCompleted,
+                    percentage: monthMainTotal > 0 ? Math.round((monthMainCompleted / monthMainTotal) * 100) : 0
                 },
                 isMainCompleted
             }
@@ -331,9 +332,9 @@ export async function getChallengeWithProgress(year: number): Promise<ChallengeD
             isActive: challenge.isActive,
             months,
             totalProgress: {
-                totalBooks,
-                completedBooks: totalCompleted,
-                percentage: totalBooks > 0 ? Math.round((totalCompleted / totalBooks) * 100) : 0,
+                totalBooks: totalMainBooks, // Sadece ana hedefler
+                completedBooks: mainCompleted,
+                percentage: totalMainBooks > 0 ? Math.round((mainCompleted / totalMainBooks) * 100) : 0,
                 mainCompleted,
                 bonusCompleted
             }
@@ -1078,32 +1079,33 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                 userProgress?.books.map(b => [b.challengeBookId, b]) || []
             )
 
-            let totalCompleted = 0
+            // İlerleme sadece MAIN kitaplara göre hesaplanır (bonus kitaplar sayılmaz)
+            let totalMainBooks = 0
             let mainCompleted = 0
             let bonusCompleted = 0
-            let totalBooks = 0
 
             const months: ChallengeMonth[] = challenge.months.map(month => {
-                let monthCompleted = 0
+                let monthMainCompleted = 0
+                let monthMainTotal = 0
                 let isMainCompleted = false
 
                 const books = month.books.map(cb => {
-                    totalBooks++
                     const userBook = userBooksMap.get(cb.id)
 
                     // Kitabın gerçek durumunu kullan
                     const bookStatus = cb.book.status
                     const isCompleted = bookStatus === "COMPLETED"
 
-                    if (isCompleted) {
-                        totalCompleted++
-                        monthCompleted++
-                        if (cb.role === "MAIN") {
+                    if (cb.role === "MAIN") {
+                        totalMainBooks++
+                        monthMainTotal++
+                        if (isCompleted) {
                             mainCompleted++
+                            monthMainCompleted++
                             isMainCompleted = true
-                        } else {
-                            bonusCompleted++
                         }
+                    } else if (isCompleted) {
+                        bonusCompleted++
                     }
 
                     // userStatus'u book.status'tan türet
@@ -1141,9 +1143,9 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                     themeIcon: month.themeIcon,
                     books,
                     progress: {
-                        total: books.length,
-                        completed: monthCompleted,
-                        percentage: books.length > 0 ? Math.round((monthCompleted / books.length) * 100) : 0
+                        total: monthMainTotal, // Sadece ana hedefler
+                        completed: monthMainCompleted,
+                        percentage: monthMainTotal > 0 ? Math.round((monthMainCompleted / monthMainTotal) * 100) : 0
                     },
                     isMainCompleted
                 }
@@ -1158,9 +1160,9 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
                 isActive: challenge.isActive,
                 months,
                 totalProgress: {
-                    totalBooks,
-                    completedBooks: totalCompleted,
-                    percentage: totalBooks > 0 ? Math.round((totalCompleted / totalBooks) * 100) : 0,
+                    totalBooks: totalMainBooks, // Sadece ana hedefler
+                    completedBooks: mainCompleted,
+                    percentage: totalMainBooks > 0 ? Math.round((mainCompleted / totalMainBooks) * 100) : 0,
                     mainCompleted,
                     bonusCompleted
                 }

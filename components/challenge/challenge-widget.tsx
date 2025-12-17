@@ -83,13 +83,10 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
         setIsJoining(false)
     }
 
-    const completedCount = [
-        currentMonth.mainBook?.bookStatus === "COMPLETED" ? 1 : 0,
-        ...currentMonth.bonusBooks.map(b => b.bookStatus === "COMPLETED" ? 1 : 0)
-    ].reduce((a, b) => a + b, 0)
-
-    const totalBooks = 1 + currentMonth.bonusBooks.length
-    const progressPercentage = Math.round((completedCount / totalBooks) * 100)
+    // İlerleme sadece ana hedef kitaplarına göre hesaplanır (bonus kitaplar sayılmaz)
+    const mainCompleted = currentMonth.mainBook?.bookStatus === "COMPLETED" ? 1 : 0
+    const totalMainBooks = currentMonth.mainBook ? 1 : 0
+    const progressPercentage = totalMainBooks > 0 ? Math.round((mainCompleted / totalMainBooks) * 100) : 0
 
     return (
         <Card className={cn(
@@ -144,11 +141,13 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                     </div>
                 ) : (
                     <>
-                        {/* İlerleme çubuğu */}
+                        {/* İlerleme çubuğu - sadece ana hedefler */}
                         <div className="space-y-1">
                             <div className="flex justify-between text-xs">
-                                <span className="text-muted-foreground">Bu Ay</span>
-                                <span className="font-medium">{completedCount}/{totalBooks} kitap</span>
+                                <span className="text-muted-foreground">Ana Hedef</span>
+                                <span className="font-medium">
+                                    {mainCompleted}/{totalMainBooks} {progressPercentage === 100 ? "✓" : ""}
+                                </span>
                             </div>
                             <Progress value={progressPercentage} className="h-2" />
                         </div>
