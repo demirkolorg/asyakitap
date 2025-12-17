@@ -754,7 +754,15 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                                                                             href={`/book/${book.book.id}`}
                                                                             className="hover:text-primary transition-colors"
                                                                         >
-                                                                            <h3 className="font-bold line-clamp-2">{book.book.title}</h3>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <h3 className="font-bold line-clamp-2">{book.book.title}</h3>
+                                                                                {book.book.status === "COMPLETED" && (
+                                                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500 text-white flex-shrink-0">Okudum</span>
+                                                                                )}
+                                                                                {book.book.status === "READING" && (
+                                                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500 text-white flex-shrink-0">Okunuyor</span>
+                                                                                )}
+                                                                            </div>
                                                                             <p className="text-sm text-muted-foreground">{book.book.author?.name || "Bilinmeyen Yazar"}</p>
                                                                             {book.book.pageCount && (
                                                                                 <p className="text-xs text-muted-foreground mt-1">
@@ -853,7 +861,15 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                                                                             href={`/book/${book.book.id}`}
                                                                             className="min-w-0 flex-1 hover:text-primary transition-colors"
                                                                         >
-                                                                            <h4 className="font-semibold text-sm line-clamp-1">{book.book.title}</h4>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <h4 className="font-semibold text-sm line-clamp-1">{book.book.title}</h4>
+                                                                                {book.book.status === "COMPLETED" && (
+                                                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500 text-white flex-shrink-0">Okudum</span>
+                                                                                )}
+                                                                                {book.book.status === "READING" && (
+                                                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500 text-white flex-shrink-0">Okunuyor</span>
+                                                                                )}
+                                                                            </div>
                                                                             <p className="text-xs text-muted-foreground">{book.book.author?.name || "Bilinmeyen Yazar"}</p>
                                                                         </Link>
                                                                         <DropdownMenu>
