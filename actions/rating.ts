@@ -50,51 +50,49 @@ function calculateAverage(data: BookRatingData): number {
 
 // Puanlama ekle veya güncelle
 export async function saveBookRating(bookId: string, data: BookRatingData) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-        throw new Error("Unauthorized")
-    }
-
-    // Kitabın kullanıcıya ait olduğunu ve COMPLETED olduğunu kontrol et
-    const book = await prisma.book.findUnique({
-        where: { id: bookId, userId: user.id },
-        select: { id: true, status: true }
-    })
-
-    if (!book) {
-        return { success: false, error: "Kitap bulunamadı" }
-    }
-
-    if (book.status !== "COMPLETED") {
-        return { success: false, error: "Sadece okuduğunuz kitapları puanlayabilirsiniz" }
-    }
-
-    // Tüm puanların 1-10 arasında olduğunu kontrol et
-    const values = [
-        data.konuFikir,
-        data.akicilik,
-        data.derinlik,
-        data.etki,
-        data.dilUslup,
-        data.karakterAnlatim,
-        data.ozgunluk,
-        data.baskiTasarim,
-        data.tavsiyeEderim,
-        data.genelPuan
-    ]
-
-    for (const value of values) {
-        if (value < 1 || value > 10) {
-            return { success: false, error: "Tüm puanlar 1-10 arasında olmalıdır" }
-        }
-    }
-
     try {
-        const ortalamaPuan = calculateAverage(data)
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
 
-        console.log("Saving rating for book:", bookId, "Data:", JSON.stringify(data), "Average:", ortalamaPuan)
+        if (!user) {
+            return { success: false, error: "Oturum açmanız gerekiyor" }
+        }
+
+        // Kitabın kullanıcıya ait olduğunu ve COMPLETED olduğunu kontrol et
+        const book = await prisma.book.findUnique({
+            where: { id: bookId, userId: user.id },
+            select: { id: true, status: true }
+        })
+
+        if (!book) {
+            return { success: false, error: "Kitap bulunamadı" }
+        }
+
+        if (book.status !== "COMPLETED") {
+            return { success: false, error: "Sadece okuduğunuz kitapları puanlayabilirsiniz" }
+        }
+
+        // Tüm puanların 1-10 arasında olduğunu kontrol et
+        const values = [
+            data.konuFikir,
+            data.akicilik,
+            data.derinlik,
+            data.etki,
+            data.dilUslup,
+            data.karakterAnlatim,
+            data.ozgunluk,
+            data.baskiTasarim,
+            data.tavsiyeEderim,
+            data.genelPuan
+        ]
+
+        for (const value of values) {
+            if (value < 1 || value > 10) {
+                return { success: false, error: "Tüm puanlar 1-10 arasında olmalıdır" }
+            }
+        }
+
+        const ortalamaPuan = calculateAverage(data)
 
         const rating = await prisma.bookRating.upsert({
             where: { bookId },
@@ -135,7 +133,7 @@ export async function saveBookRating(bookId: string, data: BookRatingData) {
         return { success: true, rating }
     } catch (error) {
         console.error("Failed to save rating:", error)
-        return { success: false, error: "Puanlama kaydedilemedi" }
+        return { success: false, error: "Puanlama kaydedilemedi: " + (error instanceof Error ? error.message : "Bilinmeyen hata") }
     }
 }
 
@@ -160,24 +158,24 @@ export async function getBookRating(bookId: string): Promise<BookRatingWithMeta 
 
 // Puanlamayı sil
 export async function deleteBookRating(bookId: string) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-        throw new Error("Unauthorized")
-    }
-
-    // Kitabın kullanıcıya ait olduğunu kontrol et
-    const book = await prisma.book.findUnique({
-        where: { id: bookId, userId: user.id },
-        select: { id: true }
-    })
-
-    if (!book) {
-        return { success: false, error: "Kitap bulunamadı" }
-    }
-
     try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+            return { success: false, error: "Oturum açmanız gerekiyor" }
+        }
+
+        // Kitabın kullanıcıya ait olduğunu kontrol et
+        const book = await prisma.book.findUnique({
+            where: { id: bookId, userId: user.id },
+            select: { id: true }
+        })
+
+        if (!book) {
+            return { success: false, error: "Kitap bulunamadı" }
+        }
+
         await prisma.bookRating.delete({
             where: { bookId }
         })
@@ -190,7 +188,7 @@ export async function deleteBookRating(bookId: string) {
         return { success: true }
     } catch (error) {
         console.error("Failed to delete rating:", error)
-        return { success: false, error: "Puanlama silinemedi" }
+        return { success: false, error: "Puanlama silinemedi: " + (error instanceof Error ? error.message : "Bilinmeyen hata") }
     }
 }
 
