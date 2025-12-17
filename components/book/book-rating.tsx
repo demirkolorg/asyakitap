@@ -17,7 +17,8 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { saveBookRating, deleteBookRating, RATING_CATEGORIES, type BookRatingData } from "@/actions/rating"
+import { saveBookRating, deleteBookRating, type BookRatingData } from "@/actions/rating"
+import { RATING_CATEGORIES } from "@/lib/rating-categories"
 import type { BookRating as BookRatingType } from "@prisma/client"
 
 interface BookRatingProps {
