@@ -221,7 +221,15 @@ const getCachedStats = (userId: string) =>
                     include: {
                         challenge: true,
                         books: {
-                            include: { challengeBook: true }
+                            include: {
+                                challengeBook: {
+                                    include: {
+                                        book: {
+                                            select: { status: true }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }),
@@ -351,26 +359,36 @@ const getCachedStats = (userId: string) =>
                 }
             }
 
-            // Process challenge stats
+            // Process challenge stats - kitabın gerçek durumunu (book.status) kullan
             let challengeStats: ChallengeStats | null = null
             if (challengeData) {
-                const mainCompleted = challengeData.books.filter(
-                    b => b.status === 'COMPLETED' && b.challengeBook.role === 'MAIN'
+                // Sadece MAIN kitaplar ilerleme için sayılır
+                const mainBooks = challengeData.books.filter(
+                    b => b.challengeBook.role === 'MAIN'
+                )
+                const mainCompleted = mainBooks.filter(
+                    b => b.challengeBook.book?.status === 'COMPLETED'
                 ).length
-                const bonusCompleted = challengeData.books.filter(
-                    b => b.status === 'COMPLETED' && b.challengeBook.role === 'BONUS'
+
+                // Bonus kitaplar ayrı sayılır
+                const bonusBooks = challengeData.books.filter(
+                    b => b.challengeBook.role === 'BONUS'
+                )
+                const bonusCompleted = bonusBooks.filter(
+                    b => b.challengeBook.book?.status === 'COMPLETED'
                 ).length
-                const totalChallengeBooks = challengeData.books.length
+
+                const totalMainBooks = mainBooks.length
 
                 challengeStats = {
                     hasActiveChallenge: true,
                     year: challengeData.challenge.year,
-                    totalBooks: totalChallengeBooks,
-                    completedBooks: mainCompleted + bonusCompleted,
+                    totalBooks: totalMainBooks, // Sadece ana hedefler
+                    completedBooks: mainCompleted,
                     mainCompleted,
                     bonusCompleted,
-                    percentage: totalChallengeBooks > 0
-                        ? Math.round(((mainCompleted + bonusCompleted) / totalChallengeBooks) * 100)
+                    percentage: totalMainBooks > 0
+                        ? Math.round((mainCompleted / totalMainBooks) * 100)
                         : 0
                 }
             }
