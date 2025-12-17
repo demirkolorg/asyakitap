@@ -82,22 +82,40 @@ export interface FullStatsData {
     bestMonth: { month: string; count: number } | null
 }
 
-// Helper to get monthly data
+// Helper to get monthly data - tüm ayları döndürür (en eskiden en yeniye)
 async function getMonthlyData(userId: string): Promise<MonthlyData[]> {
     const now = new Date()
-    const months: MonthlyData[] = []
 
-    // Last 12 months
-    for (let i = 11; i >= 0; i--) {
-        const date = new Date(now.getFullYear(), now.getMonth() - i, 1)
-        const nextMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 1)
+    // En eski tamamlanan kitabı bul
+    const oldestBook = await prisma.book.findFirst({
+        where: {
+            userId,
+            status: 'COMPLETED',
+            endDate: { not: null }
+        },
+        orderBy: { endDate: 'asc' },
+        select: { endDate: true }
+    })
+
+    // Eğer hiç tamamlanan kitap yoksa son 12 ayı döndür
+    const startDate = oldestBook?.endDate
+        ? new Date(oldestBook.endDate.getFullYear(), oldestBook.endDate.getMonth(), 1)
+        : new Date(now.getFullYear(), now.getMonth() - 11, 1)
+
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1) // Gelecek ayın başı
+
+    const months: MonthlyData[] = []
+    const currentDate = new Date(startDate)
+
+    while (currentDate < endDate) {
+        const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
 
         const books = await prisma.book.findMany({
             where: {
                 userId,
                 status: 'COMPLETED',
                 endDate: {
-                    gte: date,
+                    gte: currentDate,
                     lt: nextMonth
                 }
             },
@@ -105,12 +123,14 @@ async function getMonthlyData(userId: string): Promise<MonthlyData[]> {
         })
 
         months.push({
-            month: date.getMonth() + 1,
-            monthName: TURKISH_MONTHS[date.getMonth()],
-            year: date.getFullYear(),
+            month: currentDate.getMonth() + 1,
+            monthName: TURKISH_MONTHS[currentDate.getMonth()],
+            year: currentDate.getFullYear(),
             booksCompleted: books.length,
             pagesRead: books.reduce((sum, b) => sum + (b.pageCount || 0), 0)
         })
+
+        currentDate.setMonth(currentDate.getMonth() + 1)
     }
 
     return months
