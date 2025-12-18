@@ -5,7 +5,6 @@ import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
 import {
     Dialog,
     DialogContent,
@@ -31,11 +30,9 @@ import {
     Calendar,
     FileText,
     Quote,
-    ChevronDown,
     Clock,
     Plus,
     PenLine,
-    Building2,
     Barcode,
     Bot,
     Loader2,
@@ -45,6 +42,10 @@ import {
     Sparkles,
     Library,
     Star,
+    Heart,
+    Share2,
+    Flag,
+    BookMarked,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -183,6 +184,13 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     }, [])
 
     const progress = book.pageCount ? Math.round((currentPage / book.pageCount) * 100) : 0
+
+    // Okuma süresi hesaplama
+    const readingDays = book.startDate && book.endDate
+        ? Math.ceil((new Date(book.endDate).getTime() - new Date(book.startDate).getTime()) / (1000 * 60 * 60 * 24))
+        : book.startDate
+            ? Math.ceil((new Date().getTime() - new Date(book.startDate).getTime()) / (1000 * 60 * 60 * 24))
+            : null
 
     const handleDeleteBook = async () => {
         setIsDeleting(true)
@@ -416,102 +424,618 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         ADDED_TO_LIST: "Listeye eklendi",
     }
 
-    const statusConfig: Record<BookStatus, { label: string; color: string; bgColor: string }> = {
-        TO_READ: { label: "Okunacak", color: "text-blue-600", bgColor: "bg-blue-600" },
-        READING: { label: "Okunuyor", color: "text-yellow-600", bgColor: "bg-yellow-600" },
-        COMPLETED: { label: "Bitirdim", color: "text-green-600", bgColor: "bg-green-600" },
-        DNF: { label: "Yarım Bırakıldı", color: "text-red-600", bgColor: "bg-red-600" },
+    const statusConfig: Record<BookStatus, { label: string; color: string; bgColor: string; icon: string }> = {
+        TO_READ: { label: "Okunacak", color: "text-blue-500", bgColor: "bg-blue-500", icon: "menu_book" },
+        READING: { label: "Okunuyor", color: "text-primary", bgColor: "bg-primary", icon: "auto_stories" },
+        COMPLETED: { label: "Bitirdim", color: "text-green-500", bgColor: "bg-green-500", icon: "check_circle" },
+        DNF: { label: "Yarım Bırakıldı", color: "text-red-500", bgColor: "bg-red-500", icon: "cancel" },
     }
 
     return (
-        <div className="max-w-5xl mx-auto px-0 md:px-0">
-            {/* Main Book Section - Goodreads Style */}
-            <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-                {/* Left Column - Cover & Actions */}
-                <div className="md:w-[200px] lg:w-[240px] flex-shrink-0">
+        <div className="space-y-6">
+            {/* Hero Section */}
+            <div className="bg-card rounded-xl p-4 md:p-6 border border-border/50 shadow-sm">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                     {/* Book Cover */}
-                    <div className="relative aspect-[2/3] w-32 md:w-full max-w-[240px] mx-auto md:mx-0 bg-muted rounded-lg overflow-hidden shadow-lg">
-                        {book.coverUrl ? (
-                            <Image
-                                src={book.coverUrl.replace("http:", "https:")}
-                                alt={book.title}
-                                fill
-                                className="object-cover"
-                                priority
+                    <div className="w-full md:w-[200px] lg:w-[240px] flex-shrink-0 relative group">
+                        <div className="relative aspect-[2/3] w-40 md:w-full mx-auto rounded-lg overflow-hidden shadow-2xl bg-muted">
+                            {book.coverUrl ? (
+                                <Image
+                                    src={book.coverUrl.replace("http:", "https:")}
+                                    alt={book.title}
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                />
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-muted-foreground">
+                                    <BookOpen className="h-16 w-16" />
+                                </div>
+                            )}
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                        </div>
+                    </div>
+
+                    {/* Book Info */}
+                    <div className="flex-1 w-full flex flex-col gap-4">
+                        <div className="flex justify-between items-start">
+                            <div className="flex flex-col gap-2">
+                                {/* Status Badge */}
+                                <div className={cn(
+                                    "inline-flex items-center gap-2 self-start px-3 py-1 rounded-full border",
+                                    currentStatus === "READING" && "bg-primary/10 border-primary/20",
+                                    currentStatus === "COMPLETED" && "bg-green-500/10 border-green-500/20",
+                                    currentStatus === "TO_READ" && "bg-blue-500/10 border-blue-500/20",
+                                    currentStatus === "DNF" && "bg-red-500/10 border-red-500/20"
+                                )}>
+                                    <BookMarked className={cn(
+                                        "h-4 w-4",
+                                        statusConfig[currentStatus].color
+                                    )} />
+                                    <span className={cn(
+                                        "text-xs font-bold tracking-wide uppercase",
+                                        statusConfig[currentStatus].color
+                                    )}>
+                                        {statusConfig[currentStatus].label}
+                                    </span>
+                                </div>
+
+                                {/* Title */}
+                                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight mt-2">
+                                    {book.title}
+                                </h1>
+
+                                {/* Author & Publisher */}
+                                <div className="flex flex-wrap items-center gap-2 text-base md:text-lg">
+                                    {book.author ? (
+                                        <Link
+                                            href={`/author/${book.author.id}`}
+                                            className="font-medium hover:underline hover:text-primary transition-colors"
+                                        >
+                                            {book.author.name}
+                                        </Link>
+                                    ) : (
+                                        <span className="text-muted-foreground">Bilinmiyor</span>
+                                    )}
+                                    {book.publisher && (
+                                        <>
+                                            <span className="text-muted-foreground">•</span>
+                                            <Link
+                                                href={`/publisher/${book.publisher.id}`}
+                                                className="text-muted-foreground hover:text-foreground transition-colors"
+                                            >
+                                                {book.publisher.name}
+                                            </Link>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Desktop Actions */}
+                            <div className="hidden md:flex gap-2">
+                                <button
+                                    onClick={handleToggleLibrary}
+                                    disabled={isUpdatingLibrary}
+                                    className={cn(
+                                        "h-10 w-10 rounded-full border flex items-center justify-center transition-colors",
+                                        inLibrary
+                                            ? "border-primary/30 text-primary hover:bg-primary/10"
+                                            : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                                    )}
+                                    title={inLibrary ? "Kütüphanemde" : "Kütüphaneme Ekle"}
+                                >
+                                    <Library className="h-5 w-5" />
+                                </button>
+                                <button
+                                    className="h-10 w-10 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
+                                    title="Favorilere Ekle"
+                                >
+                                    <Heart className="h-5 w-5" />
+                                </button>
+                                <button
+                                    className="h-10 w-10 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
+                                    title="Paylaş"
+                                >
+                                    <Share2 className="h-5 w-5" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Description */}
+                        {book.description && (
+                            <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-3xl line-clamp-3">
+                                {book.description}
+                            </p>
+                        )}
+
+                        {/* Primary Actions */}
+                        <div className="flex flex-wrap items-center gap-3 mt-2">
+                            {mounted ? (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            className={cn(
+                                                "h-12 px-6 text-base font-bold rounded-full shadow-lg transition-all",
+                                                currentStatus === "READING" && "bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/20 hover:shadow-primary/40",
+                                                currentStatus === "COMPLETED" && "bg-green-500 hover:bg-green-600 text-white",
+                                                currentStatus === "TO_READ" && "bg-blue-500 hover:bg-blue-600 text-white",
+                                                currentStatus === "DNF" && "bg-red-500 hover:bg-red-600 text-white"
+                                            )}
+                                            disabled={isUpdatingStatus}
+                                        >
+                                            <Pencil className="h-5 w-5 mr-2" />
+                                            {isUpdatingStatus ? "Güncelleniyor..." : "Durumu Güncelle"}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-[200px]">
+                                        {currentStatus === "TO_READ" && (
+                                            <DropdownMenuItem onClick={() => handleStartReading(false)}>
+                                                <PlayCircle className="mr-2 h-4 w-4" />
+                                                Okumaya Başla
+                                            </DropdownMenuItem>
+                                        )}
+                                        {currentStatus === "READING" && (
+                                            <>
+                                                <DropdownMenuItem onClick={() => setShowProgressDialog(true)}>
+                                                    <BookOpen className="mr-2 h-4 w-4" />
+                                                    İlerleme Güncelle
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={handleFinishReading}>
+                                                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                                                    Bitirdim
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={handleAbandonReading}>
+                                                    <XCircle className="mr-2 h-4 w-4" />
+                                                    Bıraktım
+                                                </DropdownMenuItem>
+                                            </>
+                                        )}
+                                        {(currentStatus === "COMPLETED" || currentStatus === "DNF") && (
+                                            <>
+                                                <DropdownMenuItem onClick={() => handleStartReading(true)}>
+                                                    <RotateCcw className="mr-2 h-4 w-4" />
+                                                    Tekrar Oku
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={handleResetToList}>
+                                                    <BookOpen className="mr-2 h-4 w-4" />
+                                                    Listeye Ekle
+                                                </DropdownMenuItem>
+                                            </>
+                                        )}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            ) : (
+                                <Button
+                                    className="h-12 px-6 text-base font-bold rounded-full"
+                                    disabled
+                                >
+                                    {statusConfig[currentStatus].label}
+                                </Button>
+                            )}
+
+                            {/* More Options */}
+                            {mounted && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
+                                            <MoreHorizontal className="h-5 w-5" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-[200px]">
+                                        <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
+                                            <Pencil className="mr-2 h-4 w-4" />
+                                            Düzenle
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            onClick={() => setShowDeleteDialog(true)}
+                                            className="text-destructive focus:text-destructive"
+                                        >
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Sil
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Statistics Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+                {/* Ortalama Puan */}
+                {book.rating && (
+                    <div className="flex flex-col justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/50 transition-colors group">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Star className="h-5 w-5 text-yellow-500 fill-yellow-500 group-hover:text-yellow-400 transition-colors" />
+                            <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Ortalama Puan</p>
+                        </div>
+                        <p className="text-2xl font-bold">
+                            {book.rating.ortalamaPuan.toFixed(1)}
+                            <span className="text-sm text-muted-foreground font-normal">/10</span>
+                        </p>
+                    </div>
+                )}
+
+                {/* Sayfa Sayısı */}
+                {book.pageCount && (
+                    <div className="flex flex-col justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/50 transition-colors group">
+                        <div className="flex items-center gap-2 mb-2">
+                            <BookOpen className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Sayfa Sayısı</p>
+                        </div>
+                        <p className="text-2xl font-bold">{book.pageCount}</p>
+                    </div>
+                )}
+
+                {/* Alıntı */}
+                <div className="flex flex-col justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/50 transition-colors group">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Quote className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                        <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Alıntı</p>
+                    </div>
+                    <p className="text-2xl font-bold">{book.quotes.length}</p>
+                </div>
+
+                {/* Okuma Süresi */}
+                {readingDays !== null && (
+                    <div className="flex flex-col justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/50 transition-colors group">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Calendar className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Okuma Süresi</p>
+                        </div>
+                        <p className="text-2xl font-bold">{readingDays} Gün</p>
+                    </div>
+                )}
+
+                {/* Yayın */}
+                {book.publishedDate && (
+                    <div className="flex flex-col justify-between p-4 rounded-xl border border-border/50 bg-card hover:bg-muted/50 transition-colors group">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Yayın</p>
+                        </div>
+                        <p className="text-2xl font-bold">{book.publishedDate}</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Layout Split: Main Content & Sidebar */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Main Column (Tabs & Content) */}
+                <div className="lg:col-span-2 flex flex-col gap-6">
+                    {/* Navigation Tabs */}
+                    <div className="flex overflow-x-auto bg-card p-1.5 rounded-2xl border border-border/50 gap-1">
+                        <button
+                            onClick={() => setActiveSection("tortu")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                activeSection === "tortu"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Tortu
+                        </button>
+                        <button
+                            onClick={() => setActiveSection("imza")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                activeSection === "imza"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            İmza
+                        </button>
+                        <button
+                            onClick={() => setActiveSection("quotes")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                activeSection === "quotes"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Alıntılar
+                        </button>
+                        {currentStatus === "COMPLETED" && (
+                            <button
+                                onClick={() => setActiveSection("rating")}
+                                className={cn(
+                                    "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                    activeSection === "rating"
+                                        ? "bg-primary text-primary-foreground shadow-sm"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                )}
+                            >
+                                Puanlama
+                            </button>
+                        )}
+                        <button
+                            onClick={() => setActiveSection("history")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                activeSection === "history"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Geçmiş
+                        </button>
+                    </div>
+
+                    {/* Tab Content */}
+                    <div className="bg-card rounded-xl border border-border/50 p-4 md:p-6">
+                        {/* Tortu Section */}
+                        {activeSection === "tortu" && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <FileText className="h-5 w-5 text-primary" />
+                                        Tortu
+                                    </h3>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    Kitabın sende bıraktığı izler, düşünceler ve notlar. Okurken veya okuduktan sonra aklına gelenler.
+                                </p>
+                                <TortuEditor
+                                    initialContent={tortu}
+                                    onChange={(content) => setTortu(content)}
+                                />
+                                <div className="flex justify-end gap-2">
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleAnalyzeTortu}
+                                        disabled={isAnalyzingTortu || tortu.trim().length < 50}
+                                    >
+                                        {isAnalyzingTortu ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Yorumlanıyor...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Bot className="h-4 w-4 mr-2" />
+                                                AI Yorumu Al
+                                            </>
+                                        )}
+                                    </Button>
+                                    <Button onClick={handleSaveTortu} disabled={isSavingTortu}>
+                                        {isSavingTortu ? "Kaydediliyor..." : "Kaydet"}
+                                    </Button>
+                                </div>
+
+                                {/* AI Yorum Kartı */}
+                                {(isAnalyzingTortu || tortuAiComment) && (
+                                    <div className="mt-4 rounded-xl border border-violet-200 dark:border-violet-800 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30 overflow-hidden">
+                                        <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-violet-200 dark:border-violet-800 bg-violet-100/50 dark:bg-violet-900/30">
+                                            <div className="flex items-center gap-2">
+                                                <Bot className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                                                <span className="font-medium text-violet-700 dark:text-violet-300">AI Yorumu</span>
+                                            </div>
+                                            {tortuAiComment && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={handleAnalyzeTortu}
+                                                    disabled={isAnalyzingTortu}
+                                                    className="h-7 text-xs text-violet-600 hover:text-violet-700 hover:bg-violet-100 dark:text-violet-400 dark:hover:bg-violet-900/50"
+                                                >
+                                                    <RefreshCw className={cn("h-3 w-3 mr-1", isAnalyzingTortu && "animate-spin")} />
+                                                    Yenile
+                                                </Button>
+                                            )}
+                                        </div>
+                                        <div className="p-4">
+                                            {isAnalyzingTortu ? (
+                                                <div className="flex items-center justify-center py-8">
+                                                    <Loader2 className="h-6 w-6 animate-spin text-violet-500" />
+                                                    <span className="ml-2 text-muted-foreground">Düşünceleriniz yorumlanıyor...</span>
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{tortuAiComment}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Imza Section */}
+                        {activeSection === "imza" && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <PenLine className="h-5 w-5 text-primary" />
+                                        İmza
+                                    </h3>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    {book.author ? (
+                                        <>
+                                            <Link href={`/author/${book.author.id}`} className="text-primary hover:underline">
+                                                {book.author.name}
+                                            </Link>
+                                            &apos;in bu kitaptaki üslubu, tarzı ve dili hakkında notların
+                                        </>
+                                    ) : (
+                                        "Yazarın bu kitaptaki üslubu, tarzı ve dili hakkında notların"
+                                    )}
+                                </p>
+                                <ImzaEditor
+                                    initialContent={imza}
+                                    onChange={(content) => setImza(content)}
+                                    authorName={book.author?.name}
+                                />
+                                <div className="flex justify-end gap-2">
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleAnalyzeImza}
+                                        disabled={isAnalyzingImza || imza.trim().length < 50}
+                                    >
+                                        {isAnalyzingImza ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Yorumlanıyor...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Bot className="h-4 w-4 mr-2" />
+                                                AI Yorumu Al
+                                            </>
+                                        )}
+                                    </Button>
+                                    <Button onClick={handleSaveImza} disabled={isSavingImza}>
+                                        {isSavingImza ? "Kaydediliyor..." : "Kaydet"}
+                                    </Button>
+                                </div>
+
+                                {/* AI Yorum Kartı */}
+                                {(isAnalyzingImza || imzaAiComment) && (
+                                    <div className="mt-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 overflow-hidden">
+                                        <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-emerald-200 dark:border-emerald-800 bg-emerald-100/50 dark:bg-emerald-900/30">
+                                            <div className="flex items-center gap-2">
+                                                <Bot className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                                                <span className="font-medium text-emerald-700 dark:text-emerald-300">AI Yorumu</span>
+                                            </div>
+                                            {imzaAiComment && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={handleAnalyzeImza}
+                                                    disabled={isAnalyzingImza}
+                                                    className="h-7 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100 dark:text-emerald-400 dark:hover:bg-emerald-900/50"
+                                                >
+                                                    <RefreshCw className={cn("h-3 w-3 mr-1", isAnalyzingImza && "animate-spin")} />
+                                                    Yenile
+                                                </Button>
+                                            )}
+                                        </div>
+                                        <div className="p-4">
+                                            {isAnalyzingImza ? (
+                                                <div className="flex items-center justify-center py-8">
+                                                    <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
+                                                    <span className="ml-2 text-muted-foreground">Üslup analiziniz yorumlanıyor...</span>
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{imzaAiComment}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Quotes Section */}
+                        {activeSection === "quotes" && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <Quote className="h-5 w-5 text-primary" />
+                                        Alıntılar
+                                    </h3>
+                                    <Button onClick={() => setShowQuoteDialog(true)}>
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Alıntı Ekle
+                                    </Button>
+                                </div>
+
+                                {book.quotes.length === 0 ? (
+                                    <p className="text-muted-foreground text-center py-8">
+                                        Henüz alıntı eklenmemiş
+                                    </p>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {book.quotes.map((quote) => (
+                                            <div
+                                                key={quote.id}
+                                                className="p-4 rounded-lg bg-muted/50 border border-border/50 relative"
+                                            >
+                                                <Quote className="absolute top-4 right-4 h-6 w-6 text-primary/20" />
+                                                <blockquote className="italic text-muted-foreground pr-8">
+                                                    &quot;{quote.content}&quot;
+                                                </blockquote>
+                                                {quote.page && (
+                                                    <p className="text-xs text-primary mt-2 text-right font-medium">
+                                                        Sayfa {quote.page}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Rating Section - Sadece tamamlanan kitaplar için */}
+                        {activeSection === "rating" && currentStatus === "COMPLETED" && (
+                            <BookRatingComponent
+                                bookId={book.id}
+                                rating={book.rating}
+                                isCompleted={true}
+                                inTab={true}
                             />
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-muted-foreground">
-                                <BookOpen className="h-16 w-16" />
+                        )}
+
+                        {/* History Section */}
+                        {activeSection === "history" && (
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
+                                    <Clock className="h-5 w-5 text-primary" />
+                                    Okuma Geçmişi
+                                </h3>
+                                {book.readingLogs.length === 0 ? (
+                                    <p className="text-muted-foreground text-center py-8">
+                                        Henüz kayıt yok
+                                    </p>
+                                ) : (
+                                    <div className="relative pl-6 border-l-2 border-muted space-y-6">
+                                        {book.readingLogs.map((log) => (
+                                            <div key={log.id} className="relative">
+                                                <div className="absolute -left-[25px] w-3 h-3 rounded-full bg-primary" />
+                                                <div>
+                                                    <p className="font-medium">{actionLabels[log.action]}</p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {formatDate(log.createdAt, { format: "long" })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
+                </div>
 
-                    {/* Action Buttons */}
-                    <div className="mt-4 space-y-2">
-                        {/* Main Status Button with Dropdown */}
-                        {mounted ? (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button
-                                        className={cn(
-                                            "w-full justify-between text-white",
-                                            statusConfig[currentStatus].bgColor,
-                                            "hover:opacity-90"
-                                        )}
-                                        disabled={isUpdatingStatus}
-                                    >
-                                        {isUpdatingStatus ? "Güncelleniyor..." : statusConfig[currentStatus].label}
-                                        <ChevronDown className="h-4 w-4 ml-2" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-[200px]">
-                                    {currentStatus === "TO_READ" && (
-                                        <DropdownMenuItem onClick={() => handleStartReading(false)}>
-                                            <PlayCircle className="mr-2 h-4 w-4" />
-                                            Okumaya Başla
-                                        </DropdownMenuItem>
-                                    )}
-                                    {currentStatus === "READING" && (
-                                        <>
-                                            <DropdownMenuItem onClick={handleFinishReading}>
-                                                <CheckCircle2 className="mr-2 h-4 w-4" />
-                                                Bitirdim
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={handleAbandonReading}>
-                                                <XCircle className="mr-2 h-4 w-4" />
-                                                Bıraktım
-                                            </DropdownMenuItem>
-                                        </>
-                                    )}
-                                    {(currentStatus === "COMPLETED" || currentStatus === "DNF") && (
-                                        <>
-                                            <DropdownMenuItem onClick={() => handleStartReading(true)}>
-                                                <RotateCcw className="mr-2 h-4 w-4" />
-                                                Tekrar Oku
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={handleResetToList}>
-                                                <BookOpen className="mr-2 h-4 w-4" />
-                                                Listeye Ekle
-                                            </DropdownMenuItem>
-                                        </>
-                                    )}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        ) : (
-                            <Button
-                                className={cn(
-                                    "w-full justify-between text-white",
-                                    statusConfig[currentStatus].bgColor
-                                )}
-                                disabled
-                            >
-                                {statusConfig[currentStatus].label}
-                                <ChevronDown className="h-4 w-4 ml-2" />
-                            </Button>
-                        )}
-
-                        {/* Progress Update (only when reading) */}
-                        {currentStatus === "READING" && book.pageCount && (
+                {/* Sidebar */}
+                <div className="flex flex-col gap-6">
+                    {/* Reading Progress */}
+                    {currentStatus === "READING" && book.pageCount && (
+                        <div className="bg-card rounded-xl border border-border/50 p-4 md:p-6 flex flex-col gap-4">
+                            <h4 className="text-lg font-bold">Okuma İlerlemesi</h4>
+                            <div className="flex items-center justify-between">
+                                <span className="text-muted-foreground text-sm">
+                                    Sayfa {currentPage} / {book.pageCount}
+                                </span>
+                                <span className="text-primary font-bold text-sm">%{progress}</span>
+                            </div>
+                            <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-primary rounded-full transition-all"
+                                    style={{ width: `${progress}%` }}
+                                />
+                            </div>
+                            <div className="flex items-center gap-3 mt-2 p-3 rounded-lg bg-muted/50">
+                                <Flag className="h-5 w-5 text-primary" />
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-muted-foreground">Hedef</span>
+                                    <span className="text-sm font-medium">Haftalık 50 Sayfa</span>
+                                </div>
+                            </div>
                             <Button
                                 variant="outline"
                                 className="w-full"
@@ -519,633 +1043,101 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             >
                                 İlerleme Güncelle
                             </Button>
-                        )}
+                        </div>
+                    )}
 
-                        {/* More Options */}
-                        {mounted ? (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="w-full">
-                                        <MoreHorizontal className="h-4 w-4 mr-2" />
-                                        Diğer İşlemler
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-[200px]">
-                                    <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
-                                        <Pencil className="mr-2 h-4 w-4" />
-                                        Düzenle
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        onClick={() => setShowDeleteDialog(true)}
-                                        className="text-destructive focus:text-destructive"
-                                    >
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Sil
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        ) : (
-                            <Button variant="ghost" className="w-full" disabled>
-                                <MoreHorizontal className="h-4 w-4 mr-2" />
-                                Diğer İşlemler
-                            </Button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Right Column - Book Details */}
-                <div className="flex-1 min-w-0">
-                    {/* Title & Author & Publisher */}
-                    <div className="mb-4 text-center md:text-left">
-                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                            {book.title}
-                        </h1>
-                        <p className="text-base md:text-xl text-muted-foreground mt-1">
-                            <span className="text-muted-foreground/70">yazan </span>
-                            {book.author ? (
-                                <Link href={`/author/${book.author.id}`} className="text-foreground hover:underline">
-                                    {book.author.name}
-                                </Link>
-                            ) : (
-                                <span className="text-muted-foreground">Bilinmiyor</span>
+                    {/* Book Details List */}
+                    <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+                        <div className="p-4 border-b border-border/50">
+                            <h4 className="text-lg font-bold">Kitap Bilgileri</h4>
+                        </div>
+                        <div className="divide-y divide-border/50">
+                            {book.isbn && (
+                                <div className="flex justify-between items-center p-4 hover:bg-muted/30 transition-colors">
+                                    <span className="text-muted-foreground text-sm">ISBN</span>
+                                    <span className="text-sm font-mono tracking-wide">{book.isbn}</span>
+                                </div>
                             )}
-                            {book.publisher && (
-                                <>
-                                    <span className="text-muted-foreground/70"> · yayınlayan </span>
-                                    <Link href={`/publisher/${book.publisher.id}`} className="text-foreground hover:underline">
-                                        {book.publisher.name}
-                                    </Link>
-                                </>
+                            {book.pageCount && (
+                                <div className="flex justify-between items-center p-4 hover:bg-muted/30 transition-colors">
+                                    <span className="text-muted-foreground text-sm">Sayfa</span>
+                                    <span className="text-sm">{book.pageCount}</span>
+                                </div>
                             )}
-                        </p>
+                            {book.publishedDate && (
+                                <div className="flex justify-between items-center p-4 hover:bg-muted/30 transition-colors">
+                                    <span className="text-muted-foreground text-sm">Yayın Tarihi</span>
+                                    <span className="text-sm">{book.publishedDate}</span>
+                                </div>
+                            )}
+                            {book.startDate && (
+                                <div className="flex justify-between items-center p-4 hover:bg-muted/30 transition-colors">
+                                    <span className="text-muted-foreground text-sm">Başlangıç</span>
+                                    <span className="text-sm">
+                                        {formatDate(book.startDate, { format: "short", dateOnly: true })}
+                                    </span>
+                                </div>
+                            )}
+                            {book.endDate && (
+                                <div className="flex justify-between items-center p-4 hover:bg-muted/30 transition-colors">
+                                    <span className="text-muted-foreground text-sm">Bitiş</span>
+                                    <span className="text-sm">
+                                        {formatDate(book.endDate, { format: "short", dateOnly: true })}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Library Toggle */}
-                    <div className="flex flex-wrap gap-2 md:gap-3 mb-4 justify-center md:justify-start">
-                        <button
-                            onClick={handleToggleLibrary}
-                            disabled={isUpdatingLibrary}
-                            className={cn(
-                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm transition-colors",
-                                inLibrary
-                                    ? "bg-green-500/10 text-green-700 hover:bg-green-500/20 border border-green-500/30"
-                                    : "bg-muted hover:bg-muted/80 text-muted-foreground"
-                            )}
-                        >
-                            <Library className="h-3.5 w-3.5" />
-                            {isUpdatingLibrary ? "..." : inLibrary ? "Kütüphanemde" : "Kütüphaneme Ekle"}
-                        </button>
-                    </div>
-
-                    {/* Reading Lists & Challenges - Detaylı Kartlar */}
+                    {/* Reading Lists & Challenges */}
                     {(book.readingListBooks.length > 0 || book.challengeBooks.length > 0) && (
-                        <div className="space-y-3 mb-6">
+                        <div className="bg-card rounded-xl border border-border/50 p-4 flex flex-col gap-3">
+                            <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                                Listelerim
+                            </h4>
+
                             {/* Reading Lists */}
                             {book.readingListBooks.map((rlb) => (
-                                <div
+                                <Link
                                     key={rlb.id}
-                                    className="p-4 rounded-xl bg-primary/5 border border-primary/20"
+                                    href={`/reading-lists/${rlb.level.readingList.slug}`}
+                                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors group"
                                 >
-                                    <div className="flex items-start gap-3">
-                                        {/* Liste Kapağı */}
-                                        {rlb.level.readingList.coverUrl && (
-                                            <div className="relative h-16 w-12 flex-shrink-0 rounded overflow-hidden bg-muted">
-                                                <Image
-                                                    src={rlb.level.readingList.coverUrl}
-                                                    alt={rlb.level.readingList.name}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                        )}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between gap-2 mb-1">
-                                                <div className="flex items-center gap-2">
-                                                    <Map className="h-4 w-4 text-primary flex-shrink-0" />
-                                                    <h4 className="font-semibold text-sm">{rlb.level.readingList.name}</h4>
-                                                </div>
-                                                <Link
-                                                    href={`/reading-lists/${rlb.level.readingList.slug}`}
-                                                    className="text-xs px-2 py-1 rounded bg-primary/10 hover:bg-primary/20 text-primary font-medium transition-colors flex-shrink-0"
-                                                >
-                                                    Listeye Git →
-                                                </Link>
-                                            </div>
-                                            {rlb.level.readingList.description && (
-                                                <p className="text-xs text-muted-foreground mb-2">
-                                                    {rlb.level.readingList.description}
-                                                </p>
-                                            )}
-                                            <div className="flex items-center gap-2 text-xs">
-                                                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                                                    Seviye {rlb.level.levelNumber}: {rlb.level.name}
-                                                </span>
-                                            </div>
-                                            {rlb.level.description && (
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    {rlb.level.description}
-                                                </p>
-                                            )}
-                                            {rlb.neden && (
-                                                <p className="text-xs mt-2 p-2 rounded bg-primary/5 border border-primary/10">
-                                                    <span className="font-medium text-primary">Neden bu listede: </span>
-                                                    {rlb.neden}
-                                                </p>
-                                            )}
-                                        </div>
+                                    <div className="h-8 w-8 rounded bg-purple-500/20 text-purple-500 flex items-center justify-center border border-purple-500/30">
+                                        <Map className="h-4 w-4" />
                                     </div>
-                                </div>
+                                    <span className="font-medium group-hover:text-primary transition-colors text-sm">
+                                        {rlb.level.readingList.name}
+                                    </span>
+                                </Link>
                             ))}
 
                             {/* Challenges */}
                             {book.challengeBooks.map((cb) => (
-                                <div
+                                <Link
                                     key={cb.id}
-                                    className={cn(
-                                        "p-4 rounded-xl border",
-                                        cb.role === "MAIN"
-                                            ? "bg-amber-500/5 border-amber-500/20"
-                                            : "bg-purple-500/5 border-purple-500/20"
-                                    )}
+                                    href={`/challenges/${cb.month.challenge.year}`}
+                                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors group"
                                 >
-                                    <div className="flex items-start gap-3">
-                                        {/* Tema İkonu */}
-                                        <div className={cn(
-                                            "w-12 h-12 rounded-lg flex items-center justify-center text-2xl flex-shrink-0",
-                                            cb.role === "MAIN" ? "bg-amber-500/10" : "bg-purple-500/10"
-                                        )}>
-                                            {cb.month.themeIcon || "📚"}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between gap-2 mb-1">
-                                                <div className="flex items-center gap-2">
-                                                    {cb.role === "MAIN" ? (
-                                                        <Target className="h-4 w-4 text-amber-600 flex-shrink-0" />
-                                                    ) : (
-                                                        <Sparkles className="h-4 w-4 text-purple-600 flex-shrink-0" />
-                                                    )}
-                                                    <h4 className="font-semibold text-sm">{cb.month.challenge.name}</h4>
-                                                    <span className={cn(
-                                                        "text-[10px] px-1.5 py-0.5 rounded font-medium",
-                                                        cb.role === "MAIN"
-                                                            ? "bg-amber-500/20 text-amber-700 dark:text-amber-400"
-                                                            : "bg-purple-500/20 text-purple-700 dark:text-purple-400"
-                                                    )}>
-                                                        {cb.role === "MAIN" ? "Ana Hedef" : "Bonus"}
-                                                    </span>
-                                                </div>
-                                                <Link
-                                                    href={`/challenges/${cb.month.challenge.year}`}
-                                                    className={cn(
-                                                        "text-xs px-2 py-1 rounded font-medium transition-colors flex-shrink-0",
-                                                        cb.role === "MAIN"
-                                                            ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400"
-                                                            : "bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-400"
-                                                    )}
-                                                >
-                                                    Hedefe Git →
-                                                </Link>
-                                            </div>
-                                            {cb.month.challenge.description && (
-                                                <p className="text-xs text-muted-foreground mb-2">
-                                                    {cb.month.challenge.description}
-                                                </p>
-                                            )}
-                                            <div className="flex items-center gap-2 text-xs mb-1">
-                                                <span className={cn(
-                                                    "px-2 py-0.5 rounded-full font-medium",
-                                                    cb.role === "MAIN"
-                                                        ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
-                                                        : "bg-purple-500/10 text-purple-700 dark:text-purple-400"
-                                                )}>
-                                                    {cb.month.monthName} {cb.month.challenge.year}
-                                                </span>
-                                                {cb.month.theme && (
-                                                    <span className="text-muted-foreground">
-                                                        Tema: {cb.month.theme}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            {cb.reason && (
-                                                <p className={cn(
-                                                    "text-xs mt-2 p-2 rounded border",
-                                                    cb.role === "MAIN"
-                                                        ? "bg-amber-500/5 border-amber-500/10"
-                                                        : "bg-purple-500/5 border-purple-500/10"
-                                                )}>
-                                                    <span className={cn(
-                                                        "font-medium",
-                                                        cb.role === "MAIN" ? "text-amber-600" : "text-purple-600"
-                                                    )}>Neden bu hedefte: </span>
-                                                    {cb.reason}
-                                                </p>
-                                            )}
-                                        </div>
+                                    <div className={cn(
+                                        "h-8 w-8 rounded flex items-center justify-center border",
+                                        cb.role === "MAIN"
+                                            ? "bg-amber-500/20 text-amber-500 border-amber-500/30"
+                                            : "bg-blue-500/20 text-blue-500 border-blue-500/30"
+                                    )}>
+                                        {cb.role === "MAIN" ? (
+                                            <Target className="h-4 w-4" />
+                                        ) : (
+                                            <Sparkles className="h-4 w-4" />
+                                        )}
                                     </div>
-                                </div>
+                                    <span className="font-medium group-hover:text-primary transition-colors text-sm">
+                                        {cb.month.challenge.year} Okuma Hedefi
+                                    </span>
+                                </Link>
                             ))}
                         </div>
                     )}
-
-                    {/* Progress Bar (when reading) */}
-                    {currentStatus === "READING" && book.pageCount && (
-                        <div className="mb-6 p-4 bg-muted/50 rounded-lg">
-                            <div className="flex items-center justify-between text-sm mb-2">
-                                <span className="text-muted-foreground">İlerleme</span>
-                                <span className="font-medium">{progress}%</span>
-                            </div>
-                            <Progress value={progress} className="h-2" />
-                            <p className="text-sm text-muted-foreground mt-2">
-                                {currentPage} / {book.pageCount} sayfa okundu
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Book Stats - Modern Grid */}
-                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 py-4">
-                        {/* Rating */}
-                        {book.rating && (
-                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
-                                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 mb-1" />
-                                <span className="text-base md:text-lg font-bold text-yellow-600 dark:text-yellow-400">
-                                    {book.rating.ortalamaPuan.toFixed(1)}
-                                </span>
-                                <span className="text-[9px] text-yellow-600/70 dark:text-yellow-400/70">puan</span>
-                            </div>
-                        )}
-
-                        {/* Sayfa */}
-                        {book.pageCount && (
-                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                                <BookOpen className="h-4 w-4 text-blue-500 mb-1" />
-                                <span className="text-base md:text-lg font-bold text-blue-600 dark:text-blue-400">
-                                    {book.pageCount}
-                                </span>
-                                <span className="text-[9px] text-blue-600/70 dark:text-blue-400/70">sayfa</span>
-                            </div>
-                        )}
-
-                        {/* Alıntı */}
-                        <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                            <Quote className="h-4 w-4 text-amber-500 mb-1" />
-                            <span className="text-base md:text-lg font-bold text-amber-600 dark:text-amber-400">
-                                {book.quotes.length}
-                            </span>
-                            <span className="text-[9px] text-amber-600/70 dark:text-amber-400/70">alıntı</span>
-                        </div>
-
-                        {/* Başlangıç */}
-                        {book.startDate && (
-                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-green-500/10 border border-green-500/20">
-                                <Calendar className="h-4 w-4 text-green-500 mb-1" />
-                                <span className="text-xs md:text-sm font-bold text-green-600 dark:text-green-400">
-                                    {formatDate(book.startDate, { format: "day-month", dateOnly: true })}
-                                </span>
-                                <span className="text-[9px] text-green-600/70 dark:text-green-400/70">başlangıç</span>
-                            </div>
-                        )}
-
-                        {/* Bitiş */}
-                        {book.endDate && (
-                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                                <CheckCircle2 className="h-4 w-4 text-emerald-500 mb-1" />
-                                <span className="text-xs md:text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                                    {formatDate(book.endDate, { format: "day-month", dateOnly: true })}
-                                </span>
-                                <span className="text-[9px] text-emerald-600/70 dark:text-emerald-400/70">bitiş</span>
-                            </div>
-                        )}
-
-                        {/* Yayın Tarihi */}
-                        {book.publishedDate && (
-                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20">
-                                <Calendar className="h-4 w-4 text-violet-500 mb-1" />
-                                <span className="text-xs md:text-sm font-bold text-violet-600 dark:text-violet-400">
-                                    {book.publishedDate}
-                                </span>
-                                <span className="text-[9px] text-violet-600/70 dark:text-violet-400/70">yayın</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* ISBN - Ayrı satır */}
-                    {book.isbn && (
-                        <div className="flex items-center justify-center md:justify-start gap-2 pb-4 text-xs text-muted-foreground">
-                            <Barcode className="h-3.5 w-3.5" />
-                            <span>ISBN: {book.isbn}</span>
-                        </div>
-                    )}
-
-                    {/* Kitap Açıklaması */}
-                    {book.description && (
-                        <div className="py-4 border-t">
-                            <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-                                <FileText className="h-4 w-4 text-muted-foreground" />
-                                Kitap Hakkında
-                            </h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                                {book.description}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Tabs/Sections */}
-                    <div className="mt-4 md:mt-6">
-                        <div className="flex gap-0.5 md:gap-1 border-b overflow-x-auto">
-                            <button
-                                onClick={() => setActiveSection("tortu")}
-                                className={cn(
-                                    "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-                                    activeSection === "tortu"
-                                        ? "border-primary text-primary"
-                                        : "border-transparent text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <FileText className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
-                                Tortu
-                            </button>
-                            <button
-                                onClick={() => setActiveSection("imza")}
-                                className={cn(
-                                    "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-                                    activeSection === "imza"
-                                        ? "border-primary text-primary"
-                                        : "border-transparent text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <PenLine className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
-                                İmza
-                            </button>
-                            <button
-                                onClick={() => setActiveSection("quotes")}
-                                className={cn(
-                                    "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-                                    activeSection === "quotes"
-                                        ? "border-primary text-primary"
-                                        : "border-transparent text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <Quote className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
-                                Alıntı ({book.quotes.length})
-                            </button>
-                            {currentStatus === "COMPLETED" && (
-                                <button
-                                    onClick={() => setActiveSection("rating")}
-                                    className={cn(
-                                        "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-                                        activeSection === "rating"
-                                            ? "border-primary text-primary"
-                                            : "border-transparent text-muted-foreground hover:text-foreground"
-                                    )}
-                                >
-                                    <Star className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
-                                    Puanlama
-                                </button>
-                            )}
-                            <button
-                                onClick={() => setActiveSection("history")}
-                                className={cn(
-                                    "px-2 md:px-4 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-                                    activeSection === "history"
-                                        ? "border-primary text-primary"
-                                        : "border-transparent text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <Clock className="h-3 w-3 md:h-4 md:w-4 inline mr-1 md:mr-2" />
-                                Geçmiş
-                            </button>
-                        </div>
-
-                        {/* Section Content */}
-                        <div className="mt-6">
-                            {/* Tortu Section */}
-                            {activeSection === "tortu" && (
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                                        <FileText className="h-4 w-4" />
-                                        <span>
-                                            Kitabın sende bıraktığı izler, düşünceler ve notlar. Okurken veya okuduktan sonra aklına gelenler.
-                                        </span>
-                                    </div>
-                                    <TortuEditor
-                                        initialContent={tortu}
-                                        onChange={(content) => setTortu(content)}
-                                    />
-                                    <div className="flex justify-end gap-2">
-                                        <Button
-                                            variant="outline"
-                                            onClick={handleAnalyzeTortu}
-                                            disabled={isAnalyzingTortu || tortu.trim().length < 50}
-                                        >
-                                            {isAnalyzingTortu ? (
-                                                <>
-                                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                    Yorumlanıyor...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Bot className="h-4 w-4 mr-2" />
-                                                    AI Yorumu Al
-                                                </>
-                                            )}
-                                        </Button>
-                                        <Button onClick={handleSaveTortu} disabled={isSavingTortu}>
-                                            {isSavingTortu ? "Kaydediliyor..." : "Kaydet"}
-                                        </Button>
-                                    </div>
-
-                                    {/* AI Yorum Kartı */}
-                                    {(isAnalyzingTortu || tortuAiComment) && (
-                                        <div className="mt-4 rounded-xl border border-violet-200 dark:border-violet-800 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30 overflow-hidden">
-                                            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-violet-200 dark:border-violet-800 bg-violet-100/50 dark:bg-violet-900/30">
-                                                <div className="flex items-center gap-2">
-                                                    <Bot className="h-5 w-5 text-violet-600 dark:text-violet-400" />
-                                                    <span className="font-medium text-violet-700 dark:text-violet-300">AI Yorumu</span>
-                                                </div>
-                                                {tortuAiComment && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={handleAnalyzeTortu}
-                                                        disabled={isAnalyzingTortu}
-                                                        className="h-7 text-xs text-violet-600 hover:text-violet-700 hover:bg-violet-100 dark:text-violet-400 dark:hover:bg-violet-900/50"
-                                                    >
-                                                        <RefreshCw className={cn("h-3 w-3 mr-1", isAnalyzingTortu && "animate-spin")} />
-                                                        Yenile
-                                                    </Button>
-                                                )}
-                                            </div>
-                                            <div className="p-4">
-                                                {isAnalyzingTortu ? (
-                                                    <div className="flex items-center justify-center py-8">
-                                                        <Loader2 className="h-6 w-6 animate-spin text-violet-500" />
-                                                        <span className="ml-2 text-muted-foreground">Düşünceleriniz yorumlanıyor...</span>
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{tortuAiComment}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Imza Section */}
-                            {activeSection === "imza" && (
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                                        <PenLine className="h-4 w-4" />
-                                        <span>
-                                            {book.author ? (
-                                                <>
-                                                    <Link href={`/author/${book.author.id}`} className="text-primary hover:underline">
-                                                        {book.author.name}
-                                                    </Link>
-                                                    &apos;in bu kitaptaki üslubu, tarzı ve dili hakkında notların
-                                                </>
-                                            ) : (
-                                                "Yazarın bu kitaptaki üslubu, tarzı ve dili hakkında notların"
-                                            )}
-                                        </span>
-                                    </div>
-                                    <ImzaEditor
-                                        initialContent={imza}
-                                        onChange={(content) => setImza(content)}
-                                        authorName={book.author?.name}
-                                    />
-                                    <div className="flex justify-end gap-2">
-                                        <Button
-                                            variant="outline"
-                                            onClick={handleAnalyzeImza}
-                                            disabled={isAnalyzingImza || imza.trim().length < 50}
-                                        >
-                                            {isAnalyzingImza ? (
-                                                <>
-                                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                    Yorumlanıyor...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Bot className="h-4 w-4 mr-2" />
-                                                    AI Yorumu Al
-                                                </>
-                                            )}
-                                        </Button>
-                                        <Button onClick={handleSaveImza} disabled={isSavingImza}>
-                                            {isSavingImza ? "Kaydediliyor..." : "Kaydet"}
-                                        </Button>
-                                    </div>
-
-                                    {/* AI Yorum Kartı */}
-                                    {(isAnalyzingImza || imzaAiComment) && (
-                                        <div className="mt-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 overflow-hidden">
-                                            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-emerald-200 dark:border-emerald-800 bg-emerald-100/50 dark:bg-emerald-900/30">
-                                                <div className="flex items-center gap-2">
-                                                    <Bot className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                                    <span className="font-medium text-emerald-700 dark:text-emerald-300">AI Yorumu</span>
-                                                </div>
-                                                {imzaAiComment && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={handleAnalyzeImza}
-                                                        disabled={isAnalyzingImza}
-                                                        className="h-7 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100 dark:text-emerald-400 dark:hover:bg-emerald-900/50"
-                                                    >
-                                                        <RefreshCw className={cn("h-3 w-3 mr-1", isAnalyzingImza && "animate-spin")} />
-                                                        Yenile
-                                                    </Button>
-                                                )}
-                                            </div>
-                                            <div className="p-4">
-                                                {isAnalyzingImza ? (
-                                                    <div className="flex items-center justify-center py-8">
-                                                        <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
-                                                        <span className="ml-2 text-muted-foreground">Üslup analiziniz yorumlanıyor...</span>
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{imzaAiComment}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Quotes Section */}
-                            {activeSection === "quotes" && (
-                                <div className="space-y-4">
-                                    <div className="flex flex-wrap justify-between items-center gap-2">
-                                        <h3 className="text-lg font-semibold">Alıntılar</h3>
-                                        <Button onClick={() => setShowQuoteDialog(true)}>
-                                            <Plus className="h-4 w-4 mr-2" />
-                                            Alıntı Ekle
-                                        </Button>
-                                    </div>
-
-                                    {book.quotes.length === 0 ? (
-                                        <p className="text-muted-foreground text-center py-8">
-                                            Henüz alıntı eklenmemiş
-                                        </p>
-                                    ) : (
-                                        <div className="space-y-4">
-                                            {book.quotes.map((quote) => (
-                                                <Card key={quote.id}>
-                                                    <CardContent className="pt-4">
-                                                        <blockquote className="border-l-4 border-primary/30 pl-4 italic text-muted-foreground">
-                                                            &quot;{quote.content}&quot;
-                                                        </blockquote>
-                                                        {quote.page && (
-                                                            <p className="text-xs text-muted-foreground mt-2 text-right">
-                                                                Sayfa {quote.page}
-                                                            </p>
-                                                        )}
-                                                    </CardContent>
-                                                </Card>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Rating Section - Sadece tamamlanan kitaplar için */}
-                            {activeSection === "rating" && currentStatus === "COMPLETED" && (
-                                <BookRatingComponent
-                                    bookId={book.id}
-                                    rating={book.rating}
-                                    isCompleted={true}
-                                    inTab={true}
-                                />
-                            )}
-
-                            {/* History Section */}
-                            {activeSection === "history" && (
-                                <div className="space-y-4">
-                                    <h3 className="text-lg font-semibold">Okuma Geçmişi</h3>
-                                    {book.readingLogs.length === 0 ? (
-                                        <p className="text-muted-foreground text-center py-8">
-                                            Henüz kayıt yok
-                                        </p>
-                                    ) : (
-                                        <div className="relative pl-6 border-l-2 border-muted space-y-6">
-                                            {book.readingLogs.map((log) => (
-                                                <div key={log.id} className="relative">
-                                                    <div className="absolute -left-[25px] w-3 h-3 rounded-full bg-primary" />
-                                                    <div>
-                                                        <p className="font-medium">{actionLabels[log.action]}</p>
-                                                        <p className="text-sm text-muted-foreground">
-                                                            {formatDate(log.createdAt, { format: "long" })}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
                 </div>
             </div>
 
