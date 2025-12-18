@@ -84,7 +84,7 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
         <div className="h-[300px] w-full animate-pulse rounded-lg border bg-muted" />
     ),
 })
-import { cn, formatDate } from "@/lib/utils"
+import { cn, formatDate, getNowInTurkey } from "@/lib/utils"
 
 // Types
 import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, ChallengeBookRole, BookRating } from "@prisma/client"
@@ -338,7 +338,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         setIsUpdatingStatus(true)
         const result = await updateBook(book.id, {
             status: "READING",
-            startDate: new Date(),
+            startDate: getNowInTurkey(),
             endDate: null,
         })
         if (result.success) {
@@ -356,7 +356,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         setIsUpdatingStatus(true)
         const result = await updateBook(book.id, {
             status: "COMPLETED",
-            endDate: new Date(),
+            endDate: getNowInTurkey(),
             currentPage: book.pageCount || currentPage,
         })
         if (result.success) {
@@ -375,7 +375,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         setIsUpdatingStatus(true)
         const result = await updateBook(book.id, {
             status: "DNF",
-            endDate: new Date(),
+            endDate: getNowInTurkey(),
         })
         if (result.success) {
             await addReadingLog(book.id, "ABANDONED")
