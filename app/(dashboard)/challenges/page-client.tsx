@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -15,11 +16,23 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { Target, Plus, Loader2, Calendar, ChevronRight, Trophy } from "lucide-react"
+import {
+    Target,
+    Plus,
+    Loader2,
+    Calendar,
+    Trophy,
+    BookOpen,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight,
+    Sparkles,
+    Flag
+} from "lucide-react"
 import { toast } from "sonner"
 import { createChallenge } from "@/actions/challenge"
-import type { ChallengeTimeline } from "@/actions/challenge"
-import { ChallengeTimelineClient } from "./timeline-client"
+import type { ChallengeTimeline, ChallengeMonth } from "@/actions/challenge"
+import { cn } from "@/lib/utils"
 
 interface ChallengesPageClientProps {
     timeline: ChallengeTimeline | null
@@ -30,12 +43,26 @@ interface ChallengesPageClientProps {
 export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPageClientProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
+    const [selectedChallengeId, setSelectedChallengeId] = useState<string | null>(
+        allChallenges.length > 0 ? allChallenges[0].id : null
+    )
+    const [selectedMonthId, setSelectedMonthId] = useState<string | null>(null)
     const [createDialog, setCreateDialog] = useState<{
         open: boolean
         year: string
         name: string
         description: string
     }>({ open: false, year: new Date().getFullYear().toString(), name: "", description: "" })
+
+    // Seçili challenge'ı bul
+    const selectedChallenge = timeline?.challenges.find(c => c.id === selectedChallengeId) ||
+        (timeline?.challenges[0] || null)
+
+    // Seçili ay (varsayılan olarak şu anki ay veya ilk ay)
+    const currentMonthNumber = new Date().getMonth() + 1
+    const selectedMonth = selectedChallenge?.months.find(m =>
+        selectedMonthId ? m.id === selectedMonthId : m.monthNumber === currentMonthNumber
+    ) || selectedChallenge?.months[0]
 
     const handleCreateSubmit = async () => {
         const year = parseInt(createDialog.year)
@@ -67,161 +94,33 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
         }
     }
 
-    // Eğer challenge varsa göster
-    if (allChallenges.length > 0) {
+    // Empty state
+    if (allChallenges.length === 0) {
         return (
-            <>
-                {/* Header with create button */}
-                <div className="flex items-center justify-between mb-6">
+            <div className="space-y-6">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b">
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-                            <Target className="h-7 w-7 text-primary" />
-                            Okuma Hedefleri
-                        </h1>
+                        <h1 className="text-2xl md:text-3xl font-bold">Yıllık Okuma Hedefleri</h1>
                         <p className="text-muted-foreground mt-1">
-                            Yıllık okuma hedeflerini takip et
+                            Okuma yolculuğunu planla, takip et ve hedeflerine ulaş.
                         </p>
                     </div>
                     <Button
-                        size="sm"
                         onClick={() => setCreateDialog({
                             open: true,
-                            year: (new Date().getFullYear() + 1).toString(),
-                            name: `${new Date().getFullYear() + 1} Okuma Hedefi`,
+                            year: new Date().getFullYear().toString(),
+                            name: `${new Date().getFullYear()} Okuma Hedefi`,
                             description: ""
                         })}
                         className="gap-2"
                     >
                         <Plus className="h-4 w-4" />
-                        Yeni Hedef
+                        Yeni Hedef Ekle
                     </Button>
                 </div>
 
-                {/* Challenge Cards */}
-                <div className="grid gap-4 mb-8">
-                    {allChallenges.map((challenge) => (
-                        <Link
-                            key={challenge.id}
-                            href={`/challenges/${challenge.year}`}
-                            className="block border rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <Trophy className="h-6 w-6 text-primary" />
-                                    </div>
-                                    <div>
-                                        <h2 className="font-semibold text-lg">{challenge.name}</h2>
-                                        <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                                            <span className="flex items-center gap-1">
-                                                <Calendar className="h-4 w-4" />
-                                                {challenge.year}
-                                            </span>
-                                            <span>
-                                                {challenge._count.months} ay
-                                            </span>
-                                            <span>
-                                                {(Array.isArray(challenge.months) ? challenge.months : []).reduce((sum: number, m: { _count: { books: number } }) => sum + m._count.books, 0)} kitap
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-
-                {/* Timeline (if has months) */}
-                {timeline && timeline.challenges.some(c => c.months.length > 0) && (
-                    <ChallengeTimelineClient timeline={timeline} />
-                )}
-
-                {/* Create Dialog */}
-                <Dialog open={createDialog.open} onOpenChange={(open) => !open && setCreateDialog({ ...createDialog, open: false })}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Yeni Okuma Hedefi</DialogTitle>
-                            <DialogDescription>
-                                Yeni bir yıllık okuma hedefi oluşturun
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="challenge-year">Yıl</Label>
-                                <Input
-                                    id="challenge-year"
-                                    type="number"
-                                    placeholder="2026"
-                                    value={createDialog.year}
-                                    onChange={(e) => setCreateDialog({ ...createDialog, year: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="challenge-name">Hedef Adı</Label>
-                                <Input
-                                    id="challenge-name"
-                                    placeholder="Örn: 2026 Okuma Hedefi"
-                                    value={createDialog.name}
-                                    onChange={(e) => setCreateDialog({ ...createDialog, name: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="challenge-description">Açıklama (Opsiyonel)</Label>
-                                <Textarea
-                                    id="challenge-description"
-                                    placeholder="Bu hedef hakkında kısa bir açıklama..."
-                                    value={createDialog.description}
-                                    onChange={(e) => setCreateDialog({ ...createDialog, description: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setCreateDialog({ ...createDialog, open: false })}>
-                                Vazgeç
-                            </Button>
-                            <Button onClick={handleCreateSubmit} disabled={isLoading}>
-                                {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                                Oluştur
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            </>
-        )
-    }
-
-    // Eğer hiç challenge yoksa veya timeline yoksa, boş state göster
-    return (
-        <div className="max-w-4xl mx-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-                        <Target className="h-7 w-7 text-primary" />
-                        Okuma Hedefleri
-                    </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Yıllık okuma hedeflerini takip et
-                    </p>
-                </div>
-                <Button
-                    size="sm"
-                    onClick={() => setCreateDialog({
-                        open: true,
-                        year: new Date().getFullYear().toString(),
-                        name: `${new Date().getFullYear()} Okuma Hedefi`,
-                        description: ""
-                    })}
-                    className="gap-2"
-                >
-                    <Plus className="h-4 w-4" />
-                    Yeni Hedef
-                </Button>
-            </div>
-
-            {/* Empty State or Challenge List */}
-            {allChallenges.length === 0 ? (
+                {/* Empty State */}
                 <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-xl bg-muted/40">
                     <Target className="h-12 w-12 text-muted-foreground mb-4" />
                     <p className="text-muted-foreground mb-2">Henüz okuma hedefi eklenmemiş</p>
@@ -238,92 +137,481 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                         Hedef Oluştur
                     </Button>
                 </div>
-            ) : (
-                <div className="grid gap-4">
-                    {allChallenges.map((challenge) => (
-                        <Link
-                            key={challenge.id}
-                            href={`/challenges/${challenge.year}`}
-                            className="block border rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <Trophy className="h-6 w-6 text-primary" />
+
+                {/* Create Dialog */}
+                <CreateChallengeDialog
+                    createDialog={createDialog}
+                    setCreateDialog={setCreateDialog}
+                    handleCreateSubmit={handleCreateSubmit}
+                    isLoading={isLoading}
+                />
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b">
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-bold">Yıllık Okuma Hedefleri</h1>
+                    <p className="text-muted-foreground mt-1">
+                        Okuma yolculuğunu planla, takip et ve hedeflerine ulaş.
+                    </p>
+                </div>
+                <Button
+                    onClick={() => setCreateDialog({
+                        open: true,
+                        year: (new Date().getFullYear() + 1).toString(),
+                        name: `${new Date().getFullYear() + 1} Okuma Hedefi`,
+                        description: ""
+                    })}
+                    className="gap-2"
+                >
+                    <Plus className="h-4 w-4" />
+                    Yeni Hedef Ekle
+                </Button>
+            </div>
+
+            {/* Hedefler Section */}
+            <section>
+                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                    <Flag className="h-5 w-5 text-primary" />
+                    Hedeflerin
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {allChallenges.map((challenge) => {
+                        const isSelected = selectedChallengeId === challenge.id
+                        const challengeDetail = timeline?.challenges.find(c => c.id === challenge.id)
+                        const totalBooks = (Array.isArray(challenge.months) ? challenge.months : [])
+                            .reduce((sum: number, m: { _count: { books: number } }) => sum + m._count.books, 0)
+
+                        return (
+                            <div
+                                key={challenge.id}
+                                onClick={() => setSelectedChallengeId(challenge.id)}
+                                className={cn(
+                                    "relative flex flex-col gap-4 rounded-2xl p-5 cursor-pointer transition-all",
+                                    isSelected
+                                        ? "bg-primary/10 border-2 border-primary shadow-[0_0_20px_rgba(var(--primary)/0.15)]"
+                                        : "bg-card border border-border hover:border-primary/50"
+                                )}
+                            >
+                                {isSelected && (
+                                    <div className="absolute top-3 right-3 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                        Seçili
+                                    </div>
+                                )}
+
+                                <div className="flex items-center gap-3">
+                                    <div className={cn(
+                                        "p-2.5 rounded-lg",
+                                        isSelected ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+                                    )}>
+                                        <Calendar className="h-6 w-6" />
                                     </div>
                                     <div>
-                                        <h2 className="font-semibold text-lg">{challenge.name}</h2>
-                                        <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                                            <span className="flex items-center gap-1">
-                                                <Calendar className="h-4 w-4" />
-                                                {challenge.year}
+                                        <p className="font-bold text-lg">{challenge.name}</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {challenge.description || "Genel Okuma"}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="bg-background p-3 rounded-xl border">
+                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-0.5">
+                                            Ay Sayısı
+                                        </span>
+                                        <span className="text-xl font-bold">{challenge._count.months}</span>
+                                    </div>
+                                    <div className="bg-background p-3 rounded-xl border">
+                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-0.5">
+                                            Kitap
+                                        </span>
+                                        <span className="text-xl font-bold">{totalBooks}</span>
+                                    </div>
+                                </div>
+
+                                {/* Progress bar if available */}
+                                {challengeDetail?.totalProgress && (
+                                    <div className="pt-2 border-t">
+                                        <div className="flex justify-between text-xs mb-1.5">
+                                            <span className="text-muted-foreground">İlerleme</span>
+                                            <span className="font-medium">
+                                                {challengeDetail.totalProgress.completedBooks}/{challengeDetail.totalProgress.totalBooks}
                                             </span>
-                                            <span>
-                                                {challenge._count.months} ay
-                                            </span>
-                                            <span>
-                                                {(Array.isArray(challenge.months) ? challenge.months : []).reduce((sum: number, m: { _count: { books: number } }) => sum + m._count.books, 0)} kitap
-                                            </span>
+                                        </div>
+                                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-primary rounded-full transition-all"
+                                                style={{ width: `${challengeDetail.totalProgress.percentage}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    })}
+                </div>
+            </section>
+
+            {/* Divider */}
+            <div className="w-full h-px bg-border" />
+
+            {/* Aylık Temalar Section */}
+            {selectedChallenge && selectedChallenge.months.length > 0 && (
+                <section className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-bold">
+                            {selectedChallenge.year} Detayları: Aylık Temalar
+                        </h2>
+                        <div className="flex gap-2">
+                            <Button
+                                size="icon"
+                                variant="outline"
+                                className="h-8 w-8 rounded-full"
+                                onClick={() => {
+                                    const currentIndex = selectedChallenge.months.findIndex(m => m.id === selectedMonth?.id)
+                                    if (currentIndex > 0) {
+                                        setSelectedMonthId(selectedChallenge.months[currentIndex - 1].id)
+                                    }
+                                }}
+                                disabled={!selectedMonth || selectedChallenge.months.findIndex(m => m.id === selectedMonth.id) === 0}
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                size="icon"
+                                variant="outline"
+                                className="h-8 w-8 rounded-full"
+                                onClick={() => {
+                                    const currentIndex = selectedChallenge.months.findIndex(m => m.id === selectedMonth?.id)
+                                    if (currentIndex < selectedChallenge.months.length - 1) {
+                                        setSelectedMonthId(selectedChallenge.months[currentIndex + 1].id)
+                                    }
+                                }}
+                                disabled={!selectedMonth || selectedChallenge.months.findIndex(m => m.id === selectedMonth.id) === selectedChallenge.months.length - 1}
+                            >
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Month Cards Strip */}
+                    <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide snap-x">
+                        {selectedChallenge.months.map((month) => {
+                            const isCurrentMonth = month.monthNumber === currentMonthNumber
+                            const isSelectedMonth = selectedMonth?.id === month.id
+                            const mainBooks = month.books.filter(b => b.role === "MAIN")
+                            const completedMain = mainBooks.filter(b => b.book.status === "COMPLETED").length
+
+                            return (
+                                <div
+                                    key={month.id}
+                                    onClick={() => setSelectedMonthId(month.id)}
+                                    className={cn(
+                                        "min-w-[260px] snap-center flex flex-col justify-between p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden group",
+                                        isSelectedMonth
+                                            ? "bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary"
+                                            : "bg-card border hover:border-primary/50"
+                                    )}
+                                >
+                                    {/* Background Icon */}
+                                    <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                                        <span className="text-8xl">{month.themeIcon}</span>
+                                    </div>
+
+                                    <div className="relative z-10">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h4 className={cn(
+                                                "text-xl font-bold",
+                                                isSelectedMonth ? "text-foreground" : "text-foreground/80 group-hover:text-foreground"
+                                            )}>
+                                                {month.monthName}
+                                            </h4>
+                                            <div className={cn(
+                                                "p-2 rounded-full",
+                                                isSelectedMonth ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground group-hover:text-primary"
+                                            )}>
+                                                <span className="text-lg">{month.themeIcon}</span>
+                                            </div>
+                                        </div>
+                                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Tema</p>
+                                        <p className={cn(
+                                            "font-semibold mb-4",
+                                            isSelectedMonth ? "text-primary" : "text-foreground/90"
+                                        )}>
+                                            {month.theme}
+                                        </p>
+                                    </div>
+
+                                    <div className="relative z-10 mt-auto">
+                                        <div className="flex justify-between text-sm mb-1.5">
+                                            <span className="text-muted-foreground">İlerleme</span>
+                                            <span className="font-medium">{completedMain} / {mainBooks.length} Kitap</span>
+                                        </div>
+                                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                                            <div
+                                                className={cn(
+                                                    "h-full rounded-full transition-all",
+                                                    isSelectedMonth ? "bg-primary shadow-[0_0_10px_rgba(var(--primary)/0.5)]" : "bg-primary"
+                                                )}
+                                                style={{ width: `${mainBooks.length > 0 ? (completedMain / mainBooks.length) * 100 : 0}%` }}
+                                            />
                                         </div>
                                     </div>
                                 </div>
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                            </div>
-                        </Link>
-                    ))}
-                </div>
+                            )
+                        })}
+                    </div>
+                </section>
+            )}
+
+            {/* Kitap Listesi Section */}
+            {selectedMonth && (
+                <MonthBookList
+                    month={selectedMonth}
+                    challengeYear={selectedChallenge?.year || new Date().getFullYear()}
+                />
             )}
 
             {/* Create Dialog */}
-            <Dialog open={createDialog.open} onOpenChange={(open) => !open && setCreateDialog({ ...createDialog, open: false })}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Yeni Okuma Hedefi</DialogTitle>
-                        <DialogDescription>
-                            Yeni bir yıllık okuma hedefi oluşturun
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="challenge-year-2">Yıl</Label>
-                            <Input
-                                id="challenge-year-2"
-                                type="number"
-                                placeholder="2026"
-                                value={createDialog.year}
-                                onChange={(e) => setCreateDialog({ ...createDialog, year: e.target.value })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="challenge-name-2">Hedef Adı</Label>
-                            <Input
-                                id="challenge-name-2"
-                                placeholder="Örn: 2026 Okuma Hedefi"
-                                value={createDialog.name}
-                                onChange={(e) => setCreateDialog({ ...createDialog, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="challenge-description-2">Açıklama (Opsiyonel)</Label>
-                            <Textarea
-                                id="challenge-description-2"
-                                placeholder="Bu hedef hakkında kısa bir açıklama..."
-                                value={createDialog.description}
-                                onChange={(e) => setCreateDialog({ ...createDialog, description: e.target.value })}
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setCreateDialog({ ...createDialog, open: false })}>
-                            Vazgeç
-                        </Button>
-                        <Button onClick={handleCreateSubmit} disabled={isLoading}>
-                            {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                            Oluştur
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <CreateChallengeDialog
+                createDialog={createDialog}
+                setCreateDialog={setCreateDialog}
+                handleCreateSubmit={handleCreateSubmit}
+                isLoading={isLoading}
+            />
         </div>
+    )
+}
+
+// Month Book List Component
+function MonthBookList({ month, challengeYear }: { month: ChallengeMonth; challengeYear: number }) {
+    const mainBooks = month.books.filter(b => b.role === "MAIN")
+    const bonusBooks = month.books.filter(b => b.role === "BONUS")
+
+    // Tüm ana kitapların tamamlanıp tamamlanmadığını kontrol et
+    const isAllMainCompleted = mainBooks.length > 0 &&
+        mainBooks.every(b => b.book.status === "COMPLETED")
+
+    return (
+        <section>
+            <div className="flex items-center gap-3 mb-4">
+                <h3 className="text-lg font-bold">{month.monthName} Kitap Listesi</h3>
+                <div className="h-px bg-border flex-1" />
+                <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full border">
+                    {month.books.length} Kitap
+                </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {/* Main Books */}
+                {mainBooks.map((book) => (
+                    <BookCard key={book.id} book={book} type="main" />
+                ))}
+
+                {/* Bonus Books */}
+                {bonusBooks.map((book) => (
+                    <BookCard
+                        key={book.id}
+                        book={book}
+                        type="bonus"
+                        isLocked={!isAllMainCompleted}
+                    />
+                ))}
+            </div>
+
+            {/* Add Book Button */}
+            <Link
+                href={`/challenges/${challengeYear}`}
+                className="w-full mt-4 py-4 rounded-xl border border-dashed text-muted-foreground hover:text-primary hover:border-primary hover:bg-muted/50 transition-all flex items-center justify-center gap-2 group"
+            >
+                <Plus className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                <span className="font-medium">Bu Aya Kitap Ekle</span>
+            </Link>
+        </section>
+    )
+}
+
+// Book Card Component
+function BookCard({
+    book,
+    type,
+    isLocked = false
+}: {
+    book: ChallengeMonth["books"][0]
+    type: "main" | "bonus"
+    isLocked?: boolean
+}) {
+    const isCompleted = book.book.status === "COMPLETED"
+    const isReading = book.book.status === "READING"
+
+    return (
+        <Link
+            href={`/book/${book.book.id}`}
+            className={cn(
+                "flex flex-col rounded-xl bg-card border overflow-hidden transition-all group",
+                isCompleted && "border-green-500/30",
+                !isCompleted && !isLocked && "hover:border-primary/50",
+                isLocked && "opacity-60"
+            )}
+        >
+            <div className="flex p-3 gap-3">
+                {/* Book Cover */}
+                <div className="w-20 shrink-0 shadow-lg rounded-md overflow-hidden aspect-[2/3] relative">
+                    {book.book.coverUrl ? (
+                        <Image
+                            src={book.book.coverUrl}
+                            alt={book.book.title}
+                            fill
+                            className={cn(
+                                "object-cover transition-transform duration-500 group-hover:scale-110",
+                                isLocked && "grayscale"
+                            )}
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center h-full bg-muted">
+                            <BookOpen className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                    )}
+
+                    {/* Completed Overlay */}
+                    {isCompleted && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                            <CheckCircle2 className="h-8 w-8 text-green-500 drop-shadow-lg" />
+                        </div>
+                    )}
+                </div>
+
+                {/* Book Info */}
+                <div className="flex flex-col flex-1 min-w-0">
+                    <div className="flex gap-1.5 mb-1.5 flex-wrap">
+                        <span className={cn(
+                            "inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ring-inset",
+                            type === "main"
+                                ? "bg-primary/20 text-primary ring-primary/30"
+                                : "bg-purple-400/10 text-purple-400 ring-purple-400/20"
+                        )}>
+                            {type === "main" ? "Ana Hedef" : "Bonus"}
+                        </span>
+                        {isCompleted && (
+                            <span className="inline-flex items-center rounded-md bg-green-500/20 px-1.5 py-0.5 text-[10px] font-medium text-green-500 ring-1 ring-inset ring-green-500/30">
+                                Tamamlandı
+                            </span>
+                        )}
+                        {isReading && (
+                            <span className="inline-flex items-center rounded-md bg-yellow-400/10 px-1.5 py-0.5 text-[10px] font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">
+                                Okunuyor
+                            </span>
+                        )}
+                        {!isCompleted && !isReading && !isLocked && (
+                            <span className="inline-flex items-center rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-border">
+                                Başlanmadı
+                            </span>
+                        )}
+                    </div>
+
+                    <h4 className="font-bold text-sm line-clamp-2 mb-0.5 group-hover:text-primary transition-colors">
+                        {book.book.title}
+                    </h4>
+                    <p className="text-xs text-muted-foreground mb-2">
+                        {book.book.author?.name || "Bilinmeyen Yazar"}
+                    </p>
+
+                    <div className="mt-auto flex items-center text-[10px] text-muted-foreground gap-1">
+                        <BookOpen className="h-3 w-3" />
+                        <span>{book.book.pageCount || "-"} Sayfa</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Reason */}
+            {book.reason && (
+                <div className="bg-muted/50 px-3 py-2 border-t">
+                    <p className="text-[10px] text-muted-foreground italic line-clamp-2">
+                        "{book.reason}"
+                    </p>
+                </div>
+            )}
+
+            {/* Progress Bar */}
+            <div className="h-1 w-full bg-muted">
+                <div
+                    className={cn(
+                        "h-full transition-all",
+                        isCompleted ? "bg-green-500 w-full" :
+                            isReading ? "bg-yellow-500 w-1/2" :
+                                "bg-transparent w-0"
+                    )}
+                />
+            </div>
+        </Link>
+    )
+}
+
+// Create Challenge Dialog Component
+function CreateChallengeDialog({
+    createDialog,
+    setCreateDialog,
+    handleCreateSubmit,
+    isLoading
+}: {
+    createDialog: { open: boolean; year: string; name: string; description: string }
+    setCreateDialog: (dialog: { open: boolean; year: string; name: string; description: string }) => void
+    handleCreateSubmit: () => void
+    isLoading: boolean
+}) {
+    return (
+        <Dialog open={createDialog.open} onOpenChange={(open) => !open && setCreateDialog({ ...createDialog, open: false })}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Yeni Okuma Hedefi</DialogTitle>
+                    <DialogDescription>
+                        Yeni bir yıllık okuma hedefi oluşturun
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="challenge-year">Yıl</Label>
+                        <Input
+                            id="challenge-year"
+                            type="number"
+                            placeholder="2026"
+                            value={createDialog.year}
+                            onChange={(e) => setCreateDialog({ ...createDialog, year: e.target.value })}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="challenge-name">Hedef Adı</Label>
+                        <Input
+                            id="challenge-name"
+                            placeholder="Örn: 2026 Okuma Hedefi"
+                            value={createDialog.name}
+                            onChange={(e) => setCreateDialog({ ...createDialog, name: e.target.value })}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="challenge-description">Açıklama (Opsiyonel)</Label>
+                        <Textarea
+                            id="challenge-description"
+                            placeholder="Bu hedef hakkında kısa bir açıklama..."
+                            value={createDialog.description}
+                            onChange={(e) => setCreateDialog({ ...createDialog, description: e.target.value })}
+                        />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setCreateDialog({ ...createDialog, open: false })}>
+                        Vazgeç
+                    </Button>
+                    <Button onClick={handleCreateSubmit} disabled={isLoading}>
+                        {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        Oluştur
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     )
 }
