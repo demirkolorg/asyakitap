@@ -12,16 +12,22 @@ export const TIMEZONE = "Europe/Istanbul"
 type DateFormatOptions = {
   format?: "short" | "long" | "full" | "date-only" | "time-only" | "month-year" | "day-month"
   locale?: string
+  // Sadece tarih alanları için (startDate, endDate gibi) - saat bilgisi yok, UTC olarak saklanmış
+  dateOnly?: boolean
 }
 
 // Tarihi Türkiye timezone'unda formatla
 export function formatDate(date: Date | string | null | undefined, options: DateFormatOptions = {}): string {
   if (!date) return ""
 
-  const { format = "short", locale = "tr-TR" } = options
+  const { format = "short", locale = "tr-TR", dateOnly = false } = options
   const d = typeof date === "string" ? new Date(date) : date
 
-  const formatOptions: Intl.DateTimeFormatOptions = { timeZone: TIMEZONE }
+  // Eğer dateOnly true ise, UTC olarak göster (tarih kayması önlenir)
+  // Aksi halde Türkiye timezone'unda göster (timestamp'ler için)
+  const formatOptions: Intl.DateTimeFormatOptions = {
+    timeZone: dateOnly ? "UTC" : TIMEZONE
+  }
 
   switch (format) {
     case "short":

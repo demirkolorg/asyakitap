@@ -800,7 +800,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-green-500/10 border border-green-500/20">
                                 <Calendar className="h-4 w-4 text-green-500 mb-1" />
                                 <span className="text-xs md:text-sm font-bold text-green-600 dark:text-green-400">
-                                    {formatDate(book.startDate, { format: "day-month" })}
+                                    {formatDate(book.startDate, { format: "day-month", dateOnly: true })}
                                 </span>
                                 <span className="text-[9px] text-green-600/70 dark:text-green-400/70">başlangıç</span>
                             </div>
@@ -811,7 +811,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                                 <CheckCircle2 className="h-4 w-4 text-emerald-500 mb-1" />
                                 <span className="text-xs md:text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                                    {formatDate(book.endDate, { format: "day-month" })}
+                                    {formatDate(book.endDate, { format: "day-month", dateOnly: true })}
                                 </span>
                                 <span className="text-[9px] text-emerald-600/70 dark:text-emerald-400/70">bitiş</span>
                             </div>
@@ -834,6 +834,19 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <div className="flex items-center justify-center md:justify-start gap-2 pb-4 text-xs text-muted-foreground">
                             <Barcode className="h-3.5 w-3.5" />
                             <span>ISBN: {book.isbn}</span>
+                        </div>
+                    )}
+
+                    {/* Kitap Açıklaması */}
+                    {book.description && (
+                        <div className="py-4 border-t">
+                            <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                                Kitap Hakkında
+                            </h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                                {book.description}
+                            </p>
                         </div>
                     )}
 
