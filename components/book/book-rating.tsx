@@ -15,7 +15,7 @@ import {
     ChevronUp,
 } from "lucide-react"
 import { toast } from "sonner"
-import { cn } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 import { saveBookRating, deleteBookRating, type BookRatingData } from "@/actions/rating"
 import { RATING_CATEGORIES } from "@/lib/rating-categories"
 import type { BookRating as BookRatingType } from "@prisma/client"
@@ -232,13 +232,7 @@ export function BookRating({ bookId, rating, isCompleted, inTab = false }: BookR
             {/* Son güncelleme */}
             {currentRating && (
                 <p className="text-xs text-muted-foreground text-right">
-                    Son güncelleme: {new Date(currentRating.updatedAt).toLocaleDateString("tr-TR", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    })}
+                    Son güncelleme: {formatDate(currentRating.updatedAt, { format: "long" })}
                 </p>
             )}
         </div>

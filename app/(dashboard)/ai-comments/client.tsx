@@ -18,7 +18,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { cn } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 import type { AICommentsPageData, AICommentWithBook } from "@/actions/ai-comments"
 
 interface AICommentsClientProps {
@@ -78,17 +78,6 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
         return result
     }, [comments, filterSource, searchQuery])
 
-    // Format date
-    const formatDate = (date: Date) => {
-        const d = new Date(date)
-        return d.toLocaleDateString('tr-TR', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        })
-    }
 
     // Strip HTML for preview
     const stripHtml = (html: string) => {
@@ -336,7 +325,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                                 <Calendar className="h-3 w-3" />
-                                                <span>{formatDate(comment.createdAt)}</span>
+                                                <span>{formatDate(comment.createdAt, { format: "long" })}</span>
                                             </div>
                                             {!isStatsComment && comment.book && (
                                                 <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">

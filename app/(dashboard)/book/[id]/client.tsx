@@ -84,7 +84,7 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
         <div className="h-[300px] w-full animate-pulse rounded-lg border bg-muted" />
     ),
 })
-import { cn } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 
 // Types
 import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, ChallengeBookRole, BookRating } from "@prisma/client"
@@ -800,7 +800,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-green-500/10 border border-green-500/20">
                                 <Calendar className="h-4 w-4 text-green-500 mb-1" />
                                 <span className="text-xs md:text-sm font-bold text-green-600 dark:text-green-400">
-                                    {new Date(book.startDate).toLocaleDateString("tr-TR", { day: "2-digit", month: "short", timeZone: "UTC" })}
+                                    {formatDate(book.startDate, { format: "day-month" })}
                                 </span>
                                 <span className="text-[9px] text-green-600/70 dark:text-green-400/70">başlangıç</span>
                             </div>
@@ -811,7 +811,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                                 <CheckCircle2 className="h-4 w-4 text-emerald-500 mb-1" />
                                 <span className="text-xs md:text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                                    {new Date(book.endDate).toLocaleDateString("tr-TR", { day: "2-digit", month: "short", timeZone: "UTC" })}
+                                    {formatDate(book.endDate, { format: "day-month" })}
                                 </span>
                                 <span className="text-[9px] text-emerald-600/70 dark:text-emerald-400/70">bitiş</span>
                             </div>
@@ -1122,13 +1122,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                                     <div>
                                                         <p className="font-medium">{actionLabels[log.action]}</p>
                                                         <p className="text-sm text-muted-foreground">
-                                                            {new Date(log.createdAt).toLocaleDateString("tr-TR", {
-                                                                day: "numeric",
-                                                                month: "long",
-                                                                year: "numeric",
-                                                                hour: "2-digit",
-                                                                minute: "2-digit"
-                                                            })}
+                                                            {formatDate(log.createdAt, { format: "long" })}
                                                         </p>
                                                     </div>
                                                 </div>

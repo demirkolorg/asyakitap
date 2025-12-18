@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { createClient } from "@/lib/supabase/server"
 import { unstable_cache } from "next/cache"
 import { CACHE_TAGS, CACHE_DURATION } from "@/lib/cache"
+import { getNowInTurkey } from "@/lib/utils"
 
 // Turkish month names
 const TURKISH_MONTHS = [
@@ -84,7 +85,7 @@ export interface FullStatsData {
 
 // Helper to get monthly data - tüm ayları döndürür (en eskiden en yeniye)
 async function getMonthlyData(userId: string): Promise<MonthlyData[]> {
-    const now = new Date()
+    const now = getNowInTurkey()
 
     // En eski tamamlanan kitabı bul
     const oldestBook = await prisma.book.findFirst({
@@ -140,7 +141,7 @@ async function getMonthlyData(userId: string): Promise<MonthlyData[]> {
 const getCachedStats = (userId: string) =>
     unstable_cache(
         async (): Promise<FullStatsData> => {
-            const now = new Date()
+            const now = getNowInTurkey()
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
             const startOfYear = new Date(now.getFullYear(), 0, 1)
 

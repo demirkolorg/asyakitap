@@ -6,6 +6,7 @@ import { revalidatePath, revalidateTag } from "next/cache"
 import { ChallengeBookStatus, ChallengeBookRole, BookStatus } from "@prisma/client"
 import { CACHE_TAGS } from "@/lib/cache"
 import { scrapeKitapyurdu } from "./kitapyurdu"
+import { getNowInTurkey, TIMEZONE } from "@/lib/utils"
 
 // ==========================================
 // Types
@@ -353,7 +354,7 @@ export async function getActiveChallenge() {
     if (!user) return null
 
     try {
-        const now = new Date()
+        const now = getNowInTurkey()
         const currentMonth = now.getMonth() + 1
         const currentYear = now.getFullYear()
 
@@ -885,7 +886,7 @@ export async function markChallengeBookAsRead(
             where: { id: userBook.id },
             data: {
                 status: "COMPLETED",
-                completedAt: new Date(),
+                completedAt: getNowInTurkey(),
                 takeaway: takeaway || null
             }
         })
@@ -963,11 +964,11 @@ export async function updateChallengeBookStatus(
         } = { status }
 
         if (status === "IN_PROGRESS" && !userBook.startedAt) {
-            updateData.startedAt = new Date()
+            updateData.startedAt = getNowInTurkey()
         }
 
         if (status === "COMPLETED") {
-            updateData.completedAt = new Date()
+            updateData.completedAt = getNowInTurkey()
         } else {
             updateData.completedAt = null
         }
@@ -1032,7 +1033,7 @@ export async function getChallengeTimeline(): Promise<ChallengeTimeline | null> 
     if (!user) return null
 
     try {
-        const now = new Date()
+        const now = getNowInTurkey()
         const currentMonth = now.getMonth() + 1
         const currentYear = now.getFullYear()
 

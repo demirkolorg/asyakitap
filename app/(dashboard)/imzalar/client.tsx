@@ -16,7 +16,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { cn } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 import { Book, BookStatus, Author } from "@prisma/client"
 
 type BookWithAuthor = Book & { author: Author | null }
@@ -416,7 +416,7 @@ export default function ImzalarClient({ booksWithImza, totalBookCount, booksWith
                                                     <span>{book.pageCount} sayfa</span>
                                                 )}
                                                 <span>
-                                                    {new Date(book.updatedAt).toLocaleDateString('tr-TR')}
+                                                    {formatDate(book.updatedAt, { format: "short" })}
                                                 </span>
                                             </div>
                                             <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
