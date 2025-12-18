@@ -762,71 +762,80 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         </div>
                     )}
 
-                    {/* Book Stats */}
-                    <div className="flex flex-wrap gap-3 md:gap-6 py-4 border-y text-sm justify-center md:justify-start">
-                        {/* Rating Badge - Puanlama varsa göster */}
+                    {/* Book Stats - Modern Grid */}
+                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 py-4">
+                        {/* Rating */}
                         {book.rating && (
-                            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/30">
-                                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                                <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
-                                    {book.rating.ortalamaPuan.toFixed(1)}/10
+                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 mb-1" />
+                                <span className="text-base md:text-lg font-bold text-yellow-600 dark:text-yellow-400">
+                                    {book.rating.ortalamaPuan.toFixed(1)}
                                 </span>
+                                <span className="text-[9px] text-yellow-600/70 dark:text-yellow-400/70">puan</span>
                             </div>
                         )}
+
+                        {/* Sayfa */}
                         {book.pageCount && (
-                            <div className="flex items-center gap-2">
-                                <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm">
-                                    <strong>{book.pageCount}</strong> sayfa
+                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                <BookOpen className="h-4 w-4 text-blue-500 mb-1" />
+                                <span className="text-base md:text-lg font-bold text-blue-600 dark:text-blue-400">
+                                    {book.pageCount}
                                 </span>
+                                <span className="text-[9px] text-blue-600/70 dark:text-blue-400/70">sayfa</span>
                             </div>
                         )}
-                        {book.isbn && (
-                            <div className="flex items-center gap-2">
-                                <Barcode className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm">
-                                    ISBN: <strong>{book.isbn}</strong>
-                                </span>
-                            </div>
-                        )}
-                        {book.publishedDate && (
-                            <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm">
-                                    Yayın: <strong>{book.publishedDate}</strong>
-                                </span>
-                            </div>
-                        )}
-                        {book.description && (
-                            <div className="mt-3 pt-3 border-t">
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                    {book.description}
-                                </p>
-                            </div>
-                        )}
-                        {book.startDate && (
-                            <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm">
-                                    Başlangıç: <strong>{new Date(book.startDate).toLocaleDateString("tr-TR")}</strong>
-                                </span>
-                            </div>
-                        )}
-                        {book.endDate && (
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm">
-                                    Bitiş: <strong>{new Date(book.endDate).toLocaleDateString("tr-TR")}</strong>
-                                </span>
-                            </div>
-                        )}
-                        <div className="flex items-center gap-2">
-                            <Quote className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">
-                                <strong>{book.quotes.length}</strong> alıntı
+
+                        {/* Alıntı */}
+                        <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                            <Quote className="h-4 w-4 text-amber-500 mb-1" />
+                            <span className="text-base md:text-lg font-bold text-amber-600 dark:text-amber-400">
+                                {book.quotes.length}
                             </span>
+                            <span className="text-[9px] text-amber-600/70 dark:text-amber-400/70">alıntı</span>
                         </div>
+
+                        {/* Başlangıç */}
+                        {book.startDate && (
+                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-green-500/10 border border-green-500/20">
+                                <Calendar className="h-4 w-4 text-green-500 mb-1" />
+                                <span className="text-xs md:text-sm font-bold text-green-600 dark:text-green-400">
+                                    {new Date(book.startDate).toLocaleDateString("tr-TR", { day: "2-digit", month: "short" })}
+                                </span>
+                                <span className="text-[9px] text-green-600/70 dark:text-green-400/70">başlangıç</span>
+                            </div>
+                        )}
+
+                        {/* Bitiş */}
+                        {book.endDate && (
+                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                <CheckCircle2 className="h-4 w-4 text-emerald-500 mb-1" />
+                                <span className="text-xs md:text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                                    {new Date(book.endDate).toLocaleDateString("tr-TR", { day: "2-digit", month: "short" })}
+                                </span>
+                                <span className="text-[9px] text-emerald-600/70 dark:text-emerald-400/70">bitiş</span>
+                            </div>
+                        )}
+
+                        {/* Yayın Tarihi */}
+                        {book.publishedDate && (
+                            <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20">
+                                <Calendar className="h-4 w-4 text-violet-500 mb-1" />
+                                <span className="text-xs md:text-sm font-bold text-violet-600 dark:text-violet-400">
+                                    {book.publishedDate}
+                                </span>
+                                <span className="text-[9px] text-violet-600/70 dark:text-violet-400/70">yayın</span>
+                            </div>
+                        )}
                     </div>
+
+                    {/* ISBN - Ayrı satır */}
+                    {book.isbn && (
+                        <div className="flex items-center justify-center md:justify-start gap-2 pb-4 text-xs text-muted-foreground">
+                            <Barcode className="h-3.5 w-3.5" />
+                            <span>ISBN: {book.isbn}</span>
+                        </div>
+                    )}
 
                     {/* Tabs/Sections */}
                     <div className="mt-4 md:mt-6">
