@@ -556,7 +556,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
 
                 {/* Right Column - Book Details */}
                 <div className="flex-1 min-w-0">
-                    {/* Title & Author */}
+                    {/* Title & Author & Publisher */}
                     <div className="mb-4 text-center md:text-left">
                         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                             {book.title}
@@ -570,20 +570,19 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             ) : (
                                 <span className="text-muted-foreground">Bilinmiyor</span>
                             )}
+                            {book.publisher && (
+                                <>
+                                    <span className="text-muted-foreground/70"> · yayınlayan </span>
+                                    <Link href={`/publisher/${book.publisher.id}`} className="text-foreground hover:underline">
+                                        {book.publisher.name}
+                                    </Link>
+                                </>
+                            )}
                         </p>
                     </div>
 
-                    {/* Publisher Badge & Library Toggle */}
+                    {/* Library Toggle */}
                     <div className="flex flex-wrap gap-2 md:gap-3 mb-4 justify-center md:justify-start">
-                        {book.publisher && (
-                            <Link
-                                href={`/publisher/${book.publisher.id}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted hover:bg-muted/80 text-sm transition-colors"
-                            >
-                                <Building2 className="h-3.5 w-3.5" />
-                                {book.publisher.name}
-                            </Link>
-                        )}
                         <button
                             onClick={handleToggleLibrary}
                             disabled={isUpdatingLibrary}
