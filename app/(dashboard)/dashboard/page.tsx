@@ -37,119 +37,85 @@ export default async function DashboardPage() {
                 </Button>
             </div>
 
-            {/* Stats Grid - Mobile: 3x2 Grid, Desktop: 6 columns */}
-            <div className="grid grid-cols-3 gap-2 md:hidden">
-                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
-                    <BookOpen className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-bold">{stats.totalBooks}</span>
-                    <span className="text-[10px] text-muted-foreground">kitap</span>
+            {/* Stats Grid - Compact Design */}
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
+                {/* Toplam Kitap */}
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 p-3 md:p-4">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-lg bg-blue-500/20">
+                            <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                            <p className="text-lg md:text-2xl font-bold">{stats.totalBooks}</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">kitap</p>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
-                    <BookCheck className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-bold">{stats.completed}</span>
-                    <span className="text-[10px] text-muted-foreground">bitti</span>
+
+                {/* Bitti */}
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 p-3 md:p-4">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-lg bg-green-500/20">
+                            <BookCheck className="h-4 w-4 md:h-5 md:w-5 text-green-600 dark:text-green-400" />
+                        </div>
+                        <div>
+                            <p className="text-lg md:text-2xl font-bold">{stats.completed}</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">bitti</p>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
-                    <Users className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm font-bold">{stats.uniqueAuthors}</span>
-                    <span className="text-[10px] text-muted-foreground">yazar</span>
+
+                {/* Yazar */}
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-violet-500/10 to-violet-600/5 border border-violet-500/20 p-3 md:p-4">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-lg bg-violet-500/20">
+                            <Users className="h-4 w-4 md:h-5 md:w-5 text-violet-600 dark:text-violet-400" />
+                        </div>
+                        <div>
+                            <p className="text-lg md:text-2xl font-bold">{stats.uniqueAuthors}</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">yazar</p>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
-                    <Quote className="h-4 w-4 text-orange-600" />
-                    <span className="text-sm font-bold">{stats.totalQuotes}</span>
-                    <span className="text-[10px] text-muted-foreground">alıntı</span>
+
+                {/* Alıntı */}
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 p-3 md:p-4">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-lg bg-amber-500/20">
+                            <Quote className="h-4 w-4 md:h-5 md:w-5 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <div>
+                            <p className="text-lg md:text-2xl font-bold">{stats.totalQuotes}</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">alıntı</p>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
-                    <FileText className="h-4 w-4 text-purple-600" />
-                    <span className="text-sm font-bold">{stats.totalTortu}</span>
-                    <span className="text-[10px] text-muted-foreground">tortu</span>
+
+                {/* Tortu */}
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-rose-500/10 to-rose-600/5 border border-rose-500/20 p-3 md:p-4">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-lg bg-rose-500/20">
+                            <FileText className="h-4 w-4 md:h-5 md:w-5 text-rose-600 dark:text-rose-400" />
+                        </div>
+                        <div>
+                            <p className="text-lg md:text-2xl font-bold">{stats.totalTortu}</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">tortu</p>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-col items-center gap-1 px-2 py-2 bg-muted/50 rounded-lg">
-                    <Pen className="h-4 w-4 text-pink-600" />
-                    <span className="text-sm font-bold">{stats.totalImza}</span>
-                    <span className="text-[10px] text-muted-foreground">imza</span>
+
+                {/* İmza */}
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 border border-cyan-500/20 p-3 md:p-4">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-lg bg-cyan-500/20">
+                            <Pen className="h-4 w-4 md:h-5 md:w-5 text-cyan-600 dark:text-cyan-400" />
+                        </div>
+                        <div>
+                            <p className="text-lg md:text-2xl font-bold">{stats.totalImza}</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">imza</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            {/* Desktop Stats Grid */}
-            <div className="hidden md:grid gap-3 grid-cols-3 lg:grid-cols-6">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 pb-2">
-                        <CardTitle className="text-sm font-medium">Toplam</CardTitle>
-                        <BookOpen className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                        <div className="text-2xl font-bold">{stats.totalBooks}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {stats.toRead} bekliyor
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 pb-2">
-                        <CardTitle className="text-sm font-medium">Bitti</CardTitle>
-                        <BookCheck className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                        <div className="text-2xl font-bold">{stats.completed}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {stats.pagesRead.toLocaleString()} sayfa
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 pb-2">
-                        <CardTitle className="text-sm font-medium">Yazar</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                        <div className="text-2xl font-bold">{stats.uniqueAuthors}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Farklı yazar
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 pb-2">
-                        <CardTitle className="text-sm font-medium">Alıntı</CardTitle>
-                        <Quote className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                        <div className="text-2xl font-bold">{stats.totalQuotes}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Kaydedildi
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 pb-2">
-                        <CardTitle className="text-sm font-medium">Tortu</CardTitle>
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                        <div className="text-2xl font-bold">{stats.totalTortu}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Kitap tortusu
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 pb-2">
-                        <CardTitle className="text-sm font-medium">İmza</CardTitle>
-                        <Pen className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                        <div className="text-2xl font-bold">{stats.totalImza}</div>
-                        <p className="text-xs text-muted-foreground">
-                            Yazar imzası
-                        </p>
-                    </CardContent>
-                </Card>
             </div>
 
             {/* Currently Reading */}
