@@ -154,74 +154,59 @@ export function ChallengeWidget({ challenge }: ChallengeWidgetProps) {
                         {/* Ana Kitaplar */}
                         {currentMonth.mainBooks.length > 0 && (
                             <div className="space-y-2">
-                                {currentMonth.mainBooks.map((mainBook) => (
-                                    <div
-                                        key={mainBook.id}
-                                        className={cn(
-                                            "flex gap-2.5 p-2 rounded-lg transition-all",
-                                            mainBook.bookStatus === "COMPLETED"
-                                                ? "bg-green-500/10"
-                                                : "hover:bg-muted/50"
-                                        )}
-                                    >
-                                        {/* Kapak */}
-                                        <div className="relative h-14 w-10 md:h-16 md:w-11 flex-shrink-0 rounded overflow-hidden bg-muted">
-                                            {mainBook.coverUrl ? (
-                                                <Image
-                                                    src={mainBook.coverUrl}
-                                                    alt={mainBook.title}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            ) : (
-                                                <div className="flex items-center justify-center h-full">
-                                                    <BookOpen className="h-4 w-4 text-muted-foreground" />
-                                                </div>
-                                            )}
-                                            {mainBook.bookStatus === "COMPLETED" && (
-                                                <div className="absolute inset-0 bg-green-500/30 flex items-center justify-center">
-                                                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                                                </div>
-                                            )}
-                                        </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Target className={cn(
+                                        "h-3 w-3",
+                                        isWarmupPeriod ? "text-orange-500" : "text-emerald-500"
+                                    )} />
+                                    <span className="text-[10px] font-medium text-muted-foreground">Ana Hedefler</span>
+                                </div>
 
-                                        {/* Bilgi */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <div className="min-w-0">
-                                                    <h4 className="font-medium text-xs md:text-sm line-clamp-1">
-                                                        {mainBook.title}
-                                                    </h4>
-                                                    <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-1">
-                                                        {mainBook.author}
-                                                    </p>
-                                                </div>
-                                                <span className={cn(
-                                                    "text-[9px] font-medium px-1.5 py-0.5 rounded flex-shrink-0",
-                                                    isWarmupPeriod ? "bg-orange-500/20 text-orange-600" : "bg-emerald-500/20 text-emerald-600"
-                                                )}>
-                                                    ANA
-                                                </span>
-                                            </div>
-                                            {/* Durum */}
-                                            <div className="mt-1">
-                                                {mainBook.bookStatus === "COMPLETED" ? (
-                                                    <span className="inline-flex items-center gap-1 text-[10px] text-green-600 font-medium">
-                                                        <CheckCircle2 className="h-3 w-3" />
-                                                        Okudum
-                                                    </span>
-                                                ) : mainBook.bookStatus === "READING" ? (
-                                                    <span className="inline-flex items-center gap-1 text-[10px] text-blue-600 font-medium">
-                                                        <BookOpen className="h-3 w-3" />
-                                                        Okunuyor
-                                                    </span>
+                                <div className="grid grid-cols-2 gap-1.5">
+                                    {currentMonth.mainBooks.map((mainBook) => (
+                                        <div
+                                            key={mainBook.id}
+                                            className={cn(
+                                                "relative flex gap-2 p-1.5 rounded-lg transition-all",
+                                                mainBook.bookStatus === "COMPLETED"
+                                                    ? "bg-green-500/10"
+                                                    : "hover:bg-muted/50"
+                                            )}
+                                        >
+                                            <div className="relative h-10 w-7 flex-shrink-0 rounded overflow-hidden bg-muted">
+                                                {mainBook.coverUrl ? (
+                                                    <Image
+                                                        src={mainBook.coverUrl}
+                                                        alt={mainBook.title}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
                                                 ) : (
-                                                    <span className="text-[10px] text-muted-foreground">Okunacak</span>
+                                                    <div className="flex items-center justify-center h-full">
+                                                        <BookOpen className="h-3 w-3 text-muted-foreground" />
+                                                    </div>
+                                                )}
+                                                {mainBook.bookStatus === "COMPLETED" && (
+                                                    <div className="absolute inset-0 bg-green-500/30 flex items-center justify-center">
+                                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                    </div>
                                                 )}
                                             </div>
+
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-[10px] font-medium line-clamp-2 leading-tight">
+                                                    {mainBook.title}
+                                                </p>
+                                            </div>
+
+                                            {mainBook.bookStatus === "COMPLETED" ? (
+                                                <CheckCircle2 className="h-3 w-3 text-green-600 flex-shrink-0" />
+                                            ) : mainBook.bookStatus === "READING" ? (
+                                                <BookOpen className="h-3 w-3 text-blue-500 flex-shrink-0" />
+                                            ) : null}
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         )}
 
