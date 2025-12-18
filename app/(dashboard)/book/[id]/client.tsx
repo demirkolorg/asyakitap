@@ -800,7 +800,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-green-500/10 border border-green-500/20">
                                 <Calendar className="h-4 w-4 text-green-500 mb-1" />
                                 <span className="text-xs md:text-sm font-bold text-green-600 dark:text-green-400">
-                                    {new Date(book.startDate).toLocaleDateString("tr-TR", { day: "2-digit", month: "short" })}
+                                    {new Date(book.startDate).toLocaleDateString("tr-TR", { day: "2-digit", month: "short", timeZone: "UTC" })}
                                 </span>
                                 <span className="text-[9px] text-green-600/70 dark:text-green-400/70">başlangıç</span>
                             </div>
@@ -811,7 +811,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                                 <CheckCircle2 className="h-4 w-4 text-emerald-500 mb-1" />
                                 <span className="text-xs md:text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                                    {new Date(book.endDate).toLocaleDateString("tr-TR", { day: "2-digit", month: "short" })}
+                                    {new Date(book.endDate).toLocaleDateString("tr-TR", { day: "2-digit", month: "short", timeZone: "UTC" })}
                                 </span>
                                 <span className="text-[9px] text-emerald-600/70 dark:text-emerald-400/70">bitiş</span>
                             </div>
