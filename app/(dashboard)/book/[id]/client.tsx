@@ -1089,53 +1089,161 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         </div>
                     </div>
 
-                    {/* Reading Lists & Challenges */}
-                    {(book.readingListBooks.length > 0 || book.challengeBooks.length > 0) && (
-                        <div className="bg-card rounded-xl border border-border/50 p-4 flex flex-col gap-3">
-                            <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2">
-                                Listelerim
-                            </h4>
-
-                            {/* Reading Lists */}
-                            {book.readingListBooks.map((rlb) => (
-                                <Link
-                                    key={rlb.id}
-                                    href={`/reading-lists/${rlb.level.readingList.slug}`}
-                                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors group"
-                                >
-                                    <div className="h-8 w-8 rounded bg-purple-500/20 text-purple-500 flex items-center justify-center border border-purple-500/30">
-                                        <Map className="h-4 w-4" />
+                    {/* Reading Lists - Detaylı Kartlar */}
+                    {book.readingListBooks.length > 0 && (
+                        <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+                            <div className="p-4 border-b border-border/50 flex items-center gap-2">
+                                <Map className="h-5 w-5 text-purple-500" />
+                                <h4 className="text-sm font-bold">Okuma Listeleri</h4>
+                            </div>
+                            <div className="divide-y divide-border/50">
+                                {book.readingListBooks.map((rlb) => (
+                                    <div key={rlb.id} className="p-4 hover:bg-muted/30 transition-colors">
+                                        <div className="flex items-start gap-3">
+                                            {/* Liste Kapağı */}
+                                            {rlb.level.readingList.coverUrl ? (
+                                                <div className="relative h-14 w-10 flex-shrink-0 rounded overflow-hidden bg-muted">
+                                                    <Image
+                                                        src={rlb.level.readingList.coverUrl}
+                                                        alt={rlb.level.readingList.name}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="h-14 w-10 flex-shrink-0 rounded bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
+                                                    <Map className="h-5 w-5 text-purple-500" />
+                                                </div>
+                                            )}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between gap-2 mb-1">
+                                                    <h5 className="font-semibold text-sm truncate">
+                                                        {rlb.level.readingList.name}
+                                                    </h5>
+                                                    <Link
+                                                        href={`/reading-lists/${rlb.level.readingList.slug}`}
+                                                        className="text-[10px] px-2 py-0.5 rounded bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 font-medium transition-colors flex-shrink-0"
+                                                    >
+                                                        Git →
+                                                    </Link>
+                                                </div>
+                                                {rlb.level.readingList.description && (
+                                                    <p className="text-[11px] text-muted-foreground line-clamp-1 mb-1.5">
+                                                        {rlb.level.readingList.description}
+                                                    </p>
+                                                )}
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 font-medium">
+                                                        Seviye {rlb.level.levelNumber}: {rlb.level.name}
+                                                    </span>
+                                                </div>
+                                                {rlb.level.description && (
+                                                    <p className="text-[10px] text-muted-foreground mt-1">
+                                                        {rlb.level.description}
+                                                    </p>
+                                                )}
+                                                {rlb.neden && (
+                                                    <div className="mt-2 p-2 rounded bg-purple-500/5 border border-purple-500/10">
+                                                        <p className="text-[10px]">
+                                                            <span className="font-medium text-purple-600 dark:text-purple-400">Neden: </span>
+                                                            <span className="text-muted-foreground">{rlb.neden}</span>
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span className="font-medium group-hover:text-primary transition-colors text-sm">
-                                        {rlb.level.readingList.name}
-                                    </span>
-                                </Link>
-                            ))}
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
-                            {/* Challenges */}
-                            {book.challengeBooks.map((cb) => (
-                                <Link
-                                    key={cb.id}
-                                    href={`/challenges/${cb.month.challenge.year}`}
-                                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors group"
-                                >
-                                    <div className={cn(
-                                        "h-8 w-8 rounded flex items-center justify-center border",
-                                        cb.role === "MAIN"
-                                            ? "bg-amber-500/20 text-amber-500 border-amber-500/30"
-                                            : "bg-blue-500/20 text-blue-500 border-blue-500/30"
-                                    )}>
-                                        {cb.role === "MAIN" ? (
-                                            <Target className="h-4 w-4" />
-                                        ) : (
-                                            <Sparkles className="h-4 w-4" />
-                                        )}
+                    {/* Challenges - Detaylı Kartlar */}
+                    {book.challengeBooks.length > 0 && (
+                        <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+                            <div className="p-4 border-b border-border/50 flex items-center gap-2">
+                                <Target className="h-5 w-5 text-amber-500" />
+                                <h4 className="text-sm font-bold">Okuma Hedefleri</h4>
+                            </div>
+                            <div className="divide-y divide-border/50">
+                                {book.challengeBooks.map((cb) => (
+                                    <div key={cb.id} className="p-4 hover:bg-muted/30 transition-colors">
+                                        <div className="flex items-start gap-3">
+                                            {/* Tema İkonu */}
+                                            <div className={cn(
+                                                "w-10 h-10 rounded-lg flex items-center justify-center text-xl flex-shrink-0",
+                                                cb.role === "MAIN" ? "bg-amber-500/10" : "bg-blue-500/10"
+                                            )}>
+                                                {cb.month.themeIcon || "📚"}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between gap-2 mb-1">
+                                                    <div className="flex items-center gap-2 min-w-0">
+                                                        <h5 className="font-semibold text-sm truncate">
+                                                            {cb.month.challenge.name}
+                                                        </h5>
+                                                        <span className={cn(
+                                                            "text-[9px] px-1.5 py-0.5 rounded font-bold flex-shrink-0",
+                                                            cb.role === "MAIN"
+                                                                ? "bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                                                                : "bg-blue-500/20 text-blue-700 dark:text-blue-400"
+                                                        )}>
+                                                            {cb.role === "MAIN" ? "ANA" : "BONUS"}
+                                                        </span>
+                                                    </div>
+                                                    <Link
+                                                        href={`/challenges/${cb.month.challenge.year}`}
+                                                        className={cn(
+                                                            "text-[10px] px-2 py-0.5 rounded font-medium transition-colors flex-shrink-0",
+                                                            cb.role === "MAIN"
+                                                                ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                                                                : "bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-400"
+                                                        )}
+                                                    >
+                                                        Git →
+                                                    </Link>
+                                                </div>
+                                                {cb.month.challenge.description && (
+                                                    <p className="text-[11px] text-muted-foreground line-clamp-1 mb-1.5">
+                                                        {cb.month.challenge.description}
+                                                    </p>
+                                                )}
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <span className={cn(
+                                                        "text-[10px] px-2 py-0.5 rounded-full font-medium",
+                                                        cb.role === "MAIN"
+                                                            ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                                                            : "bg-blue-500/10 text-blue-700 dark:text-blue-400"
+                                                    )}>
+                                                        {cb.month.monthName} {cb.month.challenge.year}
+                                                    </span>
+                                                    {cb.month.theme && (
+                                                        <span className="text-[10px] text-muted-foreground">
+                                                            Tema: {cb.month.theme}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {cb.reason && (
+                                                    <div className={cn(
+                                                        "mt-2 p-2 rounded border",
+                                                        cb.role === "MAIN"
+                                                            ? "bg-amber-500/5 border-amber-500/10"
+                                                            : "bg-blue-500/5 border-blue-500/10"
+                                                    )}>
+                                                        <p className="text-[10px]">
+                                                            <span className={cn(
+                                                                "font-medium",
+                                                                cb.role === "MAIN" ? "text-amber-600 dark:text-amber-400" : "text-blue-600 dark:text-blue-400"
+                                                            )}>Neden: </span>
+                                                            <span className="text-muted-foreground">{cb.reason}</span>
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span className="font-medium group-hover:text-primary transition-colors text-sm">
-                                        {cb.month.challenge.year} Okuma Hedefi
-                                    </span>
-                                </Link>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
