@@ -1,16 +1,18 @@
 import { getDashboardData } from "@/actions/dashboard"
 import { getActiveChallenge } from "@/actions/challenge"
+import { getReadingListsSummary } from "@/actions/reading-lists"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { BookOpen, BookCheck, BookMarked, Quote, FileText, TrendingUp, Plus, Users, Pen } from "lucide-react"
+import { BookOpen, BookCheck, BookMarked, Quote, FileText, Plus, Users, Pen, Map } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { ChallengeWidget } from "@/components/challenge/challenge-widget"
 
 export default async function DashboardPage() {
-    const [data, challenge] = await Promise.all([
+    const [data, challenge, readingLists] = await Promise.all([
         getDashboardData(),
-        getActiveChallenge()
+        getActiveChallenge(),
+        getReadingListsSummary()
     ])
 
     if (!data) {
@@ -216,6 +218,70 @@ export default async function DashboardPage() {
 
             {/* Challenge Widget */}
             {challenge && <ChallengeWidget challenge={challenge} />}
+
+            {/* Reading Lists */}
+            {readingLists.length > 0 && (
+                <Card>
+                    <CardHeader className="p-4 md:p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                                    <Map className="h-4 w-4 md:h-5 md:w-5" />
+                                    Okuma Listeleri
+                                </CardTitle>
+                                <CardDescription className="text-xs md:text-sm">Tematik okuma yolculukları</CardDescription>
+                            </div>
+                            <Button variant="ghost" size="sm" asChild className="text-xs h-7 md:h-8">
+                                <Link href="/reading-lists">Tümünü Gör</Link>
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0 md:p-6 md:pt-0">
+                        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                            {readingLists.slice(0, 6).map((list) => (
+                                <Link
+                                    key={list.id}
+                                    href={`/reading-lists/${list.slug}`}
+                                    className="flex gap-3 p-3 rounded-xl border hover:border-primary/50 hover:bg-muted/50 transition-all group"
+                                >
+                                    {/* Cover */}
+                                    <div className="relative h-16 w-12 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5">
+                                        {list.coverUrl ? (
+                                            <Image
+                                                src={list.coverUrl}
+                                                alt={list.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full items-center justify-center">
+                                                <Map className="h-5 w-5 text-primary/50" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    {/* Info */}
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+                                            {list.name}
+                                        </h3>
+                                        {list.description && (
+                                            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                                                {list.description}
+                                            </p>
+                                        )}
+                                        <div className="flex items-center gap-2 mt-1.5 text-[10px] text-muted-foreground">
+                                            <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">
+                                                {list.levelCount} seviye
+                                            </span>
+                                            <span>{list.totalBooks} kitap</span>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Three Column Layout - Stack on mobile */}
             <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-3">
