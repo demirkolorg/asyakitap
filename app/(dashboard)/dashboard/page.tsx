@@ -131,57 +131,92 @@ export default async function DashboardPage() {
                     </h2>
 
                     {featuredBook ? (
-                        <div className="bg-card rounded-2xl p-4 md:p-6 border border-border/50 shadow-sm flex flex-col md:flex-row gap-4 md:gap-6">
-                            {/* Book Cover */}
-                            <Link href={`/book/${featuredBook.id}`} className="w-32 md:w-40 shrink-0 mx-auto md:mx-0">
-                                <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-muted shadow-lg">
-                                    {featuredBook.coverUrl ? (
-                                        <Image
-                                            src={featuredBook.coverUrl.replace("http:", "https:")}
-                                            alt={featuredBook.title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex h-full items-center justify-center">
-                                            <BookOpen className="h-12 w-12 text-muted-foreground" />
-                                        </div>
-                                    )}
-                                </div>
-                            </Link>
+                        <div className="bg-card rounded-xl md:rounded-2xl p-3 md:p-6 border border-border/50 shadow-sm">
+                            {/* Mobile: Horizontal layout / Desktop: Same */}
+                            <div className="flex gap-3 md:gap-6">
+                                {/* Book Cover */}
+                                <Link href={`/book/${featuredBook.id}`} className="w-20 md:w-40 shrink-0">
+                                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-muted shadow-lg">
+                                        {featuredBook.coverUrl ? (
+                                            <Image
+                                                src={featuredBook.coverUrl.replace("http:", "https:")}
+                                                alt={featuredBook.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full items-center justify-center">
+                                                <BookOpen className="h-8 md:h-12 w-8 md:w-12 text-muted-foreground" />
+                                            </div>
+                                        )}
+                                    </div>
+                                </Link>
 
-                            {/* Details */}
-                            <div className="flex flex-col justify-between flex-1 py-1">
-                                <div>
-                                    <div className="flex justify-between items-start mb-2">
-                                        <span className="bg-primary/20 text-primary text-[10px] md:text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">
+                                {/* Right Side - Title, Author, Status */}
+                                <div className="flex-1 min-w-0 flex flex-col">
+                                    {/* Status Badge & Menu */}
+                                    <div className="flex justify-between items-start mb-1 md:mb-2">
+                                        <span className="bg-primary/20 text-primary text-[9px] md:text-xs font-bold px-1.5 md:px-2 py-0.5 md:py-1 rounded uppercase tracking-wider">
                                             Okunuyor
                                         </span>
                                         <Link href={`/book/${featuredBook.id}`} className="text-muted-foreground hover:text-foreground">
-                                            <MoreHorizontal className="h-5 w-5" />
+                                            <MoreHorizontal className="h-4 md:h-5 w-4 md:w-5" />
                                         </Link>
                                     </div>
+
+                                    {/* Title */}
                                     <Link href={`/book/${featuredBook.id}`}>
-                                        <h3 className="text-xl md:text-2xl lg:text-3xl font-bold leading-tight mb-1 hover:text-primary transition-colors">
+                                        <h3 className="text-sm md:text-2xl lg:text-3xl font-bold leading-tight mb-0.5 md:mb-1 hover:text-primary transition-colors line-clamp-2">
                                             {featuredBook.title}
                                         </h3>
                                     </Link>
-                                    <p className="text-muted-foreground text-base md:text-lg mb-4 md:mb-6">
+
+                                    {/* Author */}
+                                    <p className="text-muted-foreground text-xs md:text-lg mb-2 md:mb-4">
                                         {featuredBook.author?.name || "Bilinmiyor"}
                                     </p>
 
-                                    {/* Last Quote from this book */}
+                                    {/* Mobile: Compact Progress */}
+                                    {featuredBook.pageCount && (
+                                        <div className="md:hidden mt-auto">
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                                                    <div
+                                                        className={cn(
+                                                            "h-full rounded-full",
+                                                            featuredGoalInfo?.statusColor === 'green' && "bg-green-500",
+                                                            featuredGoalInfo?.statusColor === 'yellow' && "bg-yellow-500",
+                                                            featuredGoalInfo?.statusColor === 'red' && "bg-red-500",
+                                                            !featuredGoalInfo && "bg-primary"
+                                                        )}
+                                                        style={{ width: `${Math.min(100, (featuredBook.currentPage / featuredBook.pageCount) * 100)}%` }}
+                                                    />
+                                                </div>
+                                                <span className={cn(
+                                                    "text-xs font-bold",
+                                                    featuredGoalInfo?.statusColor === 'green' && "text-green-500",
+                                                    featuredGoalInfo?.statusColor === 'yellow' && "text-yellow-500",
+                                                    featuredGoalInfo?.statusColor === 'red' && "text-red-500",
+                                                    !featuredGoalInfo && "text-primary"
+                                                )}>
+                                                    %{Math.round((featuredBook.currentPage / featuredBook.pageCount) * 100)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Desktop Only: Quote */}
                                     {recentQuotes.find(q => q.bookTitle === featuredBook.title) && (
-                                        <div className="p-3 md:p-4 bg-muted/50 rounded-lg mb-4 md:mb-6 border border-border/50">
-                                            <p className="text-muted-foreground italic text-xs md:text-sm leading-relaxed">
+                                        <div className="hidden md:block p-4 bg-muted/50 rounded-lg mb-4 border border-border/50">
+                                            <p className="text-muted-foreground italic text-sm leading-relaxed">
                                                 "{recentQuotes.find(q => q.bookTitle === featuredBook.title)?.content.slice(0, 150)}..."
                                             </p>
                                         </div>
                                     )}
 
-                                    {/* Reading Goal Info */}
+                                    {/* Desktop Only: Reading Goal Info */}
                                     {featuredGoalInfo && (
-                                        <div className="flex flex-wrap gap-2 md:gap-3 mb-4 md:mb-6">
+                                        <div className="hidden md:flex flex-wrap gap-3 mb-4">
                                             <div className={cn(
                                                 "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
                                                 featuredGoalInfo.statusColor === 'green' && "bg-green-500/10 text-green-600 dark:text-green-400",
@@ -201,60 +236,81 @@ export default async function DashboardPage() {
                                             </div>
                                         </div>
                                     )}
-                                </div>
 
-                                {/* Progress */}
-                                {featuredBook.pageCount && (
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-xs md:text-sm text-muted-foreground">İlerleme</span>
-                                            <span className={cn(
-                                                "text-xl md:text-2xl font-bold",
-                                                featuredGoalInfo?.statusColor === 'green' && "text-green-500",
-                                                featuredGoalInfo?.statusColor === 'yellow' && "text-yellow-500",
-                                                featuredGoalInfo?.statusColor === 'red' && "text-red-500",
-                                                !featuredGoalInfo && "text-primary"
-                                            )}>
-                                                {Math.round((featuredBook.currentPage / featuredBook.pageCount) * 100)}%
-                                            </span>
+                                    {/* Desktop Only: Full Progress */}
+                                    {featuredBook.pageCount && (
+                                        <div className="hidden md:flex flex-col gap-2 mt-auto">
+                                            <div className="flex justify-between items-end">
+                                                <span className="text-sm text-muted-foreground">İlerleme</span>
+                                                <span className={cn(
+                                                    "text-2xl font-bold",
+                                                    featuredGoalInfo?.statusColor === 'green' && "text-green-500",
+                                                    featuredGoalInfo?.statusColor === 'yellow' && "text-yellow-500",
+                                                    featuredGoalInfo?.statusColor === 'red' && "text-red-500",
+                                                    !featuredGoalInfo && "text-primary"
+                                                )}>
+                                                    {Math.round((featuredBook.currentPage / featuredBook.pageCount) * 100)}%
+                                                </span>
+                                            </div>
+                                            <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
+                                                <div
+                                                    className={cn(
+                                                        "h-full rounded-full transition-all",
+                                                        featuredGoalInfo?.statusColor === 'green' && "bg-green-500",
+                                                        featuredGoalInfo?.statusColor === 'yellow' && "bg-yellow-500",
+                                                        featuredGoalInfo?.statusColor === 'red' && "bg-red-500",
+                                                        !featuredGoalInfo && "bg-primary"
+                                                    )}
+                                                    style={{ width: `${Math.min(100, (featuredBook.currentPage / featuredBook.pageCount) * 100)}%` }}
+                                                />
+                                            </div>
+                                            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                                <span>Sayfa {featuredBook.currentPage}</span>
+                                                <span>Sayfa {featuredBook.pageCount}</span>
+                                            </div>
                                         </div>
-                                        <div className="h-2 md:h-3 w-full bg-muted rounded-full overflow-hidden">
-                                            <div
-                                                className={cn(
-                                                    "h-full rounded-full transition-all",
-                                                    featuredGoalInfo?.statusColor === 'green' && "bg-green-500",
-                                                    featuredGoalInfo?.statusColor === 'yellow' && "bg-yellow-500",
-                                                    featuredGoalInfo?.statusColor === 'red' && "bg-red-500",
-                                                    !featuredGoalInfo && "bg-primary"
-                                                )}
-                                                style={{ width: `${Math.min(100, (featuredBook.currentPage / featuredBook.pageCount) * 100)}%` }}
-                                            />
-                                        </div>
-                                        <div className="flex justify-between text-[10px] md:text-xs text-muted-foreground mt-1">
-                                            <span>Sayfa {featuredBook.currentPage}</span>
-                                            <span>Sayfa {featuredBook.pageCount}</span>
-                                        </div>
-                                        {/* Action Buttons */}
-                                        <div className="flex gap-2 mt-3">
-                                            <Link
-                                                href={`/book/${featuredBook.id}?action=progress`}
-                                                className="flex-1 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors text-xs md:text-sm flex items-center justify-center gap-1.5"
-                                            >
-                                                <Edit className="h-3.5 w-3.5" />
-                                                <span className="hidden sm:inline">İlerleme</span>
-                                                <span className="sm:hidden">Sayfa</span>
-                                            </Link>
-                                            <Link
-                                                href={`/book/${featuredBook.id}?action=quote`}
-                                                className="flex-1 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg font-medium transition-colors text-xs md:text-sm flex items-center justify-center gap-1.5"
-                                            >
-                                                <Quote className="h-3.5 w-3.5" />
-                                                Alıntı
-                                            </Link>
-                                        </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
+
+                            {/* Mobile: Goal Info Chips */}
+                            {featuredGoalInfo && (
+                                <div className="flex md:hidden flex-wrap gap-1.5 mt-3">
+                                    <div className={cn(
+                                        "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium",
+                                        featuredGoalInfo.statusColor === 'green' && "bg-green-500/10 text-green-600 dark:text-green-400",
+                                        featuredGoalInfo.statusColor === 'yellow' && "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+                                        featuredGoalInfo.statusColor === 'red' && "bg-red-500/10 text-red-600 dark:text-red-400",
+                                    )}>
+                                        <Target className="h-3 w-3" />
+                                        {featuredGoalInfo.statusMessage}
+                                    </div>
+                                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
+                                        <Clock className="h-3 w-3" />
+                                        {formatRemainingDays(featuredGoalInfo.remainingDays)}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Action Buttons - Both Mobile & Desktop */}
+                            {featuredBook.pageCount && (
+                                <div className="flex gap-2 mt-3">
+                                    <Link
+                                        href={`/book/${featuredBook.id}?action=progress`}
+                                        className="flex-1 py-1.5 md:py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors text-[11px] md:text-sm flex items-center justify-center gap-1.5"
+                                    >
+                                        <Edit className="h-3 md:h-3.5 w-3 md:w-3.5" />
+                                        Sayfa
+                                    </Link>
+                                    <Link
+                                        href={`/book/${featuredBook.id}?action=quote`}
+                                        className="flex-1 py-1.5 md:py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg font-medium transition-colors text-[11px] md:text-sm flex items-center justify-center gap-1.5"
+                                    >
+                                        <Quote className="h-3 md:h-3.5 w-3 md:w-3.5" />
+                                        Alıntı
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="bg-card rounded-2xl p-8 border border-border/50 text-center">
