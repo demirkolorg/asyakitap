@@ -234,14 +234,24 @@ export default async function DashboardPage() {
                                             <span>Sayfa {featuredBook.currentPage}</span>
                                             <span>Sayfa {featuredBook.pageCount}</span>
                                         </div>
-                                        {/* İlerleme Güncelle Butonu */}
-                                        <Link
-                                            href={`/book/${featuredBook.id}?action=progress`}
-                                            className="mt-3 w-full py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors text-xs md:text-sm flex items-center justify-center gap-2"
-                                        >
-                                            <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                                            İlerleme Güncelle
-                                        </Link>
+                                        {/* Action Buttons */}
+                                        <div className="flex gap-2 mt-3">
+                                            <Link
+                                                href={`/book/${featuredBook.id}?action=progress`}
+                                                className="flex-1 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors text-xs md:text-sm flex items-center justify-center gap-1.5"
+                                            >
+                                                <Edit className="h-3.5 w-3.5" />
+                                                <span className="hidden sm:inline">İlerleme</span>
+                                                <span className="sm:hidden">Sayfa</span>
+                                            </Link>
+                                            <Link
+                                                href={`/book/${featuredBook.id}?action=quote`}
+                                                className="flex-1 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg font-medium transition-colors text-xs md:text-sm flex items-center justify-center gap-1.5"
+                                            >
+                                                <Quote className="h-3.5 w-3.5" />
+                                                Alıntı
+                                            </Link>
+                                        </div>
                                     </div>
                                 )}
                             </div>

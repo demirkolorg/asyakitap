@@ -192,7 +192,9 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         const action = searchParams.get('action')
         if (action === 'progress' && currentStatus === 'READING') {
             setShowProgressDialog(true)
-            // URL'den action parametresini temizle
+            router.replace(`/book/${book.id}`, { scroll: false })
+        } else if (action === 'quote') {
+            setShowQuoteDialog(true)
             router.replace(`/book/${book.id}`, { scroll: false })
         }
     }, [searchParams, currentStatus, book.id, router])
@@ -1621,10 +1623,15 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
 
             {/* Quote Dialog */}
             <Dialog open={showQuoteDialog} onOpenChange={setShowQuoteDialog}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
-                        <DialogTitle>Yeni Alıntı</DialogTitle>
-                        <DialogDescription>Kitaptan bir alıntı ekle</DialogDescription>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Quote className="h-5 w-5 text-primary" />
+                            Yeni Alıntı
+                        </DialogTitle>
+                        <DialogDescription>
+                            {book.title} kitabından bir alıntı ekle
+                        </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
@@ -1633,7 +1640,8 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 value={quoteContent}
                                 onChange={(e) => setQuoteContent(e.target.value)}
                                 placeholder="Alıntıyı buraya yaz..."
-                                rows={4}
+                                rows={5}
+                                className="resize-none"
                             />
                         </div>
                         <div className="space-y-2">
