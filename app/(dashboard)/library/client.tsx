@@ -54,6 +54,7 @@ interface LibraryClientProps {
 }
 
 type StatusFilter = "ALL" | BookStatus
+type LibraryFilter = "ALL" | "IN_LIBRARY" | "NOT_IN_LIBRARY"
 type ViewMode = "cards" | "reading-lists" | "challenges"
 
 export default function LibraryClient({ books: initialBooks, readingLists, challengeTimeline }: LibraryClientProps) {
@@ -61,6 +62,7 @@ export default function LibraryClient({ books: initialBooks, readingLists, chall
     const [books, setBooks] = useState(initialBooks)
     const [activeView, setActiveView] = useState<ViewMode>("cards")
     const [activeStatus, setActiveStatus] = useState<StatusFilter>("ALL")
+    const [libraryFilter, setLibraryFilter] = useState<LibraryFilter>("ALL")
     const [searchQuery, setSearchQuery] = useState("")
     const [highlightInLibrary, setHighlightInLibrary] = useState(false)
 
@@ -96,6 +98,12 @@ export default function LibraryClient({ books: initialBooks, readingLists, chall
             result = result.filter(b => b.status === activeStatus)
         }
 
+        if (libraryFilter !== "ALL") {
+            result = result.filter(b =>
+                libraryFilter === "IN_LIBRARY" ? b.inLibrary : !b.inLibrary
+            )
+        }
+
         if (searchQuery) {
             const query = searchQuery.toLowerCase()
             result = result.filter(
@@ -105,7 +113,7 @@ export default function LibraryClient({ books: initialBooks, readingLists, chall
         }
 
         return result
-    }, [books, activeStatus, searchQuery])
+    }, [books, activeStatus, libraryFilter, searchQuery])
 
     // Book Card Component
     const BookCard = ({ book }: { book: BookWithRelations }) => {
@@ -555,6 +563,35 @@ export default function LibraryClient({ books: initialBooks, readingLists, chall
                             )}
                         >
                             Bitti
+                        </button>
+
+                        {/* Separator */}
+                        <div className="h-5 w-px bg-border mx-1" />
+
+                        {/* Library Filter */}
+                        <button
+                            onClick={() => setLibraryFilter(libraryFilter === "IN_LIBRARY" ? "ALL" : "IN_LIBRARY")}
+                            className={cn(
+                                "px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
+                                libraryFilter === "IN_LIBRARY"
+                                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                                    : "bg-muted text-muted-foreground border border-border hover:border-emerald-500/50 hover:text-emerald-500"
+                            )}
+                        >
+                            <Library className="h-3.5 w-3.5" />
+                            Rafta
+                        </button>
+                        <button
+                            onClick={() => setLibraryFilter(libraryFilter === "NOT_IN_LIBRARY" ? "ALL" : "NOT_IN_LIBRARY")}
+                            className={cn(
+                                "px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
+                                libraryFilter === "NOT_IN_LIBRARY"
+                                    ? "bg-orange-500 text-white shadow-lg shadow-orange-500/20"
+                                    : "bg-muted text-muted-foreground border border-border hover:border-orange-500/50 hover:text-orange-500"
+                            )}
+                        >
+                            <Library className="h-3.5 w-3.5" />
+                            Rafta Değil
                         </button>
                     </div>
 
