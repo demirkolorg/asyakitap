@@ -1338,19 +1338,6 @@ function CinematicBookCard({ book }: { book: ReadingListBook }) {
                 </div>
             </div>
 
-            {/* Action Button */}
-            <div className="flex justify-end mt-3">
-                {isNotStarted ? (
-                    <span className="flex items-center gap-1 text-xs font-medium text-[#2bee79] bg-[#2bee79]/10 px-3 py-1.5 rounded-full border border-[#2bee79]/30 group-hover:bg-[#2bee79]/20 transition-colors">
-                        <Play className="h-3 w-3" />
-                        Başla
-                    </span>
-                ) : (
-                    <button className="text-gray-500 hover:text-gray-300 transition-colors p-1">
-                        <MoreHorizontal className="h-4 w-4" />
-                    </button>
-                )}
-            </div>
         </Link>
     )
 }
