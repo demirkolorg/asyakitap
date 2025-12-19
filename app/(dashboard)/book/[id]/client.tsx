@@ -1369,7 +1369,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             {/* Dialogs */}
             {/* Edit Dialog */}
             <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-                <DialogContent className="sm:max-w-[500px]">
+                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Kitabı Düzenle</DialogTitle>
                         <DialogDescription>Kitap bilgilerini güncelle</DialogDescription>
