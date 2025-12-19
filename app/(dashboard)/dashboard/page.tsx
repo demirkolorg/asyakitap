@@ -133,8 +133,8 @@ export default async function DashboardPage() {
                     {featuredBook ? (
                         <div className="bg-card rounded-2xl p-4 md:p-6 border border-border/50 shadow-sm flex flex-col md:flex-row gap-4 md:gap-6">
                             {/* Book Cover */}
-                            <Link href={`/book/${featuredBook.id}`} className="w-full md:w-44 shrink-0">
-                                <div className="relative aspect-[2/3] md:aspect-auto md:h-full rounded-lg overflow-hidden bg-muted shadow-lg">
+                            <Link href={`/book/${featuredBook.id}`} className="w-32 md:w-40 shrink-0 mx-auto md:mx-0">
+                                <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-muted shadow-lg">
                                     {featuredBook.coverUrl ? (
                                         <Image
                                             src={featuredBook.coverUrl.replace("http:", "https:")}
