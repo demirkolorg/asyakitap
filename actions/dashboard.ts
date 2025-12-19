@@ -31,6 +31,8 @@ interface CurrentlyReadingBook extends BookWithAuthor {
     currentPage: number
     pageCount: number | null
     updatedAt: Date
+    startDate: Date | null
+    readingGoalDays: number | null
 }
 
 interface RecentlyCompletedBook extends BookWithAuthor {
@@ -115,6 +117,8 @@ const getCachedDashboardData = (userId: string) =>
                         currentPage: true,
                         pageCount: true,
                         updatedAt: true,
+                        startDate: true,
+                        readingGoalDays: true,
                         author: { select: { id: true, name: true } }
                     },
                     orderBy: { updatedAt: 'desc' },

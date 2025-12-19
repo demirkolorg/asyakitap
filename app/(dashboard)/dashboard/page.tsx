@@ -18,11 +18,13 @@ import {
     ChevronRight,
     Star,
     Edit,
-    CheckCircle2
+    CheckCircle2,
+    Clock
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { calculateReadingGoal, formatRemainingDays } from "@/lib/reading-goal"
 
 export default async function DashboardPage() {
     const [data, challenge, readingLists] = await Promise.all([
@@ -40,6 +42,14 @@ export default async function DashboardPage() {
     // İlk okunan kitabı featured olarak göster
     const featuredBook = currentlyReading[0]
     const otherReadingBooks = currentlyReading.slice(1)
+
+    // Featured kitap için okuma hedefi hesapla
+    const featuredGoalInfo = featuredBook ? calculateReadingGoal({
+        pageCount: featuredBook.pageCount,
+        currentPage: featuredBook.currentPage,
+        startDate: featuredBook.startDate,
+        readingGoalDays: featuredBook.readingGoalDays,
+    }) : null
 
     // Challenge progress hesaplama
     const challengeProgress = challenge ? {
@@ -168,6 +178,29 @@ export default async function DashboardPage() {
                                             </p>
                                         </div>
                                     )}
+
+                                    {/* Reading Goal Info */}
+                                    {featuredGoalInfo && (
+                                        <div className="flex flex-wrap gap-2 md:gap-3 mb-4 md:mb-6">
+                                            <div className={cn(
+                                                "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
+                                                featuredGoalInfo.statusColor === 'green' && "bg-green-500/10 text-green-600 dark:text-green-400",
+                                                featuredGoalInfo.statusColor === 'yellow' && "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+                                                featuredGoalInfo.statusColor === 'red' && "bg-red-500/10 text-red-600 dark:text-red-400",
+                                            )}>
+                                                <Target className="h-3.5 w-3.5" />
+                                                {featuredGoalInfo.statusMessage}
+                                            </div>
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                                                <Clock className="h-3.5 w-3.5" />
+                                                {formatRemainingDays(featuredGoalInfo.remainingDays)}
+                                            </div>
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                                                <BookOpen className="h-3.5 w-3.5" />
+                                                Günde {featuredGoalInfo.currentDailyTarget} sayfa
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Progress */}
@@ -175,13 +208,25 @@ export default async function DashboardPage() {
                                     <div className="flex flex-col gap-2">
                                         <div className="flex justify-between items-end">
                                             <span className="text-xs md:text-sm text-muted-foreground">İlerleme</span>
-                                            <span className="text-xl md:text-2xl font-bold text-primary">
+                                            <span className={cn(
+                                                "text-xl md:text-2xl font-bold",
+                                                featuredGoalInfo?.statusColor === 'green' && "text-green-500",
+                                                featuredGoalInfo?.statusColor === 'yellow' && "text-yellow-500",
+                                                featuredGoalInfo?.statusColor === 'red' && "text-red-500",
+                                                !featuredGoalInfo && "text-primary"
+                                            )}>
                                                 {Math.round((featuredBook.currentPage / featuredBook.pageCount) * 100)}%
                                             </span>
                                         </div>
                                         <div className="h-2 md:h-3 w-full bg-muted rounded-full overflow-hidden">
                                             <div
-                                                className="h-full bg-primary rounded-full transition-all"
+                                                className={cn(
+                                                    "h-full rounded-full transition-all",
+                                                    featuredGoalInfo?.statusColor === 'green' && "bg-green-500",
+                                                    featuredGoalInfo?.statusColor === 'yellow' && "bg-yellow-500",
+                                                    featuredGoalInfo?.statusColor === 'red' && "bg-red-500",
+                                                    !featuredGoalInfo && "bg-primary"
+                                                )}
                                                 style={{ width: `${Math.min(100, (featuredBook.currentPage / featuredBook.pageCount) * 100)}%` }}
                                             />
                                         </div>

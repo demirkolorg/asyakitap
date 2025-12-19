@@ -86,6 +86,7 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
     ),
 })
 import { cn, formatDate, getNowInTurkey } from "@/lib/utils"
+import { estimateReadingDays, calculateReadingGoal, formatRemainingDays, formatDailyTarget } from "@/lib/reading-goal"
 
 // Types
 import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, ChallengeBookRole, BookRating } from "@prisma/client"
@@ -173,6 +174,11 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [inLibrary, setInLibrary] = useState(book.inLibrary)
     const [isUpdatingLibrary, setIsUpdatingLibrary] = useState(false)
 
+    // Okuma hedefi modal state
+    const [showStartReadingModal, setShowStartReadingModal] = useState(false)
+    const [readingGoalDays, setReadingGoalDays] = useState("")
+    const [isStartingReading, setIsStartingReading] = useState(false)
+
     // AI yorum state'leri - kaydedilmiş yorumları başlangıçta yükle
     const [tortuAiComment, setTortuAiComment] = useState<string | null>(book.tortuAiComment || null)
     const [imzaAiComment, setImzaAiComment] = useState<string | null>(book.imzaAiComment || null)
@@ -184,6 +190,17 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     }, [])
 
     const progress = book.pageCount ? Math.round((currentPage / book.pageCount) * 100) : 0
+
+    // Okuma hedefi hesaplama
+    const readingGoalInfo = calculateReadingGoal({
+        pageCount: book.pageCount,
+        currentPage: currentPage,
+        startDate: book.startDate,
+        readingGoalDays: book.readingGoalDays,
+    })
+
+    // AI önerisi hesaplama (modal için)
+    const aiSuggestion = book.pageCount ? estimateReadingDays(book.pageCount) : null
 
     // Okuma süresi hesaplama
     const readingDays = book.startDate && book.endDate
@@ -342,12 +359,14 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         setIsUpdatingLibrary(false)
     }
 
-    const handleStartReading = async (isRestart = false) => {
+    // Okumaya başla (eski yöntem - restart için)
+    const handleStartReadingDirect = async (isRestart = false) => {
         setIsUpdatingStatus(true)
         const result = await updateBook(book.id, {
             status: "READING",
             startDate: getNowInTurkey(),
             endDate: null,
+            readingGoalDays: null, // Restart'ta hedefi sıfırla
         })
         if (result.success) {
             await addReadingLog(book.id, isRestart ? "RESTARTED" : "STARTED")
@@ -358,6 +377,40 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             toast.error("Bir hata oluştu")
         }
         setIsUpdatingStatus(false)
+    }
+
+    // Modal ile okumaya başla
+    const handleStartReadingWithGoal = async () => {
+        setIsStartingReading(true)
+        const goalDays = readingGoalDays ? parseInt(readingGoalDays) : null
+
+        const result = await updateBook(book.id, {
+            status: "READING",
+            startDate: getNowInTurkey(),
+            endDate: null,
+            currentPage: 0,
+            readingGoalDays: goalDays,
+        })
+        if (result.success) {
+            await addReadingLog(book.id, "STARTED")
+            setCurrentStatus("READING")
+            setCurrentPage(0)
+            setShowStartReadingModal(false)
+            toast.success(goalDays
+                ? `Okumaya başladın! Hedef: ${goalDays} gün`
+                : "Okumaya başladın!"
+            )
+            router.refresh()
+        } else {
+            toast.error("Bir hata oluştu")
+        }
+        setIsStartingReading(false)
+    }
+
+    // Modal'ı aç (TO_READ durumunda)
+    const handleOpenStartReadingModal = () => {
+        setReadingGoalDays("")
+        setShowStartReadingModal(true)
     }
 
     const handleFinishReading = async () => {
@@ -569,7 +622,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-[200px]">
                                         {currentStatus === "TO_READ" && (
-                                            <DropdownMenuItem onClick={() => handleStartReading(false)}>
+                                            <DropdownMenuItem onClick={handleOpenStartReadingModal}>
                                                 <PlayCircle className="mr-2 h-4 w-4" />
                                                 Okumaya Başla
                                             </DropdownMenuItem>
@@ -593,7 +646,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         )}
                                         {(currentStatus === "COMPLETED" || currentStatus === "DNF") && (
                                             <>
-                                                <DropdownMenuItem onClick={() => handleStartReading(true)}>
+                                                <DropdownMenuItem onClick={() => handleStartReadingDirect(true)}>
                                                     <RotateCcw className="mr-2 h-4 w-4" />
                                                     Tekrar Oku
                                                 </DropdownMenuItem>
@@ -1013,29 +1066,85 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
 
                 {/* Sidebar */}
                 <div className="flex flex-col gap-6">
-                    {/* Reading Progress */}
+                    {/* Reading Progress & Goal Widget */}
                     {currentStatus === "READING" && book.pageCount && (
                         <div className="bg-card rounded-xl border border-border/50 p-4 md:p-6 flex flex-col gap-4">
-                            <h4 className="text-lg font-bold">Okuma İlerlemesi</h4>
                             <div className="flex items-center justify-between">
-                                <span className="text-muted-foreground text-sm">
-                                    Sayfa {currentPage} / {book.pageCount}
-                                </span>
-                                <span className="text-primary font-bold text-sm">%{progress}</span>
+                                <h4 className="text-lg font-bold flex items-center gap-2">
+                                    <Target className="h-5 w-5 text-primary" />
+                                    Okuma İlerlemesi
+                                </h4>
+                                {readingGoalInfo && (
+                                    <span className={cn(
+                                        "text-xs px-2 py-1 rounded-full font-medium",
+                                        readingGoalInfo.statusColor === 'green' && "bg-green-500/10 text-green-600 dark:text-green-400",
+                                        readingGoalInfo.statusColor === 'yellow' && "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+                                        readingGoalInfo.statusColor === 'red' && "bg-red-500/10 text-red-600 dark:text-red-400",
+                                    )}>
+                                        {readingGoalInfo.statusMessage}
+                                    </span>
+                                )}
                             </div>
-                            <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-primary rounded-full transition-all"
-                                    style={{ width: `${progress}%` }}
-                                />
-                            </div>
-                            <div className="flex items-center gap-3 mt-2 p-3 rounded-lg bg-muted/50">
-                                <Flag className="h-5 w-5 text-primary" />
-                                <div className="flex flex-col">
-                                    <span className="text-xs text-muted-foreground">Hedef</span>
-                                    <span className="text-sm font-medium">Haftalık 50 Sayfa</span>
+
+                            {/* Progress Bar */}
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-muted-foreground text-sm">
+                                        Sayfa {currentPage} / {book.pageCount}
+                                    </span>
+                                    <span className="text-primary font-bold text-sm">%{progress}</span>
+                                </div>
+                                <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
+                                    <div
+                                        className={cn(
+                                            "h-full rounded-full transition-all",
+                                            readingGoalInfo?.statusColor === 'green' && "bg-green-500",
+                                            readingGoalInfo?.statusColor === 'yellow' && "bg-yellow-500",
+                                            readingGoalInfo?.statusColor === 'red' && "bg-red-500",
+                                            !readingGoalInfo && "bg-primary"
+                                        )}
+                                        style={{ width: `${progress}%` }}
+                                    />
                                 </div>
                             </div>
+
+                            {/* Goal Stats */}
+                            {readingGoalInfo && (
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="p-3 rounded-lg bg-muted/50 flex items-center gap-3">
+                                        <Clock className="h-5 w-5 text-muted-foreground" />
+                                        <div className="flex flex-col">
+                                            <span className="text-xs text-muted-foreground">Kalan Süre</span>
+                                            <span className="text-sm font-medium">
+                                                {formatRemainingDays(readingGoalInfo.remainingDays)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="p-3 rounded-lg bg-muted/50 flex items-center gap-3">
+                                        <BookOpen className="h-5 w-5 text-muted-foreground" />
+                                        <div className="flex flex-col">
+                                            <span className="text-xs text-muted-foreground">Günlük Hedef</span>
+                                            <span className="text-sm font-medium">
+                                                {readingGoalInfo.currentDailyTarget} sayfa
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* No Goal Set */}
+                            {!readingGoalInfo && book.pageCount && (
+                                <div className="p-3 rounded-lg bg-muted/50 flex items-center gap-3">
+                                    <Flag className="h-5 w-5 text-muted-foreground" />
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-muted-foreground">Hedef belirlenmedi</span>
+                                        <span className="text-sm text-muted-foreground">
+                                            Okumaya başlarken hedef belirleyebilirsin
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+
                             <Button
                                 variant="outline"
                                 className="w-full"
@@ -1385,6 +1494,119 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             Vazgeç
                         </Button>
                         <Button onClick={handleUpdateProgress}>Güncelle</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Start Reading Modal */}
+            <Dialog open={showStartReadingModal} onOpenChange={setShowStartReadingModal}>
+                <DialogContent className="sm:max-w-[450px]">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <PlayCircle className="h-5 w-5 text-primary" />
+                            Okumaya Başla
+                        </DialogTitle>
+                        <DialogDescription>
+                            Bu kitabı kaç günde bitirmek istiyorsun?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        {/* AI Önerisi */}
+                        {aiSuggestion && (
+                            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Bot className="h-5 w-5 text-primary" />
+                                    <span className="font-medium text-primary">AI Önerisi</span>
+                                </div>
+                                <div className="space-y-2 text-sm">
+                                    <button
+                                        onClick={() => setReadingGoalDays(aiSuggestion.fastReader.toString())}
+                                        className={cn(
+                                            "w-full flex justify-between items-center p-2 rounded-md transition-colors",
+                                            readingGoalDays === aiSuggestion.fastReader.toString()
+                                                ? "bg-primary/20 text-primary"
+                                                : "hover:bg-muted"
+                                        )}
+                                    >
+                                        <span>🚀 Hızlı (50 sf/gün)</span>
+                                        <span className="font-medium">{aiSuggestion.fastReader} gün</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setReadingGoalDays(aiSuggestion.normalReader.toString())}
+                                        className={cn(
+                                            "w-full flex justify-between items-center p-2 rounded-md transition-colors",
+                                            readingGoalDays === aiSuggestion.normalReader.toString()
+                                                ? "bg-primary/20 text-primary"
+                                                : "hover:bg-muted"
+                                        )}
+                                    >
+                                        <span>📖 Normal (30 sf/gün)</span>
+                                        <span className="font-medium">{aiSuggestion.normalReader} gün</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setReadingGoalDays(aiSuggestion.casualReader.toString())}
+                                        className={cn(
+                                            "w-full flex justify-between items-center p-2 rounded-md transition-colors",
+                                            readingGoalDays === aiSuggestion.casualReader.toString()
+                                                ? "bg-primary/20 text-primary"
+                                                : "hover:bg-muted"
+                                        )}
+                                    >
+                                        <span>☕ Rahat (15 sf/gün)</span>
+                                        <span className="font-medium">{aiSuggestion.casualReader} gün</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Manuel Gün Girişi */}
+                        <div className="space-y-2">
+                            <Label htmlFor="goalDays">Hedef Gün (Opsiyonel)</Label>
+                            <div className="flex items-center gap-2">
+                                <Input
+                                    id="goalDays"
+                                    type="number"
+                                    placeholder="Örn: 14"
+                                    value={readingGoalDays}
+                                    onChange={(e) => setReadingGoalDays(e.target.value)}
+                                    min={1}
+                                    className="w-24"
+                                />
+                                <span className="text-muted-foreground">gün</span>
+                            </div>
+                        </div>
+
+                        {/* Günlük Sayfa Bilgisi */}
+                        {readingGoalDays && book.pageCount && parseInt(readingGoalDays) > 0 && (
+                            <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 text-sm">
+                                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">
+                                    Günde yaklaşık{" "}
+                                    <span className="font-medium text-foreground">
+                                        {Math.ceil(book.pageCount / parseInt(readingGoalDays))}
+                                    </span>{" "}
+                                    sayfa okumalısın
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowStartReadingModal(false)}>
+                            Vazgeç
+                        </Button>
+                        <Button onClick={handleStartReadingWithGoal} disabled={isStartingReading}>
+                            {isStartingReading ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Başlatılıyor...
+                                </>
+                            ) : (
+                                <>
+                                    <PlayCircle className="h-4 w-4 mr-2" />
+                                    Okumaya Başla
+                                </>
+                            )}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

@@ -187,6 +187,7 @@ export async function updateBook(id: string, data: {
     endDate?: Date | null
     coverUrl?: string | null
     inLibrary?: boolean
+    readingGoalDays?: number | null
 }) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

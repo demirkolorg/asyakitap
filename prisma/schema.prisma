@@ -83,6 +83,7 @@ model Book {
   rating               BookRating?           // Kitap puanlaması (1-1 ilişki)
   startDate            DateTime?
   endDate              DateTime?
+  readingGoalDays      Int?                  // Kullanıcının hedeflediği okuma gün sayısı
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
 
