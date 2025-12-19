@@ -130,6 +130,7 @@ interface ReadingListLevel {
     levelNumber: number
     name: string
     description: string | null
+    coverUrl: string | null
     books: ReadingListBook[]
 }
 
@@ -258,7 +259,7 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
         open: false,
         mode: "create" as "create" | "edit",
         levelId: null as string | null,
-        data: { name: "", description: "" }
+        data: { name: "", description: "", coverUrl: "" }
     })
 
     const [bookDialog, setBookDialog] = useState({
@@ -442,14 +443,14 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
                 open: true,
                 mode: "edit",
                 levelId: level.id,
-                data: { name: level.name, description: level.description || "" }
+                data: { name: level.name, description: level.description || "", coverUrl: level.coverUrl || "" }
             })
         } else {
             setLevelDialog({
                 open: true,
                 mode: "create",
                 levelId: null,
-                data: { name: "", description: "" }
+                data: { name: "", description: "", coverUrl: "" }
             })
         }
     }
@@ -465,7 +466,8 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
             if (levelDialog.mode === "edit" && levelDialog.levelId) {
                 const result = await updateLevel(levelDialog.levelId, {
                     name: levelDialog.data.name,
-                    description: levelDialog.data.description || undefined
+                    description: levelDialog.data.description || undefined,
+                    coverUrl: levelDialog.data.coverUrl || undefined
                 })
                 if (result.success) {
                     toast.success("Seviye güncellendi")
@@ -478,7 +480,8 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
                 const result = await createLevel({
                     readingListId: selectedList.id,
                     name: levelDialog.data.name,
-                    description: levelDialog.data.description || undefined
+                    description: levelDialog.data.description || undefined,
+                    coverUrl: levelDialog.data.coverUrl || undefined
                 })
                 if (result.success) {
                     toast.success("Seviye eklendi")
@@ -1141,11 +1144,26 @@ function LevelAccordion({
             <button
                 onClick={onToggle}
                 className={cn(
-                    "w-full flex items-center justify-between p-5 transition-colors group text-left",
+                    "relative w-full flex items-center justify-between p-5 transition-colors group text-left overflow-hidden",
                     isExpanded ? "bg-muted/50" : "hover:bg-muted/30"
                 )}
             >
-                <div className="flex items-center gap-3">
+                {/* Level Cover Background (if expanded and has cover) */}
+                {isExpanded && level.coverUrl && (
+                    <>
+                        <div className="absolute inset-0">
+                            <Image
+                                src={level.coverUrl}
+                                alt={level.name}
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/70" />
+                    </>
+                )}
+
+                <div className="relative flex items-center gap-3">
                     {isEditMode && (
                         <div
                             className="cursor-grab text-muted-foreground hover:text-foreground touch-none"
@@ -1183,7 +1201,7 @@ function LevelAccordion({
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="relative flex items-center gap-2">
                     {isEditMode && (
                         <>
                             <Button
@@ -1483,7 +1501,7 @@ type LevelDialogType = {
     open: boolean
     mode: "create" | "edit"
     levelId: string | null
-    data: { name: string; description: string }
+    data: { name: string; description: string; coverUrl: string }
 }
 
 function LevelDialog({
@@ -1530,6 +1548,20 @@ function LevelDialog({
                                 data: { ...dialog.data, description: e.target.value }
                             })}
                         />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Kapak Görseli URL (Opsiyonel)</Label>
+                        <Input
+                            placeholder="https://..."
+                            value={dialog.data.coverUrl}
+                            onChange={(e) => setDialog({
+                                ...dialog,
+                                data: { ...dialog.data, coverUrl: e.target.value }
+                            })}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            Seviye için bir arka plan görseli belirleyin
+                        </p>
                     </div>
                 </div>
                 <DialogFooter>

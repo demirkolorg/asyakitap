@@ -214,6 +214,7 @@ model ReadingListLevel {
   levelNumber   Int
   name          String
   description   String?           @db.Text
+  coverUrl      String?           // Seviye kapak görseli
   books         ReadingListBook[]
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt

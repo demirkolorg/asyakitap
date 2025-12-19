@@ -43,6 +43,7 @@ export interface ReadingListLevel {
     levelNumber: number
     name: string
     description: string | null
+    coverUrl: string | null
     books: ReadingListBook[]
 }
 
@@ -132,6 +133,7 @@ export async function getReadingListDetail(slug: string): Promise<ReadingListDet
                 levelNumber: level.levelNumber,
                 name: level.name,
                 description: level.description,
+                coverUrl: level.coverUrl,
                 books: level.books.map(rb => ({
                     id: rb.id,
                     bookId: rb.bookId,
@@ -271,6 +273,7 @@ export async function createLevel(data: {
     readingListId: string
     name: string
     description?: string
+    coverUrl?: string
 }) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -287,6 +290,7 @@ export async function createLevel(data: {
                 readingListId: data.readingListId,
                 name: data.name,
                 description: data.description || null,
+                coverUrl: data.coverUrl || null,
                 levelNumber: (maxLevel._max.levelNumber ?? 0) + 1
             }
         })
@@ -402,6 +406,7 @@ export async function updateReadingList(id: string, data: {
 export async function updateLevel(id: string, data: {
     name?: string
     description?: string
+    coverUrl?: string
 }) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -671,6 +676,7 @@ export async function getAllReadingLists(): Promise<ReadingListDetail[]> {
                     levelNumber: level.levelNumber,
                     name: level.name,
                     description: level.description,
+                    coverUrl: level.coverUrl,
                     books: level.books.map(rb => ({
                         id: rb.id,
                         bookId: rb.bookId,
