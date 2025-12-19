@@ -64,60 +64,60 @@ export default async function DashboardPage() {
 
     return (
         <div className="space-y-6 md:space-y-8">
-            {/* Stats Ribbon */}
-            <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+            {/* Stats Ribbon - Compact on mobile */}
+            <section className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4">
                 {/* Toplam Kitap */}
-                <div className="bg-card rounded-xl p-4 md:p-5 border border-border/50 flex flex-col justify-between h-28 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                        <p className="text-muted-foreground text-xs md:text-sm font-medium">Toplam Kitap</p>
-                        <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
+                <div className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
+                    <div className="flex justify-between items-center md:items-start">
+                        <p className="text-muted-foreground text-[10px] md:text-sm font-medium">Kitap</p>
+                        <BookOpen className="h-3 w-3 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
                     </div>
-                    <p className="text-2xl md:text-3xl font-bold tracking-tight">{stats.totalBooks}</p>
+                    <p className="text-lg md:text-3xl font-bold tracking-tight">{stats.totalBooks}</p>
                 </div>
 
                 {/* Bitti */}
-                <div className="bg-card rounded-xl p-4 md:p-5 border border-border/50 flex flex-col justify-between h-28 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                        <p className="text-muted-foreground text-xs md:text-sm font-medium">Bitti</p>
-                        <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
+                <div className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
+                    <div className="flex justify-between items-center md:items-start">
+                        <p className="text-muted-foreground text-[10px] md:text-sm font-medium">Bitti</p>
+                        <CheckCircle2 className="h-3 w-3 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
                     </div>
-                    <p className="text-2xl md:text-3xl font-bold tracking-tight">{stats.completed}</p>
+                    <p className="text-lg md:text-3xl font-bold tracking-tight">{stats.completed}</p>
                 </div>
 
                 {/* Yazar */}
-                <div className="bg-card rounded-xl p-4 md:p-5 border border-border/50 flex flex-col justify-between h-28 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                        <p className="text-muted-foreground text-xs md:text-sm font-medium">Yazar</p>
-                        <Users className="h-4 w-4 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
+                <div className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
+                    <div className="flex justify-between items-center md:items-start">
+                        <p className="text-muted-foreground text-[10px] md:text-sm font-medium">Yazar</p>
+                        <Users className="h-3 w-3 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
                     </div>
-                    <p className="text-2xl md:text-3xl font-bold tracking-tight">{stats.uniqueAuthors}</p>
+                    <p className="text-lg md:text-3xl font-bold tracking-tight">{stats.uniqueAuthors}</p>
                 </div>
 
                 {/* Alıntı */}
-                <div className="bg-card rounded-xl p-4 md:p-5 border border-border/50 flex flex-col justify-between h-28 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                        <p className="text-muted-foreground text-xs md:text-sm font-medium">Alıntı</p>
-                        <Quote className="h-4 w-4 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
+                <div className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
+                    <div className="flex justify-between items-center md:items-start">
+                        <p className="text-muted-foreground text-[10px] md:text-sm font-medium">Alıntı</p>
+                        <Quote className="h-3 w-3 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
                     </div>
-                    <p className="text-2xl md:text-3xl font-bold tracking-tight">{stats.totalQuotes}</p>
+                    <p className="text-lg md:text-3xl font-bold tracking-tight">{stats.totalQuotes}</p>
                 </div>
 
                 {/* Tortu */}
-                <div className="bg-card rounded-xl p-4 md:p-5 border border-border/50 flex flex-col justify-between h-28 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                        <p className="text-muted-foreground text-xs md:text-sm font-medium">Tortu</p>
-                        <FileText className="h-4 w-4 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
+                <div className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
+                    <div className="flex justify-between items-center md:items-start">
+                        <p className="text-muted-foreground text-[10px] md:text-sm font-medium">Tortu</p>
+                        <FileText className="h-3 w-3 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
                     </div>
-                    <p className="text-2xl md:text-3xl font-bold tracking-tight">{stats.totalTortu}</p>
+                    <p className="text-lg md:text-3xl font-bold tracking-tight">{stats.totalTortu}</p>
                 </div>
 
                 {/* İmza */}
-                <div className="bg-card rounded-xl p-4 md:p-5 border border-border/50 flex flex-col justify-between h-28 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
-                    <div className="flex justify-between items-start">
-                        <p className="text-muted-foreground text-xs md:text-sm font-medium">İmza</p>
-                        <Pen className="h-4 w-4 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
+                <div className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-32 hover:border-primary/30 transition-colors cursor-pointer group">
+                    <div className="flex justify-between items-center md:items-start">
+                        <p className="text-muted-foreground text-[10px] md:text-sm font-medium">İmza</p>
+                        <Pen className="h-3 w-3 md:h-5 md:w-5 text-primary/50 group-hover:text-primary transition-colors" />
                     </div>
-                    <p className="text-2xl md:text-3xl font-bold tracking-tight">{stats.totalImza}</p>
+                    <p className="text-lg md:text-3xl font-bold tracking-tight">{stats.totalImza}</p>
                 </div>
             </section>
 
@@ -234,6 +234,14 @@ export default async function DashboardPage() {
                                             <span>Sayfa {featuredBook.currentPage}</span>
                                             <span>Sayfa {featuredBook.pageCount}</span>
                                         </div>
+                                        {/* İlerleme Güncelle Butonu */}
+                                        <Link
+                                            href={`/book/${featuredBook.id}?action=progress`}
+                                            className="mt-3 w-full py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors text-xs md:text-sm flex items-center justify-center gap-2"
+                                        >
+                                            <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                            İlerleme Güncelle
+                                        </Link>
                                     </div>
                                 )}
                             </div>

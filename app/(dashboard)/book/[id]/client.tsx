@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { updateBook, deleteBook } from "@/actions/library"
 import { analyzeTortu, analyzeImza } from "@/actions/ai"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import {
     Trash2,
     PlayCircle,
@@ -143,6 +143,7 @@ interface BookDetailClientProps {
 
 export default function BookDetailClient({ book }: BookDetailClientProps) {
     const router = useRouter()
+    const searchParams = useSearchParams()
     const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "rating" | "history">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
@@ -187,7 +188,14 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
 
     useEffect(() => {
         setMounted(true)
-    }, [])
+        // URL'den action parametresini kontrol et
+        const action = searchParams.get('action')
+        if (action === 'progress' && currentStatus === 'READING') {
+            setShowProgressDialog(true)
+            // URL'den action parametresini temizle
+            router.replace(`/book/${book.id}`, { scroll: false })
+        }
+    }, [searchParams, currentStatus, book.id, router])
 
     const progress = book.pageCount ? Math.round((currentPage / book.pageCount) * 100) : 0
 
