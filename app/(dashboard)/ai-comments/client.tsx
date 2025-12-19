@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
     Bot,
     BookOpen,
@@ -11,15 +10,13 @@ import {
     Search,
     FileText,
     Pen,
-    Calendar,
     Sparkles,
-    MessageSquare,
     BarChart3,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn, formatDate } from "@/lib/utils"
-import type { AICommentsPageData, AICommentWithBook } from "@/actions/ai-comments"
+import type { AICommentsPageData } from "@/actions/ai-comments"
 
 interface AICommentsClientProps {
     data: AICommentsPageData
@@ -29,26 +26,23 @@ const sourceConfig = {
     TORTU: {
         label: "Tortu",
         color: "bg-violet-500",
-        textColor: "text-violet-600",
-        bgColor: "bg-violet-50 dark:bg-violet-950/30",
+        lightColor: "text-violet-500",
+        bgColor: "bg-violet-500/10",
         icon: FileText,
-        description: "Kitaptan aklında kalanlar"
     },
     IMZA: {
         label: "İmza",
         color: "bg-emerald-500",
-        textColor: "text-emerald-600",
-        bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
+        lightColor: "text-emerald-500",
+        bgColor: "bg-emerald-500/10",
         icon: Pen,
-        description: "Yazarın üslubu hakkında"
     },
     STATS: {
         label: "İstatistik",
         color: "bg-blue-500",
-        textColor: "text-blue-600",
-        bgColor: "bg-blue-50 dark:bg-blue-950/30",
+        lightColor: "text-blue-500",
+        bgColor: "bg-blue-500/10",
         icon: BarChart3,
-        description: "Okuma alışkanlıkları analizi"
     }
 }
 
@@ -78,7 +72,6 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
         return result
     }, [comments, filterSource, searchQuery])
 
-
     // Strip HTML for preview
     const stripHtml = (html: string) => {
         return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
@@ -87,122 +80,113 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                    <Bot className="h-6 w-6" />
-                    AI Yorumları
-                </h1>
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl md:text-4xl font-black tracking-tight">AI Yorumları</h1>
                 <p className="text-muted-foreground">
-                    Tortu ve İmza için AI analizlerin
+                    Tortu ve İmza için AI analizlerin.
                 </p>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                            <MessageSquare className="h-4 w-4" />
-                            Toplam Yorum
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.total}</div>
-                    </CardContent>
-                </Card>
-
-                <Card className={sourceConfig.TORTU.bgColor}>
-                    <CardHeader className="pb-2">
-                        <CardTitle className={cn("text-sm font-medium flex items-center gap-2", sourceConfig.TORTU.textColor)}>
-                            <FileText className="h-4 w-4" />
-                            Tortu Yorumu
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.tortuCount}</div>
-                    </CardContent>
-                </Card>
-
-                <Card className={sourceConfig.IMZA.bgColor}>
-                    <CardHeader className="pb-2">
-                        <CardTitle className={cn("text-sm font-medium flex items-center gap-2", sourceConfig.IMZA.textColor)}>
-                            <Pen className="h-4 w-4" />
-                            İmza Yorumu
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.imzaCount}</div>
-                    </CardContent>
-                </Card>
-
-                <Card className={sourceConfig.STATS.bgColor}>
-                    <CardHeader className="pb-2">
-                        <CardTitle className={cn("text-sm font-medium flex items-center gap-2", sourceConfig.STATS.textColor)}>
-                            <BarChart3 className="h-4 w-4" />
-                            İstatistik Analizi
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.statsCount}</div>
-                    </CardContent>
-                </Card>
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-card rounded-xl p-4 border border-border/50 flex flex-col gap-1 relative overflow-hidden group hover:border-border transition-colors">
+                    <div className="absolute right-0 top-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Bot className="h-12 w-12" />
+                    </div>
+                    <span className="text-muted-foreground text-sm font-medium z-10">Toplam Yorum</span>
+                    <span className="text-3xl font-black z-10">{stats.total}</span>
+                </div>
+                <div className="bg-card rounded-xl p-4 border border-border/50 flex flex-col gap-1 relative overflow-hidden group hover:border-violet-500/50 transition-colors">
+                    <div className="absolute right-0 top-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity text-violet-500">
+                        <FileText className="h-12 w-12" />
+                    </div>
+                    <span className="text-muted-foreground text-sm font-medium z-10">Tortu Yorumu</span>
+                    <span className="text-3xl font-black text-violet-500 z-10">{stats.tortuCount}</span>
+                </div>
+                <div className="bg-card rounded-xl p-4 border border-border/50 flex flex-col gap-1 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
+                    <div className="absolute right-0 top-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity text-emerald-500">
+                        <Pen className="h-12 w-12" />
+                    </div>
+                    <span className="text-muted-foreground text-sm font-medium z-10">İmza Yorumu</span>
+                    <span className="text-3xl font-black text-emerald-500 z-10">{stats.imzaCount}</span>
+                </div>
+                <div className="bg-card rounded-xl p-4 border border-border/50 flex flex-col gap-1 relative overflow-hidden group hover:border-blue-500/50 transition-colors">
+                    <div className="absolute right-0 top-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity text-blue-500">
+                        <BarChart3 className="h-12 w-12" />
+                    </div>
+                    <span className="text-muted-foreground text-sm font-medium z-10">İstatistik Analizi</span>
+                    <span className="text-3xl font-black text-blue-500 z-10">{stats.statsCount}</span>
+                </div>
             </div>
 
-            {/* Filter Bar */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                {/* Source Filter */}
-                <div className="flex gap-2">
-                    <Button
-                        variant={filterSource === "all" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setFilterSource("all")}
-                    >
-                        Tümü
-                    </Button>
-                    <Button
-                        variant={filterSource === "TORTU" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setFilterSource("TORTU")}
-                        className={filterSource === "TORTU" ? "bg-violet-600 hover:bg-violet-700" : ""}
-                    >
-                        <FileText className="h-4 w-4 mr-1" />
-                        Tortu
-                    </Button>
-                    <Button
-                        variant={filterSource === "IMZA" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setFilterSource("IMZA")}
-                        className={filterSource === "IMZA" ? "bg-emerald-600 hover:bg-emerald-700" : ""}
-                    >
-                        <Pen className="h-4 w-4 mr-1" />
-                        İmza
-                    </Button>
-                    <Button
-                        variant={filterSource === "STATS" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setFilterSource("STATS")}
-                        className={filterSource === "STATS" ? "bg-blue-600 hover:bg-blue-700" : ""}
-                    >
-                        <BarChart3 className="h-4 w-4 mr-1" />
-                        İstatistik
-                    </Button>
-                </div>
-
+            {/* Control Bar */}
+            <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center bg-card/50 p-4 rounded-xl border border-border/50">
                 {/* Search */}
-                <div className="relative w-full sm:w-72">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div className="relative w-full lg:w-80 group">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                         placeholder="Kitap, yazar veya içerik ara..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-9"
+                        className="pl-10 bg-background border-border/50 focus:border-primary"
                     />
+                </div>
+
+                {/* Source Filters */}
+                <div className="flex items-center gap-2 overflow-x-auto w-full lg:w-auto pb-2 lg:pb-0 scrollbar-hide">
+                    <button
+                        onClick={() => setFilterSource("all")}
+                        className={cn(
+                            "px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all",
+                            filterSource === "all"
+                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                                : "bg-muted text-muted-foreground border border-border hover:border-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        Tümü
+                    </button>
+                    <button
+                        onClick={() => setFilterSource("TORTU")}
+                        className={cn(
+                            "px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
+                            filterSource === "TORTU"
+                                ? "bg-violet-500 text-white shadow-lg shadow-violet-500/20"
+                                : "bg-muted text-muted-foreground border border-border hover:border-violet-500/50 hover:text-violet-500"
+                        )}
+                    >
+                        <FileText className="h-3.5 w-3.5" />
+                        Tortu
+                    </button>
+                    <button
+                        onClick={() => setFilterSource("IMZA")}
+                        className={cn(
+                            "px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
+                            filterSource === "IMZA"
+                                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                                : "bg-muted text-muted-foreground border border-border hover:border-emerald-500/50 hover:text-emerald-500"
+                        )}
+                    >
+                        <Pen className="h-3.5 w-3.5" />
+                        İmza
+                    </button>
+                    <button
+                        onClick={() => setFilterSource("STATS")}
+                        className={cn(
+                            "px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
+                            filterSource === "STATS"
+                                ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
+                                : "bg-muted text-muted-foreground border border-border hover:border-blue-500/50 hover:text-blue-500"
+                        )}
+                    >
+                        <BarChart3 className="h-3.5 w-3.5" />
+                        İstatistik
+                    </button>
                 </div>
             </div>
 
             {/* Comments List */}
             {filteredComments.length === 0 ? (
-                <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-lg bg-muted/40">
+                <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-xl bg-muted/40">
                     <Bot className="h-12 w-12 text-muted-foreground mb-4" />
                     {searchQuery ? (
                         <>
@@ -224,20 +208,20 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                     )}
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div className="grid gap-4">
                     {filteredComments.map((comment) => {
                         const config = sourceConfig[comment.source]
                         const Icon = config.icon
                         const isStatsComment = comment.source === "STATS"
 
                         return (
-                            <Card
+                            <div
                                 key={comment.id}
-                                className="group hover:border-primary/30 transition-colors overflow-hidden"
+                                className="group rounded-xl border border-border/50 bg-card hover:border-primary/30 hover:shadow-lg transition-all overflow-hidden"
                             >
                                 <div className="flex">
-                                    {/* Book Cover - sadece kitap yorumları için */}
-                                    {!isStatsComment && comment.book && (
+                                    {/* Book Cover or Icon */}
+                                    {!isStatsComment && comment.book ? (
                                         <Link href={`/book/${comment.book.id}`} className="flex-shrink-0">
                                             <div className="relative w-24 sm:w-28 aspect-[2/3] bg-muted">
                                                 {comment.book.coverUrl ? (
@@ -254,10 +238,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                                 )}
                                             </div>
                                         </Link>
-                                    )}
-
-                                    {/* Stats Icon - istatistik yorumları için */}
-                                    {isStatsComment && (
+                                    ) : (
                                         <div className="flex-shrink-0 w-24 sm:w-28 aspect-[2/3] bg-gradient-to-br from-blue-500/20 to-blue-600/10 flex items-center justify-center">
                                             <BarChart3 className="h-12 w-12 text-blue-500" />
                                         </div>
@@ -270,7 +251,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                             <div className="min-w-0">
                                                 {isStatsComment ? (
                                                     <>
-                                                        <p className="font-semibold">Okuma Alışkanlıkları Analizi</p>
+                                                        <p className="font-bold text-lg">Okuma Alışkanlıkları Analizi</p>
                                                         <p className="text-muted-foreground text-sm">
                                                             Genel istatistik değerlendirmesi
                                                         </p>
@@ -279,7 +260,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                                     <>
                                                         <Link
                                                             href={`/book/${comment.book.id}`}
-                                                            className="font-semibold hover:text-primary transition-colors line-clamp-1"
+                                                            className="font-bold text-lg hover:text-primary transition-colors line-clamp-1"
                                                         >
                                                             {comment.book.title}
                                                         </Link>
@@ -300,12 +281,10 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
 
                                         {/* User Content */}
                                         <div className="mb-3 p-3 rounded-lg bg-muted/50">
-                                            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                                                <span className="font-medium">
-                                                    {isStatsComment ? "İstatistikler:" : "Senin notun:"}
-                                                </span>
+                                            <p className="text-xs text-muted-foreground mb-2 font-medium">
+                                                {isStatsComment ? "İstatistikler:" : "Senin notun:"}
                                             </p>
-                                            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                            <p className="text-sm text-muted-foreground line-clamp-2">
                                                 {stripHtml(comment.userContent)}
                                             </p>
                                         </div>
@@ -316,37 +295,37 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                                 <Sparkles className="h-3 w-3 text-primary" />
                                                 <span className="font-medium">AI Yorumu:</span>
                                             </p>
-                                            <p className="text-sm whitespace-pre-wrap">
+                                            <p className="text-sm line-clamp-3">
                                                 {comment.aiComment}
                                             </p>
                                         </div>
 
                                         {/* Footer */}
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                <Calendar className="h-3 w-3" />
-                                                <span>{formatDate(comment.createdAt, { format: "long" })}</span>
+                                            <div className="text-xs text-muted-foreground">
+                                                {formatDate(comment.createdAt, { format: "long" })}
                                             </div>
-                                            {!isStatsComment && comment.book && (
-                                                <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <Link href={`/book/${comment.book.id}`}>
-                                                        Kitaba Git
-                                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                            {isStatsComment && (
-                                                <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <Link href="/stats">
-                                                        İstatistiklere Git
-                                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                                    </Link>
-                                                </Button>
+                                            {!isStatsComment && comment.book ? (
+                                                <Link
+                                                    href={`/book/${comment.book.id}`}
+                                                    className="flex items-center gap-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium"
+                                                >
+                                                    Kitaba Git
+                                                    <ArrowRight className="h-4 w-4" />
+                                                </Link>
+                                            ) : (
+                                                <Link
+                                                    href="/stats"
+                                                    className="flex items-center gap-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium"
+                                                >
+                                                    İstatistiklere Git
+                                                    <ArrowRight className="h-4 w-4" />
+                                                </Link>
                                             )}
                                         </div>
                                     </div>
                                 </div>
-                            </Card>
+                            </div>
                         )
                     })}
                 </div>
