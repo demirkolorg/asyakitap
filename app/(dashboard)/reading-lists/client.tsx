@@ -70,6 +70,7 @@ import {
     GripVertical,
     Link as LinkIcon,
     Settings,
+    MapPin,
 } from "lucide-react"
 import { toast } from "sonner"
 import {
@@ -841,9 +842,9 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
                 })}
             </div>
 
-            {/* Liste Detay Görünümü */}
+            {/* Liste Detay Görünümü - Cinematic Style */}
             {selectedList && (
-                <>
+                <div className="space-y-6">
                     {/* Divider */}
                     <div className="relative py-6 flex items-center justify-center">
                         <div className="h-px bg-border w-full absolute" />
@@ -852,179 +853,167 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
                         </span>
                     </div>
 
-                    <div className="rounded-2xl overflow-hidden border bg-card/50">
-                        {/* Hero Section */}
-                        <div className="relative h-80 md:h-96 w-full flex items-end">
-                            {/* Background */}
-                            <div className="absolute inset-0">
-                                {selectedList.coverUrl ? (
-                                    <Image
-                                        src={selectedList.coverUrl}
-                                        alt={selectedList.name}
-                                        fill
-                                        className="object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-primary/30 to-primary/10" />
+                    {/* Hero Section */}
+                    <div className="relative rounded-2xl overflow-hidden">
+                        {/* Background Image */}
+                        <div className="absolute inset-0">
+                            {selectedList.coverUrl ? (
+                                <Image
+                                    src={selectedList.coverUrl}
+                                    alt={selectedList.name}
+                                    fill
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-[#102217] to-[#193324]" />
+                            )}
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f0c] via-[#0a0f0c]/70 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f0c]/90 via-transparent to-transparent" />
+
+                        {/* Content */}
+                        <div className="relative z-10 p-6 md:p-10 min-h-[320px] md:min-h-[400px] flex flex-col justify-end">
+                            <div className="flex gap-2 flex-wrap items-center mb-4">
+                                <span className="bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                    Küratör Seçimi
+                                </span>
+                                <span className="bg-[#1a2e1f] text-[#2bee79] border border-[#2bee79]/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                    {selectedList.levels.length > 0 ? selectedList.levels[0].name.split(" ")[0] : "Koleksiyon"}
+                                </span>
+
+                                {/* Edit Mode Toggle */}
+                                <Button
+                                    variant={isEditMode ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => setIsEditMode(!isEditMode)}
+                                    className="ml-auto"
+                                >
+                                    <Settings className="h-4 w-4 mr-2" />
+                                    {isEditMode ? "Düzenlemeyi Bitir" : "Düzenle"}
+                                </Button>
+
+                                {/* List Actions Menu */}
+                                {isEditMode && (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" size="icon">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => openListDialog("edit", selectedList)}>
+                                                <Edit className="h-4 w-4 mr-2" />
+                                                Listeyi Düzenle
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                className="text-destructive"
+                                                onClick={() => setDeleteDialog({
+                                                    open: true,
+                                                    type: "list",
+                                                    id: selectedList.id,
+                                                    name: selectedList.name
+                                                })}
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Listeyi Sil
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 )}
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-                            <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent" />
 
-                            {/* Content */}
-                            <div className="relative z-10 p-6 md:p-10 w-full flex flex-col gap-4">
-                                <div className="flex gap-2 flex-wrap items-center">
-                                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                                        Küratör Seçimi
-                                    </span>
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white mb-3">
+                                {selectedList.name}
+                            </h1>
 
-                                    {/* Edit Mode Toggle */}
-                                    <Button
-                                        variant={isEditMode ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => setIsEditMode(!isEditMode)}
-                                        className="ml-auto"
-                                    >
-                                        <Settings className="h-4 w-4 mr-2" />
-                                        {isEditMode ? "Düzenlemeyi Bitir" : "Düzenle"}
-                                    </Button>
+                            {selectedList.description && (
+                                <p className="text-gray-300 text-base md:text-lg max-w-2xl leading-relaxed mb-6">
+                                    {selectedList.description}
+                                </p>
+                            )}
+
+                            <div className="flex flex-wrap items-center gap-6">
+                                <div className="flex items-center gap-2 text-gray-300">
+                                    <BookOpen className="h-5 w-5 text-[#2bee79]" />
+                                    <span className="font-medium">{selectedList.totalBooks} Kitap</span>
                                 </div>
-
-                                <div className="flex items-start justify-between gap-4">
-                                    <div>
-                                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
-                                            {selectedList.name}
-                                        </h1>
-
-                                        {selectedList.description && (
-                                            <p className="text-muted-foreground text-base md:text-lg max-w-2xl leading-relaxed mt-2">
-                                                {selectedList.description}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    {/* List Actions Menu */}
-                                    {isEditMode && (
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="outline" size="icon">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onClick={() => openListDialog("edit", selectedList)}>
-                                                    <Edit className="h-4 w-4 mr-2" />
-                                                    Listeyi Düzenle
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem
-                                                    className="text-destructive"
-                                                    onClick={() => setDeleteDialog({
-                                                        open: true,
-                                                        type: "list",
-                                                        id: selectedList.id,
-                                                        name: selectedList.name
-                                                    })}
-                                                >
-                                                    <Trash2 className="h-4 w-4 mr-2" />
-                                                    Listeyi Sil
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    )}
+                                <div className="flex items-center gap-2 text-gray-300">
+                                    <Layers className="h-5 w-5 text-[#2bee79]" />
+                                    <span className="font-medium">{selectedList.levels.length} Bölüm</span>
                                 </div>
-
-                                <div className="flex flex-wrap items-center gap-4 md:gap-8 pt-2">
-                                    <div className="flex items-center gap-2">
-                                        <BookOpen className="h-5 w-5 text-primary" />
-                                        <span className="font-medium">{selectedList.totalBooks} Kitap</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Layers className="h-5 w-5 text-primary" />
-                                        <span className="font-medium">{selectedList.levels.length} Seviye</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <FileText className="h-5 w-5 text-primary" />
-                                        <span className="font-medium">~{totalPages} Sayfa</span>
-                                    </div>
+                                <div className="flex items-center gap-2 text-gray-300">
+                                    <FileText className="h-5 w-5 text-[#2bee79]" />
+                                    <span className="font-medium">~{totalPages} Sayfa</span>
                                 </div>
                             </div>
                         </div>
-
-                        {/* Add Level Button (Edit Mode) */}
-                        {isEditMode && (
-                            <div className="p-4 border-b">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => openLevelDialog("create")}
-                                    className="w-full"
-                                >
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Yeni Seviye Ekle
-                                </Button>
-                            </div>
-                        )}
-
-                        {/* Accordion Levels */}
-                        <DndContext
-                            sensors={sensors}
-                            collisionDetection={closestCenter}
-                            onDragEnd={handleLevelDragEnd}
-                        >
-                            <SortableContext
-                                items={selectedList.levels.map(l => l.id)}
-                                strategy={verticalListSortingStrategy}
-                                disabled={!isEditMode}
-                            >
-                                <div className="flex flex-col">
-                                    {selectedList.levels.map((level, index) => {
-                                        const isExpanded = expandedLevels.has(level.id)
-
-                                        return (
-                                            <LevelAccordion
-                                                key={level.id}
-                                                level={level}
-                                                isExpanded={isExpanded}
-                                                isEditMode={isEditMode}
-                                                isLast={index === selectedList.levels.length - 1}
-                                                onToggle={() => toggleLevel(level.id)}
-                                                onEdit={() => openLevelDialog("edit", level)}
-                                                onDelete={() => setDeleteDialog({
-                                                    open: true,
-                                                    type: "level",
-                                                    id: level.id,
-                                                    name: level.name
-                                                })}
-                                                onAddBook={(mode) => openBookDialog(mode, level.id)}
-                                                onEditBook={(book) => openBookDialog("edit", level.id, book)}
-                                                onDeleteBook={(book) => setDeleteDialog({
-                                                    open: true,
-                                                    type: "book",
-                                                    id: book.id,
-                                                    name: book.book.title
-                                                })}
-                                                onBookDragEnd={(e) => handleBookDragEnd(level.id, e)}
-                                                sensors={sensors}
-                                            />
-                                        )
-                                    })}
-                                </div>
-                            </SortableContext>
-                        </DndContext>
-
-                        {selectedList.levels.length === 0 && (
-                            <div className="text-center py-12 text-muted-foreground">
-                                <Layers className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                                <p className="mb-2">Henüz seviye eklenmemiş</p>
-                                {isEditMode && (
-                                    <Button variant="link" onClick={() => openLevelDialog("create")}>
-                                        İlk seviyeyi ekle
-                                    </Button>
-                                )}
-                            </div>
-                        )}
                     </div>
-                </>
+
+                    {/* Add Level Button (Edit Mode) */}
+                    {isEditMode && (
+                        <Button
+                            variant="outline"
+                            onClick={() => openLevelDialog("create")}
+                            className="w-full border-dashed border-[#2bee79]/30 text-[#2bee79] hover:bg-[#2bee79]/10"
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Yeni Seviye Ekle
+                        </Button>
+                    )}
+
+                    {/* Level Sections */}
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleLevelDragEnd}
+                    >
+                        <SortableContext
+                            items={selectedList.levels.map(l => l.id)}
+                            strategy={verticalListSortingStrategy}
+                            disabled={!isEditMode}
+                        >
+                            <div className="space-y-6">
+                                {selectedList.levels.map((level) => (
+                                    <LevelSection
+                                        key={level.id}
+                                        level={level}
+                                        isEditMode={isEditMode}
+                                        onEdit={() => openLevelDialog("edit", level)}
+                                        onDelete={() => setDeleteDialog({
+                                            open: true,
+                                            type: "level",
+                                            id: level.id,
+                                            name: level.name
+                                        })}
+                                        onAddBook={(mode) => openBookDialog(mode, level.id)}
+                                        onEditBook={(book) => openBookDialog("edit", level.id, book)}
+                                        onDeleteBook={(book) => setDeleteDialog({
+                                            open: true,
+                                            type: "book",
+                                            id: book.id,
+                                            name: book.book.title
+                                        })}
+                                        onBookDragEnd={(e) => handleBookDragEnd(level.id, e)}
+                                        sensors={sensors}
+                                    />
+                                ))}
+                            </div>
+                        </SortableContext>
+                    </DndContext>
+
+                    {selectedList.levels.length === 0 && (
+                        <div className="text-center py-12 text-muted-foreground rounded-2xl border border-dashed bg-[#0a0f0c]/50">
+                            <Layers className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                            <p className="mb-2">Henüz seviye eklenmemiş</p>
+                            {isEditMode && (
+                                <Button variant="link" className="text-[#2bee79]" onClick={() => openLevelDialog("create")}>
+                                    İlk seviyeyi ekle
+                                </Button>
+                            )}
+                        </div>
+                    )}
+                </div>
             )}
 
             {/* Loading Overlay */}
@@ -1089,7 +1078,284 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
     )
 }
 
-// Level Accordion Component
+// Level Section Component - Cinematic Style
+function LevelSection({
+    level,
+    isEditMode,
+    onEdit,
+    onDelete,
+    onAddBook,
+    onEditBook,
+    onDeleteBook,
+    onBookDragEnd,
+    sensors,
+}: {
+    level: ReadingListLevel
+    isEditMode: boolean
+    onEdit: () => void
+    onDelete: () => void
+    onAddBook: (mode: "add-url" | "add-manual") => void
+    onEditBook: (book: ReadingListBook) => void
+    onDeleteBook: (book: ReadingListBook) => void
+    onBookDragEnd: (event: DragEndEvent) => void
+    sensors: ReturnType<typeof useSensors>
+}) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: level.id, disabled: !isEditMode })
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    }
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={cn(
+                "relative rounded-2xl overflow-hidden",
+                isDragging && "opacity-50 shadow-lg z-50"
+            )}
+        >
+            {/* Section with Background Image */}
+            <div className="relative min-h-[500px]">
+                {/* Background Image - Left Side */}
+                <div className="absolute inset-y-0 left-0 w-1/2">
+                    {level.coverUrl ? (
+                        <Image
+                            src={level.coverUrl}
+                            alt={level.name}
+                            fill
+                            className="object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#102217] to-[#193324]" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0a0f0c]" />
+                    <div className="absolute inset-0 bg-[#0a0f0c]/40" />
+                </div>
+
+                {/* Right Side - Dark Background */}
+                <div className="absolute inset-y-0 right-0 w-1/2 bg-[#0a0f0c]" />
+
+                {/* Content */}
+                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 md:p-8">
+                    {/* Left - Level Info */}
+                    <div className="flex flex-col justify-end">
+                        {/* Edit Controls */}
+                        {isEditMode && (
+                            <div className="flex items-center gap-2 mb-4">
+                                <div
+                                    className="cursor-grab text-gray-400 hover:text-white touch-none p-2 rounded hover:bg-white/10"
+                                    {...attributes}
+                                    {...listeners}
+                                >
+                                    <GripVertical className="h-5 w-5" />
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={onEdit}
+                                    className="text-gray-400 hover:text-white hover:bg-white/10"
+                                >
+                                    <Edit className="h-4 w-4 mr-1" />
+                                    Düzenle
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={onDelete}
+                                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                >
+                                    <Trash2 className="h-4 w-4 mr-1" />
+                                    Sil
+                                </Button>
+                            </div>
+                        )}
+
+                        {/* Level Header */}
+                        <div className="flex items-center gap-3 mb-3">
+                            <span className="flex items-center justify-center h-8 w-8 rounded-full bg-[#2bee79]/20 text-[#2bee79] text-sm font-bold border border-[#2bee79]/30">
+                                {level.levelNumber}
+                            </span>
+                            <h2 className="text-2xl md:text-3xl font-bold text-[#2bee79]">
+                                {level.name}
+                            </h2>
+                        </div>
+
+                        {/* Description */}
+                        {level.description && (
+                            <p className="text-gray-300 leading-relaxed max-w-md">
+                                {level.description}
+                            </p>
+                        )}
+
+                        {/* Add Book Buttons (Edit Mode) */}
+                        {isEditMode && (
+                            <div className="flex gap-2 mt-6">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => onAddBook("add-url")}
+                                    className="border-[#2bee79]/30 text-[#2bee79] hover:bg-[#2bee79]/10"
+                                >
+                                    <LinkIcon className="h-4 w-4 mr-2" />
+                                    URL ile Ekle
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => onAddBook("add-manual")}
+                                    className="border-[#2bee79]/30 text-[#2bee79] hover:bg-[#2bee79]/10"
+                                >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Manuel Ekle
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right - Book Cards */}
+                    <div>
+                        {isEditMode ? (
+                            <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCenter}
+                                onDragEnd={onBookDragEnd}
+                            >
+                                <SortableContext
+                                    items={level.books.map(b => b.id)}
+                                    strategy={verticalListSortingStrategy}
+                                >
+                                    <div className="space-y-3">
+                                        {level.books.map((book) => (
+                                            <SortableBookItem
+                                                key={book.id}
+                                                book={book}
+                                                onEdit={() => onEditBook(book)}
+                                                onDelete={() => onDeleteBook(book)}
+                                            />
+                                        ))}
+                                    </div>
+                                </SortableContext>
+                            </DndContext>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {level.books.map((book) => (
+                                    <CinematicBookCard key={book.id} book={book} />
+                                ))}
+                            </div>
+                        )}
+
+                        {level.books.length === 0 && (
+                            <div className="text-center py-12 text-gray-500">
+                                <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                                <p>Bu seviyede henüz kitap yok</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// Cinematic Book Card Component
+function CinematicBookCard({ book }: { book: ReadingListBook }) {
+    const isCompleted = book.book.status === "COMPLETED"
+    const isReading = book.book.status === "READING"
+    const isNotStarted = book.book.status === "TO_READ" || (!isCompleted && !isReading)
+
+    return (
+        <Link
+            href={`/book/${book.book.id}`}
+            className="group block bg-[#0d1a10] border border-[#1a2e1f] rounded-xl p-4 hover:border-[#2bee79]/50 transition-all"
+        >
+            <div className="flex gap-3">
+                {/* Book Cover */}
+                <div className="shrink-0 w-16 aspect-[2/3] rounded-lg overflow-hidden bg-[#1a2e1f]">
+                    {book.book.coverUrl ? (
+                        <Image
+                            src={book.book.coverUrl}
+                            alt={book.book.title}
+                            width={64}
+                            height={96}
+                            className="object-cover w-full h-full"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                            <BookOpen className="h-5 w-5 text-gray-600" />
+                        </div>
+                    )}
+                </div>
+
+                {/* Book Info */}
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                        <h4 className="font-semibold text-white group-hover:text-[#2bee79] transition-colors line-clamp-2 text-sm">
+                            {book.book.title}
+                        </h4>
+
+                        {/* Status Badge */}
+                        {isCompleted && (
+                            <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide bg-[#2bee79]/20 text-[#2bee79] px-2 py-0.5 rounded-full shrink-0">
+                                <Check className="h-2.5 w-2.5" />
+                                Okundu
+                            </span>
+                        )}
+                        {isReading && (
+                            <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full shrink-0">
+                                <BookOpen className="h-2.5 w-2.5" />
+                                Okunuyor
+                            </span>
+                        )}
+                        {isNotStarted && (
+                            <span className="text-[9px] font-bold uppercase tracking-wide bg-[#1a2e1f] text-gray-400 px-2 py-0.5 rounded-full shrink-0">
+                                Sırada
+                            </span>
+                        )}
+                    </div>
+
+                    <p className="text-xs text-gray-400 mb-2">
+                        {book.book.author?.name || "Bilinmeyen Yazar"}
+                    </p>
+
+                    {/* Neden Tag */}
+                    {book.neden && (
+                        <div className="flex items-start gap-1.5 bg-[#1a2e1f]/50 rounded-lg px-2 py-1.5">
+                            <MapPin className="h-3 w-3 text-[#2bee79] shrink-0 mt-0.5" />
+                            <span className="text-[10px] text-gray-400 leading-relaxed">
+                                <span className="text-[#2bee79] font-medium">Neden:</span> {book.neden}
+                            </span>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Action Button */}
+            <div className="flex justify-end mt-3">
+                {isNotStarted ? (
+                    <span className="flex items-center gap-1 text-xs font-medium text-[#2bee79] bg-[#2bee79]/10 px-3 py-1.5 rounded-full border border-[#2bee79]/30 group-hover:bg-[#2bee79]/20 transition-colors">
+                        <Play className="h-3 w-3" />
+                        Başla
+                    </span>
+                ) : (
+                    <button className="text-gray-500 hover:text-gray-300 transition-colors p-1">
+                        <MoreHorizontal className="h-4 w-4" />
+                    </button>
+                )}
+            </div>
+        </Link>
+    )
+}
+
+// Legacy Level Accordion Component (for reference - can be removed)
 function LevelAccordion({
     level,
     isExpanded,
@@ -1283,7 +1549,7 @@ function LevelAccordion({
                     ) : (
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                             {level.books.map((book) => (
-                                <BookCard key={book.id} book={book} />
+                                <CinematicBookCard key={book.id} book={book} />
                             ))}
                         </div>
                     )}
@@ -1297,103 +1563,6 @@ function LevelAccordion({
                 </div>
             )}
         </div>
-    )
-}
-
-// Horizontal Book Card Component (View Mode)
-function BookCard({ book }: { book: ReadingListBook }) {
-    const isCompleted = book.book.status === "COMPLETED"
-    const isReading = book.book.status === "READING"
-    const isNotStarted = book.book.status === "TO_READ" || (!isCompleted && !isReading)
-
-    return (
-        <Link
-            href={`/book/${book.book.id}`}
-            className={cn(
-                "flex flex-col sm:flex-row gap-4 bg-card rounded-lg p-4 border transition-all group",
-                isNotStarted && "opacity-75 hover:opacity-100",
-                "hover:border-primary/50"
-            )}
-        >
-            {/* Book Cover */}
-            <div className={cn(
-                "shrink-0 w-20 sm:w-24 aspect-[2/3] rounded overflow-hidden shadow-md transition-all",
-                isNotStarted && "grayscale group-hover:grayscale-0"
-            )}>
-                {book.book.coverUrl ? (
-                    <Image
-                        src={book.book.coverUrl}
-                        alt={book.book.title}
-                        width={96}
-                        height={144}
-                        className="object-cover w-full h-full"
-                    />
-                ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <BookOpen className="h-6 w-6 text-muted-foreground/50" />
-                    </div>
-                )}
-            </div>
-
-            {/* Book Info */}
-            <div className="flex flex-col flex-1 justify-between py-1">
-                <div>
-                    <div className="flex justify-between items-start mb-1 gap-2">
-                        <h4 className="font-bold group-hover:text-primary transition-colors line-clamp-1">
-                            {book.book.title}
-                        </h4>
-
-                        {/* Status Badge */}
-                        {isCompleted && (
-                            <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide bg-green-500/20 text-green-500 px-2 py-0.5 rounded-full shrink-0">
-                                <Check className="h-3 w-3" />
-                                Okundu
-                            </span>
-                        )}
-                        {isReading && (
-                            <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide bg-primary/20 text-primary px-2 py-0.5 rounded-full border border-primary/20 shrink-0">
-                                <BookOpen className="h-3 w-3" />
-                                Okunuyor
-                            </span>
-                        )}
-                        {isNotStarted && (
-                            <span className="text-[10px] font-bold uppercase tracking-wide bg-muted text-muted-foreground px-2 py-0.5 rounded-full shrink-0">
-                                Sırada
-                            </span>
-                        )}
-                    </div>
-
-                    <p className="text-sm text-muted-foreground mb-3">
-                        {book.book.author?.name || "Bilinmeyen Yazar"}
-                    </p>
-
-                    {/* Neden Tag */}
-                    {book.neden && (
-                        <div className="inline-flex items-start gap-2 bg-muted/50 border rounded-md px-2 py-1.5 max-w-fit">
-                            <Lightbulb className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                            <span className="text-xs text-muted-foreground">
-                                <span className="text-primary font-semibold">Neden: </span>
-                                {book.neden}
-                            </span>
-                        </div>
-                    )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex justify-end mt-3 sm:mt-0">
-                    {isNotStarted ? (
-                        <Button size="sm" className="gap-1">
-                            <Play className="h-4 w-4" />
-                            Başla
-                        </Button>
-                    ) : (
-                        <button className="text-muted-foreground hover:text-foreground transition-colors p-1">
-                            <MoreHorizontal className="h-5 w-5" />
-                        </button>
-                    )}
-                </div>
-            </div>
-        </Link>
     )
 }
 
