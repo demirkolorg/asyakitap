@@ -309,3 +309,359 @@ Bu verilere göre okuma alışkanlıklarımı analiz et. Neleri iyi yapıyorum, 
 
     return result
 }
+
+// =====================================================
+// KİŞİSELLEŞTİRİLMİŞ KİTAP ÖNERİLERİ
+// =====================================================
+
+export interface BookRecommendation {
+    title: string
+    author: string
+    reason: string
+    matchScore: number // 1-100
+}
+
+export interface SmartRecommendationsResult {
+    success: boolean
+    recommendations?: BookRecommendation[]
+    summary?: string
+    error?: string
+}
+
+/**
+ * Kullanıcının okuma geçmişine ve tercihlerine göre akıllı kitap önerileri
+ */
+export async function getSmartRecommendations(): Promise<SmartRecommendationsResult> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    // Kullanıcının okuma verilerini çek
+    const [completedBooks, ratings, quotes] = await Promise.all([
+        prisma.book.findMany({
+            where: { userId: user.id, status: "COMPLETED" },
+            select: {
+                title: true,
+                author: { select: { name: true } },
+                description: true,
+                tortu: true,
+                imza: true,
+                rating: {
+                    select: {
+                        genelPuan: true,
+                        konuFikir: true,
+                        etki: true,
+                        derinlik: true
+                    }
+                }
+            },
+            orderBy: { endDate: "desc" },
+            take: 20
+        }),
+        prisma.bookRating.findMany({
+            where: { book: { userId: user.id } },
+            select: {
+                genelPuan: true,
+                book: { select: { title: true, author: { select: { name: true } } } }
+            },
+            orderBy: { genelPuan: "desc" },
+            take: 10
+        }),
+        prisma.quote.findMany({
+            where: { book: { userId: user.id } },
+            select: { content: true },
+            take: 10
+        })
+    ])
+
+    if (completedBooks.length < 3) {
+        return {
+            success: false,
+            error: "Öneri için en az 3 tamamlanmış kitap gerekli"
+        }
+    }
+
+    // En beğenilen kitapları bul
+    const topRated = ratings
+        .filter(r => r.genelPuan >= 7)
+        .slice(0, 5)
+        .map(r => `${r.book.title} - ${r.book.author?.name || "Bilinmeyen"}`)
+
+    // Kitap listesi
+    const bookList = completedBooks.map(b => {
+        const rating = b.rating?.genelPuan ? ` (Puan: ${b.rating.genelPuan}/10)` : ""
+        return `- ${b.title} - ${b.author?.name || "Bilinmeyen"}${rating}`
+    }).join("\n")
+
+    // Tortu ve imzalardan tercih analizi
+    const tortuSamples = completedBooks
+        .filter(b => b.tortu)
+        .slice(0, 3)
+        .map(b => `"${b.title}": ${b.tortu?.slice(0, 200)}...`)
+        .join("\n")
+
+    const systemPrompt = `Sen kişiselleştirilmiş kitap önerileri veren uzman bir asistansın.
+
+Görevin:
+1. Kullanıcının okuduğu kitapları ve puanlarını analiz et
+2. Okuma tercihlerini ve tarzını anla
+3. 5 yeni kitap öner - her biri için neden uygun olduğunu açıkla
+4. Her öneri için 1-100 arası uyum puanı ver
+
+Yanıt formatı (JSON):
+{
+  "summary": "Kullanıcının okuma profili özeti (1-2 cümle)",
+  "recommendations": [
+    {
+      "title": "Kitap Adı",
+      "author": "Yazar Adı",
+      "reason": "Bu kitabı önermemizin sebebi (2-3 cümle)",
+      "matchScore": 85
+    }
+  ]
+}
+
+Sadece JSON döndür, başka bir şey yazma. Türkçe yaz.`
+
+    const prompt = `Okuduğum Kitaplar:
+${bookList}
+
+En Beğendiğim Kitaplar:
+${topRated.length > 0 ? topRated.join("\n") : "Henüz puanlama yok"}
+
+Kitaplar Hakkındaki Düşüncelerim:
+${tortuSamples || "Henüz not yok"}
+
+Bu verilere göre bana 5 yeni kitap öner.`
+
+    const result = await generateText(prompt, systemPrompt)
+
+    if (!result.success || !result.text) {
+        return { success: false, error: result.error || "AI yanıt vermedi" }
+    }
+
+    try {
+        // JSON parse
+        const jsonMatch = result.text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) {
+            return { success: false, error: "Geçersiz AI yanıtı" }
+        }
+
+        const parsed = JSON.parse(jsonMatch[0])
+
+        return {
+            success: true,
+            summary: parsed.summary,
+            recommendations: parsed.recommendations
+        }
+    } catch (e) {
+        console.error("Failed to parse AI recommendations:", e)
+        return { success: false, error: "AI yanıtı işlenemedi" }
+    }
+}
+
+// =====================================================
+// ALINTI DUYGU ANALİZİ
+// =====================================================
+
+export type QuoteSentiment = "inspiring" | "thoughtful" | "melancholic" | "humorous" | "profound" | "neutral"
+
+export interface QuoteSentimentResult {
+    quoteId: string
+    sentiment: QuoteSentiment
+    explanation: string
+    emotion: string // Emoji
+}
+
+/**
+ * Alıntıların duygusal analizini yap
+ */
+export async function analyzeQuoteSentiments(quotes: { id: string; content: string }[]): Promise<{
+    success: boolean
+    results?: QuoteSentimentResult[]
+    error?: string
+}> {
+    if (quotes.length === 0) {
+        return { success: false, error: "Analiz için alıntı gerekli" }
+    }
+
+    const systemPrompt = `Sen alıntıların duygusal tonunu analiz eden bir uzmansın.
+
+Her alıntı için:
+1. Duygu kategorisi belirle: inspiring (ilham verici), thoughtful (düşündürücü), melancholic (hüzünlü), humorous (mizahi), profound (derin), neutral (nötr)
+2. Kısa açıklama yaz (1 cümle)
+3. Uygun emoji seç
+
+Yanıt formatı (JSON array):
+[
+  {
+    "id": "alıntı_id",
+    "sentiment": "inspiring",
+    "explanation": "Bu alıntı umut ve motivasyon aşılıyor",
+    "emotion": "✨"
+  }
+]
+
+Sadece JSON döndür. Türkçe yaz.`
+
+    const quotesText = quotes.map((q, i) => `[${q.id}]: "${q.content}"`).join("\n\n")
+
+    const prompt = `Aşağıdaki alıntıları analiz et:\n\n${quotesText}`
+
+    const result = await generateText(prompt, systemPrompt)
+
+    if (!result.success || !result.text) {
+        return { success: false, error: result.error || "AI yanıt vermedi" }
+    }
+
+    try {
+        const jsonMatch = result.text.match(/\[[\s\S]*\]/)
+        if (!jsonMatch) {
+            return { success: false, error: "Geçersiz AI yanıtı" }
+        }
+
+        const parsed = JSON.parse(jsonMatch[0])
+
+        return {
+            success: true,
+            results: parsed
+        }
+    } catch (e) {
+        console.error("Failed to parse sentiment analysis:", e)
+        return { success: false, error: "AI yanıtı işlenemedi" }
+    }
+}
+
+// =====================================================
+// OKUMA DENEYİMİ RAPORU
+// =====================================================
+
+export interface ReadingExperienceReport {
+    summary: string
+    highlights: string[]
+    authorInsight: string
+    memorableQuote?: string
+    overallImpression: string
+    wouldRecommend: boolean
+    recommendTo: string
+}
+
+/**
+ * Kitap tamamlandığında kapsamlı okuma deneyimi raporu oluştur
+ */
+export async function generateReadingExperienceReport(bookId: string): Promise<{
+    success: boolean
+    report?: ReadingExperienceReport
+    error?: string
+}> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    // Kitap verilerini çek
+    const book = await prisma.book.findFirst({
+        where: { id: bookId, userId: user.id },
+        select: {
+            title: true,
+            author: { select: { name: true } },
+            pageCount: true,
+            tortu: true,
+            imza: true,
+            description: true,
+            quotes: {
+                select: { content: true, page: true },
+                take: 5
+            },
+            rating: true,
+            startDate: true,
+            endDate: true
+        }
+    })
+
+    if (!book) {
+        return { success: false, error: "Kitap bulunamadı" }
+    }
+
+    if (!book.tortu && !book.imza && book.quotes.length === 0 && !book.rating) {
+        return { success: false, error: "Rapor için yeterli veri yok. Tortu, imza veya alıntı ekleyin." }
+    }
+
+    // Okuma süresi hesapla
+    let readingDuration = ""
+    if (book.startDate && book.endDate) {
+        const days = Math.ceil((book.endDate.getTime() - book.startDate.getTime()) / (1000 * 60 * 60 * 24))
+        readingDuration = `${days} günde okundu`
+    }
+
+    const systemPrompt = `Sen okuma deneyimlerini özetleyen bir edebiyat asistanısın.
+
+Kullanıcının kitap hakkındaki tüm notlarını, alıntılarını ve puanlarını analiz ederek kapsamlı bir "Okuma Deneyimi Raporu" oluştur.
+
+Yanıt formatı (JSON):
+{
+  "summary": "Kitabın genel özeti ve okuyucunun deneyimi (2-3 cümle)",
+  "highlights": ["Öne çıkan nokta 1", "Öne çıkan nokta 2", "Öne çıkan nokta 3"],
+  "authorInsight": "Yazarın üslubu hakkında gözlem (1-2 cümle)",
+  "memorableQuote": "En etkileyici alıntı (varsa)",
+  "overallImpression": "Genel izlenim ve kitabın bıraktığı etki (2-3 cümle)",
+  "wouldRecommend": true/false,
+  "recommendTo": "Bu kitabı kimlere önerirsin (1 cümle)"
+}
+
+Sadece JSON döndür. Türkçe yaz. Samimi ve kişisel bir dil kullan.`
+
+    const quotesText = book.quotes.length > 0
+        ? book.quotes.map(q => `"${q.content}" (s.${q.page || "?"})`).join("\n")
+        : "Alıntı yok"
+
+    const ratingText = book.rating
+        ? `Genel Puan: ${book.rating.genelPuan}/10, Etki: ${book.rating.etki}/10, Derinlik: ${book.rating.derinlik}/10`
+        : "Puanlama yok"
+
+    const prompt = `Kitap: "${book.title}" - ${book.author?.name || "Bilinmeyen"}
+Sayfa Sayısı: ${book.pageCount || "Bilinmiyor"}
+${readingDuration}
+
+Tortu (Düşüncelerim):
+${book.tortu || "Henüz yazılmadı"}
+
+İmza (Yazarın Üslubu):
+${book.imza || "Henüz yazılmadı"}
+
+Alıntılar:
+${quotesText}
+
+Puanlama:
+${ratingText}
+
+Bu verilere dayanarak okuma deneyimi raporu oluştur.`
+
+    const result = await generateText(prompt, systemPrompt)
+
+    if (!result.success || !result.text) {
+        return { success: false, error: result.error || "AI yanıt vermedi" }
+    }
+
+    try {
+        const jsonMatch = result.text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) {
+            return { success: false, error: "Geçersiz AI yanıtı" }
+        }
+
+        const parsed = JSON.parse(jsonMatch[0])
+
+        return {
+            success: true,
+            report: parsed
+        }
+    } catch (e) {
+        console.error("Failed to parse experience report:", e)
+        return { success: false, error: "AI yanıtı işlenemedi" }
+    }
+}

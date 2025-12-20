@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { updateBook, deleteBook } from "@/actions/library"
-import { analyzeTortu, analyzeImza } from "@/actions/ai"
+import { analyzeTortu, analyzeImza, generateReadingExperienceReport, type ReadingExperienceReport } from "@/actions/ai"
 import { useRouter, useSearchParams } from "next/navigation"
 import {
     Trash2,
@@ -46,6 +46,10 @@ import {
     Share2,
     Flag,
     BookMarked,
+    FileBarChart,
+    TrendingUp,
+    MessageCircle,
+    Lightbulb,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingLog } from "@/actions/reading-logs"
@@ -185,6 +189,11 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [imzaAiComment, setImzaAiComment] = useState<string | null>(book.imzaAiComment || null)
     const [isAnalyzingTortu, setIsAnalyzingTortu] = useState(false)
     const [isAnalyzingImza, setIsAnalyzingImza] = useState(false)
+
+    // Okuma Deneyimi Raporu state
+    const [experienceReport, setExperienceReport] = useState<ReadingExperienceReport | null>(null)
+    const [isGeneratingReport, setIsGeneratingReport] = useState(false)
+    const [showReportModal, setShowReportModal] = useState(false)
 
     useEffect(() => {
         setMounted(true)
@@ -344,6 +353,26 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             toast.error(result.error || "AI yanıt üretemedi")
         }
         setIsAnalyzingImza(false)
+    }
+
+    const handleGenerateReport = async () => {
+        setIsGeneratingReport(true)
+        setShowReportModal(true)
+
+        try {
+            const result = await generateReadingExperienceReport(book.id)
+
+            if (result.success && result.report) {
+                setExperienceReport(result.report)
+                toast.success("Okuma raporu hazır!")
+            } else {
+                toast.error(result.error || "Rapor oluşturulamadı")
+            }
+        } catch (e) {
+            toast.error("Bir hata oluştu")
+        } finally {
+            setIsGeneratingReport(false)
+        }
     }
 
     const handleCreateQuote = async () => {
@@ -1165,6 +1194,36 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         </div>
                     )}
 
+                    {/* Reading Experience Report - For Completed Books */}
+                    {currentStatus === "COMPLETED" && (
+                        <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-xl border border-emerald-500/20 p-4 md:p-6 flex flex-col gap-4">
+                            <div className="flex items-center gap-2">
+                                <FileBarChart className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                                <h4 className="text-lg font-bold">Okuma Deneyimi Raporu</h4>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                AI, bu kitabı okuma deneyimini analiz ederek kapsamlı bir rapor oluşturabilir.
+                            </p>
+                            <Button
+                                onClick={handleGenerateReport}
+                                disabled={isGeneratingReport}
+                                className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                            >
+                                {isGeneratingReport ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Rapor Oluşturuluyor...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles className="h-4 w-4" />
+                                        Rapor Oluştur
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    )}
+
                     {/* Book Details List */}
                     <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
                         <div className="p-4 border-b border-border/50">
@@ -1688,6 +1747,122 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Reading Experience Report Modal */}
+            <Dialog open={showReportModal} onOpenChange={setShowReportModal}>
+                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <FileBarChart className="h-5 w-5 text-emerald-600" />
+                            Okuma Deneyimi Raporu
+                        </DialogTitle>
+                        <DialogDescription>
+                            {book.title} - {book.author?.name || "Bilinmeyen Yazar"}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {isGeneratingReport ? (
+                        <div className="flex flex-col items-center justify-center py-12">
+                            <Loader2 className="h-10 w-10 animate-spin text-emerald-600 mb-4" />
+                            <p className="text-muted-foreground">Okuma deneyiminiz analiz ediliyor...</p>
+                        </div>
+                    ) : experienceReport ? (
+                        <div className="space-y-6 py-4">
+                            {/* Summary */}
+                            <div className="bg-emerald-500/5 rounded-xl p-4 border border-emerald-500/20">
+                                <p className="text-sm leading-relaxed">{experienceReport.summary}</p>
+                            </div>
+
+                            {/* Highlights */}
+                            <div className="space-y-3">
+                                <h4 className="font-bold flex items-center gap-2">
+                                    <TrendingUp className="h-4 w-4 text-emerald-600" />
+                                    Öne Çıkanlar
+                                </h4>
+                                <ul className="space-y-2">
+                                    {experienceReport.highlights.map((highlight: string, i: number) => (
+                                        <li key={i} className="flex items-start gap-2 text-sm">
+                                            <span className="text-emerald-600 mt-1">•</span>
+                                            <span>{highlight}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Author Insight */}
+                            <div className="space-y-3">
+                                <h4 className="font-bold flex items-center gap-2">
+                                    <MessageCircle className="h-4 w-4 text-blue-600" />
+                                    Yazar Hakkında
+                                </h4>
+                                <p className="text-sm leading-relaxed text-muted-foreground">
+                                    {experienceReport.authorInsight}
+                                </p>
+                            </div>
+
+                            {/* Memorable Quote */}
+                            {experienceReport.memorableQuote && (
+                                <div className="bg-amber-500/5 rounded-xl p-4 border border-amber-500/20">
+                                    <h4 className="font-bold mb-2 flex items-center gap-2">
+                                        <Quote className="h-4 w-4 text-amber-600" />
+                                        Akılda Kalan
+                                    </h4>
+                                    <blockquote className="text-sm italic text-muted-foreground">
+                                        &ldquo;{experienceReport.memorableQuote}&rdquo;
+                                    </blockquote>
+                                </div>
+                            )}
+
+                            {/* Recommendation */}
+                            <div className="space-y-3">
+                                <h4 className="font-bold flex items-center gap-2">
+                                    <Lightbulb className="h-4 w-4 text-amber-600" />
+                                    Tavsiye
+                                </h4>
+                                <div className="flex items-center gap-3">
+                                    <span className={cn(
+                                        "px-3 py-1 rounded-full text-sm font-medium",
+                                        experienceReport.wouldRecommend
+                                            ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                                            : "bg-red-500/10 text-red-600 dark:text-red-400"
+                                    )}>
+                                        {experienceReport.wouldRecommend ? "✓ Tavsiye Ederim" : "✗ Tavsiye Etmem"}
+                                    </span>
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                    {experienceReport.recommendTo}
+                                </p>
+                            </div>
+
+                            {/* Overall Impression */}
+                            <div className="bg-gradient-to-r from-violet-500/10 to-purple-500/10 rounded-xl p-4 border border-violet-500/20">
+                                <h4 className="font-bold mb-2 flex items-center gap-2">
+                                    <Sparkles className="h-4 w-4 text-violet-600" />
+                                    Genel İzlenim
+                                </h4>
+                                <p className="text-sm leading-relaxed">{experienceReport.overallImpression}</p>
+                            </div>
+                        </div>
+                    ) : null}
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowReportModal(false)}>
+                            Kapat
+                        </Button>
+                        {experienceReport && (
+                            <Button
+                                onClick={handleGenerateReport}
+                                disabled={isGeneratingReport}
+                                variant="outline"
+                                className="gap-2"
+                            >
+                                <RefreshCw className="h-4 w-4" />
+                                Yeniden Oluştur
+                            </Button>
+                        )}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

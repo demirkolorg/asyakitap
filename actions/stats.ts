@@ -490,3 +490,152 @@ export async function getFullStats(): Promise<FullStatsData | null> {
         throw error
     }
 }
+
+// ==========================================
+// Streak & Heatmap Data
+// ==========================================
+
+export interface HeatmapDay {
+    date: string // YYYY-MM-DD
+    count: number // Sayfa sayısı veya aktivite sayısı
+    level: 0 | 1 | 2 | 3 | 4 // 0: yok, 1-4: yoğunluk
+}
+
+export interface StreakData {
+    currentStreak: number
+    longestStreak: number
+    totalActiveDays: number
+    heatmapData: HeatmapDay[]
+    lastActivityDate: string | null
+}
+
+export async function getStreakData(): Promise<StreakData | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    const userId = user.id
+
+    // Son 365 gün için veri çek
+    const oneYearAgo = new Date()
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+
+    // ReadingLog'dan aktivite günlerini al
+    const readingLogs = await prisma.readingLog.findMany({
+        where: {
+            book: { userId },
+            createdAt: { gte: oneYearAgo }
+        },
+        select: {
+            createdAt: true,
+            action: true
+        },
+        orderBy: { createdAt: 'desc' }
+    })
+
+    // Kitap güncellemelerini de al (sayfa ilerlemesi)
+    const bookUpdates = await prisma.book.findMany({
+        where: {
+            userId,
+            updatedAt: { gte: oneYearAgo },
+            currentPage: { gt: 0 }
+        },
+        select: {
+            updatedAt: true,
+            currentPage: true
+        }
+    })
+
+    // Gün bazında aktivite haritası oluştur
+    const activityMap = new Map<string, number>()
+
+    // ReadingLog aktivitelerini ekle
+    readingLogs.forEach(log => {
+        const dateStr = log.createdAt.toISOString().split('T')[0]
+        activityMap.set(dateStr, (activityMap.get(dateStr) || 0) + 1)
+    })
+
+    // Kitap güncellemelerini ekle
+    bookUpdates.forEach(book => {
+        const dateStr = book.updatedAt.toISOString().split('T')[0]
+        activityMap.set(dateStr, (activityMap.get(dateStr) || 0) + 1)
+    })
+
+    // Heatmap verisi oluştur (son 365 gün)
+    const heatmapData: HeatmapDay[] = []
+    const today = new Date()
+
+    for (let i = 364; i >= 0; i--) {
+        const date = new Date(today)
+        date.setDate(date.getDate() - i)
+        const dateStr = date.toISOString().split('T')[0]
+        const count = activityMap.get(dateStr) || 0
+
+        // Level hesapla (0-4)
+        let level: 0 | 1 | 2 | 3 | 4 = 0
+        if (count > 0) level = 1
+        if (count >= 2) level = 2
+        if (count >= 4) level = 3
+        if (count >= 6) level = 4
+
+        heatmapData.push({ date: dateStr, count, level })
+    }
+
+    // Streak hesapla
+    const activeDates = Array.from(activityMap.keys()).sort().reverse()
+    const totalActiveDays = activeDates.length
+
+    let currentStreak = 0
+    let longestStreak = 0
+    let tempStreak = 0
+
+    // Bugünden geriye doğru streak hesapla
+    const todayStr = today.toISOString().split('T')[0]
+    let checkDate = new Date(today)
+
+    // Current streak
+    while (true) {
+        const checkStr = checkDate.toISOString().split('T')[0]
+        if (activityMap.has(checkStr)) {
+            currentStreak++
+            checkDate.setDate(checkDate.getDate() - 1)
+        } else {
+            // Bugün aktivite yoksa, dün kontrol et
+            if (checkStr === todayStr) {
+                checkDate.setDate(checkDate.getDate() - 1)
+                continue
+            }
+            break
+        }
+    }
+
+    // Longest streak
+    const sortedDates = Array.from(activityMap.keys()).sort()
+    for (let i = 0; i < sortedDates.length; i++) {
+        if (i === 0) {
+            tempStreak = 1
+        } else {
+            const prevDate = new Date(sortedDates[i - 1])
+            const currDate = new Date(sortedDates[i])
+            const diffDays = Math.round((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24))
+
+            if (diffDays === 1) {
+                tempStreak++
+            } else {
+                tempStreak = 1
+            }
+        }
+        longestStreak = Math.max(longestStreak, tempStreak)
+    }
+
+    const lastActivityDate = activeDates.length > 0 ? activeDates[0] : null
+
+    return {
+        currentStreak,
+        longestStreak,
+        totalActiveDays,
+        heatmapData,
+        lastActivityDate
+    }
+}

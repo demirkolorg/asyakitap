@@ -30,9 +30,10 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Quote, Plus, Search, Trash2, Edit, BookOpen, Copy, MessageSquare } from "lucide-react"
+import { Quote, Plus, Search, Trash2, Edit, BookOpen, Copy, MessageSquare, Sparkles, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { addQuote, deleteQuote, updateQuote } from "@/actions/quotes"
+import { analyzeQuoteSentiments, type QuoteSentimentResult } from "@/actions/ai"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
@@ -60,6 +61,16 @@ interface QuotesClientProps {
     books: BookForSelect[]
 }
 
+// Sentiment renkleri ve etiketleri
+const SENTIMENT_CONFIG = {
+    inspiring: { label: "İlham Verici", color: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400", emoji: "✨" },
+    thoughtful: { label: "Düşündürücü", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400", emoji: "🤔" },
+    melancholic: { label: "Hüzünlü", color: "bg-purple-500/10 text-purple-600 dark:text-purple-400", emoji: "💜" },
+    humorous: { label: "Mizahi", color: "bg-green-500/10 text-green-600 dark:text-green-400", emoji: "😄" },
+    profound: { label: "Derin", color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400", emoji: "🌊" },
+    neutral: { label: "Nötr", color: "bg-gray-500/10 text-gray-600 dark:text-gray-400", emoji: "📖" },
+}
+
 export default function QuotesClient({ initialQuotes, books }: QuotesClientProps) {
     const [quotes, setQuotes] = useState(initialQuotes)
     const [searchQuery, setSearchQuery] = useState("")
@@ -71,6 +82,10 @@ export default function QuotesClient({ initialQuotes, books }: QuotesClientProps
     const [selectedBookId, setSelectedBookId] = useState("")
     const [quoteContent, setQuoteContent] = useState("")
     const [quotePage, setQuotePage] = useState("")
+
+    // Sentiment analysis state
+    const [sentimentResults, setSentimentResults] = useState<Record<string, QuoteSentimentResult>>({})
+    const [analyzingSentiments, setAnalyzingSentiments] = useState(false)
 
     // Get books with quotes for filter
     const booksWithQuotes = useMemo(() => {
@@ -154,6 +169,40 @@ export default function QuotesClient({ initialQuotes, books }: QuotesClientProps
         setQuotePage(quote.page?.toString() || "")
     }
 
+    const handleAnalyzeSentiments = async () => {
+        if (filteredQuotes.length === 0) {
+            toast.error("Analiz için alıntı yok")
+            return
+        }
+
+        setAnalyzingSentiments(true)
+
+        try {
+            // En fazla 10 alıntı analiz et
+            const quotesToAnalyze = filteredQuotes.slice(0, 10).map(q => ({
+                id: q.id,
+                content: q.content
+            }))
+
+            const result = await analyzeQuoteSentiments(quotesToAnalyze)
+
+            if (result.success && result.results) {
+                const resultsMap: Record<string, QuoteSentimentResult> = {}
+                result.results.forEach(r => {
+                    resultsMap[r.quoteId] = r
+                })
+                setSentimentResults(prev => ({ ...prev, ...resultsMap }))
+                toast.success(`${result.results.length} alıntı analiz edildi`)
+            } else {
+                toast.error(result.error || "Analiz başarısız")
+            }
+        } catch (e) {
+            toast.error("Bir hata oluştu")
+        } finally {
+            setAnalyzingSentiments(false)
+        }
+    }
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -233,11 +282,32 @@ export default function QuotesClient({ initialQuotes, books }: QuotesClientProps
                     ))}
                 </div>
 
-                {/* Add Button */}
-                <Button onClick={() => setIsAddDialogOpen(true)} className="shadow-lg shadow-primary/25">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Alıntı Ekle
-                </Button>
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={handleAnalyzeSentiments}
+                        disabled={analyzingSentiments || filteredQuotes.length === 0}
+                        className="gap-2"
+                    >
+                        {analyzingSentiments ? (
+                            <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span className="hidden sm:inline">Analiz ediliyor...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Sparkles className="h-4 w-4" />
+                                <span className="hidden sm:inline">Duygu Analizi</span>
+                            </>
+                        )}
+                    </Button>
+                    <Button onClick={() => setIsAddDialogOpen(true)} className="shadow-lg shadow-primary/25">
+                        <Plus className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">Alıntı Ekle</span>
+                        <span className="sm:hidden">Ekle</span>
+                    </Button>
+                </div>
             </div>
 
             {/* Quotes List */}
@@ -270,6 +340,19 @@ export default function QuotesClient({ initialQuotes, books }: QuotesClientProps
                         >
                             {/* Quote Icon */}
                             <Quote className="absolute top-4 left-4 h-8 w-8 text-primary/10" />
+
+                            {/* Sentiment Badge */}
+                            {sentimentResults[quote.id] && (
+                                <div className="absolute top-4 right-4 z-10">
+                                    <span className={cn(
+                                        "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium",
+                                        SENTIMENT_CONFIG[sentimentResults[quote.id].sentiment].color
+                                    )}>
+                                        <span>{SENTIMENT_CONFIG[sentimentResults[quote.id].sentiment].emoji}</span>
+                                        <span className="hidden sm:inline">{SENTIMENT_CONFIG[sentimentResults[quote.id].sentiment].label}</span>
+                                    </span>
+                                </div>
+                            )}
 
                             {/* Quote Content */}
                             <blockquote className="relative z-10 text-lg leading-relaxed pl-8 pr-4 italic">

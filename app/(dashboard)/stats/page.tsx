@@ -1,6 +1,7 @@
-import { getFullStats } from "@/actions/stats"
+import { getFullStats, getStreakData } from "@/actions/stats"
 import { StatsClient } from "./client"
 import { redirect } from "next/navigation"
+import { StreakHeatmap } from "@/components/streak-heatmap"
 
 export const metadata = {
     title: "İstatistikler | AsyaKitap",
@@ -8,11 +9,22 @@ export const metadata = {
 }
 
 export default async function StatsPage() {
-    const stats = await getFullStats()
+    const [stats, streakData] = await Promise.all([
+        getFullStats(),
+        getStreakData()
+    ])
 
     if (!stats) {
         redirect("/")
     }
 
-    return <StatsClient stats={stats} />
+    return (
+        <div className="space-y-6">
+            {/* Streak Heatmap */}
+            {streakData && <StreakHeatmap data={streakData} />}
+
+            {/* Existing Stats */}
+            <StatsClient stats={stats} />
+        </div>
+    )
 }
