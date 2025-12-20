@@ -689,3 +689,116 @@ ${parsed.wouldRecommend ? '✅ Tavsiye Ederim' : '❌ Tavsiye Etmem'}: ${parsed.
         return { success: false, error: "AI yanıtı işlenemedi" }
     }
 }
+
+// =====================================================
+// OKUMA NOTLARI ANALİZİ
+// =====================================================
+
+export interface ReadingNotesAnalysis {
+    summary: string           // Genel okuma deneyimi özeti
+    emotionalJourney: string  // Duygusal yolculuk analizi
+    keyInsights: string[]     // Önemli çıkarımlar
+    readingPattern: string    // Okuma örüntüsü analizi
+    recommendation: string    // Sonraki adım önerisi
+}
+
+export async function analyzeReadingNotes(
+    bookId: string
+): Promise<{ success: boolean; analysis?: ReadingNotesAnalysis; error?: string }> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    // Kitap ve notları getir
+    const book = await prisma.book.findFirst({
+        where: { id: bookId, userId: user.id },
+        include: {
+            author: true,
+            readingNotes: {
+                orderBy: { createdAt: 'asc' }
+            }
+        }
+    })
+
+    if (!book) {
+        return { success: false, error: "Kitap bulunamadı" }
+    }
+
+    if (book.readingNotes.length < 3) {
+        return { success: false, error: "En az 3 okuma notu gerekli" }
+    }
+
+    const notesText = book.readingNotes.map((note, i) => {
+        const moodText = note.mood ? ` [Ruh hali: ${note.mood}]` : ''
+        const pageText = note.page ? ` (Sayfa ${note.page})` : ''
+        return `Not ${i + 1}${pageText}${moodText}: ${note.content}`
+    }).join('\n\n')
+
+    const systemPrompt = `Sen bir okuma koçusun. Kullanıcının kitap okurken aldığı notları analiz edeceksin. Türkçe yanıt ver.`
+
+    const prompt = `Kitap: "${book.title}" - ${book.author?.name || 'Bilinmeyen Yazar'}
+Sayfa sayısı: ${book.pageCount || 'Bilinmiyor'}
+Toplam not sayısı: ${book.readingNotes.length}
+
+Okuma Notları:
+${notesText}
+
+Bu okuma notlarını analiz et ve aşağıdaki JSON formatında yanıt ver:
+{
+  "summary": "Kitap boyunca alınan notların genel özeti ve okuyucunun kitapla ilişkisi (2-3 cümle)",
+  "emotionalJourney": "Notlardaki duygusal değişim ve tepkiler (hangi kısımlarda ne hissedilmiş)",
+  "keyInsights": ["Not 1'den çıkarım", "Not 2'den çıkarım", "Not 3'ten çıkarım"],
+  "readingPattern": "Okuma örüntüsü analizi (hangi konulara odaklanılmış, ne tür şeyler dikkat çekmiş)",
+  "recommendation": "Bu okuma deneyimine göre bir sonraki adım önerisi"
+}
+
+SADECE JSON döndür, başka bir şey yazma.`
+
+    const result = await generateText(prompt, systemPrompt)
+
+    if (!result.success || !result.text) {
+        return { success: false, error: result.error || "AI yanıt üretemedi" }
+    }
+
+    try {
+        const jsonMatch = result.text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) {
+            return { success: false, error: "AI yanıtı JSON formatında değil" }
+        }
+
+        const parsed = JSON.parse(jsonMatch[0]) as ReadingNotesAnalysis
+
+        // AI yorumunu kaydet
+        const analysisText = `📖 Özet: ${parsed.summary}
+
+💭 Duygusal Yolculuk: ${parsed.emotionalJourney}
+
+✨ Önemli Çıkarımlar:
+${parsed.keyInsights.map(i => `• ${i}`).join('\n')}
+
+📊 Okuma Örüntüsü: ${parsed.readingPattern}
+
+🎯 Öneri: ${parsed.recommendation}`
+
+        await prisma.aIComment.create({
+            data: {
+                bookId: bookId,
+                userId: user.id,
+                source: 'READING_NOTE',
+                userContent: `${book.title} - ${book.readingNotes.length} okuma notu analizi`,
+                aiComment: analysisText
+            }
+        })
+
+        return {
+            success: true,
+            analysis: parsed
+        }
+    } catch (e) {
+        console.error("Failed to parse reading notes analysis:", e)
+        return { success: false, error: "AI yanıtı işlenemedi" }
+    }
+}

@@ -77,6 +77,7 @@ model Book {
   imzaAiComment        String?               @db.Text // AI'ın imza yorumu
   quotes               Quote[]
   readingLogs          ReadingLog[]
+  readingNotes         ReadingNote[]         // Okuma notları (okurken alınan notlar)
   aiComments           AIComment[]           // AI yorumları
   readingListBooks     ReadingListBook[]     // Bu kitabın bulunduğu okuma listeleri
   challengeBooks       ChallengeBook[]       // Bu kitabın bulunduğu challenge'lar
@@ -112,6 +113,7 @@ enum AICommentSource {
   IMZA
   STATS              // İstatistik analizi
   EXPERIENCE_REPORT  // Okuma deneyimi raporu
+  READING_NOTE       // Okuma notu analizi
 }
 
 model AIComment {
@@ -154,6 +156,24 @@ model Quote {
 
   @@index([bookId])
   @@index([bookId, createdAt]) // Sıralı alıntılar için
+}
+
+// ==========================================
+// Okuma Notları (Okurken alınan notlar)
+// ==========================================
+
+model ReadingNote {
+  id        String   @id @default(cuid())
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  content   String   @db.Text    // Not içeriği
+  page      Int?                 // Sayfa numarası (opsiyonel)
+  mood      String?              // Ruh hali/emoji (opsiyonel)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([bookId])
+  @@index([bookId, createdAt]) // Kronolojik sıralama için
 }
 
 // ==========================================

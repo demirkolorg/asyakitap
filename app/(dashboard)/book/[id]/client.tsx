@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { updateBook, deleteBook } from "@/actions/library"
-import { analyzeTortu, analyzeImza, generateReadingExperienceReport, type ReadingExperienceReport } from "@/actions/ai"
+import { analyzeTortu, analyzeImza, generateReadingExperienceReport, analyzeReadingNotes, type ReadingExperienceReport, type ReadingNotesAnalysis } from "@/actions/ai"
 import { useRouter, useSearchParams } from "next/navigation"
 import {
     Trash2,
@@ -50,8 +50,11 @@ import {
     TrendingUp,
     MessageCircle,
     Lightbulb,
+    StickyNote,
+    Trash2 as TrashIcon,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
+import { addReadingNote, deleteReadingNote, MOOD_OPTIONS } from "@/actions/reading-notes"
 import { addReadingLog } from "@/actions/reading-logs"
 import { toast } from "sonner"
 import {
@@ -93,7 +96,7 @@ import { cn, formatDate, getNowInTurkey } from "@/lib/utils"
 import { estimateReadingDays, calculateReadingGoal, formatRemainingDays, formatDailyTarget } from "@/lib/reading-goal"
 
 // Types
-import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, ChallengeBookRole, BookRating } from "@prisma/client"
+import { Book, Quote as QuoteType, BookStatus, ReadingLog, ReadingAction, Author, Publisher, ChallengeBookRole, BookRating, ReadingNote } from "@prisma/client"
 import { BookRating as BookRatingComponent } from "@/components/book/book-rating"
 
 interface ReadingListBookInfo {
@@ -136,6 +139,7 @@ interface ChallengeBookInfo {
 interface BookDetailClientProps {
     book: Book & {
         quotes: QuoteType[]
+        readingNotes: ReadingNote[]
         readingLogs: ReadingLog[]
         author: Author | null
         publisher: Publisher | null
@@ -148,7 +152,7 @@ interface BookDetailClientProps {
 export default function BookDetailClient({ book }: BookDetailClientProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "rating" | "history">("tortu")
+    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "history">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
     const [isSavingImza, setIsSavingImza] = useState(false)
@@ -195,6 +199,18 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [isGeneratingReport, setIsGeneratingReport] = useState(false)
     const [showReportModal, setShowReportModal] = useState(false)
 
+    // Okuma Notları state
+    const [readingNotes, setReadingNotes] = useState(book.readingNotes)
+    const [showNoteDialog, setShowNoteDialog] = useState(false)
+    const [noteContent, setNoteContent] = useState("")
+    const [notePage, setNotePage] = useState("")
+    const [noteMood, setNoteMood] = useState("")
+    const [isAddingNote, setIsAddingNote] = useState(false)
+    const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null)
+    const [notesAnalysis, setNotesAnalysis] = useState<ReadingNotesAnalysis | null>(null)
+    const [isAnalyzingNotes, setIsAnalyzingNotes] = useState(false)
+    const [showNotesAnalysisModal, setShowNotesAnalysisModal] = useState(false)
+
     useEffect(() => {
         setMounted(true)
         // URL'den action parametresini kontrol et
@@ -204,6 +220,9 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             router.replace(`/book/${book.id}`, { scroll: false })
         } else if (action === 'quote') {
             setShowQuoteDialog(true)
+            router.replace(`/book/${book.id}`, { scroll: false })
+        } else if (action === 'note') {
+            setShowNoteDialog(true)
             router.replace(`/book/${book.id}`, { scroll: false })
         }
     }, [searchParams, currentStatus, book.id, router])
@@ -383,6 +402,60 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         setShowQuoteDialog(false)
         toast.success("Alıntı eklendi")
         router.refresh()
+    }
+
+    const handleCreateNote = async () => {
+        if (!noteContent.trim()) return
+        setIsAddingNote(true)
+        const result = await addReadingNote(
+            book.id,
+            noteContent,
+            notePage ? parseInt(notePage) : undefined,
+            noteMood || undefined
+        )
+        if (result.success && result.note) {
+            setReadingNotes([result.note, ...readingNotes])
+            setNoteContent("")
+            setNotePage("")
+            setNoteMood("")
+            setShowNoteDialog(false)
+            toast.success("Not eklendi")
+        } else {
+            toast.error(result.error || "Not eklenirken hata oluştu")
+        }
+        setIsAddingNote(false)
+    }
+
+    const handleDeleteNote = async (noteId: string) => {
+        setDeletingNoteId(noteId)
+        const result = await deleteReadingNote(noteId)
+        if (result.success) {
+            setReadingNotes(readingNotes.filter(n => n.id !== noteId))
+            toast.success("Not silindi")
+        } else {
+            toast.error(result.error || "Not silinirken hata oluştu")
+        }
+        setDeletingNoteId(null)
+    }
+
+    const handleAnalyzeNotes = async () => {
+        setIsAnalyzingNotes(true)
+        setShowNotesAnalysisModal(true)
+
+        try {
+            const result = await analyzeReadingNotes(book.id)
+
+            if (result.success && result.analysis) {
+                setNotesAnalysis(result.analysis)
+                toast.success("Notlar analiz edildi!")
+            } else {
+                toast.error(result.error || "Analiz yapılamadı")
+            }
+        } catch (e) {
+            toast.error("Bir hata oluştu")
+        } finally {
+            setIsAnalyzingNotes(false)
+        }
     }
 
     const handleToggleLibrary = async () => {
@@ -833,6 +906,17 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         >
                             Alıntılar
                         </button>
+                        <button
+                            onClick={() => setActiveSection("notes")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                activeSection === "notes"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Notlar
+                        </button>
                         {currentStatus === "COMPLETED" && (
                             <button
                                 onClick={() => setActiveSection("rating")}
@@ -1057,6 +1141,102 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                                 )}
                                             </div>
                                         ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Notes Section */}
+                        {activeSection === "notes" && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <StickyNote className="h-5 w-5 text-primary" />
+                                        Okuma Notları
+                                    </h3>
+                                    <div className="flex gap-2">
+                                        {readingNotes.length >= 3 && (
+                                            <Button
+                                                variant="outline"
+                                                onClick={handleAnalyzeNotes}
+                                                disabled={isAnalyzingNotes}
+                                            >
+                                                {isAnalyzingNotes ? (
+                                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                ) : (
+                                                    <Sparkles className="h-4 w-4 mr-2" />
+                                                )}
+                                                AI Analizi
+                                            </Button>
+                                        )}
+                                        <Button onClick={() => setShowNoteDialog(true)}>
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Not Ekle
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                {readingNotes.length === 0 ? (
+                                    <div className="text-center py-12 border border-dashed rounded-xl">
+                                        <StickyNote className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                        <p className="text-muted-foreground mb-2">Henüz okuma notu yok</p>
+                                        <p className="text-sm text-muted-foreground mb-4">
+                                            Okurken aklına gelen düşünceleri, tepkilerini not al
+                                        </p>
+                                        <Button variant="outline" onClick={() => setShowNoteDialog(true)}>
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            İlk Notu Ekle
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {readingNotes.map((note) => {
+                                            const moodConfig = MOOD_OPTIONS.find(m => m.value === note.mood)
+                                            return (
+                                                <div
+                                                    key={note.id}
+                                                    className="p-4 rounded-lg bg-muted/50 border border-border/50 relative group"
+                                                >
+                                                    {/* Delete Button */}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                        onClick={() => handleDeleteNote(note.id)}
+                                                        disabled={deletingNoteId === note.id}
+                                                    >
+                                                        {deletingNoteId === note.id ? (
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                        ) : (
+                                                            <TrashIcon className="h-4 w-4" />
+                                                        )}
+                                                    </Button>
+
+                                                    {/* Mood Badge */}
+                                                    {moodConfig && (
+                                                        <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-primary/10 text-xs font-medium mb-2">
+                                                            <span>{moodConfig.emoji}</span>
+                                                            <span>{moodConfig.label}</span>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Content */}
+                                                    <p className="text-sm whitespace-pre-wrap pr-8">{note.content}</p>
+
+                                                    {/* Footer */}
+                                                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
+                                                        {note.page && (
+                                                            <span className="text-xs text-primary font-medium">
+                                                                Sayfa {note.page}
+                                                            </span>
+                                                        )}
+                                                        <span className="text-xs text-muted-foreground ml-auto">
+                                                            {formatDate(note.createdAt, { format: "long" })}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
                                     </div>
                                 )}
                             </div>
@@ -1720,6 +1900,177 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <Button onClick={handleCreateQuote} disabled={!quoteContent.trim()}>
                             Ekle
                         </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Note Dialog */}
+            <Dialog open={showNoteDialog} onOpenChange={setShowNoteDialog}>
+                <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <StickyNote className="h-5 w-5 text-primary" />
+                            Okuma Notu
+                        </DialogTitle>
+                        <DialogDescription>
+                            {book.title} okurken aklına gelenleri not al
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Not</Label>
+                            <Textarea
+                                value={noteContent}
+                                onChange={(e) => setNoteContent(e.target.value)}
+                                placeholder="Düşüncelerini, tepkilerini, sorularını yaz..."
+                                rows={5}
+                                className="resize-none"
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Sayfa (opsiyonel)</Label>
+                                <Input
+                                    type="number"
+                                    value={notePage}
+                                    onChange={(e) => setNotePage(e.target.value)}
+                                    placeholder="Sayfa no"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Ruh Hali (opsiyonel)</Label>
+                                <div className="flex flex-wrap gap-1">
+                                    {MOOD_OPTIONS.map((mood) => (
+                                        <button
+                                            key={mood.value}
+                                            type="button"
+                                            onClick={() => setNoteMood(noteMood === mood.value ? "" : mood.value)}
+                                            className={cn(
+                                                "px-2 py-1 rounded-md text-lg transition-all",
+                                                noteMood === mood.value
+                                                    ? "bg-primary/20 ring-2 ring-primary"
+                                                    : "hover:bg-muted"
+                                            )}
+                                            title={mood.label}
+                                        >
+                                            {mood.emoji}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowNoteDialog(false)}>
+                            Vazgeç
+                        </Button>
+                        <Button onClick={handleCreateNote} disabled={!noteContent.trim() || isAddingNote}>
+                            {isAddingNote ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Ekleniyor...
+                                </>
+                            ) : (
+                                "Ekle"
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Reading Notes Analysis Modal */}
+            <Dialog open={showNotesAnalysisModal} onOpenChange={setShowNotesAnalysisModal}>
+                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Sparkles className="h-5 w-5 text-primary" />
+                            Okuma Notları Analizi
+                        </DialogTitle>
+                        <DialogDescription>
+                            {book.title} - {readingNotes.length} not analiz edildi
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {isAnalyzingNotes ? (
+                        <div className="flex flex-col items-center justify-center py-12">
+                            <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+                            <p className="text-muted-foreground">Notlarınız analiz ediliyor...</p>
+                        </div>
+                    ) : notesAnalysis ? (
+                        <div className="space-y-6 py-4">
+                            {/* Summary */}
+                            <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
+                                <h4 className="font-bold mb-2 flex items-center gap-2">
+                                    <BookOpen className="h-4 w-4 text-primary" />
+                                    Özet
+                                </h4>
+                                <p className="text-sm leading-relaxed">{notesAnalysis.summary}</p>
+                            </div>
+
+                            {/* Emotional Journey */}
+                            <div className="space-y-3">
+                                <h4 className="font-bold flex items-center gap-2">
+                                    <Heart className="h-4 w-4 text-rose-500" />
+                                    Duygusal Yolculuk
+                                </h4>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    {notesAnalysis.emotionalJourney}
+                                </p>
+                            </div>
+
+                            {/* Key Insights */}
+                            <div className="space-y-3">
+                                <h4 className="font-bold flex items-center gap-2">
+                                    <Lightbulb className="h-4 w-4 text-amber-500" />
+                                    Önemli Çıkarımlar
+                                </h4>
+                                <ul className="space-y-2">
+                                    {notesAnalysis.keyInsights.map((insight, i) => (
+                                        <li key={i} className="flex items-start gap-2 text-sm">
+                                            <span className="text-amber-500 mt-1">•</span>
+                                            <span>{insight}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Reading Pattern */}
+                            <div className="space-y-3">
+                                <h4 className="font-bold flex items-center gap-2">
+                                    <TrendingUp className="h-4 w-4 text-blue-500" />
+                                    Okuma Örüntüsü
+                                </h4>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    {notesAnalysis.readingPattern}
+                                </p>
+                            </div>
+
+                            {/* Recommendation */}
+                            <div className="bg-gradient-to-r from-violet-500/10 to-purple-500/10 rounded-xl p-4 border border-violet-500/20">
+                                <h4 className="font-bold mb-2 flex items-center gap-2">
+                                    <Target className="h-4 w-4 text-violet-600" />
+                                    Öneri
+                                </h4>
+                                <p className="text-sm leading-relaxed">{notesAnalysis.recommendation}</p>
+                            </div>
+                        </div>
+                    ) : null}
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowNotesAnalysisModal(false)}>
+                            Kapat
+                        </Button>
+                        {notesAnalysis && (
+                            <Button
+                                onClick={handleAnalyzeNotes}
+                                disabled={isAnalyzingNotes}
+                                variant="outline"
+                                className="gap-2"
+                            >
+                                <RefreshCw className="h-4 w-4" />
+                                Yeniden Analiz Et
+                            </Button>
+                        )}
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

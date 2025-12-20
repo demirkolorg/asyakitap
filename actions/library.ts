@@ -110,6 +110,10 @@ export async function getBook(id: string) {
                     orderBy: { createdAt: 'desc' },
                     take: 50
                 },
+                readingNotes: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 100
+                },
                 readingLogs: {
                     orderBy: { createdAt: 'desc' },
                     take: 20

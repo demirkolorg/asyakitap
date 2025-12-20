@@ -20,6 +20,7 @@ import {
     BarChart3,
     FileBarChart,
     X,
+    StickyNote,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -60,13 +61,20 @@ const sourceConfig = {
         lightColor: "text-amber-500",
         bgColor: "bg-amber-500/10",
         icon: FileBarChart,
+    },
+    READING_NOTE: {
+        label: "Okuma Notu",
+        color: "bg-rose-500",
+        lightColor: "text-rose-500",
+        bgColor: "bg-rose-500/10",
+        icon: StickyNote,
     }
 }
 
 export function AICommentsClient({ data }: AICommentsClientProps) {
     const { comments, stats } = data
     const [searchQuery, setSearchQuery] = useState("")
-    const [filterSource, setFilterSource] = useState<"all" | "TORTU" | "IMZA" | "STATS" | "EXPERIENCE_REPORT">("all")
+    const [filterSource, setFilterSource] = useState<"all" | "TORTU" | "IMZA" | "STATS" | "EXPERIENCE_REPORT" | "READING_NOTE">("all")
     const [selectedComment, setSelectedComment] = useState<CommentType | null>(null)
 
     // Filter comments
@@ -210,6 +218,18 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                     >
                         <FileBarChart className="h-3.5 w-3.5" />
                         Deneyim
+                    </button>
+                    <button
+                        onClick={() => setFilterSource("READING_NOTE")}
+                        className={cn(
+                            "px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
+                            filterSource === "READING_NOTE"
+                                ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20"
+                                : "bg-muted text-muted-foreground border border-border hover:border-rose-500/50 hover:text-rose-500"
+                        )}
+                    >
+                        <StickyNote className="h-3.5 w-3.5" />
+                        Notlar
                     </button>
                 </div>
             </div>

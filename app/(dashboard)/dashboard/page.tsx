@@ -19,7 +19,8 @@ import {
     Star,
     Edit,
     CheckCircle2,
-    Clock
+    Clock,
+    StickyNote
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -308,6 +309,13 @@ export default async function DashboardPage() {
                                     >
                                         <Quote className="h-3 md:h-3.5 w-3 md:w-3.5" />
                                         Alıntı
+                                    </Link>
+                                    <Link
+                                        href={`/book/${featuredBook.id}?action=note`}
+                                        className="flex-1 py-1.5 md:py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg font-medium transition-colors text-[11px] md:text-sm flex items-center justify-center gap-1.5"
+                                    >
+                                        <StickyNote className="h-3 md:h-3.5 w-3 md:w-3.5" />
+                                        Not
                                     </Link>
                                 </div>
                             )}
