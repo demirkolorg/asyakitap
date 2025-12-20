@@ -654,7 +654,31 @@ Bu verilere dayanarak okuma deneyimi raporu oluştur.`
             return { success: false, error: "Geçersiz AI yanıtı" }
         }
 
-        const parsed = JSON.parse(jsonMatch[0])
+        const parsed = JSON.parse(jsonMatch[0]) as ReadingExperienceReport
+
+        // Raporu AI yorumları olarak kaydet
+        const reportText = `📖 Özet: ${parsed.summary}
+
+✨ Öne Çıkanlar:
+${parsed.highlights.map(h => `• ${h}`).join('\n')}
+
+✍️ Yazar Hakkında: ${parsed.authorInsight}
+
+${parsed.memorableQuote ? `💬 Akılda Kalan: "${parsed.memorableQuote}"` : ''}
+
+🎯 Genel İzlenim: ${parsed.overallImpression}
+
+${parsed.wouldRecommend ? '✅ Tavsiye Ederim' : '❌ Tavsiye Etmem'}: ${parsed.recommendTo}`
+
+        await prisma.aIComment.create({
+            data: {
+                bookId: bookId,
+                userId: user.id,
+                source: 'EXPERIENCE_REPORT',
+                userContent: `${book.title} - ${book.author?.name || 'Bilinmeyen Yazar'} (Okuma Deneyimi Raporu)`,
+                aiComment: reportText
+            }
+        })
 
         return {
             success: true,

@@ -110,7 +110,8 @@ enum ReadingAction {
 enum AICommentSource {
   TORTU
   IMZA
-  STATS  // İstatistik analizi
+  STATS              // İstatistik analizi
+  EXPERIENCE_REPORT  // Okuma deneyimi raporu
 }
 
 model AIComment {

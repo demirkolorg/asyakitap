@@ -12,6 +12,7 @@ import {
     Pen,
     Sparkles,
     BarChart3,
+    FileBarChart,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -43,13 +44,20 @@ const sourceConfig = {
         lightColor: "text-blue-500",
         bgColor: "bg-blue-500/10",
         icon: BarChart3,
+    },
+    EXPERIENCE_REPORT: {
+        label: "Deneyim Raporu",
+        color: "bg-amber-500",
+        lightColor: "text-amber-500",
+        bgColor: "bg-amber-500/10",
+        icon: FileBarChart,
     }
 }
 
 export function AICommentsClient({ data }: AICommentsClientProps) {
     const { comments, stats } = data
     const [searchQuery, setSearchQuery] = useState("")
-    const [filterSource, setFilterSource] = useState<"all" | "TORTU" | "IMZA" | "STATS">("all")
+    const [filterSource, setFilterSource] = useState<"all" | "TORTU" | "IMZA" | "STATS" | "EXPERIENCE_REPORT">("all")
 
     // Filter comments
     const filteredComments = useMemo(() => {
@@ -181,6 +189,18 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                         <BarChart3 className="h-3.5 w-3.5" />
                         İstatistik
                     </button>
+                    <button
+                        onClick={() => setFilterSource("EXPERIENCE_REPORT")}
+                        className={cn(
+                            "px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5",
+                            filterSource === "EXPERIENCE_REPORT"
+                                ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20"
+                                : "bg-muted text-muted-foreground border border-border hover:border-amber-500/50 hover:text-amber-500"
+                        )}
+                    >
+                        <FileBarChart className="h-3.5 w-3.5" />
+                        Deneyim
+                    </button>
                 </div>
             </div>
 
@@ -210,8 +230,8 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
             ) : (
                 <div className="grid gap-4">
                     {filteredComments.map((comment) => {
-                        const config = sourceConfig[comment.source]
-                        const Icon = config.icon
+                        const config = sourceConfig[comment.source as keyof typeof sourceConfig]
+                        const Icon = config?.icon || FileText
                         const isStatsComment = comment.source === "STATS"
 
                         return (

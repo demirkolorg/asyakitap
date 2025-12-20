@@ -48,7 +48,8 @@
       "Bash(npx prisma:*)",
       "Bash(git checkout:*)",
       "Bash(git show:*)",
-      "Bash(npx dotenv:*)"
+      "Bash(npx dotenv:*)",
+      "Bash(cd:*)"
     ],
     "deny": [],
     "ask": []
