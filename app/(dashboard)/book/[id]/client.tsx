@@ -138,13 +138,13 @@ interface ChallengeBookInfo {
 
 interface BookDetailClientProps {
     book: Book & {
-        quotes: QuoteType[]
+        quotes?: QuoteType[]
         readingNotes?: ReadingNote[]
-        readingLogs: ReadingLog[]
+        readingLogs?: ReadingLog[]
         author: Author | null
         publisher: Publisher | null
-        readingListBooks: ReadingListBookInfo[]
-        challengeBooks: ChallengeBookInfo[]
+        readingListBooks?: ReadingListBookInfo[]
+        challengeBooks?: ChallengeBookInfo[]
         rating: BookRating | null
     }
 }
@@ -152,6 +152,13 @@ interface BookDetailClientProps {
 export default function BookDetailClient({ book }: BookDetailClientProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
+
+    // Safe array access
+    const quotes = book.quotes || []
+    const readingLogs = book.readingLogs || []
+    const readingListBooks = book.readingListBooks || []
+    const challengeBooks = book.challengeBooks || []
+
     const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "history">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
@@ -841,7 +848,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <Quote className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                         <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Alıntı</p>
                     </div>
-                    <p className="text-2xl font-bold">{book.quotes.length}</p>
+                    <p className="text-2xl font-bold">{quotes.length}</p>
                 </div>
 
                 {/* Okuma Süresi */}
@@ -1119,13 +1126,13 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     </Button>
                                 </div>
 
-                                {book.quotes.length === 0 ? (
+                                {quotes.length === 0 ? (
                                     <p className="text-muted-foreground text-center py-8">
                                         Henüz alıntı eklenmemiş
                                     </p>
                                 ) : (
                                     <div className="space-y-4">
-                                        {book.quotes.map((quote) => (
+                                        {quotes.map((quote) => (
                                             <div
                                                 key={quote.id}
                                                 className="p-4 rounded-lg bg-muted/50 border border-border/50 relative"
@@ -1259,13 +1266,13 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     <Clock className="h-5 w-5 text-primary" />
                                     Okuma Geçmişi
                                 </h3>
-                                {book.readingLogs.length === 0 ? (
+                                {readingLogs.length === 0 ? (
                                     <p className="text-muted-foreground text-center py-8">
                                         Henüz kayıt yok
                                     </p>
                                 ) : (
                                     <div className="relative pl-6 border-l-2 border-muted space-y-6">
-                                        {book.readingLogs.map((log) => (
+                                        {readingLogs.map((log) => (
                                             <div key={log.id} className="relative">
                                                 <div className="absolute -left-[25px] w-3 h-3 rounded-full bg-primary" />
                                                 <div>
@@ -1448,14 +1455,14 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                     </div>
 
                     {/* Reading Lists - Detaylı Kartlar */}
-                    {book.readingListBooks.length > 0 && (
+                    {readingListBooks.length > 0 && (
                         <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
                             <div className="p-4 border-b border-border/50 flex items-center gap-2">
                                 <Map className="h-5 w-5 text-purple-500" />
                                 <h4 className="text-sm font-bold">Okuma Listeleri</h4>
                             </div>
                             <div className="divide-y divide-border/50">
-                                {book.readingListBooks.map((rlb) => (
+                                {readingListBooks.map((rlb) => (
                                     <div key={rlb.id} className="p-4 hover:bg-muted/30 transition-colors">
                                         <div className="flex items-start gap-3">
                                             {/* Liste Kapağı */}
@@ -1517,14 +1524,14 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                     )}
 
                     {/* Challenges - Detaylı Kartlar */}
-                    {book.challengeBooks.length > 0 && (
+                    {challengeBooks.length > 0 && (
                         <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
                             <div className="p-4 border-b border-border/50 flex items-center gap-2">
                                 <Target className="h-5 w-5 text-amber-500" />
                                 <h4 className="text-sm font-bold">Okuma Hedefleri</h4>
                             </div>
                             <div className="divide-y divide-border/50">
-                                {book.challengeBooks.map((cb) => (
+                                {challengeBooks.map((cb) => (
                                     <div key={cb.id} className="p-4 hover:bg-muted/30 transition-colors">
                                         <div className="flex items-start gap-3">
                                             {/* Tema İkonu */}
