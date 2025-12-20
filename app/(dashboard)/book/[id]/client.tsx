@@ -139,7 +139,7 @@ interface ChallengeBookInfo {
 interface BookDetailClientProps {
     book: Book & {
         quotes: QuoteType[]
-        readingNotes: ReadingNote[]
+        readingNotes?: ReadingNote[]
         readingLogs: ReadingLog[]
         author: Author | null
         publisher: Publisher | null
