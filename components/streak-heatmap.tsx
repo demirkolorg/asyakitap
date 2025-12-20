@@ -11,6 +11,12 @@ interface StreakHeatmapProps {
 const MONTHS_TR = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
 const DAYS_TR = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]
 
+// YYYY-MM-DD string'i parse et (timezone sorununu önlemek için)
+function parseDateString(dateStr: string): Date {
+    const [year, month, day] = dateStr.split('-').map(Number)
+    return new Date(year, month - 1, day)
+}
+
 export function StreakHeatmap({ data }: StreakHeatmapProps) {
     const { currentStreak, longestStreak, totalActiveDays, heatmapData } = data
 
@@ -19,7 +25,8 @@ export function StreakHeatmap({ data }: StreakHeatmapProps) {
     let currentWeek: HeatmapDay[] = []
 
     // İlk günün haftanın hangi günü olduğunu bul
-    const firstDate = new Date(heatmapData[0]?.date || new Date())
+    const firstDateStr = heatmapData[0]?.date
+    const firstDate = firstDateStr ? parseDateString(firstDateStr) : new Date()
     const firstDayOfWeek = (firstDate.getDay() + 6) % 7 // Pazartesi = 0
 
     // İlk haftayı boşluklarla doldur
@@ -27,7 +34,7 @@ export function StreakHeatmap({ data }: StreakHeatmapProps) {
         currentWeek.push({ date: "", count: 0, level: 0 })
     }
 
-    heatmapData.forEach((day, index) => {
+    heatmapData.forEach((day) => {
         currentWeek.push(day)
         if (currentWeek.length === 7) {
             weeks.push(currentWeek)
@@ -47,7 +54,7 @@ export function StreakHeatmap({ data }: StreakHeatmapProps) {
     weeks.forEach((week, weekIndex) => {
         const firstValidDay = week.find(d => d.date)
         if (firstValidDay) {
-            const date = new Date(firstValidDay.date)
+            const date = parseDateString(firstValidDay.date)
             const month = date.getMonth()
             if (month !== lastMonth) {
                 monthLabels.push({ month: MONTHS_TR[month], weekIndex })
@@ -95,22 +102,16 @@ export function StreakHeatmap({ data }: StreakHeatmapProps) {
             <div className="overflow-x-auto pb-2">
                 <div className="min-w-[700px]">
                     {/* Month Labels */}
-                    <div className="flex mb-1 ml-8">
-                        {monthLabels.map((label, i) => (
-                            <div
-                                key={i}
-                                className="text-[10px] text-muted-foreground"
-                                style={{
-                                    position: "relative",
-                                    left: `${label.weekIndex * 12}px`,
-                                    marginRight: i < monthLabels.length - 1
-                                        ? `${(monthLabels[i + 1]?.weekIndex - label.weekIndex - 1) * 12}px`
-                                        : "0"
-                                }}
-                            >
-                                {label.month}
-                            </div>
-                        ))}
+                    <div className="flex mb-1 ml-8 gap-[2px]">
+                        {weeks.map((week, weekIndex) => {
+                            const firstValidDay = week.find(d => d.date)
+                            const showLabel = firstValidDay && monthLabels.find(l => l.weekIndex === weekIndex)
+                            return (
+                                <div key={weekIndex} className="w-[10px] text-[10px] text-muted-foreground">
+                                    {showLabel ? monthLabels.find(l => l.weekIndex === weekIndex)?.month : ""}
+                                </div>
+                            )
+                        })}
                     </div>
 
                     {/* Grid */}
