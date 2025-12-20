@@ -4,6 +4,12 @@ import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import {
     Bot,
     BookOpen,
     ArrowRight,
@@ -13,11 +19,14 @@ import {
     Sparkles,
     BarChart3,
     FileBarChart,
+    X,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn, formatDate } from "@/lib/utils"
 import type { AICommentsPageData } from "@/actions/ai-comments"
+
+type CommentType = AICommentsPageData["comments"][number]
 
 interface AICommentsClientProps {
     data: AICommentsPageData
@@ -58,6 +67,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
     const { comments, stats } = data
     const [searchQuery, setSearchQuery] = useState("")
     const [filterSource, setFilterSource] = useState<"all" | "TORTU" | "IMZA" | "STATS" | "EXPERIENCE_REPORT">("all")
+    const [selectedComment, setSelectedComment] = useState<CommentType | null>(null)
 
     // Filter comments
     const filteredComments = useMemo(() => {
@@ -237,12 +247,13 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                         return (
                             <div
                                 key={comment.id}
-                                className="group rounded-xl border border-border/50 bg-card hover:border-primary/30 hover:shadow-lg transition-all overflow-hidden"
+                                onClick={() => setSelectedComment(comment)}
+                                className="group rounded-xl border border-border/50 bg-card hover:border-primary/30 hover:shadow-lg transition-all overflow-hidden cursor-pointer"
                             >
                                 <div className="flex">
                                     {/* Book Cover or Icon */}
                                     {!isStatsComment && comment.book ? (
-                                        <Link href={`/book/${comment.book.id}`} className="flex-shrink-0">
+                                        <Link href={`/book/${comment.book.id}`} className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                                             <div className="relative w-24 sm:w-28 aspect-[2/3] bg-muted">
                                                 {comment.book.coverUrl ? (
                                                     <Image
@@ -281,6 +292,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                                         <Link
                                                             href={`/book/${comment.book.id}`}
                                                             className="font-bold text-lg hover:text-primary transition-colors line-clamp-1"
+                                                            onClick={(e) => e.stopPropagation()}
                                                         >
                                                             {comment.book.title}
                                                         </Link>
@@ -329,6 +341,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                                 <Link
                                                     href={`/book/${comment.book.id}`}
                                                     className="flex items-center gap-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium"
+                                                    onClick={(e) => e.stopPropagation()}
                                                 >
                                                     Kitaba Git
                                                     <ArrowRight className="h-4 w-4" />
@@ -337,6 +350,7 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                                                 <Link
                                                     href="/stats"
                                                     className="flex items-center gap-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium"
+                                                    onClick={(e) => e.stopPropagation()}
                                                 >
                                                     İstatistiklere Git
                                                     <ArrowRight className="h-4 w-4" />
@@ -350,6 +364,102 @@ export function AICommentsClient({ data }: AICommentsClientProps) {
                     })}
                 </div>
             )}
+
+            {/* Detail Modal */}
+            <Dialog open={!!selectedComment} onOpenChange={(open) => !open && setSelectedComment(null)}>
+                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                    {selectedComment && (() => {
+                        const config = sourceConfig[selectedComment.source as keyof typeof sourceConfig]
+                        const Icon = config?.icon || FileText
+                        const isStatsComment = selectedComment.source === "STATS"
+
+                        return (
+                            <>
+                                <DialogHeader>
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex items-center gap-3">
+                                            {!isStatsComment && selectedComment.book?.coverUrl && (
+                                                <div className="relative w-12 h-18 rounded overflow-hidden flex-shrink-0">
+                                                    <Image
+                                                        src={selectedComment.book.coverUrl.replace("http:", "https:")}
+                                                        alt={selectedComment.book.title}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                </div>
+                                            )}
+                                            <div>
+                                                <DialogTitle className="text-left">
+                                                    {isStatsComment
+                                                        ? "Okuma Alışkanlıkları Analizi"
+                                                        : selectedComment.book?.title || "AI Yorumu"}
+                                                </DialogTitle>
+                                                {!isStatsComment && selectedComment.book?.author?.name && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {selectedComment.book.author.name}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <span className={cn(
+                                            "text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1 flex-shrink-0 text-white",
+                                            config?.color || "bg-gray-500"
+                                        )}>
+                                            <Icon className="h-3 w-3" />
+                                            {config?.label || "Yorum"}
+                                        </span>
+                                    </div>
+                                </DialogHeader>
+
+                                <div className="space-y-4 mt-4">
+                                    {/* User Content */}
+                                    <div className="p-4 rounded-lg bg-muted/50">
+                                        <p className="text-xs text-muted-foreground mb-2 font-medium">
+                                            {isStatsComment ? "İstatistikler:" : "Senin notun:"}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                            {stripHtml(selectedComment.userContent)}
+                                        </p>
+                                    </div>
+
+                                    {/* AI Comment - Full */}
+                                    <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
+                                        <p className="text-xs text-muted-foreground mb-3 flex items-center gap-1">
+                                            <Sparkles className="h-3 w-3 text-primary" />
+                                            <span className="font-medium">AI Yorumu:</span>
+                                        </p>
+                                        <div className="text-sm whitespace-pre-wrap leading-relaxed">
+                                            {selectedComment.aiComment}
+                                        </div>
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="flex items-center justify-between pt-2">
+                                        <div className="text-xs text-muted-foreground">
+                                            {formatDate(selectedComment.createdAt, { format: "long" })}
+                                        </div>
+                                        {!isStatsComment && selectedComment.book ? (
+                                            <Button variant="outline" size="sm" asChild>
+                                                <Link href={`/book/${selectedComment.book.id}`}>
+                                                    Kitaba Git
+                                                    <ArrowRight className="h-4 w-4 ml-1" />
+                                                </Link>
+                                            </Button>
+                                        ) : (
+                                            <Button variant="outline" size="sm" asChild>
+                                                <Link href="/stats">
+                                                    İstatistiklere Git
+                                                    <ArrowRight className="h-4 w-4 ml-1" />
+                                                </Link>
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            </>
+                        )
+                    })()}
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
