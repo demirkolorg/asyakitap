@@ -200,7 +200,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [showReportModal, setShowReportModal] = useState(false)
 
     // Okuma Notları state
-    const [readingNotes, setReadingNotes] = useState(book.readingNotes)
+    const [readingNotes, setReadingNotes] = useState(book.readingNotes || [])
     const [showNoteDialog, setShowNoteDialog] = useState(false)
     const [noteContent, setNoteContent] = useState("")
     const [notePage, setNotePage] = useState("")
