@@ -509,6 +509,14 @@ export interface StreakData {
     lastActivityDate: string | null
 }
 
+// Tarihi YYYY-MM-DD formatında döndür (Türkiye timezone)
+function formatDateToYMD(date: Date): string {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+}
+
 export async function getStreakData(): Promise<StreakData | null> {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -517,10 +525,10 @@ export async function getStreakData(): Promise<StreakData | null> {
 
     const userId = user.id
 
-    // Son 365 gün için veri çek
-    const oneYearAgo = new Date()
+    // Son 365 gün için veri çek (Türkiye saati)
+    const today = getNowInTurkey()
+    const oneYearAgo = new Date(today)
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
-    const today = new Date()
 
     // Okunmuş/okunan kitapları al (startDate ve endDate ile)
     const books = await prisma.book.findMany({
@@ -559,7 +567,7 @@ export async function getStreakData(): Promise<StreakData | null> {
         // Her gün için aktivite ekle
         const currentDate = new Date(effectiveStart)
         while (currentDate <= effectiveEnd) {
-            const dateStr = currentDate.toISOString().split('T')[0]
+            const dateStr = formatDateToYMD(currentDate)
             activityMap.set(dateStr, (activityMap.get(dateStr) || 0) + 1)
             currentDate.setDate(currentDate.getDate() + 1)
         }
@@ -571,7 +579,7 @@ export async function getStreakData(): Promise<StreakData | null> {
     for (let i = 364; i >= 0; i--) {
         const date = new Date(today)
         date.setDate(date.getDate() - i)
-        const dateStr = date.toISOString().split('T')[0]
+        const dateStr = formatDateToYMD(date)
         const count = activityMap.get(dateStr) || 0
 
         // Level hesapla (0-4)
@@ -593,12 +601,12 @@ export async function getStreakData(): Promise<StreakData | null> {
     let tempStreak = 0
 
     // Bugünden geriye doğru streak hesapla
-    const todayStr = today.toISOString().split('T')[0]
+    const todayStr = formatDateToYMD(today)
     let checkDate = new Date(today)
 
     // Current streak
     while (true) {
-        const checkStr = checkDate.toISOString().split('T')[0]
+        const checkStr = formatDateToYMD(checkDate)
         if (activityMap.has(checkStr)) {
             currentStreak++
             checkDate.setDate(checkDate.getDate() - 1)
