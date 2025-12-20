@@ -2033,7 +2033,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     Önemli Çıkarımlar
                                 </h4>
                                 <ul className="space-y-2">
-                                    {notesAnalysis.keyInsights.map((insight, i) => (
+                                    {(notesAnalysis.keyInsights || []).map((insight, i) => (
                                         <li key={i} className="flex items-start gap-2 text-sm">
                                             <span className="text-amber-500 mt-1">•</span>
                                             <span>{insight}</span>
@@ -2139,7 +2139,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     Öne Çıkanlar
                                 </h4>
                                 <ul className="space-y-2">
-                                    {experienceReport.highlights.map((highlight: string, i: number) => (
+                                    {(experienceReport.highlights || []).map((highlight: string, i: number) => (
                                         <li key={i} className="flex items-start gap-2 text-sm">
                                             <span className="text-emerald-600 mt-1">•</span>
                                             <span>{highlight}</span>
