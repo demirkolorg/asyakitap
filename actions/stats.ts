@@ -520,51 +520,53 @@ export async function getStreakData(): Promise<StreakData | null> {
     // Son 365 gün için veri çek
     const oneYearAgo = new Date()
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+    const today = new Date()
 
-    // ReadingLog'dan aktivite günlerini al
-    const readingLogs = await prisma.readingLog.findMany({
-        where: {
-            book: { userId },
-            createdAt: { gte: oneYearAgo }
-        },
-        select: {
-            createdAt: true,
-            action: true
-        },
-        orderBy: { createdAt: 'desc' }
-    })
-
-    // Kitap güncellemelerini de al (sayfa ilerlemesi)
-    const bookUpdates = await prisma.book.findMany({
+    // Okunmuş/okunan kitapları al (startDate ve endDate ile)
+    const books = await prisma.book.findMany({
         where: {
             userId,
-            updatedAt: { gte: oneYearAgo },
-            currentPage: { gt: 0 }
+            OR: [
+                { status: 'COMPLETED' },
+                { status: 'READING' },
+                { status: 'DNF' }
+            ],
+            startDate: { not: null }
         },
         select: {
-            updatedAt: true,
-            currentPage: true
+            startDate: true,
+            endDate: true,
+            status: true,
+            pageCount: true
         }
     })
 
     // Gün bazında aktivite haritası oluştur
     const activityMap = new Map<string, number>()
 
-    // ReadingLog aktivitelerini ekle
-    readingLogs.forEach(log => {
-        const dateStr = log.createdAt.toISOString().split('T')[0]
-        activityMap.set(dateStr, (activityMap.get(dateStr) || 0) + 1)
-    })
+    // Her kitabın okuma günlerini hesapla
+    books.forEach(book => {
+        if (!book.startDate) return
 
-    // Kitap güncellemelerini ekle
-    bookUpdates.forEach(book => {
-        const dateStr = book.updatedAt.toISOString().split('T')[0]
-        activityMap.set(dateStr, (activityMap.get(dateStr) || 0) + 1)
+        const startDate = new Date(book.startDate)
+        // Bitiş tarihi yoksa (hala okunuyor veya bırakıldı) bugünü kullan
+        const endDate = book.endDate ? new Date(book.endDate) : today
+
+        // Sadece son 1 yıl içindeki günleri say
+        const effectiveStart = startDate < oneYearAgo ? oneYearAgo : startDate
+        const effectiveEnd = endDate > today ? today : endDate
+
+        // Her gün için aktivite ekle
+        const currentDate = new Date(effectiveStart)
+        while (currentDate <= effectiveEnd) {
+            const dateStr = currentDate.toISOString().split('T')[0]
+            activityMap.set(dateStr, (activityMap.get(dateStr) || 0) + 1)
+            currentDate.setDate(currentDate.getDate() + 1)
+        }
     })
 
     // Heatmap verisi oluştur (son 365 gün)
     const heatmapData: HeatmapDay[] = []
-    const today = new Date()
 
     for (let i = 364; i >= 0; i--) {
         const date = new Date(today)
