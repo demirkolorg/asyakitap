@@ -102,7 +102,7 @@ export function StreakHeatmap({ data }: StreakHeatmapProps) {
             <div className="overflow-x-auto pb-2">
                 <div className="w-full">
                     {/* Month Labels */}
-                    <div className="flex mb-1 ml-8 gap-[2px] justify-end">
+                    <div className="flex mb-1 ml-8 justify-between">
                         {weeks.map((week, weekIndex) => {
                             const firstValidDay = week.find(d => d.date)
                             const showLabel = firstValidDay && monthLabels.find(l => l.weekIndex === weekIndex)
@@ -115,7 +115,7 @@ export function StreakHeatmap({ data }: StreakHeatmapProps) {
                     </div>
 
                     {/* Grid */}
-                    <div className="flex gap-[2px] justify-end">
+                    <div className="flex justify-between">
                         {/* Day Labels */}
                         <div className="flex flex-col gap-[2px] mr-1">
                             {DAYS_TR.map((day, i) => (
