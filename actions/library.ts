@@ -168,6 +168,18 @@ export async function getBook(id: string) {
                 rating: true
             }
         })
+
+        // Ensure arrays are never undefined
+        if (book) {
+            return {
+                ...book,
+                quotes: book.quotes || [],
+                readingNotes: book.readingNotes || [],
+                readingLogs: book.readingLogs || [],
+                readingListBooks: book.readingListBooks || [],
+                challengeBooks: book.challengeBooks || []
+            }
+        }
         return book
     } catch (error) {
         console.error("Failed to fetch book:", error)
