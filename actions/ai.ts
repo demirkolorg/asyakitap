@@ -657,29 +657,35 @@ Bu verilere dayanarak okuma deneyimi raporu oluştur.`
 
         const parsed = JSON.parse(jsonMatch[0]) as ReadingExperienceReport
 
-        // Raporu AI yorumları olarak kaydet
-        const reportText = `📖 Özet: ${parsed.summary}
-
-✨ Öne Çıkanlar:
-${parsed.highlights.map(h => `• ${h}`).join('\n')}
-
-✍️ Yazar Hakkında: ${parsed.authorInsight}
-
-${parsed.memorableQuote ? `💬 Akılda Kalan: "${parsed.memorableQuote}"` : ''}
-
-🎯 Genel İzlenim: ${parsed.overallImpression}
-
-${parsed.wouldRecommend ? '✅ Tavsiye Ederim' : '❌ Tavsiye Etmem'}: ${parsed.recommendTo}`
-
-        await prisma.aIComment.create({
-            data: {
+        // Raporu ExperienceReport tablosuna kaydet (upsert)
+        await prisma.experienceReport.upsert({
+            where: { bookId: bookId },
+            create: {
                 bookId: bookId,
-                userId: user.id,
-                source: 'EXPERIENCE_REPORT',
-                userContent: `${book.title} - ${book.author?.name || 'Bilinmeyen Yazar'} (Okuma Deneyimi Raporu)`,
-                aiComment: reportText
+                context: parsed.summary,
+                overallExperience: parsed.overallImpression,
+                emotionalJourney: parsed.authorInsight,
+                keyInsights: parsed.highlights.join('\n'),
+                memorableMoments: parsed.memorableQuote || null,
+                personalGrowth: null,
+                recommendation: parsed.wouldRecommend
+                    ? `✅ Tavsiye Ederim: ${parsed.recommendTo}`
+                    : `❌ Tavsiye Etmem: ${parsed.recommendTo}`
+            },
+            update: {
+                context: parsed.summary,
+                overallExperience: parsed.overallImpression,
+                emotionalJourney: parsed.authorInsight,
+                keyInsights: parsed.highlights.join('\n'),
+                memorableMoments: parsed.memorableQuote || null,
+                recommendation: parsed.wouldRecommend
+                    ? `✅ Tavsiye Ederim: ${parsed.recommendTo}`
+                    : `❌ Tavsiye Etmem: ${parsed.recommendTo}`,
+                updatedAt: new Date()
             }
         })
+
+        revalidatePath(`/book/${bookId}`)
 
         return {
             success: true,
@@ -1215,6 +1221,38 @@ Bu verilere dayanarak kitap hakkında düşündürücü tartışma soruları ür
         }
 
         const parsed = JSON.parse(jsonMatch[0]) as BookDiscussionResult
+
+        // Mevcut soruları sil ve yenilerini kaydet
+        await prisma.discussionQuestion.deleteMany({
+            where: { bookId: book.id }
+        })
+
+        // Yeni soruları kaydet
+        if (parsed.questions && parsed.questions.length > 0) {
+            const typeMap: Record<string, 'REFLECTION' | 'ANALYSIS' | 'CONNECTION' | 'OPINION'> = {
+                reflection: 'REFLECTION',
+                analysis: 'ANALYSIS',
+                connection: 'CONNECTION',
+                opinion: 'OPINION'
+            }
+            const difficultyMap: Record<string, 'EASY' | 'MEDIUM' | 'DEEP'> = {
+                easy: 'EASY',
+                medium: 'MEDIUM',
+                deep: 'DEEP'
+            }
+
+            await prisma.discussionQuestion.createMany({
+                data: parsed.questions.map((q, index) => ({
+                    bookId: book.id,
+                    question: q.question,
+                    type: typeMap[q.type] || 'REFLECTION',
+                    difficulty: difficultyMap[q.difficulty] || 'MEDIUM',
+                    sortOrder: index
+                }))
+            })
+        }
+
+        revalidatePath(`/book/${bookId}`)
 
         return {
             success: true,

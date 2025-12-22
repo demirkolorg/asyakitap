@@ -150,6 +150,27 @@ interface BookTheme {
     isManual: boolean
 }
 
+interface DiscussionQuestion {
+    id: string
+    question: string
+    type: 'REFLECTION' | 'ANALYSIS' | 'CONNECTION' | 'OPINION'
+    difficulty: 'EASY' | 'MEDIUM' | 'DEEP'
+    sortOrder: number
+}
+
+interface ExperienceReportData {
+    id: string
+    context: string | null
+    overallExperience: string | null
+    emotionalJourney: string | null
+    keyInsights: string | null
+    memorableMoments: string | null
+    personalGrowth: string | null
+    recommendation: string | null
+    createdAt: Date
+    updatedAt: Date
+}
+
 interface BookDetailClientProps {
     book: Book & {
         quotes?: QuoteType[]
@@ -161,6 +182,8 @@ interface BookDetailClientProps {
         challengeBooks?: ChallengeBookInfo[]
         rating: BookRating | null
         themes?: BookTheme[]
+        discussionQuestions?: DiscussionQuestion[]
+        experienceReport?: ExperienceReportData | null
     }
 }
 
@@ -174,7 +197,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const readingListBooks = book.readingListBooks || []
     const challengeBooks = book.challengeBooks || []
 
-    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "history">("tortu")
+    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "history" | "discussion" | "report">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
     const [isSavingImza, setIsSavingImza] = useState(false)
@@ -216,11 +239,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [isAnalyzingTortu, setIsAnalyzingTortu] = useState(false)
     const [isAnalyzingImza, setIsAnalyzingImza] = useState(false)
 
-    // Okuma Deneyimi Raporu state
-    const [experienceReport, setExperienceReport] = useState<ReadingExperienceReport | null>(null)
-    const [isGeneratingReport, setIsGeneratingReport] = useState(false)
-    const [showReportModal, setShowReportModal] = useState(false)
-
     // Okuma Notları state
     const [readingNotes, setReadingNotes] = useState(book.readingNotes || [])
     const [showNoteDialog, setShowNoteDialog] = useState(false)
@@ -242,10 +260,13 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [isAddingTheme, setIsAddingTheme] = useState(false)
     const [removingThemeId, setRemovingThemeId] = useState<string | null>(null)
 
-    // Tartışma soruları state'leri
-    const [discussionResult, setDiscussionResult] = useState<BookDiscussionResult | null>(null)
+    // Tartışma soruları state'leri (DB'den başlat)
+    const [discussionQuestions, setDiscussionQuestions] = useState<DiscussionQuestion[]>(book.discussionQuestions || [])
     const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false)
-    const [showDiscussionModal, setShowDiscussionModal] = useState(false)
+
+    // Okuma Deneyimi Raporu state'leri (DB'den başlat)
+    const [savedExperienceReport, setSavedExperienceReport] = useState<ExperienceReportData | null>(book.experienceReport || null)
+    const [isGeneratingReport, setIsGeneratingReport] = useState(false)
 
     useEffect(() => {
         setMounted(true)
@@ -410,26 +431,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         setIsAnalyzingImza(false)
     }
 
-    const handleGenerateReport = async () => {
-        setIsGeneratingReport(true)
-        setShowReportModal(true)
-
-        try {
-            const result = await generateReadingExperienceReport(book.id)
-
-            if (result.success && result.report) {
-                setExperienceReport(result.report)
-                toast.success("Okuma raporu hazır!")
-            } else {
-                toast.error(result.error || "Rapor oluşturulamadı")
-            }
-        } catch (e) {
-            toast.error("Bir hata oluştu")
-        } finally {
-            setIsGeneratingReport(false)
-        }
-    }
-
     const handleCreateQuote = async () => {
         if (!quoteContent) return
         await addQuote(book.id, quoteContent, quotePage ? parseInt(quotePage) : undefined)
@@ -569,8 +570,17 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         try {
             const result = await generateBookDiscussionQuestions(book.id)
             if (result.success && result.result) {
-                setDiscussionResult(result.result)
-                setShowDiscussionModal(true)
+                // DB'den güncel soruları al (router.refresh yerine state güncelle)
+                const newQuestions: DiscussionQuestion[] = result.result.questions.map((q, index) => ({
+                    id: `temp-${index}`,
+                    question: q.question,
+                    type: q.type.toUpperCase() as DiscussionQuestion['type'],
+                    difficulty: q.difficulty.toUpperCase() as DiscussionQuestion['difficulty'],
+                    sortOrder: index
+                }))
+                setDiscussionQuestions(newQuestions)
+                toast.success("Sorular oluşturuldu")
+                router.refresh()
             } else {
                 toast.error(result.error || "Sorular üretilemedi")
             }
@@ -578,6 +588,39 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             toast.error("Bir hata oluştu")
         } finally {
             setIsGeneratingQuestions(false)
+        }
+    }
+
+    // Okuma deneyimi raporu üret
+    const handleGenerateExperienceReport = async () => {
+        setIsGeneratingReport(true)
+        try {
+            const result = await generateReadingExperienceReport(book.id)
+            if (result.success && result.report) {
+                // DB'den güncel raporu yansıt
+                setSavedExperienceReport({
+                    id: 'temp',
+                    context: result.report.summary,
+                    overallExperience: result.report.overallImpression,
+                    emotionalJourney: result.report.authorInsight,
+                    keyInsights: result.report.highlights.join('\n'),
+                    memorableMoments: result.report.memorableQuote || null,
+                    personalGrowth: null,
+                    recommendation: result.report.wouldRecommend
+                        ? `✅ Tavsiye Ederim: ${result.report.recommendTo}`
+                        : `❌ Tavsiye Etmem: ${result.report.recommendTo}`,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                })
+                toast.success("Rapor oluşturuldu")
+                router.refresh()
+            } else {
+                toast.error(result.error || "Rapor üretilemedi")
+            }
+        } catch {
+            toast.error("Bir hata oluştu")
+        } finally {
+            setIsGeneratingReport(false)
         }
     }
 
@@ -1054,6 +1097,28 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             </button>
                         )}
                         <button
+                            onClick={() => setActiveSection("discussion")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                activeSection === "discussion"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Tartış
+                        </button>
+                        <button
+                            onClick={() => setActiveSection("report")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                activeSection === "report"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Rapor
+                        </button>
+                        <button
                             onClick={() => setActiveSection("history")}
                             className={cn(
                                 "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
@@ -1375,6 +1440,206 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             />
                         )}
 
+                        {/* Discussion Section - Düşün & Tartış */}
+                        {activeSection === "discussion" && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <HelpCircle className="h-5 w-5 text-amber-500" />
+                                        Düşün & Tartış
+                                    </h3>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleGenerateDiscussionQuestions}
+                                        disabled={isGeneratingQuestions}
+                                    >
+                                        {isGeneratingQuestions ? (
+                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        ) : (
+                                            <Sparkles className="h-4 w-4 mr-2" />
+                                        )}
+                                        {discussionQuestions.length > 0 ? "Yeniden Üret" : "Soru Üret"}
+                                    </Button>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    Kitap hakkında düşündürücü sorular. Okuma deneyimini derinleştir, farklı perspektifler keşfet.
+                                </p>
+
+                                {discussionQuestions.length === 0 ? (
+                                    <div className="text-center py-12 text-muted-foreground">
+                                        <HelpCircle className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                                        <p>Henüz soru oluşturulmamış.</p>
+                                        <p className="text-sm mt-2">
+                                            &quot;Soru Üret&quot; butonuna tıklayarak AI ile düşündürücü sorular oluşturabilirsin.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {discussionQuestions.map((q, index) => {
+                                            const typeLabels: Record<string, { label: string; color: string }> = {
+                                                REFLECTION: { label: "Yansıma", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
+                                                ANALYSIS: { label: "Analiz", color: "bg-purple-500/10 text-purple-600 dark:text-purple-400" },
+                                                CONNECTION: { label: "Bağlantı", color: "bg-green-500/10 text-green-600 dark:text-green-400" },
+                                                OPINION: { label: "Görüş", color: "bg-orange-500/10 text-orange-600 dark:text-orange-400" },
+                                            }
+                                            const difficultyLabels: Record<string, { label: string; dots: number }> = {
+                                                EASY: { label: "Kolay", dots: 1 },
+                                                MEDIUM: { label: "Orta", dots: 2 },
+                                                DEEP: { label: "Derin", dots: 3 },
+                                            }
+                                            const typeInfo = typeLabels[q.type] || { label: q.type, color: "bg-muted" }
+                                            const diffInfo = difficultyLabels[q.difficulty] || { label: q.difficulty, dots: 1 }
+
+                                            return (
+                                                <div
+                                                    key={q.id}
+                                                    className="p-4 rounded-xl bg-muted/50 border border-border/50"
+                                                >
+                                                    <div className="flex items-start gap-3">
+                                                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-sm">
+                                                            {index + 1}
+                                                        </span>
+                                                        <div className="flex-1 space-y-2">
+                                                            <p className="text-sm font-medium leading-relaxed">{q.question}</p>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium", typeInfo.color)}>
+                                                                    {typeInfo.label}
+                                                                </span>
+                                                                <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                                                    {Array.from({ length: diffInfo.dots }).map((_, i) => (
+                                                                        <span key={i} className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                                    ))}
+                                                                    <span className="ml-1">{diffInfo.label}</span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Report Section - Okuma Deneyimi Raporu */}
+                        {activeSection === "report" && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <FileBarChart className="h-5 w-5 text-emerald-500" />
+                                        Okuma Deneyimi Raporu
+                                    </h3>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleGenerateExperienceReport}
+                                        disabled={isGeneratingReport}
+                                    >
+                                        {isGeneratingReport ? (
+                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        ) : (
+                                            <Sparkles className="h-4 w-4 mr-2" />
+                                        )}
+                                        {savedExperienceReport ? "Yeniden Üret" : "Rapor Oluştur"}
+                                    </Button>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    Kitap hakkındaki tortu, imza, alıntı ve notlarınızı analiz eden kapsamlı bir okuma deneyimi özeti.
+                                </p>
+
+                                {!savedExperienceReport ? (
+                                    <div className="text-center py-12 text-muted-foreground">
+                                        <FileBarChart className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                                        <p>Henüz rapor oluşturulmamış.</p>
+                                        <p className="text-sm mt-2">
+                                            &quot;Rapor Oluştur&quot; butonuna tıklayarak AI ile okuma deneyimi raporu oluşturabilirsin.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {/* Özet */}
+                                        {savedExperienceReport.context && (
+                                            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                                <h4 className="font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-2">
+                                                    <BookOpen className="h-4 w-4" />
+                                                    Özet
+                                                </h4>
+                                                <p className="text-sm">{savedExperienceReport.context}</p>
+                                            </div>
+                                        )}
+
+                                        {/* Genel İzlenim */}
+                                        {savedExperienceReport.overallExperience && (
+                                            <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
+                                                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                                    <Target className="h-4 w-4 text-blue-500" />
+                                                    Genel İzlenim
+                                                </h4>
+                                                <p className="text-sm text-muted-foreground">{savedExperienceReport.overallExperience}</p>
+                                            </div>
+                                        )}
+
+                                        {/* Öne Çıkanlar */}
+                                        {savedExperienceReport.keyInsights && (
+                                            <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
+                                                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                                    <Lightbulb className="h-4 w-4 text-yellow-500" />
+                                                    Öne Çıkanlar
+                                                </h4>
+                                                <ul className="space-y-1">
+                                                    {savedExperienceReport.keyInsights.split('\n').map((insight, i) => (
+                                                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                                                            <span className="text-yellow-500 mt-1">•</span>
+                                                            {insight}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+
+                                        {/* Yazar Hakkında */}
+                                        {savedExperienceReport.emotionalJourney && (
+                                            <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
+                                                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                                    <PenLine className="h-4 w-4 text-purple-500" />
+                                                    Yazar Hakkında
+                                                </h4>
+                                                <p className="text-sm text-muted-foreground">{savedExperienceReport.emotionalJourney}</p>
+                                            </div>
+                                        )}
+
+                                        {/* Akılda Kalan */}
+                                        {savedExperienceReport.memorableMoments && (
+                                            <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
+                                                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                                    <Quote className="h-4 w-4 text-amber-500" />
+                                                    Akılda Kalan
+                                                </h4>
+                                                <p className="text-sm text-muted-foreground italic">&quot;{savedExperienceReport.memorableMoments}&quot;</p>
+                                            </div>
+                                        )}
+
+                                        {/* Tavsiye */}
+                                        {savedExperienceReport.recommendation && (
+                                            <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
+                                                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                                    <Heart className="h-4 w-4 text-red-500" />
+                                                    Tavsiye
+                                                </h4>
+                                                <p className="text-sm text-muted-foreground">{savedExperienceReport.recommendation}</p>
+                                            </div>
+                                        )}
+
+                                        <p className="text-xs text-muted-foreground text-right">
+                                            Son güncelleme: {formatDate(savedExperienceReport.updatedAt, { format: "long" })}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* History Section */}
                         {activeSection === "history" && (
                             <div className="space-y-4">
@@ -1497,36 +1762,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         </div>
                     )}
 
-                    {/* Reading Experience Report - For Completed Books */}
-                    {currentStatus === "COMPLETED" && (
-                        <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-xl border border-emerald-500/20 p-4 md:p-6 flex flex-col gap-4">
-                            <div className="flex items-center gap-2">
-                                <FileBarChart className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                                <h4 className="text-lg font-bold">Okuma Deneyimi Raporu</h4>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                                AI, bu kitabı okuma deneyimini analiz ederek kapsamlı bir rapor oluşturabilir.
-                            </p>
-                            <Button
-                                onClick={handleGenerateReport}
-                                disabled={isGeneratingReport}
-                                className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-                            >
-                                {isGeneratingReport ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        Rapor Oluşturuluyor...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Sparkles className="h-4 w-4" />
-                                        Rapor Oluştur
-                                    </>
-                                )}
-                            </Button>
-                        </div>
-                    )}
-
                     {/* Book Details List */}
                     <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
                         <div className="p-4 border-b border-border/50">
@@ -1640,70 +1875,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                             </button>
                                         </div>
                                     ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Düşün & Tartış - AI Sorular */}
-                    <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
-                        <div className="p-4 border-b border-border/50 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <HelpCircle className="h-5 w-5 text-amber-500" />
-                                <h4 className="text-sm font-bold">Düşün & Tartış</h4>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleGenerateDiscussionQuestions}
-                                disabled={isGeneratingQuestions}
-                                className="h-7 px-2 text-xs"
-                            >
-                                {isGeneratingQuestions ? (
-                                    <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
-                                ) : (
-                                    <Sparkles className="h-3.5 w-3.5 mr-1" />
-                                )}
-                                {discussionResult ? "Yeni Sorular" : "Soru Üret"}
-                            </Button>
-                        </div>
-                        <div className="p-4">
-                            {!discussionResult ? (
-                                <p className="text-sm text-muted-foreground text-center py-4">
-                                    Kitap hakkında düşündürücü tartışma soruları oluşturmak için &quot;Soru Üret&quot; butonuna tıklayın.
-                                </p>
-                            ) : (
-                                <div className="space-y-3">
-                                    {discussionResult.context && (
-                                        <p className="text-xs text-muted-foreground italic border-l-2 border-amber-500/50 pl-3">
-                                            {discussionResult.context}
-                                        </p>
-                                    )}
-                                    <div className="space-y-2">
-                                        {discussionResult.questions.slice(0, 3).map((q, index) => (
-                                            <div
-                                                key={index}
-                                                className="p-3 rounded-lg bg-muted/50 border border-border/30"
-                                            >
-                                                <div className="flex items-start gap-2">
-                                                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold">
-                                                        {index + 1}
-                                                    </span>
-                                                    <p className="text-sm">{q.question}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {discussionResult.questions.length > 3 && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setShowDiscussionModal(true)}
-                                            className="w-full text-xs text-muted-foreground hover:text-foreground"
-                                        >
-                                            +{discussionResult.questions.length - 3} soru daha
-                                        </Button>
-                                    )}
                                 </div>
                             )}
                         </div>
@@ -2361,122 +2532,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Reading Experience Report Modal */}
-            <Dialog open={showReportModal} onOpenChange={setShowReportModal}>
-                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <FileBarChart className="h-5 w-5 text-emerald-600" />
-                            Okuma Deneyimi Raporu
-                        </DialogTitle>
-                        <DialogDescription>
-                            {book.title} - {book.author?.name || "Bilinmeyen Yazar"}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    {isGeneratingReport ? (
-                        <div className="flex flex-col items-center justify-center py-12">
-                            <Loader2 className="h-10 w-10 animate-spin text-emerald-600 mb-4" />
-                            <p className="text-muted-foreground">Okuma deneyiminiz analiz ediliyor...</p>
-                        </div>
-                    ) : experienceReport ? (
-                        <div className="space-y-6 py-4">
-                            {/* Summary */}
-                            <div className="bg-emerald-500/5 rounded-xl p-4 border border-emerald-500/20">
-                                <p className="text-sm leading-relaxed">{experienceReport.summary}</p>
-                            </div>
-
-                            {/* Highlights */}
-                            <div className="space-y-3">
-                                <h4 className="font-bold flex items-center gap-2">
-                                    <TrendingUp className="h-4 w-4 text-emerald-600" />
-                                    Öne Çıkanlar
-                                </h4>
-                                <ul className="space-y-2">
-                                    {(experienceReport.highlights || []).map((highlight: string, i: number) => (
-                                        <li key={i} className="flex items-start gap-2 text-sm">
-                                            <span className="text-emerald-600 mt-1">•</span>
-                                            <span>{highlight}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            {/* Author Insight */}
-                            <div className="space-y-3">
-                                <h4 className="font-bold flex items-center gap-2">
-                                    <MessageCircle className="h-4 w-4 text-blue-600" />
-                                    Yazar Hakkında
-                                </h4>
-                                <p className="text-sm leading-relaxed text-muted-foreground">
-                                    {experienceReport.authorInsight}
-                                </p>
-                            </div>
-
-                            {/* Memorable Quote */}
-                            {experienceReport.memorableQuote && (
-                                <div className="bg-amber-500/5 rounded-xl p-4 border border-amber-500/20">
-                                    <h4 className="font-bold mb-2 flex items-center gap-2">
-                                        <Quote className="h-4 w-4 text-amber-600" />
-                                        Akılda Kalan
-                                    </h4>
-                                    <blockquote className="text-sm italic text-muted-foreground">
-                                        &ldquo;{experienceReport.memorableQuote}&rdquo;
-                                    </blockquote>
-                                </div>
-                            )}
-
-                            {/* Recommendation */}
-                            <div className="space-y-3">
-                                <h4 className="font-bold flex items-center gap-2">
-                                    <Lightbulb className="h-4 w-4 text-amber-600" />
-                                    Tavsiye
-                                </h4>
-                                <div className="flex items-center gap-3">
-                                    <span className={cn(
-                                        "px-3 py-1 rounded-full text-sm font-medium",
-                                        experienceReport.wouldRecommend
-                                            ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                                            : "bg-red-500/10 text-red-600 dark:text-red-400"
-                                    )}>
-                                        {experienceReport.wouldRecommend ? "✓ Tavsiye Ederim" : "✗ Tavsiye Etmem"}
-                                    </span>
-                                </div>
-                                <p className="text-sm text-muted-foreground">
-                                    {experienceReport.recommendTo}
-                                </p>
-                            </div>
-
-                            {/* Overall Impression */}
-                            <div className="bg-gradient-to-r from-violet-500/10 to-purple-500/10 rounded-xl p-4 border border-violet-500/20">
-                                <h4 className="font-bold mb-2 flex items-center gap-2">
-                                    <Sparkles className="h-4 w-4 text-violet-600" />
-                                    Genel İzlenim
-                                </h4>
-                                <p className="text-sm leading-relaxed">{experienceReport.overallImpression}</p>
-                            </div>
-                        </div>
-                    ) : null}
-
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowReportModal(false)}>
-                            Kapat
-                        </Button>
-                        {experienceReport && (
-                            <Button
-                                onClick={handleGenerateReport}
-                                disabled={isGeneratingReport}
-                                variant="outline"
-                                className="gap-2"
-                            >
-                                <RefreshCw className="h-4 w-4" />
-                                Yeniden Oluştur
-                            </Button>
-                        )}
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
             {/* Tema Ekleme Dialog */}
             <Dialog open={showAddThemeDialog} onOpenChange={setShowAddThemeDialog}>
                 <DialogContent className="sm:max-w-md">
@@ -2520,85 +2575,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                 </DialogContent>
             </Dialog>
 
-            {/* Tartışma Soruları Modal */}
-            <Dialog open={showDiscussionModal} onOpenChange={setShowDiscussionModal}>
-                <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <HelpCircle className="h-5 w-5 text-amber-500" />
-                            Düşün & Tartış
-                        </DialogTitle>
-                        <DialogDescription>
-                            {book.title} hakkında düşündürücü sorular
-                        </DialogDescription>
-                    </DialogHeader>
-                    {discussionResult && (
-                        <div className="space-y-4 py-4">
-                            {discussionResult.context && (
-                                <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                                    <p className="text-sm text-amber-700 dark:text-amber-300 italic">
-                                        {discussionResult.context}
-                                    </p>
-                                </div>
-                            )}
-                            <div className="space-y-3">
-                                {discussionResult.questions.map((q, index) => {
-                                    const typeLabels: Record<string, { label: string; color: string }> = {
-                                        reflection: { label: "Yansıma", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
-                                        analysis: { label: "Analiz", color: "bg-purple-500/10 text-purple-600 dark:text-purple-400" },
-                                        connection: { label: "Bağlantı", color: "bg-green-500/10 text-green-600 dark:text-green-400" },
-                                        opinion: { label: "Görüş", color: "bg-orange-500/10 text-orange-600 dark:text-orange-400" },
-                                    }
-                                    const difficultyLabels: Record<string, { label: string; dots: number }> = {
-                                        easy: { label: "Kolay", dots: 1 },
-                                        medium: { label: "Orta", dots: 2 },
-                                        deep: { label: "Derin", dots: 3 },
-                                    }
-                                    const typeInfo = typeLabels[q.type] || { label: q.type, color: "bg-muted" }
-                                    const diffInfo = difficultyLabels[q.difficulty] || { label: q.difficulty, dots: 1 }
-
-                                    return (
-                                        <div
-                                            key={index}
-                                            className="p-4 rounded-xl bg-muted/50 border border-border/50"
-                                        >
-                                            <div className="flex items-start gap-3">
-                                                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
-                                                    {index + 1}
-                                                </span>
-                                                <div className="flex-1 space-y-2">
-                                                    <p className="text-sm font-medium leading-relaxed">{q.question}</p>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium", typeInfo.color)}>
-                                                            {typeInfo.label}
-                                                        </span>
-                                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                                            {Array.from({ length: diffInfo.dots }).map((_, i) => (
-                                                                <span key={i} className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                                                            ))}
-                                                            <span className="ml-1">{diffInfo.label}</span>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        </div>
-                    )}
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowDiscussionModal(false)}>
-                            Kapat
-                        </Button>
-                        <Button onClick={handleGenerateDiscussionQuestions} disabled={isGeneratingQuestions}>
-                            {isGeneratingQuestions && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            <RefreshCw className="mr-2 h-4 w-4" />
-                            Yeni Sorular
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     )
 }

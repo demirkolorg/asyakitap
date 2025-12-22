@@ -83,6 +83,8 @@ model Book {
   challengeBooks       ChallengeBook[]       // Bu kitabın bulunduğu challenge'lar
   rating               BookRating?           // Kitap puanlaması (1-1 ilişki)
   themes               BookTheme[]           // Kitabın temaları (AI ile çıkarılan)
+  discussionQuestions  DiscussionQuestion[]  // AI tartışma soruları
+  experienceReport     ExperienceReport?     // AI okuma deneyimi raporu
   startDate            DateTime?
   endDate              DateTime?
   readingGoalDays      Int?                  // Kullanıcının hedeflediği okuma gün sayısı
@@ -380,4 +382,59 @@ model BookTheme {
   @@unique([bookId, name]) // Aynı kitapta aynı tema tekrarlanmasın
   @@index([bookId])
   @@index([name])
+}
+
+// ==========================================
+// AI Tartışma Soruları
+// ==========================================
+
+enum QuestionType {
+  REFLECTION  // Yansıma - kişisel bağ kurma
+  ANALYSIS    // Analiz - yapı, karakterler, semboller
+  CONNECTION  // Bağlantı - günümüz, evrensel temalar
+  OPINION     // Görüş - tartışmaya açık
+}
+
+enum QuestionDifficulty {
+  EASY    // Kolay
+  MEDIUM  // Orta
+  DEEP    // Derin
+}
+
+model DiscussionQuestion {
+  id          String             @id @default(cuid())
+  bookId      String
+  book        Book               @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  question    String             @db.Text
+  type        QuestionType
+  difficulty  QuestionDifficulty
+  sortOrder   Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([bookId])
+}
+
+// ==========================================
+// AI Okuma Deneyimi Raporu
+// ==========================================
+
+model ExperienceReport {
+  id               String   @id @default(cuid())
+  bookId           String   @unique // Her kitapta sadece bir rapor
+  book             Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  context          String?  @db.Text // AI bağlam özeti
+
+  // Rapor bölümleri (JSON olarak saklanabilir veya ayrı alanlar)
+  overallExperience String? @db.Text // Genel okuma deneyimi
+  emotionalJourney  String? @db.Text // Duygusal yolculuk
+  keyInsights       String? @db.Text // Önemli çıkarımlar
+  memorableMoments  String? @db.Text // Akılda kalan anlar
+  personalGrowth    String? @db.Text // Kişisel gelişim
+  recommendation    String? @db.Text // Tavsiye notu
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([bookId])
 }

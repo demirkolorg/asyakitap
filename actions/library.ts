@@ -168,7 +168,11 @@ export async function getBook(id: string) {
                 rating: true,
                 themes: {
                     orderBy: { confidence: 'desc' }
-                }
+                },
+                discussionQuestions: {
+                    orderBy: { sortOrder: 'asc' }
+                },
+                experienceReport: true
             }
         })
 
@@ -181,7 +185,9 @@ export async function getBook(id: string) {
                 readingLogs: book.readingLogs ?? [],
                 readingListBooks: book.readingListBooks ?? [],
                 challengeBooks: book.challengeBooks ?? [],
-                themes: book.themes ?? []
+                themes: book.themes ?? [],
+                discussionQuestions: book.discussionQuestions ?? [],
+                experienceReport: book.experienceReport ?? null
             }
         }
         return book
