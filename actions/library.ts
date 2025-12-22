@@ -169,16 +169,25 @@ export async function getBook(id: string) {
             }
         })
 
-        // Ensure arrays are never undefined
+        // Ensure arrays are never undefined and serialize properly
         if (book) {
-            return {
+            const result = {
                 ...book,
-                quotes: book.quotes || [],
-                readingNotes: book.readingNotes || [],
-                readingLogs: book.readingLogs || [],
-                readingListBooks: book.readingListBooks || [],
-                challengeBooks: book.challengeBooks || []
+                quotes: book.quotes ?? [],
+                readingNotes: book.readingNotes ?? [],
+                readingLogs: book.readingLogs ?? [],
+                readingListBooks: book.readingListBooks ?? [],
+                challengeBooks: book.challengeBooks ?? []
             }
+            // Debug: log array types
+            console.log('getBook arrays:', {
+                quotes: Array.isArray(result.quotes),
+                readingNotes: Array.isArray(result.readingNotes),
+                readingLogs: Array.isArray(result.readingLogs),
+                readingListBooks: Array.isArray(result.readingListBooks),
+                challengeBooks: Array.isArray(result.challengeBooks)
+            })
+            return result
         }
         return book
     } catch (error) {
