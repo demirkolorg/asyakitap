@@ -17,7 +17,8 @@ import {
     Loader2,
     RefreshCw,
     BarChart3,
-    Building2
+    Building2,
+    Tags
 } from "lucide-react"
 import { analyzeReadingHabits } from "@/actions/ai"
 import type { FullStatsData } from "@/actions/stats"
@@ -28,7 +29,7 @@ interface StatsClientProps {
 }
 
 export function StatsClient({ stats }: StatsClientProps) {
-    const { readingStats, monthlyData, topAuthors, topPublishers, quoteStats, challengeStats, bestMonth } = stats
+    const { readingStats, monthlyData, topAuthors, topPublishers, quoteStats, themeStats, challengeStats, bestMonth } = stats
     const [aiAnalysis, setAiAnalysis] = useState<string | null>(null)
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [analysisError, setAnalysisError] = useState<string | null>(null)
@@ -404,6 +405,65 @@ export function StatsClient({ stats }: StatsClientProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Theme Statistics - Full Width */}
+            {themeStats.topThemes.length > 0 && (
+                <div className="rounded-xl border bg-card p-4">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <Tags className="h-5 w-5 text-violet-500" />
+                            <h3 className="font-semibold">Okuma Temaları</h3>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <span>{themeStats.uniqueThemes} farklı tema</span>
+                            <span>•</span>
+                            <span>{themeStats.booksWithThemes} kitapta</span>
+                        </div>
+                    </div>
+
+                    {/* Theme bars */}
+                    <div className="grid gap-3 md:grid-cols-2">
+                        {themeStats.topThemes.slice(0, 10).map((theme, index) => {
+                            const maxCount = themeStats.topThemes[0]?.count || 1
+                            const barWidth = (theme.count / maxCount) * 100
+                            const colors = [
+                                'bg-violet-500',
+                                'bg-purple-500',
+                                'bg-indigo-500',
+                                'bg-blue-500',
+                                'bg-cyan-500',
+                                'bg-teal-500',
+                                'bg-emerald-500',
+                                'bg-green-500',
+                                'bg-lime-500',
+                                'bg-yellow-500'
+                            ]
+                            return (
+                                <div key={theme.name} className="space-y-1">
+                                    <div className="flex justify-between text-xs">
+                                        <span className="font-medium truncate flex-1">{theme.name}</span>
+                                        <span className="text-muted-foreground ml-2">
+                                            {theme.count} kitap ({theme.percentage}%)
+                                        </span>
+                                    </div>
+                                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                        <div
+                                            className={cn("h-full rounded-full transition-all", colors[index % colors.length])}
+                                            style={{ width: `${barWidth}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+
+                    {themeStats.topThemes.length > 10 && (
+                        <p className="text-xs text-muted-foreground mt-3 text-center">
+                            ve {themeStats.uniqueThemes - 10} tema daha...
+                        </p>
+                    )}
+                </div>
+            )}
 
             {/* AI Analysis Card - Full Width */}
             <div className="rounded-xl border bg-gradient-to-br from-primary/5 to-primary/10 p-6">

@@ -63,6 +63,13 @@ export interface QuoteStats {
     mostQuotedBook: { title: string; count: number } | null
 }
 
+export interface ThemeStats {
+    totalThemes: number
+    uniqueThemes: number
+    booksWithThemes: number
+    topThemes: { name: string; count: number; percentage: number }[]
+}
+
 export interface ChallengeStats {
     hasActiveChallenge: boolean
     year: number
@@ -79,6 +86,7 @@ export interface FullStatsData {
     topAuthors: AuthorStats[]
     topPublishers: PublisherStats[]
     quoteStats: QuoteStats
+    themeStats: ThemeStats
     challengeStats: ChallengeStats | null
     bestMonth: { month: string; count: number } | null
 }
@@ -155,7 +163,8 @@ const getCachedStats = (userId: string) =>
                 authorStats,
                 publisherStats,
                 challengeData,
-                readingBooksData
+                readingBooksData,
+                themeData
             ] = await Promise.all([
                 // 1. Status counts with page sums
                 prisma.book.groupBy({
@@ -259,6 +268,15 @@ const getCachedStats = (userId: string) =>
                 prisma.book.findMany({
                     where: { userId, status: 'READING' },
                     select: { currentPage: true, pageCount: true }
+                }),
+
+                // 10. Theme statistics
+                prisma.bookTheme.findMany({
+                    where: { book: { userId } },
+                    select: {
+                        name: true,
+                        bookId: true
+                    }
                 })
             ])
 
@@ -426,6 +444,33 @@ const getCachedStats = (userId: string) =>
                 )
                 : 0
 
+            // Process theme statistics
+            const themeCountMap = new Map<string, number>()
+            const booksWithThemesSet = new Set<string>()
+
+            themeData.forEach(theme => {
+                themeCountMap.set(theme.name, (themeCountMap.get(theme.name) || 0) + 1)
+                booksWithThemesSet.add(theme.bookId)
+            })
+
+            const topThemes = Array.from(themeCountMap.entries())
+                .map(([name, count]) => ({
+                    name,
+                    count,
+                    percentage: booksWithThemesSet.size > 0
+                        ? Math.round((count / booksWithThemesSet.size) * 100)
+                        : 0
+                }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10)
+
+            const themeStats: ThemeStats = {
+                totalThemes: themeData.length,
+                uniqueThemes: themeCountMap.size,
+                booksWithThemes: booksWithThemesSet.size,
+                topThemes
+            }
+
             return {
                 readingStats: {
                     totalBooks,
@@ -460,6 +505,7 @@ const getCachedStats = (userId: string) =>
                         : 0,
                     mostQuotedBook
                 },
+                themeStats,
                 challengeStats,
                 bestMonth: bestMonth && bestMonth.booksCompleted > 0
                     ? { month: `${bestMonth.monthName} ${bestMonth.year}`, count: bestMonth.booksCompleted }
