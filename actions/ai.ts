@@ -3,7 +3,8 @@
 import { generateText, chat } from "@/lib/gemini"
 import { createClient } from "@/lib/supabase/server"
 import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
+import { CACHE_TAGS } from "@/lib/cache"
 
 /**
  * AI ile metin üretme (tek prompt)
@@ -942,7 +943,10 @@ Bu verilere dayanarak kitabın ana temalarını belirle.`
             })
         }
 
+        // Cache invalidation - stats sayfası da güncellensin
+        revalidateTag(CACHE_TAGS.userStats(user.id), "max")
         revalidatePath(`/book/${bookId}`)
+        revalidatePath('/stats')
 
         return {
             success: true,
@@ -989,7 +993,10 @@ export async function addBookTheme(
             }
         })
 
+        // Cache invalidation - stats sayfası da güncellensin
+        revalidateTag(CACHE_TAGS.userStats(user.id), "max")
         revalidatePath(`/book/${bookId}`)
+        revalidatePath('/stats')
         return { success: true }
     } catch (e: any) {
         if (e.code === 'P2002') {
@@ -1028,7 +1035,10 @@ export async function removeBookTheme(
             where: { id: themeId }
         })
 
+        // Cache invalidation - stats sayfası da güncellensin
+        revalidateTag(CACHE_TAGS.userStats(user.id), "max")
         revalidatePath(`/book/${theme.book.id}`)
+        revalidatePath('/stats')
         return { success: true }
     } catch (e) {
         console.error("Failed to remove theme:", e)
