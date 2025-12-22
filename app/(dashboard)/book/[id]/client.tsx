@@ -1042,7 +1042,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <button
                             onClick={() => setActiveSection("tortu")}
                             className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
                                 activeSection === "tortu"
                                     ? "bg-primary text-primary-foreground shadow-sm"
                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -1053,7 +1053,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <button
                             onClick={() => setActiveSection("imza")}
                             className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
                                 activeSection === "imza"
                                     ? "bg-primary text-primary-foreground shadow-sm"
                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -1064,7 +1064,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <button
                             onClick={() => setActiveSection("quotes")}
                             className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
                                 activeSection === "quotes"
                                     ? "bg-primary text-primary-foreground shadow-sm"
                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -1075,7 +1075,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <button
                             onClick={() => setActiveSection("notes")}
                             className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
                                 activeSection === "notes"
                                     ? "bg-primary text-primary-foreground shadow-sm"
                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -1087,7 +1087,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             <button
                                 onClick={() => setActiveSection("rating")}
                                 className={cn(
-                                    "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                    "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
                                     activeSection === "rating"
                                         ? "bg-primary text-primary-foreground shadow-sm"
                                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -1099,7 +1099,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <button
                             onClick={() => setActiveSection("discussion")}
                             className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
                                 activeSection === "discussion"
                                     ? "bg-primary text-primary-foreground shadow-sm"
                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -1110,7 +1110,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <button
                             onClick={() => setActiveSection("report")}
                             className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
                                 activeSection === "report"
                                     ? "bg-primary text-primary-foreground shadow-sm"
                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -1121,7 +1121,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <button
                             onClick={() => setActiveSection("history")}
                             className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
                                 activeSection === "history"
                                     ? "bg-primary text-primary-foreground shadow-sm"
                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
