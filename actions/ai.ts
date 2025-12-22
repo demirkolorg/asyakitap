@@ -1076,3 +1076,152 @@ export async function getAllThemes(): Promise<{ success: boolean; themes?: strin
         return { success: false, error: "Temalar yüklenirken hata oluştu" }
     }
 }
+
+// =====================================================
+// KİTAP TARTIŞMA SORULARI (BOOK CLUB)
+// =====================================================
+
+export interface BookDiscussionQuestion {
+    question: string
+    type: 'reflection' | 'analysis' | 'connection' | 'opinion'
+    difficulty: 'easy' | 'medium' | 'deep'
+}
+
+export interface BookDiscussionResult {
+    questions: BookDiscussionQuestion[]
+    context: string // AI'ın kitap hakkındaki kısa bağlamı
+}
+
+/**
+ * Kitap için düşündürücü tartışma soruları üret
+ */
+export async function generateBookDiscussionQuestions(
+    bookId: string
+): Promise<{ success: boolean; result?: BookDiscussionResult; error?: string }> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    // Kitap verilerini çek
+    const book = await prisma.book.findFirst({
+        where: { id: bookId, userId: user.id },
+        select: {
+            id: true,
+            title: true,
+            description: true,
+            author: { select: { name: true } },
+            tortu: true,
+            imza: true,
+            quotes: {
+                select: { content: true },
+                take: 10
+            },
+            readingNotes: {
+                select: { content: true },
+                take: 10
+            },
+            themes: {
+                select: { name: true, description: true },
+                take: 5
+            },
+            rating: {
+                select: { genelPuan: true, etki: true, derinlik: true }
+            }
+        }
+    })
+
+    if (!book) {
+        return { success: false, error: "Kitap bulunamadı" }
+    }
+
+    // En az bir içerik olmalı
+    const hasContent = book.tortu || book.imza || book.quotes.length > 0 ||
+                       book.readingNotes.length > 0 || book.description || book.themes.length > 0
+    if (!hasContent) {
+        return { success: false, error: "Soru üretmek için yeterli veri yok. Tortu, imza, alıntı, not veya tema ekleyin." }
+    }
+
+    const quotesText = book.quotes.length > 0
+        ? book.quotes.map(q => `"${q.content}"`).join("\n")
+        : ""
+
+    const notesText = book.readingNotes.length > 0
+        ? book.readingNotes.map(n => n.content).join("\n")
+        : ""
+
+    const themesText = book.themes.length > 0
+        ? book.themes.map(t => `${t.name}${t.description ? `: ${t.description}` : ''}`).join(", ")
+        : ""
+
+    const systemPrompt = `Sen bir edebiyat kulübü moderatörüsün. Görevin kitap hakkında düşündürücü, derinlikli tartışma soruları üretmek.
+
+Soru türleri:
+- reflection: Kişisel yansıma soruları (okuyucunun kendisiyle bağ kurması)
+- analysis: Analiz soruları (kitabın yapısı, karakterler, semboller)
+- connection: Bağlantı soruları (günümüz, diğer eserler, evrensel temalar)
+- opinion: Görüş soruları (tartışmaya açık, cevabı kesin olmayan)
+
+Zorluk seviyeleri:
+- easy: Kolay, herkesin cevaplayabileceği
+- medium: Orta, biraz düşünme gerektiren
+- deep: Derin, felsefi veya çok katmanlı
+
+Yanıt formatı (JSON):
+{
+  "questions": [
+    {
+      "question": "Soru metni?",
+      "type": "reflection|analysis|connection|opinion",
+      "difficulty": "easy|medium|deep"
+    }
+  ],
+  "context": "Bu kitap hakkında 1-2 cümlelik bağlam (okuyucunun notlarına dayanarak)"
+}
+
+Kurallar:
+- Tam olarak 5 soru üret
+- Her zorluk seviyesinden en az 1 soru olsun
+- Sorular spesifik olsun (genel değil, bu kitaba özel)
+- Okuyucunun notlarından ipuçları kullan
+- Spoiler içerebilir (kitap zaten okunmuş)
+- Sadece JSON döndür
+- Türkçe yaz`
+
+    const prompt = `Kitap: "${book.title}" - ${book.author?.name || 'Bilinmeyen Yazar'}
+
+${book.description ? `Kitap Açıklaması:\n${book.description}\n` : ''}
+${themesText ? `Kitabın Temaları: ${themesText}\n` : ''}
+${book.tortu ? `Okuyucunun Düşünceleri (Tortu):\n${book.tortu}\n` : ''}
+${book.imza ? `Yazarın Üslubu (İmza):\n${book.imza}\n` : ''}
+${quotesText ? `Okuyucunun Kaydettiği Alıntılar:\n${quotesText}\n` : ''}
+${notesText ? `Okuma Notları:\n${notesText}\n` : ''}
+${book.rating ? `Okuyucunun Puanları: Genel: ${book.rating.genelPuan}/10, Etki: ${book.rating.etki}/10, Derinlik: ${book.rating.derinlik}/10` : ''}
+
+Bu verilere dayanarak kitap hakkında düşündürücü tartışma soruları üret.`
+
+    const result = await generateText(prompt, systemPrompt)
+
+    if (!result.success || !result.text) {
+        return { success: false, error: result.error || "AI yanıt vermedi" }
+    }
+
+    try {
+        const jsonMatch = result.text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) {
+            return { success: false, error: "AI yanıtı JSON formatında değil" }
+        }
+
+        const parsed = JSON.parse(jsonMatch[0]) as BookDiscussionResult
+
+        return {
+            success: true,
+            result: parsed
+        }
+    } catch (e) {
+        console.error("Failed to parse discussion questions:", e)
+        return { success: false, error: "AI yanıtı işlenemedi" }
+    }
+}

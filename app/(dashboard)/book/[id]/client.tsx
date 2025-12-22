@@ -55,10 +55,11 @@ import {
     Trash2 as TrashIcon,
     Tags,
     X,
+    HelpCircle,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingNote, deleteReadingNote } from "@/actions/reading-notes"
-import { analyzeBookThemes, addBookTheme, removeBookTheme, type BookThemeAnalysis } from "@/actions/ai"
+import { analyzeBookThemes, addBookTheme, removeBookTheme, generateBookDiscussionQuestions, type BookThemeAnalysis, type BookDiscussionQuestion, type BookDiscussionResult } from "@/actions/ai"
 import { MOOD_OPTIONS } from "@/lib/constants"
 import { addReadingLog } from "@/actions/reading-logs"
 import { toast } from "sonner"
@@ -240,6 +241,11 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [newThemeDescription, setNewThemeDescription] = useState("")
     const [isAddingTheme, setIsAddingTheme] = useState(false)
     const [removingThemeId, setRemovingThemeId] = useState<string | null>(null)
+
+    // Tartışma soruları state'leri
+    const [discussionResult, setDiscussionResult] = useState<BookDiscussionResult | null>(null)
+    const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false)
+    const [showDiscussionModal, setShowDiscussionModal] = useState(false)
 
     useEffect(() => {
         setMounted(true)
@@ -554,6 +560,24 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             toast.error("Bir hata oluştu")
         } finally {
             setRemovingThemeId(null)
+        }
+    }
+
+    // Tartışma soruları üret
+    const handleGenerateDiscussionQuestions = async () => {
+        setIsGeneratingQuestions(true)
+        try {
+            const result = await generateBookDiscussionQuestions(book.id)
+            if (result.success && result.result) {
+                setDiscussionResult(result.result)
+                setShowDiscussionModal(true)
+            } else {
+                toast.error(result.error || "Sorular üretilemedi")
+            }
+        } catch {
+            toast.error("Bir hata oluştu")
+        } finally {
+            setIsGeneratingQuestions(false)
         }
     }
 
@@ -1621,6 +1645,70 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         </div>
                     </div>
 
+                    {/* Düşün & Tartış - AI Sorular */}
+                    <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+                        <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <HelpCircle className="h-5 w-5 text-amber-500" />
+                                <h4 className="text-sm font-bold">Düşün & Tartış</h4>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleGenerateDiscussionQuestions}
+                                disabled={isGeneratingQuestions}
+                                className="h-7 px-2 text-xs"
+                            >
+                                {isGeneratingQuestions ? (
+                                    <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                                ) : (
+                                    <Sparkles className="h-3.5 w-3.5 mr-1" />
+                                )}
+                                {discussionResult ? "Yeni Sorular" : "Soru Üret"}
+                            </Button>
+                        </div>
+                        <div className="p-4">
+                            {!discussionResult ? (
+                                <p className="text-sm text-muted-foreground text-center py-4">
+                                    Kitap hakkında düşündürücü tartışma soruları oluşturmak için &quot;Soru Üret&quot; butonuna tıklayın.
+                                </p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {discussionResult.context && (
+                                        <p className="text-xs text-muted-foreground italic border-l-2 border-amber-500/50 pl-3">
+                                            {discussionResult.context}
+                                        </p>
+                                    )}
+                                    <div className="space-y-2">
+                                        {discussionResult.questions.slice(0, 3).map((q, index) => (
+                                            <div
+                                                key={index}
+                                                className="p-3 rounded-lg bg-muted/50 border border-border/30"
+                                            >
+                                                <div className="flex items-start gap-2">
+                                                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold">
+                                                        {index + 1}
+                                                    </span>
+                                                    <p className="text-sm">{q.question}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {discussionResult.questions.length > 3 && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setShowDiscussionModal(true)}
+                                            className="w-full text-xs text-muted-foreground hover:text-foreground"
+                                        >
+                                            +{discussionResult.questions.length - 3} soru daha
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Reading Lists - Detaylı Kartlar */}
                     {readingListBooks.length > 0 && (
                         <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
@@ -2427,6 +2515,86 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <Button onClick={handleAddTheme} disabled={isAddingTheme || !newThemeName.trim()}>
                             {isAddingTheme && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Ekle
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Tartışma Soruları Modal */}
+            <Dialog open={showDiscussionModal} onOpenChange={setShowDiscussionModal}>
+                <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <HelpCircle className="h-5 w-5 text-amber-500" />
+                            Düşün & Tartış
+                        </DialogTitle>
+                        <DialogDescription>
+                            {book.title} hakkında düşündürücü sorular
+                        </DialogDescription>
+                    </DialogHeader>
+                    {discussionResult && (
+                        <div className="space-y-4 py-4">
+                            {discussionResult.context && (
+                                <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                                    <p className="text-sm text-amber-700 dark:text-amber-300 italic">
+                                        {discussionResult.context}
+                                    </p>
+                                </div>
+                            )}
+                            <div className="space-y-3">
+                                {discussionResult.questions.map((q, index) => {
+                                    const typeLabels: Record<string, { label: string; color: string }> = {
+                                        reflection: { label: "Yansıma", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
+                                        analysis: { label: "Analiz", color: "bg-purple-500/10 text-purple-600 dark:text-purple-400" },
+                                        connection: { label: "Bağlantı", color: "bg-green-500/10 text-green-600 dark:text-green-400" },
+                                        opinion: { label: "Görüş", color: "bg-orange-500/10 text-orange-600 dark:text-orange-400" },
+                                    }
+                                    const difficultyLabels: Record<string, { label: string; dots: number }> = {
+                                        easy: { label: "Kolay", dots: 1 },
+                                        medium: { label: "Orta", dots: 2 },
+                                        deep: { label: "Derin", dots: 3 },
+                                    }
+                                    const typeInfo = typeLabels[q.type] || { label: q.type, color: "bg-muted" }
+                                    const diffInfo = difficultyLabels[q.difficulty] || { label: q.difficulty, dots: 1 }
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="p-4 rounded-xl bg-muted/50 border border-border/50"
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+                                                    {index + 1}
+                                                </span>
+                                                <div className="flex-1 space-y-2">
+                                                    <p className="text-sm font-medium leading-relaxed">{q.question}</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium", typeInfo.color)}>
+                                                            {typeInfo.label}
+                                                        </span>
+                                                        <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                                            {Array.from({ length: diffInfo.dots }).map((_, i) => (
+                                                                <span key={i} className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                            ))}
+                                                            <span className="ml-1">{diffInfo.label}</span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowDiscussionModal(false)}>
+                            Kapat
+                        </Button>
+                        <Button onClick={handleGenerateDiscussionQuestions} disabled={isGeneratingQuestions}>
+                            {isGeneratingQuestions && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            Yeni Sorular
                         </Button>
                     </DialogFooter>
                 </DialogContent>
