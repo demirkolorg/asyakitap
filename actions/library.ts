@@ -169,9 +169,9 @@ export async function getBook(id: string) {
             }
         })
 
-        // Ensure arrays are never undefined and serialize properly
+        // Ensure arrays are never undefined
         if (book) {
-            const result = {
+            return {
                 ...book,
                 quotes: book.quotes ?? [],
                 readingNotes: book.readingNotes ?? [],
@@ -179,15 +179,6 @@ export async function getBook(id: string) {
                 readingListBooks: book.readingListBooks ?? [],
                 challengeBooks: book.challengeBooks ?? []
             }
-            // Debug: log array types
-            console.log('getBook arrays:', {
-                quotes: Array.isArray(result.quotes),
-                readingNotes: Array.isArray(result.readingNotes),
-                readingLogs: Array.isArray(result.readingLogs),
-                readingListBooks: Array.isArray(result.readingListBooks),
-                challengeBooks: Array.isArray(result.challengeBooks)
-            })
-            return result
         }
         return book
     } catch (error) {

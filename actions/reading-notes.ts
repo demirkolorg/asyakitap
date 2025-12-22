@@ -227,16 +227,4 @@ export async function getAllReadingNotes(): Promise<{
     }
 }
 
-// ==========================================
-// Mood Seçenekleri
-// ==========================================
-export const MOOD_OPTIONS = [
-    { value: "excited", label: "Heyecanlı", emoji: "🤩" },
-    { value: "thoughtful", label: "Düşünceli", emoji: "🤔" },
-    { value: "sad", label: "Hüzünlü", emoji: "😢" },
-    { value: "surprised", label: "Şaşkın", emoji: "😮" },
-    { value: "angry", label: "Kızgın", emoji: "😤" },
-    { value: "happy", label: "Mutlu", emoji: "😊" },
-    { value: "confused", label: "Kafam Karışık", emoji: "😵" },
-    { value: "inspired", label: "İlham Aldım", emoji: "✨" },
-] as const
+// MOOD_OPTIONS moved to lib/constants.ts

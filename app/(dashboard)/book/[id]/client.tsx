@@ -55,7 +55,8 @@ import {
     Trash2 as TrashIcon,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
-import { addReadingNote, deleteReadingNote, MOOD_OPTIONS } from "@/actions/reading-notes"
+import { addReadingNote, deleteReadingNote } from "@/actions/reading-notes"
+import { MOOD_OPTIONS } from "@/lib/constants"
 import { addReadingLog } from "@/actions/reading-logs"
 import { toast } from "sonner"
 import {
