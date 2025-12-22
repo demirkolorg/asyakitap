@@ -165,7 +165,10 @@ export async function getBook(id: string) {
                         }
                     }
                 },
-                rating: true
+                rating: true,
+                themes: {
+                    orderBy: { confidence: 'desc' }
+                }
             }
         })
 
@@ -177,7 +180,8 @@ export async function getBook(id: string) {
                 readingNotes: book.readingNotes ?? [],
                 readingLogs: book.readingLogs ?? [],
                 readingListBooks: book.readingListBooks ?? [],
-                challengeBooks: book.challengeBooks ?? []
+                challengeBooks: book.challengeBooks ?? [],
+                themes: book.themes ?? []
             }
         }
         return book

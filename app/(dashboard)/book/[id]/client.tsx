@@ -53,9 +53,12 @@ import {
     Lightbulb,
     StickyNote,
     Trash2 as TrashIcon,
+    Tags,
+    X,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingNote, deleteReadingNote } from "@/actions/reading-notes"
+import { analyzeBookThemes, addBookTheme, removeBookTheme, type BookThemeAnalysis } from "@/actions/ai"
 import { MOOD_OPTIONS } from "@/lib/constants"
 import { addReadingLog } from "@/actions/reading-logs"
 import { toast } from "sonner"
@@ -138,6 +141,14 @@ interface ChallengeBookInfo {
     }
 }
 
+interface BookTheme {
+    id: string
+    name: string
+    description: string | null
+    confidence: number
+    isManual: boolean
+}
+
 interface BookDetailClientProps {
     book: Book & {
         quotes?: QuoteType[]
@@ -148,6 +159,7 @@ interface BookDetailClientProps {
         readingListBooks?: ReadingListBookInfo[]
         challengeBooks?: ChallengeBookInfo[]
         rating: BookRating | null
+        themes?: BookTheme[]
     }
 }
 
@@ -219,6 +231,15 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [notesAnalysis, setNotesAnalysis] = useState<ReadingNotesAnalysis | null>(null)
     const [isAnalyzingNotes, setIsAnalyzingNotes] = useState(false)
     const [showNotesAnalysisModal, setShowNotesAnalysisModal] = useState(false)
+
+    // Tema state'leri
+    const [themes, setThemes] = useState<BookTheme[]>(book.themes || [])
+    const [isAnalyzingThemes, setIsAnalyzingThemes] = useState(false)
+    const [showAddThemeDialog, setShowAddThemeDialog] = useState(false)
+    const [newThemeName, setNewThemeName] = useState("")
+    const [newThemeDescription, setNewThemeDescription] = useState("")
+    const [isAddingTheme, setIsAddingTheme] = useState(false)
+    const [removingThemeId, setRemovingThemeId] = useState<string | null>(null)
 
     useEffect(() => {
         setMounted(true)
@@ -464,6 +485,75 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
             toast.error("Bir hata oluştu")
         } finally {
             setIsAnalyzingNotes(false)
+        }
+    }
+
+    // Tema fonksiyonları
+    const handleAnalyzeThemes = async () => {
+        setIsAnalyzingThemes(true)
+        try {
+            const result = await analyzeBookThemes(book.id)
+            if (result.success && result.analysis) {
+                // Yeni temaları state'e ekle
+                const newThemes = result.analysis.themes.map((t, i) => ({
+                    id: `temp-${i}`,
+                    name: t.name,
+                    description: t.description,
+                    confidence: t.confidence,
+                    isManual: false
+                }))
+                setThemes(newThemes)
+                toast.success(`${result.analysis.themes.length} tema belirlendi`)
+                router.refresh()
+            } else {
+                toast.error(result.error || "Tema analizi başarısız")
+            }
+        } catch {
+            toast.error("Bir hata oluştu")
+        } finally {
+            setIsAnalyzingThemes(false)
+        }
+    }
+
+    const handleAddTheme = async () => {
+        if (!newThemeName.trim()) {
+            toast.error("Tema adı gerekli")
+            return
+        }
+
+        setIsAddingTheme(true)
+        try {
+            const result = await addBookTheme(book.id, newThemeName, newThemeDescription || undefined)
+            if (result.success) {
+                toast.success("Tema eklendi")
+                setNewThemeName("")
+                setNewThemeDescription("")
+                setShowAddThemeDialog(false)
+                router.refresh()
+            } else {
+                toast.error(result.error || "Tema eklenemedi")
+            }
+        } catch {
+            toast.error("Bir hata oluştu")
+        } finally {
+            setIsAddingTheme(false)
+        }
+    }
+
+    const handleRemoveTheme = async (themeId: string) => {
+        setRemovingThemeId(themeId)
+        try {
+            const result = await removeBookTheme(themeId)
+            if (result.success) {
+                setThemes(themes.filter(t => t.id !== themeId))
+                toast.success("Tema kaldırıldı")
+            } else {
+                toast.error(result.error || "Tema kaldırılamadı")
+            }
+        } catch {
+            toast.error("Bir hata oluştu")
+        } finally {
+            setRemovingThemeId(null)
         }
     }
 
@@ -1456,6 +1546,81 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         </div>
                     </div>
 
+                    {/* Temalar */}
+                    <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+                        <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Tags className="h-5 w-5 text-indigo-500" />
+                                <h4 className="text-sm font-bold">Temalar</h4>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setShowAddThemeDialog(true)}
+                                    className="h-7 px-2 text-xs"
+                                >
+                                    <Plus className="h-3.5 w-3.5 mr-1" />
+                                    Ekle
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={handleAnalyzeThemes}
+                                    disabled={isAnalyzingThemes}
+                                    className="h-7 px-2 text-xs"
+                                >
+                                    {isAnalyzingThemes ? (
+                                        <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                                    ) : (
+                                        <Sparkles className="h-3.5 w-3.5 mr-1" />
+                                    )}
+                                    AI Analiz
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="p-4">
+                            {themes.length === 0 ? (
+                                <p className="text-sm text-muted-foreground text-center py-4">
+                                    Henüz tema belirlenmemiş. AI ile analiz edin veya manuel ekleyin.
+                                </p>
+                            ) : (
+                                <div className="flex flex-wrap gap-2">
+                                    {themes.map((theme) => (
+                                        <div
+                                            key={theme.id}
+                                            className={cn(
+                                                "group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-all",
+                                                theme.isManual
+                                                    ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20"
+                                                    : "bg-muted text-foreground"
+                                            )}
+                                            title={theme.description || undefined}
+                                        >
+                                            <span>{theme.name}</span>
+                                            {!theme.isManual && theme.confidence < 1 && (
+                                                <span className="text-[10px] text-muted-foreground">
+                                                    {Math.round(theme.confidence * 100)}%
+                                                </span>
+                                            )}
+                                            <button
+                                                onClick={() => handleRemoveTheme(theme.id)}
+                                                disabled={removingThemeId === theme.id}
+                                                className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                {removingThemeId === theme.id ? (
+                                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                                ) : (
+                                                    <X className="h-3 w-3 hover:text-destructive" />
+                                                )}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Reading Lists - Detaylı Kartlar */}
                     {readingListBooks.length > 0 && (
                         <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
@@ -2220,6 +2385,49 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 Yeniden Oluştur
                             </Button>
                         )}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Tema Ekleme Dialog */}
+            <Dialog open={showAddThemeDialog} onOpenChange={setShowAddThemeDialog}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Tags className="h-5 w-5 text-indigo-500" />
+                            Tema Ekle
+                        </DialogTitle>
+                        <DialogDescription>
+                            {book.title} için yeni tema ekleyin
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Tema Adı</Label>
+                            <Input
+                                value={newThemeName}
+                                onChange={(e) => setNewThemeName(e.target.value)}
+                                placeholder="Örn: Aşk, Dostluk, Savaş..."
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Açıklama (opsiyonel)</Label>
+                            <Textarea
+                                value={newThemeDescription}
+                                onChange={(e) => setNewThemeDescription(e.target.value)}
+                                placeholder="Bu tema kitapta nasıl işleniyor?"
+                                rows={3}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowAddThemeDialog(false)}>
+                            İptal
+                        </Button>
+                        <Button onClick={handleAddTheme} disabled={isAddingTheme || !newThemeName.trim()}>
+                            {isAddingTheme && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Ekle
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

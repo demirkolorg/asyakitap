@@ -82,6 +82,7 @@ model Book {
   readingListBooks     ReadingListBook[]     // Bu kitabın bulunduğu okuma listeleri
   challengeBooks       ChallengeBook[]       // Bu kitabın bulunduğu challenge'lar
   rating               BookRating?           // Kitap puanlaması (1-1 ilişki)
+  themes               BookTheme[]           // Kitabın temaları (AI ile çıkarılan)
   startDate            DateTime?
   endDate              DateTime?
   readingGoalDays      Int?                  // Kullanıcının hedeflediği okuma gün sayısı
@@ -359,4 +360,24 @@ model UserChallengeBook {
   @@index([userProgressId])
   @@index([challengeBookId])
   @@index([status])
+}
+
+// ==========================================
+// Kitap Temaları (AI ile çıkarılan)
+// ==========================================
+
+model BookTheme {
+  id          String   @id @default(cuid())
+  bookId      String
+  book        Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  name        String   // Tema adı (örn: "Aşk", "Savaş", "Özgürlük")
+  description String?  @db.Text // Tema açıklaması
+  confidence  Float    @default(0.8) // AI güven skoru (0-1)
+  isManual    Boolean  @default(false) // Kullanıcı tarafından mı eklendi?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([bookId, name]) // Aynı kitapta aynı tema tekrarlanmasın
+  @@index([bookId])
+  @@index([name])
 }

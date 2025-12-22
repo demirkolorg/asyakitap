@@ -802,3 +802,267 @@ ${parsed.keyInsights.map(i => `• ${i}`).join('\n')}
         return { success: false, error: "AI yanıtı işlenemedi" }
     }
 }
+
+// =====================================================
+// KİTAP TEMA ANALİZİ
+// =====================================================
+
+export interface BookThemeResult {
+    name: string
+    description: string
+    confidence: number
+}
+
+export interface BookThemeAnalysis {
+    themes: BookThemeResult[]
+    summary: string
+}
+
+/**
+ * Kitabın temalarını AI ile analiz et
+ * Tortu, imza, alıntılar ve okuma notlarından tema çıkarımı yapar
+ */
+export async function analyzeBookThemes(
+    bookId: string
+): Promise<{ success: boolean; analysis?: BookThemeAnalysis; error?: string }> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    // Kitap verilerini çek
+    const book = await prisma.book.findFirst({
+        where: { id: bookId, userId: user.id },
+        select: {
+            id: true,
+            title: true,
+            description: true,
+            author: { select: { name: true } },
+            tortu: true,
+            imza: true,
+            quotes: {
+                select: { content: true },
+                take: 10
+            },
+            readingNotes: {
+                select: { content: true },
+                take: 10
+            },
+            themes: true
+        }
+    })
+
+    if (!book) {
+        return { success: false, error: "Kitap bulunamadı" }
+    }
+
+    // En az bir içerik olmalı
+    const hasContent = book.tortu || book.imza || book.quotes.length > 0 || book.readingNotes.length > 0 || book.description
+    if (!hasContent) {
+        return { success: false, error: "Tema analizi için yeterli veri yok. Tortu, imza, alıntı veya not ekleyin." }
+    }
+
+    const quotesText = book.quotes.length > 0
+        ? book.quotes.map(q => `"${q.content}"`).join("\n")
+        : ""
+
+    const notesText = book.readingNotes.length > 0
+        ? book.readingNotes.map(n => n.content).join("\n")
+        : ""
+
+    const systemPrompt = `Sen bir edebiyat analisti ve tema uzmanısın.
+
+Görevin kitap hakkındaki verileri analiz ederek ana temaları belirlemek.
+
+Tema örnekleri: Aşk, Savaş, Dostluk, Yalnızlık, Özgürlük, Adalet, İntikam, Umut, Kayıp, Aile,
+Büyüme, Kimlik Arayışı, Toplumsal Eleştiri, Varoluş, Ölüm, Din, Politika, Teknoloji, Doğa,
+Tarih, Psikoloji, Felsefe, Macera, Gizem, Bilim Kurgu, Distopya, Fantastik, vs.
+
+Yanıt formatı (JSON):
+{
+  "themes": [
+    {
+      "name": "Tema Adı",
+      "description": "Bu temanın kitapta nasıl işlendiği (1-2 cümle)",
+      "confidence": 0.95
+    }
+  ],
+  "summary": "Kitabın tematik yapısının genel özeti (1-2 cümle)"
+}
+
+Kurallar:
+- En fazla 5 tema belirle
+- En güçlü temadan başla (confidence yüksek olan)
+- Confidence 0-1 arası (1 = kesin, 0.5 = olası)
+- Sadece JSON döndür
+- Türkçe yaz`
+
+    const prompt = `Kitap: "${book.title}" - ${book.author?.name || 'Bilinmeyen Yazar'}
+
+${book.description ? `Kitap Açıklaması:\n${book.description}\n` : ''}
+${book.tortu ? `Okuyucunun Düşünceleri (Tortu):\n${book.tortu}\n` : ''}
+${book.imza ? `Yazarın Üslubu (İmza):\n${book.imza}\n` : ''}
+${quotesText ? `Alıntılar:\n${quotesText}\n` : ''}
+${notesText ? `Okuma Notları:\n${notesText}\n` : ''}
+
+Bu verilere dayanarak kitabın ana temalarını belirle.`
+
+    const result = await generateText(prompt, systemPrompt)
+
+    if (!result.success || !result.text) {
+        return { success: false, error: result.error || "AI yanıt vermedi" }
+    }
+
+    try {
+        const jsonMatch = result.text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) {
+            return { success: false, error: "AI yanıtı JSON formatında değil" }
+        }
+
+        const parsed = JSON.parse(jsonMatch[0]) as BookThemeAnalysis
+
+        // Mevcut temaları sil ve yenilerini ekle
+        await prisma.bookTheme.deleteMany({
+            where: { bookId: book.id, isManual: false }
+        })
+
+        // Yeni temaları kaydet
+        if (parsed.themes && parsed.themes.length > 0) {
+            await prisma.bookTheme.createMany({
+                data: parsed.themes.map(theme => ({
+                    bookId: book.id,
+                    name: theme.name,
+                    description: theme.description,
+                    confidence: theme.confidence,
+                    isManual: false
+                })),
+                skipDuplicates: true
+            })
+        }
+
+        revalidatePath(`/book/${bookId}`)
+
+        return {
+            success: true,
+            analysis: parsed
+        }
+    } catch (e) {
+        console.error("Failed to parse theme analysis:", e)
+        return { success: false, error: "AI yanıtı işlenemedi" }
+    }
+}
+
+/**
+ * Kitaba manuel tema ekle
+ */
+export async function addBookTheme(
+    bookId: string,
+    themeName: string,
+    description?: string
+): Promise<{ success: boolean; error?: string }> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    // Kitabın kullanıcıya ait olduğunu kontrol et
+    const book = await prisma.book.findFirst({
+        where: { id: bookId, userId: user.id }
+    })
+
+    if (!book) {
+        return { success: false, error: "Kitap bulunamadı" }
+    }
+
+    try {
+        await prisma.bookTheme.create({
+            data: {
+                bookId,
+                name: themeName.trim(),
+                description: description?.trim(),
+                confidence: 1.0,
+                isManual: true
+            }
+        })
+
+        revalidatePath(`/book/${bookId}`)
+        return { success: true }
+    } catch (e: any) {
+        if (e.code === 'P2002') {
+            return { success: false, error: "Bu tema zaten ekli" }
+        }
+        console.error("Failed to add theme:", e)
+        return { success: false, error: "Tema eklenirken hata oluştu" }
+    }
+}
+
+/**
+ * Kitaptan tema sil
+ */
+export async function removeBookTheme(
+    themeId: string
+): Promise<{ success: boolean; error?: string }> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    // Temanın kullanıcının kitabına ait olduğunu kontrol et
+    const theme = await prisma.bookTheme.findFirst({
+        where: { id: themeId },
+        include: { book: { select: { userId: true, id: true } } }
+    })
+
+    if (!theme || theme.book.userId !== user.id) {
+        return { success: false, error: "Tema bulunamadı" }
+    }
+
+    try {
+        await prisma.bookTheme.delete({
+            where: { id: themeId }
+        })
+
+        revalidatePath(`/book/${theme.book.id}`)
+        return { success: true }
+    } catch (e) {
+        console.error("Failed to remove theme:", e)
+        return { success: false, error: "Tema silinirken hata oluştu" }
+    }
+}
+
+/**
+ * Tüm benzersiz temaları getir (filtreleme için)
+ */
+export async function getAllThemes(): Promise<{ success: boolean; themes?: string[]; error?: string }> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    try {
+        const themes = await prisma.bookTheme.findMany({
+            where: {
+                book: { userId: user.id }
+            },
+            select: { name: true },
+            distinct: ['name'],
+            orderBy: { name: 'asc' }
+        })
+
+        return {
+            success: true,
+            themes: themes.map(t => t.name)
+        }
+    } catch (e) {
+        console.error("Failed to get themes:", e)
+        return { success: false, error: "Temalar yüklenirken hata oluştu" }
+    }
+}
