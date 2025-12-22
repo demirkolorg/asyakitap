@@ -17,15 +17,15 @@ import {
     ChevronLeft,
     ChevronRight,
     Star,
-    Edit,
     CheckCircle2,
     Clock,
-    StickyNote
+    Edit,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { calculateReadingGoal, formatRemainingDays } from "@/lib/reading-goal"
+import { QuickActions } from "./quick-actions"
 
 export default async function DashboardPage() {
     const [data, challenge, readingLists] = await Promise.all([
@@ -295,29 +295,14 @@ export default async function DashboardPage() {
 
                             {/* Action Buttons - Both Mobile & Desktop */}
                             {featuredBook.pageCount && (
-                                <div className="flex gap-2 mt-3">
-                                    <Link
-                                        href={`/book/${featuredBook.id}?action=progress`}
-                                        className="flex-1 py-1.5 md:py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors text-[11px] md:text-sm flex items-center justify-center gap-1.5"
-                                    >
-                                        <Edit className="h-3 md:h-3.5 w-3 md:w-3.5" />
-                                        Sayfa
-                                    </Link>
-                                    <Link
-                                        href={`/book/${featuredBook.id}?action=quote`}
-                                        className="flex-1 py-1.5 md:py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg font-medium transition-colors text-[11px] md:text-sm flex items-center justify-center gap-1.5"
-                                    >
-                                        <Quote className="h-3 md:h-3.5 w-3 md:w-3.5" />
-                                        Alıntı
-                                    </Link>
-                                    <Link
-                                        href={`/book/${featuredBook.id}?action=note`}
-                                        className="flex-1 py-1.5 md:py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg font-medium transition-colors text-[11px] md:text-sm flex items-center justify-center gap-1.5"
-                                    >
-                                        <StickyNote className="h-3 md:h-3.5 w-3 md:w-3.5" />
-                                        Not
-                                    </Link>
-                                </div>
+                                <QuickActions
+                                    book={{
+                                        id: featuredBook.id,
+                                        title: featuredBook.title,
+                                        currentPage: featuredBook.currentPage,
+                                        pageCount: featuredBook.pageCount
+                                    }}
+                                />
                             )}
                         </div>
                     ) : (
