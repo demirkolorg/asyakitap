@@ -4,6 +4,7 @@ import * as React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 import { colorThemes, DEFAULT_COLOR_THEME, getThemeByName, type ColorTheme } from "@/lib/themes"
 import { useTheme } from "next-themes"
+import { updateFavicon } from "@/lib/favicon-generator"
 
 type ColorThemeProviderProps = {
   children: React.ReactNode
@@ -82,6 +83,9 @@ export function ColorThemeProvider({
     root.style.setProperty("--sidebar-accent-foreground", colors.sidebarAccentForeground)
     root.style.setProperty("--sidebar-border", colors.sidebarBorder)
     root.style.setProperty("--sidebar-ring", colors.sidebarRing)
+
+    // Update favicon with primary color
+    updateFavicon(colors.primary)
   }, [colorTheme, resolvedTheme, mounted])
 
   const value = {
