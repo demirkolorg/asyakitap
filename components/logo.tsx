@@ -12,12 +12,12 @@ export function Logo({ className }: LogoProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={cn("w-16 h-16", className)}
     >
-      {/* Background Squircle */}
+      {/* Background Squircle - uses theme primary color */}
       <rect
         width="512"
         height="512"
         rx="80"
-        fill="#F94361"
+        className="fill-primary"
       />
 
       {/* Clip path to contain shadow within squircle */}
@@ -27,7 +27,7 @@ export function Logo({ className }: LogoProps) {
         </clipPath>
       </defs>
 
-      {/* Long Shadow - 45 degree diagonal */}
+      {/* Long Shadow - semi-transparent overlay */}
       <g clipPath="url(#squircleClip)">
         <path
           d="
@@ -55,7 +55,7 @@ export function Logo({ className }: LogoProps) {
             C 380 130 325 65 256 65
             Z
           "
-          fill="#D63050"
+          fill="rgba(0,0,0,0.18)"
         />
       </g>
 
@@ -96,12 +96,12 @@ export function LogoIcon({ className }: LogoProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={cn("w-8 h-8", className)}
     >
-      {/* Background Squircle */}
+      {/* Background Squircle - uses theme primary color */}
       <rect
         width="512"
         height="512"
         rx="80"
-        fill="#F94361"
+        className="fill-primary"
       />
 
       {/* Clip path */}
@@ -111,7 +111,7 @@ export function LogoIcon({ className }: LogoProps) {
         </clipPath>
       </defs>
 
-      {/* Long Shadow */}
+      {/* Long Shadow - semi-transparent overlay */}
       <g clipPath="url(#squircleClipIcon)">
         <path
           d="
@@ -139,7 +139,7 @@ export function LogoIcon({ className }: LogoProps) {
             C 380 130 325 65 256 65
             Z
           "
-          fill="#D63050"
+          fill="rgba(0,0,0,0.18)"
         />
       </g>
 
