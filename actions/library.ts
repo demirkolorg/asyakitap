@@ -209,6 +209,7 @@ export async function updateBook(id: string, data: {
     description?: string | null
     tortu?: string
     imza?: string
+    mindmapContent?: string
     startDate?: Date | null
     endDate?: Date | null
     coverUrl?: string | null

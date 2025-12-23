@@ -75,6 +75,7 @@ model Book {
   tortuAiComment       String?               @db.Text // AI'ın tortu yorumu
   imza                 String?               @db.Text // Yazarın bu kitaptaki üslubu/tarzı
   imzaAiComment        String?               @db.Text // AI'ın imza yorumu
+  mindmapContent       String?               @db.Text // Zihin haritası (Markdown formatında)
   quotes               Quote[]
   readingLogs          ReadingLog[]
   readingNotes         ReadingNote[]         // Okuma notları (okurken alınan notlar)

@@ -98,6 +98,17 @@ const ImzaEditor = dynamic(() => import("@/components/editor/imza-editor"), {
         <div className="h-[300px] w-full animate-pulse rounded-lg border bg-muted" />
     ),
 })
+
+const MarkmapRenderer = dynamic(
+    () => import("@/components/book/markmap-renderer").then(mod => ({ default: mod.MarkmapRenderer })),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="h-[500px] w-full animate-pulse rounded-lg border bg-muted" />
+        ),
+    }
+)
+
 import { cn, formatDate, getNowInTurkey } from "@/lib/utils"
 import { estimateReadingDays, calculateReadingGoal, formatRemainingDays, formatDailyTarget } from "@/lib/reading-goal"
 
@@ -197,9 +208,10 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const readingListBooks = book.readingListBooks || []
     const challengeBooks = book.challengeBooks || []
 
-    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "history" | "discussion" | "report">("tortu")
+    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "history" | "discussion" | "report" | "mindmap">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
+    const [mindmapContent, setMindmapContent] = useState(book.mindmapContent || "")
     const [isSavingImza, setIsSavingImza] = useState(false)
     const [isSavingTortu, setIsSavingTortu] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -1129,6 +1141,17 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         >
                             Geçmiş
                         </button>
+                        <button
+                            onClick={() => setActiveSection("mindmap")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
+                                activeSection === "mindmap"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Zihin Haritası
+                        </button>
                     </div>
 
                     {/* Tab Content */}
@@ -1666,6 +1689,30 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         ))}
                                     </div>
                                 )}
+                            </div>
+                        )}
+
+                        {/* Mindmap Section */}
+                        {activeSection === "mindmap" && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <Map className="h-5 w-5 text-primary" />
+                                        Zihin Haritası
+                                    </h3>
+                                </div>
+                                <MarkmapRenderer
+                                    content={mindmapContent}
+                                    onChange={setMindmapContent}
+                                    onSave={async (content) => {
+                                        const result = await updateBook(book.id, { mindmapContent: content })
+                                        if (result.success) {
+                                            toast.success("Zihin haritası kaydedildi")
+                                        } else {
+                                            toast.error("Kaydetme başarısız")
+                                        }
+                                    }}
+                                />
                             </div>
                         )}
                     </div>
