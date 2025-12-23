@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { updateBook, deleteBook } from "@/actions/library"
 import { analyzeTortu, analyzeImza, generateReadingExperienceReport, analyzeReadingNotes, type ReadingExperienceReport, type ReadingNotesAnalysis } from "@/actions/ai"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -1715,10 +1717,29 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
 
                                 {isEditingBriefing || !briefing ? (
                                     <>
-                                        <TortuEditor
-                                            initialContent={briefing}
-                                            onChange={(content) => setBriefing(content)}
+                                        <Textarea
+                                            value={briefing}
+                                            onChange={(e) => setBriefing(e.target.value)}
+                                            placeholder="Markdown formatında brifing yazın...
+
+# Başlık
+## Alt Başlık
+
+- Liste öğesi
+- Başka öğe
+
+**Kalın** ve *italik* metin
+
+> Alıntı bloğu
+
+```
+Kod bloğu
+```"
+                                            className="min-h-[400px] font-mono text-sm"
                                         />
+                                        <p className="text-xs text-muted-foreground">
+                                            Markdown formatı desteklenir: # Başlık, **kalın**, *italik*, - liste, {'>'} alıntı, ``` kod bloğu
+                                        </p>
                                         <div className="flex justify-end gap-2">
                                             {briefing && (
                                                 <Button
@@ -1747,10 +1768,11 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         </div>
                                     </>
                                 ) : (
-                                    <div
-                                        className="prose prose-sm dark:prose-invert max-w-none"
-                                        dangerouslySetInnerHTML={{ __html: briefing }}
-                                    />
+                                    <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground prose-blockquote:text-muted-foreground prose-code:text-primary prose-pre:bg-muted">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {briefing}
+                                        </ReactMarkdown>
+                                    </div>
                                 )}
                             </div>
                         )}
