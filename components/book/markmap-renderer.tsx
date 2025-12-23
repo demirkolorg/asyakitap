@@ -8,8 +8,6 @@ import { Textarea } from "@/components/ui/textarea"
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
 } from "@/components/ui/dialog"
 import { Pencil, Eye, Save, X, ZoomIn, ZoomOut, Maximize2, Fullscreen } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -82,36 +80,43 @@ export function MarkmapRenderer({
 
     // Fullscreen Markmap'i render et
     useEffect(() => {
-        if (fullscreenSvgRef.current && isFullscreen) {
-            const contentToRender = content || DEFAULT_MINDMAP
-            const { root } = transformer.transform(contentToRender)
-
-            // Önceki instance'ı temizle
+        if (!isFullscreen) {
+            // Modal kapandığında temizle
             if (fullscreenMarkmapRef.current) {
                 fullscreenMarkmapRef.current.destroy()
                 fullscreenMarkmapRef.current = null
             }
-
-            // Yeni instance oluştur
-            fullscreenMarkmapRef.current = Markmap.create(fullscreenSvgRef.current, {
-                autoFit: true,
-                duration: 500,
-                maxWidth: 400,
-                paddingX: 24,
-            }, root)
-
-            // Biraz gecikme ile fit et (dialog animasyonu için)
-            setTimeout(() => {
-                fullscreenMarkmapRef.current?.fit()
-            }, 100)
+            return
         }
 
-        return () => {
-            if (fullscreenMarkmapRef.current && !isFullscreen) {
-                fullscreenMarkmapRef.current.destroy()
-                fullscreenMarkmapRef.current = null
+        // Modal açıldığında biraz bekle (DOM'un hazır olması için)
+        const timer = setTimeout(() => {
+            if (fullscreenSvgRef.current) {
+                const contentToRender = content || DEFAULT_MINDMAP
+                const { root } = transformer.transform(contentToRender)
+
+                // Önceki instance'ı temizle
+                if (fullscreenMarkmapRef.current) {
+                    fullscreenMarkmapRef.current.destroy()
+                    fullscreenMarkmapRef.current = null
+                }
+
+                // Yeni instance oluştur
+                fullscreenMarkmapRef.current = Markmap.create(fullscreenSvgRef.current, {
+                    autoFit: true,
+                    duration: 500,
+                    maxWidth: 400,
+                    paddingX: 24,
+                }, root)
+
+                // Fit et
+                setTimeout(() => {
+                    fullscreenMarkmapRef.current?.fit()
+                }, 50)
             }
-        }
+        }, 150)
+
+        return () => clearTimeout(timer)
     }, [content, isFullscreen])
 
     // Pencere boyutu değiştiğinde fit et
@@ -272,24 +277,29 @@ export function MarkmapRenderer({
 
             {/* Fullscreen Modal */}
             <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
-                <DialogContent className="max-w-none w-screen h-screen max-h-screen p-0 rounded-none border-none gap-0">
-                    <DialogHeader className="absolute top-0 left-0 right-0 z-10 px-4 py-2 bg-background/80 backdrop-blur-sm border-b">
-                        <div className="flex items-center justify-between">
-                            <DialogTitle className="text-base font-semibold">Zihin Haritası</DialogTitle>
-                            <div className="flex gap-2">
-                                <Button variant="outline" size="sm" onClick={handleFullscreenZoomIn}>
-                                    <ZoomIn className="h-4 w-4" />
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={handleFullscreenZoomOut}>
-                                    <ZoomOut className="h-4 w-4" />
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={handleFullscreenFit}>
-                                    <Maximize2 className="h-4 w-4" />
-                                </Button>
-                            </div>
+                <DialogContent
+                    showCloseButton={false}
+                    className="fixed inset-0 translate-x-0 translate-y-0 top-0 left-0 p-0 rounded-none border-none gap-0 bg-background"
+                    style={{ maxWidth: '100vw', width: '100vw', height: '100vh', maxHeight: '100vh' }}
+                >
+                    <div className="absolute top-0 left-0 right-0 z-10 px-4 py-2 bg-background/80 backdrop-blur-sm border-b flex items-center justify-between">
+                        <span className="text-base font-semibold">Zihin Haritası</span>
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={handleFullscreenZoomIn}>
+                                <ZoomIn className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={handleFullscreenZoomOut}>
+                                <ZoomOut className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={handleFullscreenFit}>
+                                <Maximize2 className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => setIsFullscreen(false)}>
+                                <X className="h-4 w-4" />
+                            </Button>
                         </div>
-                    </DialogHeader>
-                    <div className="w-full h-full overflow-hidden">
+                    </div>
+                    <div className="w-full h-full pt-12 overflow-hidden">
                         <svg
                             ref={fullscreenSvgRef}
                             className="w-full h-full"
