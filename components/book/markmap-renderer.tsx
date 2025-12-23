@@ -1,11 +1,17 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { Transformer } from "markmap-lib"
 import { Markmap } from "markmap-view"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Pencil, Eye, Save, X, ZoomIn, ZoomOut, Maximize2 } from "lucide-react"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { Pencil, Eye, Save, X, ZoomIn, ZoomOut, Maximize2, Fullscreen } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface MarkmapRendererProps {
@@ -46,8 +52,11 @@ export function MarkmapRenderer({
     className,
 }: MarkmapRendererProps) {
     const svgRef = useRef<SVGSVGElement>(null)
+    const fullscreenSvgRef = useRef<SVGSVGElement>(null)
     const markmapRef = useRef<Markmap | null>(null)
+    const fullscreenMarkmapRef = useRef<Markmap | null>(null)
     const [isEditing, setIsEditing] = useState(false)
+    const [isFullscreen, setIsFullscreen] = useState(false)
     const [editContent, setEditContent] = useState(content || DEFAULT_MINDMAP)
     const [isSaving, setIsSaving] = useState(false)
 
@@ -70,6 +79,40 @@ export function MarkmapRenderer({
             }
         }
     }, [content, isEditing])
+
+    // Fullscreen Markmap'i render et
+    useEffect(() => {
+        if (fullscreenSvgRef.current && isFullscreen) {
+            const contentToRender = content || DEFAULT_MINDMAP
+            const { root } = transformer.transform(contentToRender)
+
+            // Önceki instance'ı temizle
+            if (fullscreenMarkmapRef.current) {
+                fullscreenMarkmapRef.current.destroy()
+                fullscreenMarkmapRef.current = null
+            }
+
+            // Yeni instance oluştur
+            fullscreenMarkmapRef.current = Markmap.create(fullscreenSvgRef.current, {
+                autoFit: true,
+                duration: 500,
+                maxWidth: 400,
+                paddingX: 24,
+            }, root)
+
+            // Biraz gecikme ile fit et (dialog animasyonu için)
+            setTimeout(() => {
+                fullscreenMarkmapRef.current?.fit()
+            }, 100)
+        }
+
+        return () => {
+            if (fullscreenMarkmapRef.current && !isFullscreen) {
+                fullscreenMarkmapRef.current.destroy()
+                fullscreenMarkmapRef.current = null
+            }
+        }
+    }, [content, isFullscreen])
 
     // Pencere boyutu değiştiğinde fit et
     useEffect(() => {
@@ -122,6 +165,25 @@ export function MarkmapRenderer({
         }
     }
 
+    // Fullscreen zoom fonksiyonları
+    const handleFullscreenZoomIn = () => {
+        if (fullscreenMarkmapRef.current) {
+            fullscreenMarkmapRef.current.rescale(1.25)
+        }
+    }
+
+    const handleFullscreenZoomOut = () => {
+        if (fullscreenMarkmapRef.current) {
+            fullscreenMarkmapRef.current.rescale(0.8)
+        }
+    }
+
+    const handleFullscreenFit = () => {
+        if (fullscreenMarkmapRef.current) {
+            fullscreenMarkmapRef.current.fit()
+        }
+    }
+
     if (isEditing) {
         return (
             <div className={cn("space-y-4", className)}>
@@ -164,44 +226,78 @@ export function MarkmapRenderer({
     }
 
     return (
-        <div className={cn("space-y-4", className)}>
-            <div className="flex items-center justify-between">
-                <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={handleZoomIn}>
-                        <ZoomIn className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={handleZoomOut}>
-                        <ZoomOut className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={handleFit}>
-                        <Maximize2 className="h-4 w-4" />
-                    </Button>
-                </div>
-                {!readOnly && (
-                    <Button variant="outline" size="sm" onClick={handleEdit}>
-                        <Pencil className="h-4 w-4 mr-1" />
-                        Düzenle
-                    </Button>
-                )}
-            </div>
-            <div className="relative w-full h-[500px] border rounded-lg bg-background overflow-hidden">
-                <svg
-                    ref={svgRef}
-                    className="w-full h-full"
-                    style={{ background: "var(--background)" }}
-                />
-                {!content && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="text-center text-muted-foreground">
-                            <Eye className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                            <p>Henüz zihin haritası eklenmemiş</p>
-                            {!readOnly && (
-                                <p className="text-sm">Düzenle butonuna tıklayarak ekleyebilirsiniz</p>
-                            )}
-                        </div>
+        <>
+            <div className={cn("space-y-4", className)}>
+                <div className="flex items-center justify-between">
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={handleZoomIn}>
+                            <ZoomIn className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={handleZoomOut}>
+                            <ZoomOut className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={handleFit}>
+                            <Maximize2 className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => setIsFullscreen(true)}>
+                            <Fullscreen className="h-4 w-4" />
+                        </Button>
                     </div>
-                )}
+                    {!readOnly && (
+                        <Button variant="outline" size="sm" onClick={handleEdit}>
+                            <Pencil className="h-4 w-4 mr-1" />
+                            Düzenle
+                        </Button>
+                    )}
+                </div>
+                <div className="relative w-full h-[500px] border rounded-lg bg-background overflow-hidden">
+                    <svg
+                        ref={svgRef}
+                        className="w-full h-full"
+                        style={{ background: "var(--background)" }}
+                    />
+                    {!content && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="text-center text-muted-foreground">
+                                <Eye className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                                <p>Henüz zihin haritası eklenmemiş</p>
+                                {!readOnly && (
+                                    <p className="text-sm">Düzenle butonuna tıklayarak ekleyebilirsiniz</p>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+
+            {/* Fullscreen Modal */}
+            <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
+                <DialogContent className="max-w-[95vw] w-[95vw] max-h-[95vh] h-[95vh] p-0">
+                    <DialogHeader className="px-6 py-4 border-b">
+                        <div className="flex items-center justify-between">
+                            <DialogTitle className="text-lg font-semibold">Zihin Haritası</DialogTitle>
+                            <div className="flex gap-2">
+                                <Button variant="outline" size="sm" onClick={handleFullscreenZoomIn}>
+                                    <ZoomIn className="h-4 w-4" />
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={handleFullscreenZoomOut}>
+                                    <ZoomOut className="h-4 w-4" />
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={handleFullscreenFit}>
+                                    <Maximize2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </DialogHeader>
+                    <div className="flex-1 w-full h-[calc(95vh-80px)] overflow-hidden">
+                        <svg
+                            ref={fullscreenSvgRef}
+                            className="w-full h-full"
+                            style={{ background: "var(--background)" }}
+                        />
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
     )
 }
