@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { ThemeSelector } from '@/components/theme-selector';
 import { UserNavMenu } from '@/components/layout/user-nav-menu';
 import { GlobalSearch } from '@/components/global-search';
 import { KitapyurduModal } from '@/components/kitapyurdu-modal';
@@ -199,7 +199,7 @@ export function DashboardHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <ThemeToggle />
+          <ThemeSelector />
           <UserNavMenu />
         </div>
       </header>
