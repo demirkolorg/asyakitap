@@ -860,7 +860,7 @@ export function StatsClient({ stats, extendedStats }: StatsClientProps) {
                                     <Hash className="h-5 w-5 text-pink-500" />
                                     <h3 className="font-semibold">Kelime Bulutu</h3>
                                     <span className="text-xs text-muted-foreground ml-auto">
-                                        Alıntı ve notlardan
+                                        Alıntı, not, tortu ve imzalardan
                                     </span>
                                 </div>
                                 <div className="flex flex-wrap gap-2 justify-center">

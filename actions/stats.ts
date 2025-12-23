@@ -1229,8 +1229,8 @@ export async function getWordCloudData(): Promise<WordCloudData | null> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return null
 
-    // Alıntıları ve notları çek
-    const [quotes, notes] = await Promise.all([
+    // Tüm metin içeriklerini çek: alıntılar, notlar, tortu, imza
+    const [quotes, notes, books] = await Promise.all([
         prisma.quote.findMany({
             where: { book: { userId: user.id } },
             select: { content: true }
@@ -1238,11 +1238,20 @@ export async function getWordCloudData(): Promise<WordCloudData | null> {
         prisma.readingNote.findMany({
             where: { book: { userId: user.id } },
             select: { content: true }
+        }),
+        prisma.book.findMany({
+            where: { userId: user.id },
+            select: { tortu: true, imza: true }
         })
     ])
 
     // Tüm metinleri birleştir
-    const allText = [...quotes.map(q => q.content), ...notes.map(n => n.content)].join(' ')
+    const allText = [
+        ...quotes.map(q => q.content),
+        ...notes.map(n => n.content),
+        ...books.map(b => b.tortu).filter(Boolean),
+        ...books.map(b => b.imza).filter(Boolean)
+    ].join(' ')
 
     // Türkçe stop words
     const stopWords = new Set([
