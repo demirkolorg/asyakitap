@@ -9,7 +9,7 @@ import {
     Dialog,
     DialogContent,
 } from "@/components/ui/dialog"
-import { Pencil, Eye, Save, X, ZoomIn, ZoomOut, Maximize2, Fullscreen } from "lucide-react"
+import { Pencil, Eye, Save, X, ZoomIn, ZoomOut, Maximize2, Fullscreen, ChevronsDownUp, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface MarkmapRendererProps {
@@ -189,6 +189,46 @@ export function MarkmapRenderer({
         }
     }
 
+    // Tüm düğümleri aç
+    const handleExpandAll = () => {
+        if (markmapRef.current) {
+            const contentToRender = content || DEFAULT_MINDMAP
+            const { root } = transformer.transform(contentToRender)
+            markmapRef.current.setData(root, { initialExpandLevel: -1 })
+            setTimeout(() => markmapRef.current?.fit(), 100)
+        }
+    }
+
+    // Tüm düğümleri kapat
+    const handleCollapseAll = () => {
+        if (markmapRef.current) {
+            const contentToRender = content || DEFAULT_MINDMAP
+            const { root } = transformer.transform(contentToRender)
+            markmapRef.current.setData(root, { initialExpandLevel: 1 })
+            setTimeout(() => markmapRef.current?.fit(), 100)
+        }
+    }
+
+    // Fullscreen - Tüm düğümleri aç
+    const handleFullscreenExpandAll = () => {
+        if (fullscreenMarkmapRef.current) {
+            const contentToRender = content || DEFAULT_MINDMAP
+            const { root } = transformer.transform(contentToRender)
+            fullscreenMarkmapRef.current.setData(root, { initialExpandLevel: -1 })
+            setTimeout(() => fullscreenMarkmapRef.current?.fit(), 100)
+        }
+    }
+
+    // Fullscreen - Tüm düğümleri kapat
+    const handleFullscreenCollapseAll = () => {
+        if (fullscreenMarkmapRef.current) {
+            const contentToRender = content || DEFAULT_MINDMAP
+            const { root } = transformer.transform(contentToRender)
+            fullscreenMarkmapRef.current.setData(root, { initialExpandLevel: 1 })
+            setTimeout(() => fullscreenMarkmapRef.current?.fit(), 100)
+        }
+    }
+
     if (isEditing) {
         return (
             <div className={cn("space-y-4", className)}>
@@ -235,16 +275,22 @@ export function MarkmapRenderer({
             <div className={cn("space-y-4", className)}>
                 <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={handleZoomIn}>
+                        <Button variant="outline" size="sm" onClick={handleZoomIn} title="Yakınlaştır">
                             <ZoomIn className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm" onClick={handleZoomOut}>
+                        <Button variant="outline" size="sm" onClick={handleZoomOut} title="Uzaklaştır">
                             <ZoomOut className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm" onClick={handleFit}>
+                        <Button variant="outline" size="sm" onClick={handleFit} title="Sığdır">
                             <Maximize2 className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => setIsFullscreen(true)}>
+                        <Button variant="outline" size="sm" onClick={handleExpandAll} title="Tümünü Aç">
+                            <ChevronsUpDown className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={handleCollapseAll} title="Tümünü Kapat">
+                            <ChevronsDownUp className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => setIsFullscreen(true)} title="Tam Ekran">
                             <Fullscreen className="h-4 w-4" />
                         </Button>
                     </div>
@@ -285,16 +331,22 @@ export function MarkmapRenderer({
                     <div className="absolute top-0 left-0 right-0 z-10 px-4 py-2 bg-background/80 backdrop-blur-sm border-b flex items-center justify-between">
                         <span className="text-base font-semibold">Zihin Haritası</span>
                         <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={handleFullscreenZoomIn}>
+                            <Button variant="outline" size="sm" onClick={handleFullscreenZoomIn} title="Yakınlaştır">
                                 <ZoomIn className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm" onClick={handleFullscreenZoomOut}>
+                            <Button variant="outline" size="sm" onClick={handleFullscreenZoomOut} title="Uzaklaştır">
                                 <ZoomOut className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm" onClick={handleFullscreenFit}>
+                            <Button variant="outline" size="sm" onClick={handleFullscreenFit} title="Sığdır">
                                 <Maximize2 className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm" onClick={() => setIsFullscreen(false)}>
+                            <Button variant="outline" size="sm" onClick={handleFullscreenExpandAll} title="Tümünü Aç">
+                                <ChevronsUpDown className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={handleFullscreenCollapseAll} title="Tümünü Kapat">
+                                <ChevronsDownUp className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => setIsFullscreen(false)} title="Kapat">
                                 <X className="h-4 w-4" />
                             </Button>
                         </div>
