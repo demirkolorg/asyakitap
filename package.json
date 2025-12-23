@@ -41,6 +41,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.87.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@tiptap/extension-bubble-menu": "^3.13.0",
     "@tiptap/extension-link": "^3.13.0",
     "@tiptap/extension-placeholder": "^3.13.0",
