@@ -208,7 +208,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const readingListBooks = book.readingListBooks || []
     const challengeBooks = book.challengeBooks || []
 
-    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "history" | "discussion" | "report" | "mindmap" | "briefing">("tortu")
+    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "discussion" | "report" | "mindmap" | "briefing">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
     const [mindmapContent, setMindmapContent] = useState(book.mindmapContent || "")
@@ -1134,17 +1134,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             Rapor
                         </button>
                         <button
-                            onClick={() => setActiveSection("history")}
-                            className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
-                                activeSection === "history"
-                                    ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                            )}
-                        >
-                            Geçmiş
-                        </button>
-                        <button
                             onClick={() => setActiveSection("mindmap")}
                             className={cn(
                                 "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
@@ -1677,35 +1666,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                             </div>
                         )}
 
-                        {/* History Section */}
-                        {activeSection === "history" && (
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
-                                    <Clock className="h-5 w-5 text-primary" />
-                                    Okuma Geçmişi
-                                </h3>
-                                {readingLogs.length === 0 ? (
-                                    <p className="text-muted-foreground text-center py-8">
-                                        Henüz kayıt yok
-                                    </p>
-                                ) : (
-                                    <div className="relative pl-6 border-l-2 border-muted space-y-6">
-                                        {readingLogs.map((log) => (
-                                            <div key={log.id} className="relative">
-                                                <div className="absolute -left-[25px] w-3 h-3 rounded-full bg-primary" />
-                                                <div>
-                                                    <p className="font-medium">{actionLabels[log.action]}</p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {formatDate(log.createdAt, { format: "long" })}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
                         {/* Mindmap Section */}
                         {activeSection === "mindmap" && (
                             <div className="space-y-4">
@@ -1926,6 +1886,42 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     <span className="text-sm">
                                         {formatDate(book.endDate, { format: "short", dateOnly: true })}
                                     </span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Okuma Geçmişi */}
+                    <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+                        <div className="p-4 border-b border-border/50">
+                            <div className="flex items-center gap-2">
+                                <Clock className="h-5 w-5 text-amber-500" />
+                                <h4 className="text-sm font-bold">Okuma Geçmişi</h4>
+                            </div>
+                        </div>
+                        <div className="p-4">
+                            {readingLogs.length === 0 ? (
+                                <p className="text-sm text-muted-foreground text-center py-2">
+                                    Henüz kayıt yok
+                                </p>
+                            ) : (
+                                <div className="relative pl-4 border-l-2 border-muted space-y-3">
+                                    {readingLogs.slice(0, 5).map((log) => (
+                                        <div key={log.id} className="relative">
+                                            <div className="absolute -left-[21px] w-2.5 h-2.5 rounded-full bg-primary" />
+                                            <div>
+                                                <p className="text-sm font-medium">{actionLabels[log.action]}</p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {formatDate(log.createdAt, { format: "short" })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {readingLogs.length > 5 && (
+                                        <p className="text-xs text-muted-foreground text-center pt-2">
+                                            +{readingLogs.length - 5} daha fazla kayıt
+                                        </p>
+                                    )}
                                 </div>
                             )}
                         </div>
