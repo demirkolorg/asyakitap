@@ -272,10 +272,10 @@ export function MarkmapRenderer({
 
             {/* Fullscreen Modal */}
             <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
-                <DialogContent className="max-w-[95vw] w-[95vw] max-h-[95vh] h-[95vh] p-0">
-                    <DialogHeader className="px-6 py-4 border-b">
+                <DialogContent className="max-w-none w-screen h-screen max-h-screen p-0 rounded-none border-none gap-0">
+                    <DialogHeader className="absolute top-0 left-0 right-0 z-10 px-4 py-2 bg-background/80 backdrop-blur-sm border-b">
                         <div className="flex items-center justify-between">
-                            <DialogTitle className="text-lg font-semibold">Zihin Haritası</DialogTitle>
+                            <DialogTitle className="text-base font-semibold">Zihin Haritası</DialogTitle>
                             <div className="flex gap-2">
                                 <Button variant="outline" size="sm" onClick={handleFullscreenZoomIn}>
                                     <ZoomIn className="h-4 w-4" />
@@ -289,7 +289,7 @@ export function MarkmapRenderer({
                             </div>
                         </div>
                     </DialogHeader>
-                    <div className="flex-1 w-full h-[calc(95vh-80px)] overflow-hidden">
+                    <div className="w-full h-full overflow-hidden">
                         <svg
                             ref={fullscreenSvgRef}
                             className="w-full h-full"
