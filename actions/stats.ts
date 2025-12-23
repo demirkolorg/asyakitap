@@ -695,3 +695,640 @@ export async function getStreakData(): Promise<StreakData | null> {
         lastActivityDate
     }
 }
+
+// ==========================================
+// Yıllık Karşılaştırma
+// ==========================================
+
+export interface YearlyComparison {
+    currentYear: number
+    previousYear: number
+    current: {
+        books: number
+        pages: number
+        avgRating: number
+        avgDaysPerBook: number | null
+    }
+    previous: {
+        books: number
+        pages: number
+        avgRating: number
+        avgDaysPerBook: number | null
+    }
+    changes: {
+        books: number // yüzde değişim
+        pages: number
+        avgRating: number
+        avgDaysPerBook: number | null
+    }
+}
+
+export async function getYearlyComparison(): Promise<YearlyComparison | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const now = getNowInTurkey()
+    const currentYear = now.getFullYear()
+    const previousYear = currentYear - 1
+
+    const currentYearStart = new Date(currentYear, 0, 1)
+    const currentYearEnd = new Date(currentYear, 11, 31, 23, 59, 59)
+    const previousYearStart = new Date(previousYear, 0, 1)
+    const previousYearEnd = new Date(previousYear, 11, 31, 23, 59, 59)
+
+    // Her iki yıl için kitapları çek
+    const [currentBooks, previousBooks] = await Promise.all([
+        prisma.book.findMany({
+            where: {
+                userId: user.id,
+                status: 'COMPLETED',
+                endDate: { gte: currentYearStart, lte: currentYearEnd }
+            },
+            include: { rating: true }
+        }),
+        prisma.book.findMany({
+            where: {
+                userId: user.id,
+                status: 'COMPLETED',
+                endDate: { gte: previousYearStart, lte: previousYearEnd }
+            },
+            include: { rating: true }
+        })
+    ])
+
+    const calcStats = (books: typeof currentBooks) => {
+        const count = books.length
+        const pages = books.reduce((sum, b) => sum + (b.pageCount || 0), 0)
+        const ratings = books.filter(b => b.rating).map(b => b.rating!.ortalamaPuan)
+        const avgRating = ratings.length > 0 ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10 : 0
+
+        // Ortalama gün hesapla
+        const daysPerBook = books
+            .filter(b => b.startDate && b.endDate)
+            .map(b => {
+                const start = new Date(b.startDate!)
+                const end = new Date(b.endDate!)
+                return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+            })
+        const avgDays = daysPerBook.length > 0 ? Math.round(daysPerBook.reduce((a, b) => a + b, 0) / daysPerBook.length) : null
+
+        return { books: count, pages, avgRating, avgDaysPerBook: avgDays }
+    }
+
+    const current = calcStats(currentBooks)
+    const previous = calcStats(previousBooks)
+
+    const calcChange = (curr: number, prev: number) => {
+        if (prev === 0) return curr > 0 ? 100 : 0
+        return Math.round(((curr - prev) / prev) * 100)
+    }
+
+    return {
+        currentYear,
+        previousYear,
+        current,
+        previous,
+        changes: {
+            books: calcChange(current.books, previous.books),
+            pages: calcChange(current.pages, previous.pages),
+            avgRating: Math.round((current.avgRating - previous.avgRating) * 10) / 10,
+            avgDaysPerBook: current.avgDaysPerBook && previous.avgDaysPerBook
+                ? current.avgDaysPerBook - previous.avgDaysPerBook
+                : null
+        }
+    }
+}
+
+// ==========================================
+// Puan Dağılımı
+// ==========================================
+
+export interface RatingDistribution {
+    distribution: { rating: number; count: number }[]
+    averageRating: number
+    totalRated: number
+    mostCommonRating: number
+}
+
+export async function getRatingDistribution(): Promise<RatingDistribution | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const ratings = await prisma.bookRating.findMany({
+        where: { book: { userId: user.id } },
+        select: { genelPuan: true, ortalamaPuan: true }
+    })
+
+    // 1-10 arası dağılım
+    const distribution: { rating: number; count: number }[] = []
+    for (let i = 1; i <= 10; i++) {
+        distribution.push({
+            rating: i,
+            count: ratings.filter(r => Math.round(r.genelPuan) === i).length
+        })
+    }
+
+    const totalRated = ratings.length
+    const averageRating = totalRated > 0
+        ? Math.round((ratings.reduce((sum, r) => sum + r.ortalamaPuan, 0) / totalRated) * 10) / 10
+        : 0
+
+    const mostCommonRating = distribution.reduce((max, curr) =>
+        curr.count > max.count ? curr : max, distribution[0])?.rating || 0
+
+    return { distribution, averageRating, totalRated, mostCommonRating }
+}
+
+// ==========================================
+// Okuma Hızı Trendi
+// ==========================================
+
+export interface SpeedTrend {
+    months: {
+        month: string
+        year: number
+        pagesPerDay: number | null
+        booksCompleted: number
+    }[]
+    trend: 'increasing' | 'decreasing' | 'stable'
+    averageSpeed: number
+}
+
+export async function getSpeedTrend(): Promise<SpeedTrend | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const now = getNowInTurkey()
+    const sixMonthsAgo = new Date(now)
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+
+    const books = await prisma.book.findMany({
+        where: {
+            userId: user.id,
+            status: 'COMPLETED',
+            startDate: { not: null },
+            endDate: { gte: sixMonthsAgo }
+        },
+        select: { startDate: true, endDate: true, pageCount: true }
+    })
+
+    // Aylık gruplama
+    const monthlyData = new Map<string, { pages: number; days: number; books: number }>()
+
+    books.forEach(book => {
+        if (!book.startDate || !book.endDate || !book.pageCount) return
+        const endDate = new Date(book.endDate)
+        const monthKey = `${endDate.getFullYear()}-${endDate.getMonth()}`
+        const days = Math.max(1, Math.ceil((endDate.getTime() - new Date(book.startDate).getTime()) / (1000 * 60 * 60 * 24)))
+
+        const existing = monthlyData.get(monthKey) || { pages: 0, days: 0, books: 0 }
+        monthlyData.set(monthKey, {
+            pages: existing.pages + book.pageCount,
+            days: existing.days + days,
+            books: existing.books + 1
+        })
+    })
+
+    const months: SpeedTrend['months'] = []
+    for (let i = 5; i >= 0; i--) {
+        const date = new Date(now)
+        date.setMonth(date.getMonth() - i)
+        const monthKey = `${date.getFullYear()}-${date.getMonth()}`
+        const data = monthlyData.get(monthKey)
+
+        months.push({
+            month: TURKISH_MONTHS[date.getMonth()],
+            year: date.getFullYear(),
+            pagesPerDay: data && data.days > 0 ? Math.round(data.pages / data.days) : null,
+            booksCompleted: data?.books || 0
+        })
+    }
+
+    // Trend hesapla
+    const speeds = months.map(m => m.pagesPerDay).filter((s): s is number => s !== null)
+    let trend: SpeedTrend['trend'] = 'stable'
+    if (speeds.length >= 3) {
+        const firstHalf = speeds.slice(0, Math.floor(speeds.length / 2))
+        const secondHalf = speeds.slice(Math.floor(speeds.length / 2))
+        const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length
+        const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length
+        if (secondAvg > firstAvg * 1.1) trend = 'increasing'
+        else if (secondAvg < firstAvg * 0.9) trend = 'decreasing'
+    }
+
+    const averageSpeed = speeds.length > 0 ? Math.round(speeds.reduce((a, b) => a + b, 0) / speeds.length) : 0
+
+    return { months, trend, averageSpeed }
+}
+
+// ==========================================
+// Sayfa Sayısı Dağılımı
+// ==========================================
+
+export interface PageDistribution {
+    ranges: { range: string; min: number; max: number; count: number }[]
+    averagePages: number
+    shortestBook: { title: string; pages: number } | null
+    longestBook: { title: string; pages: number } | null
+}
+
+export async function getPageDistribution(): Promise<PageDistribution | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const books = await prisma.book.findMany({
+        where: { userId: user.id, pageCount: { gt: 0 } },
+        select: { title: true, pageCount: true }
+    })
+
+    const ranges = [
+        { range: '0-100', min: 0, max: 100, count: 0 },
+        { range: '101-200', min: 101, max: 200, count: 0 },
+        { range: '201-300', min: 201, max: 300, count: 0 },
+        { range: '301-400', min: 301, max: 400, count: 0 },
+        { range: '401-500', min: 401, max: 500, count: 0 },
+        { range: '500+', min: 501, max: Infinity, count: 0 }
+    ]
+
+    books.forEach(book => {
+        const pages = book.pageCount || 0
+        const range = ranges.find(r => pages >= r.min && pages <= r.max)
+        if (range) range.count++
+    })
+
+    const totalPages = books.reduce((sum, b) => sum + (b.pageCount || 0), 0)
+    const averagePages = books.length > 0 ? Math.round(totalPages / books.length) : 0
+
+    const sortedByPages = [...books].sort((a, b) => (a.pageCount || 0) - (b.pageCount || 0))
+    const shortestBook = sortedByPages[0] ? { title: sortedByPages[0].title, pages: sortedByPages[0].pageCount || 0 } : null
+    const longestBook = sortedByPages[sortedByPages.length - 1]
+        ? { title: sortedByPages[sortedByPages.length - 1].title, pages: sortedByPages[sortedByPages.length - 1].pageCount || 0 }
+        : null
+
+    return { ranges, averagePages, shortestBook, longestBook }
+}
+
+// ==========================================
+// En Hızlı/Yavaş Okunan Kitaplar
+// ==========================================
+
+export interface ReadingSpeed {
+    fastest: { title: string; author: string | null; days: number; pagesPerDay: number }[]
+    slowest: { title: string; author: string | null; days: number; pagesPerDay: number }[]
+}
+
+export async function getReadingSpeed(): Promise<ReadingSpeed | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const books = await prisma.book.findMany({
+        where: {
+            userId: user.id,
+            status: 'COMPLETED',
+            startDate: { not: null },
+            endDate: { not: null },
+            pageCount: { gt: 0 }
+        },
+        include: { author: { select: { name: true } } }
+    })
+
+    const booksWithSpeed = books.map(book => {
+        const days = Math.max(1, Math.ceil(
+            (new Date(book.endDate!).getTime() - new Date(book.startDate!).getTime()) / (1000 * 60 * 60 * 24)
+        ))
+        return {
+            title: book.title,
+            author: book.author?.name || null,
+            days,
+            pagesPerDay: Math.round((book.pageCount || 0) / days)
+        }
+    }).sort((a, b) => b.pagesPerDay - a.pagesPerDay)
+
+    return {
+        fastest: booksWithSpeed.slice(0, 5),
+        slowest: booksWithSpeed.slice(-5).reverse()
+    }
+}
+
+// ==========================================
+// Achievements / Rozetler
+// ==========================================
+
+export interface Achievement {
+    id: string
+    name: string
+    description: string
+    icon: string
+    earned: boolean
+    progress: number // 0-100
+    earnedDate?: string
+}
+
+export async function getAchievements(): Promise<Achievement[]> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    const userId = user.id
+
+    // Verileri çek
+    const [books, authors, streakData, quotes, ratings] = await Promise.all([
+        prisma.book.findMany({ where: { userId } }),
+        prisma.book.findMany({
+            where: { userId, status: 'COMPLETED' },
+            select: { authorId: true }
+        }),
+        getStreakData(),
+        prisma.quote.count({ where: { book: { userId } } }),
+        prisma.bookRating.count({ where: { book: { userId } } })
+    ])
+
+    const completedBooks = books.filter(b => b.status === 'COMPLETED').length
+    const totalBooks = books.length
+    const uniqueAuthors = new Set(authors.map(a => a.authorId).filter(Boolean)).size
+    const currentStreak = streakData?.currentStreak || 0
+    const longestStreak = streakData?.longestStreak || 0
+    const booksInLibrary = books.filter(b => b.inLibrary).length
+
+    const achievements: Achievement[] = [
+        {
+            id: 'first_book',
+            name: 'İlk Adım',
+            description: 'İlk kitabını tamamla',
+            icon: '📖',
+            earned: completedBooks >= 1,
+            progress: Math.min(completedBooks / 1 * 100, 100)
+        },
+        {
+            id: 'bookworm_10',
+            name: 'Kitap Kurdu',
+            description: '10 kitap tamamla',
+            icon: '🐛',
+            earned: completedBooks >= 10,
+            progress: Math.min(completedBooks / 10 * 100, 100)
+        },
+        {
+            id: 'bookworm_50',
+            name: 'Kütüphaneci',
+            description: '50 kitap tamamla',
+            icon: '📚',
+            earned: completedBooks >= 50,
+            progress: Math.min(completedBooks / 50 * 100, 100)
+        },
+        {
+            id: 'bookworm_100',
+            name: 'Edebiyat Ustası',
+            description: '100 kitap tamamla',
+            icon: '🏆',
+            earned: completedBooks >= 100,
+            progress: Math.min(completedBooks / 100 * 100, 100)
+        },
+        {
+            id: 'streak_7',
+            name: 'Haftalık Seri',
+            description: '7 gün üst üste oku',
+            icon: '🔥',
+            earned: longestStreak >= 7,
+            progress: Math.min(longestStreak / 7 * 100, 100)
+        },
+        {
+            id: 'streak_30',
+            name: 'Aylık Seri',
+            description: '30 gün üst üste oku',
+            icon: '💪',
+            earned: longestStreak >= 30,
+            progress: Math.min(longestStreak / 30 * 100, 100)
+        },
+        {
+            id: 'diversity_10',
+            name: 'Çeşitlilik',
+            description: '10 farklı yazardan kitap oku',
+            icon: '🌈',
+            earned: uniqueAuthors >= 10,
+            progress: Math.min(uniqueAuthors / 10 * 100, 100)
+        },
+        {
+            id: 'quote_master',
+            name: 'Alıntı Ustası',
+            description: '50 alıntı kaydet',
+            icon: '✨',
+            earned: quotes >= 50,
+            progress: Math.min(quotes / 50 * 100, 100)
+        },
+        {
+            id: 'critic',
+            name: 'Eleştirmen',
+            description: '20 kitabı puanla',
+            icon: '⭐',
+            earned: ratings >= 20,
+            progress: Math.min(ratings / 20 * 100, 100)
+        },
+        {
+            id: 'collector',
+            name: 'Koleksiyoncu',
+            description: 'Kütüphanende 25 kitap olsun',
+            icon: '🏠',
+            earned: booksInLibrary >= 25,
+            progress: Math.min(booksInLibrary / 25 * 100, 100)
+        },
+        {
+            id: 'hoarder',
+            name: 'Kitap Biriktirici',
+            description: '100 kitap ekle',
+            icon: '📦',
+            earned: totalBooks >= 100,
+            progress: Math.min(totalBooks / 100 * 100, 100)
+        },
+        {
+            id: 'active_reader',
+            name: 'Aktif Okuyucu',
+            description: 'Şu an bir kitap okuyor ol',
+            icon: '👀',
+            earned: books.some(b => b.status === 'READING'),
+            progress: books.some(b => b.status === 'READING') ? 100 : 0
+        }
+    ]
+
+    return achievements.sort((a, b) => {
+        // Kazanılanlar önce, sonra progress'e göre
+        if (a.earned && !b.earned) return -1
+        if (!a.earned && b.earned) return 1
+        return b.progress - a.progress
+    })
+}
+
+// ==========================================
+// Kütüphane Değeri
+// ==========================================
+
+export interface LibraryValue {
+    totalBooksInLibrary: number
+    totalBooks: number
+    estimatedValue: number // TL cinsinden
+    averageBookPrice: number
+    oldestBook: { title: string; addedDate: string } | null
+    newestBook: { title: string; addedDate: string } | null
+}
+
+export async function getLibraryValue(): Promise<LibraryValue | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const books = await prisma.book.findMany({
+        where: { userId: user.id },
+        select: { title: true, inLibrary: true, pageCount: true, createdAt: true },
+        orderBy: { createdAt: 'asc' }
+    })
+
+    const booksInLibrary = books.filter(b => b.inLibrary)
+    const totalBooksInLibrary = booksInLibrary.length
+    const totalBooks = books.length
+
+    // Tahmini değer hesapla (ortalama kitap fiyatı ~80 TL varsayımı)
+    const averageBookPrice = 80
+    const estimatedValue = totalBooksInLibrary * averageBookPrice
+
+    const oldestBook = books[0] ? {
+        title: books[0].title,
+        addedDate: books[0].createdAt.toLocaleDateString('tr-TR')
+    } : null
+
+    const newestBook = books[books.length - 1] ? {
+        title: books[books.length - 1].title,
+        addedDate: books[books.length - 1].createdAt.toLocaleDateString('tr-TR')
+    } : null
+
+    return {
+        totalBooksInLibrary,
+        totalBooks,
+        estimatedValue,
+        averageBookPrice,
+        oldestBook,
+        newestBook
+    }
+}
+
+// ==========================================
+// Word Cloud Verisi
+// ==========================================
+
+export interface WordCloudData {
+    words: { text: string; value: number }[]
+    totalWords: number
+    uniqueWords: number
+}
+
+export async function getWordCloudData(): Promise<WordCloudData | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    // Alıntıları ve notları çek
+    const [quotes, notes] = await Promise.all([
+        prisma.quote.findMany({
+            where: { book: { userId: user.id } },
+            select: { content: true }
+        }),
+        prisma.readingNote.findMany({
+            where: { book: { userId: user.id } },
+            select: { content: true }
+        })
+    ])
+
+    // Tüm metinleri birleştir
+    const allText = [...quotes.map(q => q.content), ...notes.map(n => n.content)].join(' ')
+
+    // Türkçe stop words
+    const stopWords = new Set([
+        've', 'veya', 'ile', 'için', 'bu', 'bir', 'de', 'da', 'ki', 'ne', 'o', 'ben', 'sen',
+        'biz', 'siz', 'onlar', 'ama', 'fakat', 'ancak', 'çünkü', 'eğer', 'gibi', 'kadar',
+        'daha', 'en', 'çok', 'az', 'her', 'hiç', 'olan', 'olarak', 'var', 'yok', 'mı', 'mi',
+        'mu', 'mü', 'diye', 'şey', 'şeyi', 'tüm', 'bütün', 'hem', 'ya', 'sadece', 'bile',
+        'artık', 'hep', 'nasıl', 'neden', 'nerede', 'kim', 'hangi', 'zaten', 'belki'
+    ])
+
+    // Kelimeleri say
+    const wordCount = new Map<string, number>()
+    const words = allText.toLowerCase()
+        .replace(/[.,!?;:'"()\[\]{}—–-]/g, ' ')
+        .split(/\s+/)
+        .filter(word => word.length > 2 && !stopWords.has(word) && !/^\d+$/.test(word))
+
+    words.forEach(word => {
+        wordCount.set(word, (wordCount.get(word) || 0) + 1)
+    })
+
+    // En sık kullanılan 50 kelime
+    const sortedWords = Array.from(wordCount.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 50)
+        .map(([text, value]) => ({ text, value }))
+
+    return {
+        words: sortedWords,
+        totalWords: words.length,
+        uniqueWords: wordCount.size
+    }
+}
+
+// ==========================================
+// Tüm Gelişmiş İstatistikler
+// ==========================================
+
+export interface ExtendedStatsData {
+    yearlyComparison: YearlyComparison | null
+    ratingDistribution: RatingDistribution | null
+    speedTrend: SpeedTrend | null
+    pageDistribution: PageDistribution | null
+    readingSpeed: ReadingSpeed | null
+    achievements: Achievement[]
+    libraryValue: LibraryValue | null
+    wordCloud: WordCloudData | null
+    streakData: StreakData | null
+}
+
+export async function getExtendedStats(): Promise<ExtendedStatsData | null> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const [
+        yearlyComparison,
+        ratingDistribution,
+        speedTrend,
+        pageDistribution,
+        readingSpeed,
+        achievements,
+        libraryValue,
+        wordCloud,
+        streakData
+    ] = await Promise.all([
+        getYearlyComparison(),
+        getRatingDistribution(),
+        getSpeedTrend(),
+        getPageDistribution(),
+        getReadingSpeed(),
+        getAchievements(),
+        getLibraryValue(),
+        getWordCloudData(),
+        getStreakData()
+    ])
+
+    return {
+        yearlyComparison,
+        ratingDistribution,
+        speedTrend,
+        pageDistribution,
+        readingSpeed,
+        achievements,
+        libraryValue,
+        wordCloud,
+        streakData
+    }
+}
