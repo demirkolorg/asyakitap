@@ -208,10 +208,13 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const readingListBooks = book.readingListBooks || []
     const challengeBooks = book.challengeBooks || []
 
-    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "history" | "discussion" | "report" | "mindmap">("tortu")
+    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "history" | "discussion" | "report" | "mindmap" | "briefing">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
     const [mindmapContent, setMindmapContent] = useState(book.mindmapContent || "")
+    const [briefing, setBriefing] = useState(book.briefing || "")
+    const [isEditingBriefing, setIsEditingBriefing] = useState(false)
+    const [isSavingBriefing, setIsSavingBriefing] = useState(false)
     const [isSavingImza, setIsSavingImza] = useState(false)
     const [isSavingTortu, setIsSavingTortu] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -1152,6 +1155,17 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         >
                             Zihin Haritası
                         </button>
+                        <button
+                            onClick={() => setActiveSection("briefing")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
+                                activeSection === "briefing"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Detaylı Brifing
+                        </button>
                     </div>
 
                     {/* Tab Content */}
@@ -1713,6 +1727,71 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         }
                                     }}
                                 />
+                            </div>
+                        )}
+
+                        {/* Briefing Section */}
+                        {activeSection === "briefing" && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <BookMarked className="h-5 w-5 text-primary" />
+                                        Detaylı Brifing
+                                    </h3>
+                                    {!isEditingBriefing && briefing && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setIsEditingBriefing(true)}
+                                        >
+                                            <Pencil className="h-4 w-4 mr-2" />
+                                            Düzenle
+                                        </Button>
+                                    )}
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    Kitap hakkında hazırladığın veya bulduğun detaylı brifing dökümanı.
+                                </p>
+
+                                {isEditingBriefing || !briefing ? (
+                                    <>
+                                        <TortuEditor
+                                            initialContent={briefing}
+                                            onChange={(content) => setBriefing(content)}
+                                        />
+                                        <div className="flex justify-end gap-2">
+                                            {briefing && (
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => setIsEditingBriefing(false)}
+                                                >
+                                                    Vazgeç
+                                                </Button>
+                                            )}
+                                            <Button
+                                                onClick={async () => {
+                                                    setIsSavingBriefing(true)
+                                                    const result = await updateBook(book.id, { briefing })
+                                                    if (result.success) {
+                                                        toast.success("Brifing kaydedildi")
+                                                        setIsEditingBriefing(false)
+                                                    } else {
+                                                        toast.error("Kaydetme başarısız")
+                                                    }
+                                                    setIsSavingBriefing(false)
+                                                }}
+                                                disabled={isSavingBriefing}
+                                            >
+                                                {isSavingBriefing ? "Kaydediliyor..." : "Kaydet"}
+                                            </Button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div
+                                        className="prose prose-sm dark:prose-invert max-w-none"
+                                        dangerouslySetInnerHTML={{ __html: briefing }}
+                                    />
+                                )}
                             </div>
                         )}
                     </div>
