@@ -1717,10 +1717,17 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
 
                                 {isEditingBriefing || !briefing ? (
                                     <>
-                                        <Textarea
-                                            value={briefing}
-                                            onChange={(e) => setBriefing(e.target.value)}
-                                            placeholder="Markdown formatında brifing yazın...
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                            {/* Editor */}
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                                    <Pencil className="h-4 w-4" />
+                                                    Düzenle
+                                                </div>
+                                                <Textarea
+                                                    value={briefing}
+                                                    onChange={(e) => setBriefing(e.target.value)}
+                                                    placeholder="Markdown formatında brifing yazın...
 
 # Başlık
 ## Alt Başlık
@@ -1730,15 +1737,35 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
 
 **Kalın** ve *italik* metin
 
-> Alıntı bloğu
+> Alıntı bloğu"
+                                                    className="min-h-[400px] font-mono text-sm resize-none"
+                                                />
+                                            </div>
 
-```
-Kod bloğu
-```"
-                                            className="min-h-[400px] font-mono text-sm"
-                                        />
+                                            {/* Live Preview */}
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                                    <BookOpen className="h-4 w-4" />
+                                                    Önizleme
+                                                </div>
+                                                <div className="min-h-[400px] rounded-md border bg-muted/30 p-4 overflow-auto">
+                                                    {briefing ? (
+                                                        <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground prose-blockquote:text-muted-foreground prose-code:text-primary prose-pre:bg-muted">
+                                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                                {briefing}
+                                                            </ReactMarkdown>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm text-muted-foreground italic">
+                                                            Markdown yazmaya başlayın, önizleme burada görünecek...
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <p className="text-xs text-muted-foreground">
-                                            Markdown formatı desteklenir: # Başlık, **kalın**, *italik*, - liste, {'>'} alıntı, ``` kod bloğu
+                                            Markdown: # Başlık, **kalın**, *italik*, - liste, {'>'} alıntı, ``` kod, | tablo |, - [x] checkbox
                                         </p>
                                         <div className="flex justify-end gap-2">
                                             {briefing && (
