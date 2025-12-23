@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { LogoIcon } from "@/components/logo";
 import {
   Sidebar,
   SidebarContent,
@@ -216,13 +217,14 @@ export function AppSidebar() {
       <Sidebar>
         <SidebarHeader className="border-b border-sidebar-border px-6 py-5">
           <Link href="/dashboard" prefetch={false} className="flex items-center gap-3">
-            <Image
+            {/* <Image
               src="/favicon-96x96.png"
               alt="AsyaKitap Logo"
               width={36}
               height={36}
               className="rounded-lg"
-            />
+            /> */}
+            <LogoIcon className="w-9 h-9" />
             <div className="flex flex-col">
               <span className="text-xl font-bold tracking-tight text-white">
                 AsyaKitap
