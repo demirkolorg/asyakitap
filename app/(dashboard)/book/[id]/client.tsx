@@ -872,30 +872,30 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <div className="flex-1 w-full pt-2 md:pt-4">
                             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                                 <div className="flex flex-col gap-2">
-                                    {/* Status Badge */}
-                                    <div className={cn(
-                                        "inline-flex items-center gap-2 self-start px-3 py-1 rounded-full border",
-                                        currentStatus === "READING" && "bg-primary/10 border-primary/20",
-                                        currentStatus === "COMPLETED" && "bg-green-500/10 border-green-500/20",
-                                        currentStatus === "TO_READ" && "bg-blue-500/10 border-blue-500/20",
-                                        currentStatus === "DNF" && "bg-red-500/10 border-red-500/20"
-                                    )}>
-                                        <BookMarked className={cn(
-                                            "h-4 w-4",
-                                            statusConfig[currentStatus].color
-                                        )} />
-                                        <span className={cn(
-                                            "text-xs font-bold tracking-wide uppercase",
-                                            statusConfig[currentStatus].color
+                                    {/* Title + Status Badge */}
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
+                                            {book.title}
+                                        </h1>
+                                        <div className={cn(
+                                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border",
+                                            currentStatus === "READING" && "bg-primary/10 border-primary/20",
+                                            currentStatus === "COMPLETED" && "bg-green-500/10 border-green-500/20",
+                                            currentStatus === "TO_READ" && "bg-blue-500/10 border-blue-500/20",
+                                            currentStatus === "DNF" && "bg-red-500/10 border-red-500/20"
                                         )}>
-                                            {statusConfig[currentStatus].label}
-                                        </span>
+                                            <BookMarked className={cn(
+                                                "h-3.5 w-3.5",
+                                                statusConfig[currentStatus].color
+                                            )} />
+                                            <span className={cn(
+                                                "text-xs font-bold tracking-wide uppercase",
+                                                statusConfig[currentStatus].color
+                                            )}>
+                                                {statusConfig[currentStatus].label}
+                                            </span>
+                                        </div>
                                     </div>
-
-                                    {/* Title */}
-                                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
-                                        {book.title}
-                                    </h1>
 
                                     {/* Author & Publisher */}
                                     <div className="flex flex-wrap items-center gap-2 text-base md:text-lg">
