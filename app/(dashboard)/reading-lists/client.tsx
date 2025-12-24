@@ -778,9 +778,9 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
                     const progress = getListProgress(list)
 
                     return (
-                        <button
+                        <Link
                             key={list.id}
-                            onClick={() => handleSelectList(list.slug)}
+                            href={`/reading-lists/${list.slug}`}
                             className="group relative flex flex-col justify-end aspect-[4/5] rounded-xl overflow-hidden cursor-pointer shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-1 text-left"
                         >
                             {/* Background Image */}
@@ -837,193 +837,12 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
                                     </div>
                                 </div>
                             </div>
-                        </button>
+                        </Link>
                     )
                 })}
             </div>
 
-            {/* Liste Detay Görünümü - Cinematic Style */}
-            {selectedList && (
-                <div className="space-y-6">
-                    {/* Divider */}
-                    <div className="relative py-6 flex items-center justify-center">
-                        <div className="h-px bg-border w-full absolute" />
-                        <span className="relative bg-background px-4 text-xs text-muted-foreground font-mono uppercase tracking-wider">
-                            Liste Detay Görünümü
-                        </span>
-                    </div>
-
-                    {/* Hero Section */}
-                    <div className="relative rounded-2xl overflow-hidden">
-                        {/* Background Image */}
-                        <div className="absolute inset-0">
-                            {selectedList.coverUrl ? (
-                                <Image
-                                    src={selectedList.coverUrl}
-                                    alt={selectedList.name}
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-[#102217] to-[#193324]" />
-                            )}
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f0c] via-[#0a0f0c]/70 to-transparent" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0f0c]/90 via-transparent to-transparent" />
-
-                        {/* Content */}
-                        <div className="relative z-10 p-6 md:p-10 min-h-[320px] md:min-h-[400px] flex flex-col justify-end">
-                            <div className="flex gap-2 flex-wrap items-center mb-4">
-                                <span className="bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                                    Küratör Seçimi
-                                </span>
-                                <span className="bg-[#1a2e1f] text-[#2bee79] border border-[#2bee79]/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                                    {selectedList.levels.length > 0 ? selectedList.levels[0].name.split(" ")[0] : "Koleksiyon"}
-                                </span>
-
-                                {/* Edit Mode Toggle */}
-                                <Button
-                                    variant={isEditMode ? "default" : "outline"}
-                                    size="sm"
-                                    onClick={() => setIsEditMode(!isEditMode)}
-                                    className="ml-auto"
-                                >
-                                    <Settings className="h-4 w-4 mr-2" />
-                                    {isEditMode ? "Düzenlemeyi Bitir" : "Düzenle"}
-                                </Button>
-
-                                {/* List Actions Menu */}
-                                {isEditMode && (
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" size="icon">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => openListDialog("edit", selectedList)}>
-                                                <Edit className="h-4 w-4 mr-2" />
-                                                Listeyi Düzenle
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                                className="text-destructive"
-                                                onClick={() => setDeleteDialog({
-                                                    open: true,
-                                                    type: "list",
-                                                    id: selectedList.id,
-                                                    name: selectedList.name
-                                                })}
-                                            >
-                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                Listeyi Sil
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                )}
-                            </div>
-
-                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white mb-3">
-                                {selectedList.name}
-                            </h1>
-
-                            {selectedList.description && (
-                                <p className="text-gray-300 text-base md:text-lg max-w-2xl leading-relaxed mb-6">
-                                    {selectedList.description}
-                                </p>
-                            )}
-
-                            <div className="flex flex-wrap items-center gap-6">
-                                <div className="flex items-center gap-2 text-gray-300">
-                                    <BookOpen className="h-5 w-5 text-[#2bee79]" />
-                                    <span className="font-medium">{selectedList.totalBooks} Kitap</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-300">
-                                    <Layers className="h-5 w-5 text-[#2bee79]" />
-                                    <span className="font-medium">{selectedList.levels.length} Bölüm</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-300">
-                                    <FileText className="h-5 w-5 text-[#2bee79]" />
-                                    <span className="font-medium">~{totalPages} Sayfa</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Add Level Button (Edit Mode) */}
-                    {isEditMode && (
-                        <Button
-                            variant="outline"
-                            onClick={() => openLevelDialog("create")}
-                            className="w-full border-dashed border-[#2bee79]/30 text-[#2bee79] hover:bg-[#2bee79]/10"
-                        >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Yeni Seviye Ekle
-                        </Button>
-                    )}
-
-                    {/* Level Sections */}
-                    <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={handleLevelDragEnd}
-                    >
-                        <SortableContext
-                            items={selectedList.levels.map(l => l.id)}
-                            strategy={verticalListSortingStrategy}
-                            disabled={!isEditMode}
-                        >
-                            <div className="space-y-6">
-                                {selectedList.levels.map((level) => (
-                                    <LevelSection
-                                        key={level.id}
-                                        level={level}
-                                        isEditMode={isEditMode}
-                                        onEdit={() => openLevelDialog("edit", level)}
-                                        onDelete={() => setDeleteDialog({
-                                            open: true,
-                                            type: "level",
-                                            id: level.id,
-                                            name: level.name
-                                        })}
-                                        onAddBook={(mode) => openBookDialog(mode, level.id)}
-                                        onEditBook={(book) => openBookDialog("edit", level.id, book)}
-                                        onDeleteBook={(book) => setDeleteDialog({
-                                            open: true,
-                                            type: "book",
-                                            id: book.id,
-                                            name: book.book.title
-                                        })}
-                                        onBookDragEnd={(e) => handleBookDragEnd(level.id, e)}
-                                        sensors={sensors}
-                                    />
-                                ))}
-                            </div>
-                        </SortableContext>
-                    </DndContext>
-
-                    {selectedList.levels.length === 0 && (
-                        <div className="text-center py-12 text-muted-foreground rounded-2xl border border-dashed bg-[#0a0f0c]/50">
-                            <Layers className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                            <p className="mb-2">Henüz seviye eklenmemiş</p>
-                            {isEditMode && (
-                                <Button variant="link" className="text-[#2bee79]" onClick={() => openLevelDialog("create")}>
-                                    İlk seviyeyi ekle
-                                </Button>
-                            )}
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* Loading Overlay */}
-            {isLoadingDetail && (
-                <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-            )}
-
-            {/* Dialogs */}
+            {/* List Create Dialog */}
             <ListDialog
                 dialog={listDialog}
                 setDialog={setListDialog}
@@ -1031,49 +850,6 @@ export function ReadingListsPageClient({ lists: initialLists, allLists }: Readin
                 isLoading={isLoading}
                 generateSlug={generateSlug}
             />
-
-            <LevelDialog
-                dialog={levelDialog}
-                setDialog={setLevelDialog}
-                onSubmit={handleLevelSubmit}
-                isLoading={isLoading}
-            />
-
-            <BookDialog
-                dialog={bookDialog}
-                setDialog={setBookDialog}
-                onSubmit={handleBookSubmit}
-                isLoading={isLoading}
-            />
-
-            {/* Delete Confirmation */}
-            <AlertDialog open={!!deleteDialog} onOpenChange={(open) => !open && setDeleteDialog(null)}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Silmek istediğinize emin misiniz?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            &quot;{deleteDialog?.name}&quot; silinecek.
-                            {deleteDialog?.type === "list" && " Bu işlem tüm seviyeleri ve kitapları da silecektir."}
-                            {deleteDialog?.type === "level" && " Bu işlem seviyedeki tüm kitapları da silecektir."}
-                            {" "}Bu işlem geri alınamaz.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Vazgeç</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => {
-                                if (deleteDialog?.type === "list") handleDeleteList()
-                                else if (deleteDialog?.type === "level") handleDeleteLevel()
-                                else if (deleteDialog?.type === "book") handleDeleteBook()
-                            }}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                            {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                            Sil
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </div>
     )
 }
