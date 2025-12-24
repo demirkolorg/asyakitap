@@ -787,6 +787,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         ABANDONED: "Yarım bırakıldı",
         RESTARTED: "Tekrar başlandı",
         ADDED_TO_LIST: "Listeye eklendi",
+        PROGRESS_UPDATE: "İlerleme güncellendi",
     }
 
     const statusConfig: Record<BookStatus, { label: string; color: string; bgColor: string; icon: string }> = {
@@ -2243,20 +2244,30 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 </p>
                             ) : (
                                 <div className="relative pl-4 border-l-2 border-muted space-y-3">
-                                    {readingLogs.slice(0, 5).map((log) => (
+                                    {readingLogs.slice(0, 8).map((log) => (
                                         <div key={log.id} className="relative">
-                                            <div className="absolute -left-[21px] w-2.5 h-2.5 rounded-full bg-primary" />
+                                            <div className={cn(
+                                                "absolute -left-[21px] w-2.5 h-2.5 rounded-full",
+                                                log.action === "PROGRESS_UPDATE" ? "bg-amber-500" : "bg-primary"
+                                            )} />
                                             <div>
-                                                <p className="text-sm font-medium">{actionLabels[log.action]}</p>
+                                                <p className="text-sm font-medium">
+                                                    {actionLabels[log.action]}
+                                                    {log.action === "PROGRESS_UPDATE" && log.note && (
+                                                        <span className="text-muted-foreground font-normal ml-1">
+                                                            → {log.note}
+                                                        </span>
+                                                    )}
+                                                </p>
                                                 <p className="text-xs text-muted-foreground">
                                                     {formatDate(log.createdAt, { format: "short" })}
                                                 </p>
                                             </div>
                                         </div>
                                     ))}
-                                    {readingLogs.length > 5 && (
+                                    {readingLogs.length > 8 && (
                                         <p className="text-xs text-muted-foreground text-center pt-2">
-                                            +{readingLogs.length - 5} daha fazla kayıt
+                                            +{readingLogs.length - 8} daha fazla kayıt
                                         </p>
                                     )}
                                 </div>

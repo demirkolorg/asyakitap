@@ -226,6 +226,16 @@ export async function updateBook(id: string, data: {
     if (!user) throw new Error("Unauthorized")
 
     try {
+        // İlerleme güncellemesi için önceki değeri al
+        let previousPage: number | null = null
+        if (data.currentPage !== undefined) {
+            const currentBook = await prisma.book.findUnique({
+                where: { id, userId: user.id },
+                select: { currentPage: true, pageCount: true }
+            })
+            previousPage = currentBook?.currentPage ?? null
+        }
+
         const updatedBook = await prisma.book.update({
             where: { id, userId: user.id },
             data,
@@ -240,6 +250,21 @@ export async function updateBook(id: string, data: {
                 publisher: { select: { id: true, name: true } }
             }
         })
+
+        // İlerleme güncellemesi yapıldıysa ReadingLog oluştur
+        if (data.currentPage !== undefined && previousPage !== null && data.currentPage !== previousPage) {
+            const pageInfo = updatedBook.pageCount
+                ? `${data.currentPage}/${updatedBook.pageCount} sayfa`
+                : `${data.currentPage} sayfa`
+
+            await prisma.readingLog.create({
+                data: {
+                    bookId: id,
+                    action: "PROGRESS_UPDATE",
+                    note: pageInfo
+                }
+            })
+        }
 
         // Invalidate caches
         invalidateUserCaches(user.id)

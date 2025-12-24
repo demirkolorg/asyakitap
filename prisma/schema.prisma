@@ -110,6 +110,7 @@ enum ReadingAction {
   ABANDONED
   RESTARTED
   ADDED_TO_LIST
+  PROGRESS_UPDATE
 }
 
 // ==========================================
