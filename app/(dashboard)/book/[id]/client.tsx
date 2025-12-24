@@ -833,9 +833,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-primary/10 to-card" />
                     )}
 
-                    {/* Overlay gradient at bottom */}
-                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-card to-transparent" />
-
                     {/* Banner Edit Button */}
                     <button
                         onClick={() => {
@@ -926,8 +923,74 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     </div>
                                 </div>
 
-                                {/* Desktop Actions */}
-                                <div className="hidden md:flex gap-2 flex-shrink-0">
+                                {/* All Actions Together */}
+                                <div className="flex gap-2 flex-shrink-0 flex-wrap">
+                                    {/* Status Update Button */}
+                                    {mounted ? (
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    className={cn(
+                                                        "h-10 px-4 text-sm font-bold rounded-full shadow-md transition-all",
+                                                        currentStatus === "READING" && "bg-primary hover:bg-primary/90 text-primary-foreground",
+                                                        currentStatus === "COMPLETED" && "bg-green-500 hover:bg-green-600 text-white",
+                                                        currentStatus === "TO_READ" && "bg-blue-500 hover:bg-blue-600 text-white",
+                                                        currentStatus === "DNF" && "bg-red-500 hover:bg-red-600 text-white"
+                                                    )}
+                                                    disabled={isUpdatingStatus}
+                                                >
+                                                    <Pencil className="h-4 w-4 mr-2" />
+                                                    {isUpdatingStatus ? "..." : "Durum"}
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-[200px]">
+                                                {currentStatus === "TO_READ" && (
+                                                    <DropdownMenuItem onClick={handleOpenStartReadingModal}>
+                                                        <PlayCircle className="mr-2 h-4 w-4" />
+                                                        Okumaya Başla
+                                                    </DropdownMenuItem>
+                                                )}
+                                                {currentStatus === "READING" && (
+                                                    <>
+                                                        <DropdownMenuItem onClick={() => setShowProgressDialog(true)}>
+                                                            <BookOpen className="mr-2 h-4 w-4" />
+                                                            İlerleme Güncelle
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={handleFinishReading}>
+                                                            <CheckCircle2 className="mr-2 h-4 w-4" />
+                                                            Bitirdim
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={handleAbandonReading}>
+                                                            <XCircle className="mr-2 h-4 w-4" />
+                                                            Bıraktım
+                                                        </DropdownMenuItem>
+                                                    </>
+                                                )}
+                                                {(currentStatus === "COMPLETED" || currentStatus === "DNF") && (
+                                                    <>
+                                                        <DropdownMenuItem onClick={() => handleStartReadingDirect(true)}>
+                                                            <RotateCcw className="mr-2 h-4 w-4" />
+                                                            Tekrar Oku
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={handleResetToList}>
+                                                            <BookOpen className="mr-2 h-4 w-4" />
+                                                            Listeye Ekle
+                                                        </DropdownMenuItem>
+                                                    </>
+                                                )}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    ) : (
+                                        <Button
+                                            className="h-10 px-4 text-sm font-bold rounded-full"
+                                            disabled
+                                        >
+                                            {statusConfig[currentStatus].label}
+                                        </Button>
+                                    )}
+
+                                    {/* Library Button */}
                                     <button
                                         onClick={handleToggleLibrary}
                                         disabled={isUpdatingLibrary}
@@ -941,18 +1004,47 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     >
                                         <Library className="h-5 w-5" />
                                     </button>
+
+                                    {/* Favorite Button */}
                                     <button
                                         className="h-10 w-10 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
                                         title="Favorilere Ekle"
                                     >
                                         <Heart className="h-5 w-5" />
                                     </button>
+
+                                    {/* Share Button */}
                                     <button
                                         className="h-10 w-10 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
                                         title="Paylaş"
                                     >
                                         <Share2 className="h-5 w-5" />
                                     </button>
+
+                                    {/* More Options */}
+                                    {mounted && (
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="outline" size="icon" className="h-10 w-10 rounded-full">
+                                                    <MoreHorizontal className="h-5 w-5" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-[200px]">
+                                                <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
+                                                    <Pencil className="mr-2 h-4 w-4" />
+                                                    Düzenle
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem
+                                                    onClick={() => setShowDeleteDialog(true)}
+                                                    className="text-destructive focus:text-destructive"
+                                                >
+                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                    Sil
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    )}
                                 </div>
                             </div>
 
@@ -962,98 +1054,6 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     {book.description}
                                 </p>
                             )}
-
-                            {/* Primary Actions */}
-                            <div className="flex flex-wrap items-center gap-3 mt-4">
-                                {mounted ? (
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                className={cn(
-                                                    "h-11 px-5 text-sm font-bold rounded-full shadow-lg transition-all",
-                                                    currentStatus === "READING" && "bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/20 hover:shadow-primary/40",
-                                                    currentStatus === "COMPLETED" && "bg-green-500 hover:bg-green-600 text-white",
-                                                    currentStatus === "TO_READ" && "bg-blue-500 hover:bg-blue-600 text-white",
-                                                    currentStatus === "DNF" && "bg-red-500 hover:bg-red-600 text-white"
-                                                )}
-                                                disabled={isUpdatingStatus}
-                                            >
-                                                <Pencil className="h-4 w-4 mr-2" />
-                                                {isUpdatingStatus ? "Güncelleniyor..." : "Durumu Güncelle"}
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-[200px]">
-                                            {currentStatus === "TO_READ" && (
-                                                <DropdownMenuItem onClick={handleOpenStartReadingModal}>
-                                                    <PlayCircle className="mr-2 h-4 w-4" />
-                                                    Okumaya Başla
-                                                </DropdownMenuItem>
-                                            )}
-                                            {currentStatus === "READING" && (
-                                                <>
-                                                    <DropdownMenuItem onClick={() => setShowProgressDialog(true)}>
-                                                        <BookOpen className="mr-2 h-4 w-4" />
-                                                        İlerleme Güncelle
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={handleFinishReading}>
-                                                        <CheckCircle2 className="mr-2 h-4 w-4" />
-                                                        Bitirdim
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={handleAbandonReading}>
-                                                        <XCircle className="mr-2 h-4 w-4" />
-                                                        Bıraktım
-                                                    </DropdownMenuItem>
-                                                </>
-                                            )}
-                                            {(currentStatus === "COMPLETED" || currentStatus === "DNF") && (
-                                                <>
-                                                    <DropdownMenuItem onClick={() => handleStartReadingDirect(true)}>
-                                                        <RotateCcw className="mr-2 h-4 w-4" />
-                                                        Tekrar Oku
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={handleResetToList}>
-                                                        <BookOpen className="mr-2 h-4 w-4" />
-                                                        Listeye Ekle
-                                                    </DropdownMenuItem>
-                                                </>
-                                            )}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                ) : (
-                                    <Button
-                                        className="h-11 px-5 text-sm font-bold rounded-full"
-                                        disabled
-                                    >
-                                        {statusConfig[currentStatus].label}
-                                    </Button>
-                                )}
-
-                                {/* More Options */}
-                                {mounted && (
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" size="icon" className="h-11 w-11 rounded-full">
-                                                <MoreHorizontal className="h-5 w-5" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-[200px]">
-                                            <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
-                                                <Pencil className="mr-2 h-4 w-4" />
-                                                Düzenle
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                                onClick={() => setShowDeleteDialog(true)}
-                                                className="text-destructive focus:text-destructive"
-                                            >
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                Sil
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                )}
-                            </div>
                         </div>
                     </div>
                 </div>
