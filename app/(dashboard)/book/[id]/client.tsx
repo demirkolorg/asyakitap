@@ -58,6 +58,7 @@ import {
     Tags,
     X,
     HelpCircle,
+    ExternalLink,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingNote, deleteReadingNote } from "@/actions/reading-notes"
@@ -210,11 +211,14 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const readingListBooks = book.readingListBooks || []
     const challengeBooks = book.challengeBooks || []
 
-    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "discussion" | "report" | "mindmap" | "briefing">("tortu")
+    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "discussion" | "report" | "mindmap" | "briefing" | "infographic">("tortu")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
     const [mindmapContent, setMindmapContent] = useState(book.mindmapContent || "")
     const [briefing, setBriefing] = useState(book.briefing || "")
+    const [infographicUrl, setInfographicUrl] = useState(book.infographicUrl || "")
+    const [isEditingInfographic, setIsEditingInfographic] = useState(false)
+    const [isSavingInfographic, setIsSavingInfographic] = useState(false)
     const [isEditingBriefing, setIsEditingBriefing] = useState(false)
     const [isSavingBriefing, setIsSavingBriefing] = useState(false)
     const [isSavingImza, setIsSavingImza] = useState(false)
@@ -1157,6 +1161,17 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         >
                             Detaylı Brifing
                         </button>
+                        <button
+                            onClick={() => setActiveSection("infographic")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
+                                activeSection === "infographic"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            İnfografik
+                        </button>
                     </div>
 
                     {/* Tab Content */}
@@ -1799,6 +1814,97 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                             {briefing}
                                         </ReactMarkdown>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Infographic Section */}
+                        {activeSection === "infographic" && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <FileBarChart className="h-5 w-5 text-primary" />
+                                        İnfografik
+                                    </h3>
+                                    {!isEditingInfographic && infographicUrl && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setIsEditingInfographic(true)}
+                                        >
+                                            <Pencil className="h-4 w-4 mr-2" />
+                                            URL Düzenle
+                                        </Button>
+                                    )}
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    AI tarafından üretilen infografik görsel.
+                                </p>
+
+                                {isEditingInfographic || !infographicUrl ? (
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="infographic-url">İnfografik URL</Label>
+                                            <Input
+                                                id="infographic-url"
+                                                value={infographicUrl}
+                                                onChange={(e) => setInfographicUrl(e.target.value)}
+                                                placeholder="https://drive.google.com/... veya başka bir URL"
+                                            />
+                                            <p className="text-xs text-muted-foreground">
+                                                Google Drive, Dropbox veya direkt görsel linki yapıştırın.
+                                            </p>
+                                        </div>
+                                        <div className="flex justify-end gap-2">
+                                            {infographicUrl && (
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => setIsEditingInfographic(false)}
+                                                >
+                                                    Vazgeç
+                                                </Button>
+                                            )}
+                                            <Button
+                                                onClick={async () => {
+                                                    setIsSavingInfographic(true)
+                                                    const result = await updateBook(book.id, { infographicUrl: infographicUrl || null })
+                                                    if (result.success) {
+                                                        toast.success("İnfografik kaydedildi")
+                                                        setIsEditingInfographic(false)
+                                                    } else {
+                                                        toast.error("Kaydetme başarısız")
+                                                    }
+                                                    setIsSavingInfographic(false)
+                                                }}
+                                                disabled={isSavingInfographic}
+                                            >
+                                                {isSavingInfographic ? "Kaydediliyor..." : "Kaydet"}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="relative w-full rounded-lg border overflow-hidden bg-muted/30">
+                                            <img
+                                                src={infographicUrl}
+                                                alt={`${book.title} infografik`}
+                                                className="w-full h-auto"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).src = '/placeholder-infographic.png'
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex justify-center">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => window.open(infographicUrl, '_blank')}
+                                            >
+                                                <ExternalLink className="h-4 w-4 mr-2" />
+                                                Tam Boyut Aç
+                                            </Button>
+                                        </div>
                                     </div>
                                 )}
                             </div>

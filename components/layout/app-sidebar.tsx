@@ -44,6 +44,7 @@ import {
   ExternalLink,
   BookOpen,
   Loader2,
+  FileBarChart,
 } from "lucide-react";
 import { getCurrentlyReadingBooks, updateBook } from "@/actions/library";
 import { KitapyurduModal } from "@/components/kitapyurdu-modal";
@@ -116,6 +117,11 @@ const notesItems = [
     title: "AI Yorumları",
     href: "/ai-comments",
     icon: Bot,
+  },
+  {
+    title: "İnfografikler",
+    href: "/infographics",
+    icon: FileBarChart,
   },
 ];
 

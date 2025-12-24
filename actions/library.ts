@@ -211,6 +211,7 @@ export async function updateBook(id: string, data: {
     imza?: string
     mindmapContent?: string
     briefing?: string
+    infographicUrl?: string | null
     startDate?: Date | null
     endDate?: Date | null
     coverUrl?: string | null
@@ -295,6 +296,31 @@ export async function getCurrentlyReadingBooks() {
         return books
     } catch (error) {
         console.error("Failed to fetch currently reading books:", error)
+        return []
+    }
+}
+
+// İnfografikli kitapları getir
+export async function getBooksWithInfographics() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return []
+
+    try {
+        const books = await prisma.book.findMany({
+            where: {
+                userId: user.id,
+                infographicUrl: { not: null },
+                NOT: { infographicUrl: "" }
+            },
+            include: { author: true },
+            orderBy: { updatedAt: 'desc' }
+        })
+
+        return books
+    } catch (error) {
+        console.error("Failed to fetch books with infographics:", error)
         return []
     }
 }
