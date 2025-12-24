@@ -68,6 +68,11 @@ export default function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <head>
         {/* Favicon */}
+        <script
+          async
+          crossOrigin="anonymous"
+          src="https://tweakcn.com/live-preview.min.js"
+        />
         <link rel="icon" href="/favicon.ico" sizes="48x48" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
