@@ -220,6 +220,10 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [infographicUrl, setInfographicUrl] = useState(book.infographicUrl || "")
     const [isEditingInfographic, setIsEditingInfographic] = useState(false)
     const [isSavingInfographic, setIsSavingInfographic] = useState(false)
+    const [bannerUrl, setBannerUrl] = useState(book.bannerUrl || "")
+    const [showBannerDialog, setShowBannerDialog] = useState(false)
+    const [bannerInput, setBannerInput] = useState(book.bannerUrl || "")
+    const [isSavingBanner, setIsSavingBanner] = useState(false)
     const [isEditingBriefing, setIsEditingBriefing] = useState(false)
     const [isSavingBriefing, setIsSavingBriefing] = useState(false)
     const [isSavingImza, setIsSavingImza] = useState(false)
@@ -784,213 +788,272 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         DNF: { label: "Yarım Bırakıldı", color: "text-red-500", bgColor: "bg-red-500", icon: "cancel" },
     }
 
+    // Banner kaydetme fonksiyonu
+    const handleSaveBanner = async () => {
+        setIsSavingBanner(true)
+        const result = await updateBook(book.id, { bannerUrl: bannerInput || null })
+        if (result.success) {
+            setBannerUrl(bannerInput)
+            toast.success("Banner kaydedildi")
+            setShowBannerDialog(false)
+        } else {
+            toast.error("Kaydetme başarısız")
+        }
+        setIsSavingBanner(false)
+    }
+
     return (
         <div className="space-y-6">
-            {/* Hero Section */}
-            <div className="bg-card rounded-xl p-4 md:p-6 border border-border/50 shadow-sm">
-                <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
-                    {/* Book Cover */}
-                    <div className="w-full md:w-[200px] lg:w-[240px] flex-shrink-0 relative group">
-                        <div className="relative aspect-[2/3] w-40 md:w-full mx-auto rounded-lg overflow-hidden shadow-2xl bg-muted">
-                            {book.coverUrl ? (
-                                <Image
-                                    src={book.coverUrl.replace("http:", "https:")}
-                                    alt={book.title}
-                                    fill
-                                    className="object-cover"
-                                    priority
-                                />
-                            ) : (
-                                <div className="flex items-center justify-center h-full text-muted-foreground">
-                                    <BookOpen className="h-16 w-16" />
-                                </div>
-                            )}
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
-                        </div>
-                    </div>
+            {/* Profile-Style Hero Section */}
+            <div className="relative rounded-xl overflow-hidden border border-border/50 shadow-sm bg-card">
+                {/* Banner Area */}
+                <div className="relative h-48 md:h-64 lg:h-72 group">
+                    {/* Banner Image or Gradient Fallback */}
+                    {bannerUrl ? (
+                        <Image
+                            src={convertToDirectImageUrl(bannerUrl)}
+                            alt="Banner"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    ) : book.coverUrl ? (
+                        <>
+                            {/* Blurred Cover as Fallback Banner */}
+                            <Image
+                                src={book.coverUrl.replace("http:", "https:")}
+                                alt="Banner"
+                                fill
+                                className="object-cover blur-2xl scale-110 opacity-60"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
+                        </>
+                    ) : (
+                        /* Gradient Fallback */
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-primary/10 to-card" />
+                    )}
 
-                    {/* Book Info */}
-                    <div className="flex-1 w-full flex flex-col gap-4">
-                        <div className="flex justify-between items-start">
-                            <div className="flex flex-col gap-2">
-                                {/* Status Badge */}
-                                <div className={cn(
-                                    "inline-flex items-center gap-2 self-start px-3 py-1 rounded-full border",
-                                    currentStatus === "READING" && "bg-primary/10 border-primary/20",
-                                    currentStatus === "COMPLETED" && "bg-green-500/10 border-green-500/20",
-                                    currentStatus === "TO_READ" && "bg-blue-500/10 border-blue-500/20",
-                                    currentStatus === "DNF" && "bg-red-500/10 border-red-500/20"
-                                )}>
-                                    <BookMarked className={cn(
-                                        "h-4 w-4",
-                                        statusConfig[currentStatus].color
-                                    )} />
-                                    <span className={cn(
-                                        "text-xs font-bold tracking-wide uppercase",
-                                        statusConfig[currentStatus].color
+                    {/* Overlay gradient at bottom */}
+                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-card to-transparent" />
+
+                    {/* Banner Edit Button */}
+                    <button
+                        onClick={() => {
+                            setBannerInput(bannerUrl)
+                            setShowBannerDialog(true)
+                        }}
+                        className="absolute top-4 right-4 h-9 px-3 rounded-lg bg-black/40 hover:bg-black/60 text-white text-sm font-medium flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm"
+                    >
+                        <Pencil className="h-4 w-4" />
+                        Banner Düzenle
+                    </button>
+                </div>
+
+                {/* Content Area - Overlapping the banner */}
+                <div className="relative px-4 md:px-6 lg:px-8 pb-6">
+                    <div className="flex flex-col md:flex-row gap-6 items-start">
+                        {/* Book Cover - Overlapping */}
+                        <div className="relative -mt-24 md:-mt-32 z-10 flex-shrink-0">
+                            <div className="relative w-32 md:w-40 lg:w-48 aspect-[2/3] rounded-xl overflow-hidden shadow-2xl ring-4 ring-card bg-muted">
+                                {book.coverUrl ? (
+                                    <Image
+                                        src={book.coverUrl.replace("http:", "https:")}
+                                        alt={book.title}
+                                        fill
+                                        className="object-cover"
+                                        priority
+                                    />
+                                ) : (
+                                    <div className="flex items-center justify-center h-full text-muted-foreground bg-gradient-to-br from-muted to-muted-foreground/20">
+                                        <BookOpen className="h-12 w-12" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Book Info */}
+                        <div className="flex-1 w-full pt-2 md:pt-4">
+                            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                                <div className="flex flex-col gap-2">
+                                    {/* Status Badge */}
+                                    <div className={cn(
+                                        "inline-flex items-center gap-2 self-start px-3 py-1 rounded-full border",
+                                        currentStatus === "READING" && "bg-primary/10 border-primary/20",
+                                        currentStatus === "COMPLETED" && "bg-green-500/10 border-green-500/20",
+                                        currentStatus === "TO_READ" && "bg-blue-500/10 border-blue-500/20",
+                                        currentStatus === "DNF" && "bg-red-500/10 border-red-500/20"
                                     )}>
-                                        {statusConfig[currentStatus].label}
-                                    </span>
-                                </div>
+                                        <BookMarked className={cn(
+                                            "h-4 w-4",
+                                            statusConfig[currentStatus].color
+                                        )} />
+                                        <span className={cn(
+                                            "text-xs font-bold tracking-wide uppercase",
+                                            statusConfig[currentStatus].color
+                                        )}>
+                                            {statusConfig[currentStatus].label}
+                                        </span>
+                                    </div>
 
-                                {/* Title */}
-                                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight mt-2">
-                                    {book.title}
-                                </h1>
+                                    {/* Title */}
+                                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
+                                        {book.title}
+                                    </h1>
 
-                                {/* Author & Publisher */}
-                                <div className="flex flex-wrap items-center gap-2 text-base md:text-lg">
-                                    {book.author ? (
-                                        <Link
-                                            href={`/author/${book.author.id}`}
-                                            className="font-medium hover:underline hover:text-primary transition-colors"
-                                        >
-                                            {book.author.name}
-                                        </Link>
-                                    ) : (
-                                        <span className="text-muted-foreground">Bilinmiyor</span>
-                                    )}
-                                    {book.publisher && (
-                                        <>
-                                            <span className="text-muted-foreground">•</span>
+                                    {/* Author & Publisher */}
+                                    <div className="flex flex-wrap items-center gap-2 text-base md:text-lg">
+                                        {book.author ? (
                                             <Link
-                                                href={`/publisher/${book.publisher.id}`}
-                                                className="text-muted-foreground hover:text-foreground transition-colors"
+                                                href={`/author/${book.author.id}`}
+                                                className="font-medium hover:underline hover:text-primary transition-colors"
                                             >
-                                                {book.publisher.name}
+                                                {book.author.name}
                                             </Link>
-                                        </>
-                                    )}
+                                        ) : (
+                                            <span className="text-muted-foreground">Bilinmiyor</span>
+                                        )}
+                                        {book.publisher && (
+                                            <>
+                                                <span className="text-muted-foreground">•</span>
+                                                <Link
+                                                    href={`/publisher/${book.publisher.id}`}
+                                                    className="text-muted-foreground hover:text-foreground transition-colors"
+                                                >
+                                                    {book.publisher.name}
+                                                </Link>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Desktop Actions */}
+                                <div className="hidden md:flex gap-2 flex-shrink-0">
+                                    <button
+                                        onClick={handleToggleLibrary}
+                                        disabled={isUpdatingLibrary}
+                                        className={cn(
+                                            "h-10 w-10 rounded-full border flex items-center justify-center transition-colors",
+                                            inLibrary
+                                                ? "border-primary/30 text-primary hover:bg-primary/10"
+                                                : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                                        )}
+                                        title={inLibrary ? "Kütüphanemde" : "Kütüphaneme Ekle"}
+                                    >
+                                        <Library className="h-5 w-5" />
+                                    </button>
+                                    <button
+                                        className="h-10 w-10 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
+                                        title="Favorilere Ekle"
+                                    >
+                                        <Heart className="h-5 w-5" />
+                                    </button>
+                                    <button
+                                        className="h-10 w-10 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
+                                        title="Paylaş"
+                                    >
+                                        <Share2 className="h-5 w-5" />
+                                    </button>
                                 </div>
                             </div>
 
-                            {/* Desktop Actions */}
-                            <div className="hidden md:flex gap-2">
-                                <button
-                                    onClick={handleToggleLibrary}
-                                    disabled={isUpdatingLibrary}
-                                    className={cn(
-                                        "h-10 w-10 rounded-full border flex items-center justify-center transition-colors",
-                                        inLibrary
-                                            ? "border-primary/30 text-primary hover:bg-primary/10"
-                                            : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                                    )}
-                                    title={inLibrary ? "Kütüphanemde" : "Kütüphaneme Ekle"}
-                                >
-                                    <Library className="h-5 w-5" />
-                                </button>
-                                <button
-                                    className="h-10 w-10 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
-                                    title="Favorilere Ekle"
-                                >
-                                    <Heart className="h-5 w-5" />
-                                </button>
-                                <button
-                                    className="h-10 w-10 rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors"
-                                    title="Paylaş"
-                                >
-                                    <Share2 className="h-5 w-5" />
-                                </button>
-                            </div>
-                        </div>
+                            {/* Description */}
+                            {book.description && (
+                                <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-3xl line-clamp-2 mt-3">
+                                    {book.description}
+                                </p>
+                            )}
 
-                        {/* Description */}
-                        {book.description && (
-                            <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-3xl line-clamp-3">
-                                {book.description}
-                            </p>
-                        )}
-
-                        {/* Primary Actions */}
-                        <div className="flex flex-wrap items-center gap-3 mt-2">
-                            {mounted ? (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button
-                                            className={cn(
-                                                "h-12 px-6 text-base font-bold rounded-full shadow-lg transition-all",
-                                                currentStatus === "READING" && "bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/20 hover:shadow-primary/40",
-                                                currentStatus === "COMPLETED" && "bg-green-500 hover:bg-green-600 text-white",
-                                                currentStatus === "TO_READ" && "bg-blue-500 hover:bg-blue-600 text-white",
-                                                currentStatus === "DNF" && "bg-red-500 hover:bg-red-600 text-white"
+                            {/* Primary Actions */}
+                            <div className="flex flex-wrap items-center gap-3 mt-4">
+                                {mounted ? (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                className={cn(
+                                                    "h-11 px-5 text-sm font-bold rounded-full shadow-lg transition-all",
+                                                    currentStatus === "READING" && "bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/20 hover:shadow-primary/40",
+                                                    currentStatus === "COMPLETED" && "bg-green-500 hover:bg-green-600 text-white",
+                                                    currentStatus === "TO_READ" && "bg-blue-500 hover:bg-blue-600 text-white",
+                                                    currentStatus === "DNF" && "bg-red-500 hover:bg-red-600 text-white"
+                                                )}
+                                                disabled={isUpdatingStatus}
+                                            >
+                                                <Pencil className="h-4 w-4 mr-2" />
+                                                {isUpdatingStatus ? "Güncelleniyor..." : "Durumu Güncelle"}
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-[200px]">
+                                            {currentStatus === "TO_READ" && (
+                                                <DropdownMenuItem onClick={handleOpenStartReadingModal}>
+                                                    <PlayCircle className="mr-2 h-4 w-4" />
+                                                    Okumaya Başla
+                                                </DropdownMenuItem>
                                             )}
-                                            disabled={isUpdatingStatus}
-                                        >
-                                            <Pencil className="h-5 w-5 mr-2" />
-                                            {isUpdatingStatus ? "Güncelleniyor..." : "Durumu Güncelle"}
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-[200px]">
-                                        {currentStatus === "TO_READ" && (
-                                            <DropdownMenuItem onClick={handleOpenStartReadingModal}>
-                                                <PlayCircle className="mr-2 h-4 w-4" />
-                                                Okumaya Başla
-                                            </DropdownMenuItem>
-                                        )}
-                                        {currentStatus === "READING" && (
-                                            <>
-                                                <DropdownMenuItem onClick={() => setShowProgressDialog(true)}>
-                                                    <BookOpen className="mr-2 h-4 w-4" />
-                                                    İlerleme Güncelle
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={handleFinishReading}>
-                                                    <CheckCircle2 className="mr-2 h-4 w-4" />
-                                                    Bitirdim
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={handleAbandonReading}>
-                                                    <XCircle className="mr-2 h-4 w-4" />
-                                                    Bıraktım
-                                                </DropdownMenuItem>
-                                            </>
-                                        )}
-                                        {(currentStatus === "COMPLETED" || currentStatus === "DNF") && (
-                                            <>
-                                                <DropdownMenuItem onClick={() => handleStartReadingDirect(true)}>
-                                                    <RotateCcw className="mr-2 h-4 w-4" />
-                                                    Tekrar Oku
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={handleResetToList}>
-                                                    <BookOpen className="mr-2 h-4 w-4" />
-                                                    Listeye Ekle
-                                                </DropdownMenuItem>
-                                            </>
-                                        )}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            ) : (
-                                <Button
-                                    className="h-12 px-6 text-base font-bold rounded-full"
-                                    disabled
-                                >
-                                    {statusConfig[currentStatus].label}
-                                </Button>
-                            )}
+                                            {currentStatus === "READING" && (
+                                                <>
+                                                    <DropdownMenuItem onClick={() => setShowProgressDialog(true)}>
+                                                        <BookOpen className="mr-2 h-4 w-4" />
+                                                        İlerleme Güncelle
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={handleFinishReading}>
+                                                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                                                        Bitirdim
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={handleAbandonReading}>
+                                                        <XCircle className="mr-2 h-4 w-4" />
+                                                        Bıraktım
+                                                    </DropdownMenuItem>
+                                                </>
+                                            )}
+                                            {(currentStatus === "COMPLETED" || currentStatus === "DNF") && (
+                                                <>
+                                                    <DropdownMenuItem onClick={() => handleStartReadingDirect(true)}>
+                                                        <RotateCcw className="mr-2 h-4 w-4" />
+                                                        Tekrar Oku
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={handleResetToList}>
+                                                        <BookOpen className="mr-2 h-4 w-4" />
+                                                        Listeye Ekle
+                                                    </DropdownMenuItem>
+                                                </>
+                                            )}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                ) : (
+                                    <Button
+                                        className="h-11 px-5 text-sm font-bold rounded-full"
+                                        disabled
+                                    >
+                                        {statusConfig[currentStatus].label}
+                                    </Button>
+                                )}
 
-                            {/* More Options */}
-                            {mounted && (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
-                                            <MoreHorizontal className="h-5 w-5" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-[200px]">
-                                        <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
-                                            <Pencil className="mr-2 h-4 w-4" />
-                                            Düzenle
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem
-                                            onClick={() => setShowDeleteDialog(true)}
-                                            className="text-destructive focus:text-destructive"
-                                        >
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Sil
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            )}
+                                {/* More Options */}
+                                {mounted && (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" size="icon" className="h-11 w-11 rounded-full">
+                                                <MoreHorizontal className="h-5 w-5" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-[200px]">
+                                            <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
+                                                <Pencil className="mr-2 h-4 w-4" />
+                                                Düzenle
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                onClick={() => setShowDeleteDialog(true)}
+                                                className="text-destructive focus:text-destructive"
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                Sil
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2848,6 +2911,84 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         <Button onClick={handleAddTheme} disabled={isAddingTheme || !newThemeName.trim()}>
                             {isAddingTheme && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Ekle
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Banner Düzenleme Dialog */}
+            <Dialog open={showBannerDialog} onOpenChange={setShowBannerDialog}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Pencil className="h-5 w-5 text-primary" />
+                            Banner Düzenle
+                        </DialogTitle>
+                        <DialogDescription>
+                            Kitap sayfası için özel bir banner görseli ekleyin
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Banner URL</Label>
+                            <Input
+                                value={bannerInput}
+                                onChange={(e) => setBannerInput(e.target.value)}
+                                placeholder="https://... veya Google Drive linki"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Google Drive, Dropbox veya direkt görsel linklerini destekler.
+                            </p>
+                        </div>
+
+                        {/* Preview */}
+                        {bannerInput && (
+                            <div className="space-y-2">
+                                <Label>Önizleme</Label>
+                                <div className="relative h-32 w-full rounded-lg overflow-hidden bg-muted border">
+                                    <img
+                                        src={convertToDirectImageUrl(bannerInput)}
+                                        alt="Banner önizleme"
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).style.display = 'none'
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter className="gap-2">
+                        {bannerUrl && (
+                            <Button
+                                variant="outline"
+                                onClick={async () => {
+                                    setIsSavingBanner(true)
+                                    const result = await updateBook(book.id, { bannerUrl: null })
+                                    if (result.success) {
+                                        setBannerUrl("")
+                                        setBannerInput("")
+                                        toast.success("Banner kaldırıldı")
+                                        setShowBannerDialog(false)
+                                    } else {
+                                        toast.error("İşlem başarısız")
+                                    }
+                                    setIsSavingBanner(false)
+                                }}
+                                disabled={isSavingBanner}
+                                className="text-destructive hover:text-destructive"
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Kaldır
+                            </Button>
+                        )}
+                        <div className="flex-1" />
+                        <Button variant="outline" onClick={() => setShowBannerDialog(false)}>
+                            Vazgeç
+                        </Button>
+                        <Button onClick={handleSaveBanner} disabled={isSavingBanner}>
+                            {isSavingBanner && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isSavingBanner ? "Kaydediliyor..." : "Kaydet"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

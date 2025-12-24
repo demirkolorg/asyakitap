@@ -212,6 +212,7 @@ export async function updateBook(id: string, data: {
     mindmapContent?: string
     briefing?: string
     infographicUrl?: string | null
+    bannerUrl?: string | null
     startDate?: Date | null
     endDate?: Date | null
     coverUrl?: string | null

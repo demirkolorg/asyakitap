@@ -78,6 +78,7 @@ model Book {
   mindmapContent       String?               @db.Text // Zihin haritası (Markdown formatında)
   briefing             String?               @db.Text // Detaylı brifing (hazır döküman)
   infographicUrl       String?               // AI tarafından üretilen infografik görsel URL'i
+  bannerUrl            String?               // Profil banner görseli URL'i
   quotes               Quote[]
   readingLogs          ReadingLog[]
   readingNotes         ReadingNote[]         // Okuma notları (okurken alınan notlar)
