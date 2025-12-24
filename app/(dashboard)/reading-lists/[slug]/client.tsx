@@ -52,6 +52,8 @@ import {
     Settings,
     GripVertical,
     Library,
+    Share2,
+    FileText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -206,6 +208,49 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
 
         navigator.clipboard.writeText(JSON.stringify(jsonData, null, 2))
             .then(() => toast.success("JSON panoya kopyalandı"))
+            .catch(() => toast.error("Kopyalama başarısız"))
+    }
+
+    // Copy as Text
+    const handleCopyAsText = () => {
+        let text = `📚 ${list.name}\n`
+        if (list.description) {
+            text += `${list.description}\n`
+        }
+        text += `\n━━━━━━━━━━━━━━━━━━━━━━\n`
+        text += `Toplam: ${list.totalBooks} kitap, ${list.levels.length} seviye\n`
+        text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`
+
+        list.levels.forEach((level, levelIndex) => {
+            text += `▸ SEVİYE ${level.levelNumber}: ${level.name.toUpperCase()}\n`
+            if (level.description) {
+                text += `  ${level.description}\n`
+            }
+            text += `  (${level.books.length} kitap)\n\n`
+
+            level.books.forEach((book, bookIndex) => {
+                const num = `${bookIndex + 1}`.padStart(2, ' ')
+                text += `  ${num}. ${book.book.title}\n`
+                text += `      ✍️ ${book.book.author?.name || "Bilinmeyen Yazar"}`
+                if (book.book.pageCount) {
+                    text += ` • ${book.book.pageCount} sayfa`
+                }
+                text += `\n`
+                if (book.neden) {
+                    text += `      💡 ${book.neden}\n`
+                }
+                text += `\n`
+            })
+
+            if (levelIndex < list.levels.length - 1) {
+                text += `──────────────────────\n\n`
+            }
+        })
+
+        text += `\n📖 AsyaKitap Okuma Listesi`
+
+        navigator.clipboard.writeText(text)
+            .then(() => toast.success("Liste panoya kopyalandı"))
             .catch(() => toast.error("Kopyalama başarısız"))
     }
 
@@ -497,10 +542,19 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                     <Button
                         variant="outline"
                         size="sm"
+                        onClick={handleCopyAsText}
+                        className="gap-2"
+                    >
+                        <Share2 className="h-4 w-4" />
+                        <span className="hidden sm:inline">Paylaş</span>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
                         onClick={handleCopyAsJson}
                         className="gap-2"
                     >
-                        <Copy className="h-4 w-4" />
+                        <FileText className="h-4 w-4" />
                         <span className="hidden sm:inline">JSON</span>
                     </Button>
                     <Button
