@@ -15,16 +15,22 @@ export function convertToDirectImageUrl(url: string): string {
   // https://drive.google.com/open?id=FILE_ID
   // https://drive.google.com/uc?id=FILE_ID
 
-  // file/d/ formatı
+  // file/d/ formatı - lh3.googleusercontent.com CDN kullan (CORS-friendly)
   const driveFileMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/)
   if (driveFileMatch) {
-    return `https://drive.google.com/uc?export=view&id=${driveFileMatch[1]}`
+    return `https://lh3.googleusercontent.com/d/${driveFileMatch[1]}`
   }
 
   // open?id= formatı
   const driveOpenMatch = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/)
   if (driveOpenMatch) {
-    return `https://drive.google.com/uc?export=view&id=${driveOpenMatch[1]}`
+    return `https://lh3.googleusercontent.com/d/${driveOpenMatch[1]}`
+  }
+
+  // uc?id= veya uc?export=view&id= formatı
+  const driveUcMatch = url.match(/drive\.google\.com\/uc\?(?:export=view&)?id=([a-zA-Z0-9_-]+)/)
+  if (driveUcMatch) {
+    return `https://lh3.googleusercontent.com/d/${driveUcMatch[1]}`
   }
 
   // Dropbox link dönüşümü
