@@ -7,6 +7,7 @@ import { FileBarChart, X, ChevronLeft, ChevronRight, ExternalLink, BookOpen } fr
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
+import { convertToDirectImageUrl } from "@/lib/url-helpers"
 
 interface Book {
     id: string
@@ -73,7 +74,7 @@ export function InfographicsClient({ books }: InfographicsClientProps) {
                         >
                             {book.infographicUrl && (
                                 <img
-                                    src={book.infographicUrl}
+                                    src={convertToDirectImageUrl(book.infographicUrl)}
                                     alt={`${book.title} infografik`}
                                     className="w-full h-full object-cover"
                                 />
@@ -137,7 +138,7 @@ export function InfographicsClient({ books }: InfographicsClientProps) {
                             <div className="flex items-center justify-center min-h-[60vh] max-h-[80vh] p-4">
                                 {selectedBook.infographicUrl && (
                                     <img
-                                        src={selectedBook.infographicUrl}
+                                        src={convertToDirectImageUrl(selectedBook.infographicUrl)}
                                         alt={`${selectedBook.title} infografik`}
                                         className="max-w-full max-h-[75vh] object-contain"
                                     />
@@ -157,7 +158,7 @@ export function InfographicsClient({ books }: InfographicsClientProps) {
                                         variant="outline"
                                         size="sm"
                                         className="text-white border-white/30 hover:bg-white/10"
-                                        onClick={() => window.open(selectedBook.infographicUrl!, '_blank')}
+                                        onClick={() => window.open(convertToDirectImageUrl(selectedBook.infographicUrl!), '_blank')}
                                     >
                                         <ExternalLink className="h-4 w-4 mr-2" />
                                         Tam Boyut

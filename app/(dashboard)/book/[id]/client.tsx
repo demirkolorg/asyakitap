@@ -64,6 +64,7 @@ import { addQuote } from "@/actions/quotes"
 import { addReadingNote, deleteReadingNote } from "@/actions/reading-notes"
 import { analyzeBookThemes, addBookTheme, removeBookTheme, generateBookDiscussionQuestions, type BookThemeAnalysis, type BookDiscussionQuestion, type BookDiscussionResult } from "@/actions/ai"
 import { MOOD_OPTIONS } from "@/lib/constants"
+import { convertToDirectImageUrl } from "@/lib/url-helpers"
 import { addReadingLog } from "@/actions/reading-logs"
 import { toast } from "sonner"
 import {
@@ -1887,11 +1888,11 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     <div className="space-y-4">
                                         <div className="relative w-full rounded-lg border overflow-hidden bg-muted/30">
                                             <img
-                                                src={infographicUrl}
+                                                src={convertToDirectImageUrl(infographicUrl)}
                                                 alt={`${book.title} infografik`}
                                                 className="w-full h-auto"
                                                 onError={(e) => {
-                                                    (e.target as HTMLImageElement).src = '/placeholder-infographic.png'
+                                                    (e.target as HTMLImageElement).style.display = 'none'
                                                 }}
                                             />
                                         </div>
@@ -1899,7 +1900,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => window.open(infographicUrl, '_blank')}
+                                                onClick={() => window.open(convertToDirectImageUrl(infographicUrl), '_blank')}
                                             >
                                                 <ExternalLink className="h-4 w-4 mr-2" />
                                                 Tam Boyut Aç
