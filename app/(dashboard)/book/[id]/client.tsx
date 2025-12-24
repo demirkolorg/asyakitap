@@ -59,6 +59,8 @@ import {
     X,
     HelpCircle,
     ExternalLink,
+    Move,
+    Check,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingNote, deleteReadingNote } from "@/actions/reading-notes"
@@ -224,6 +226,12 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [showBannerDialog, setShowBannerDialog] = useState(false)
     const [bannerInput, setBannerInput] = useState(book.bannerUrl || "")
     const [isSavingBanner, setIsSavingBanner] = useState(false)
+    const [bannerPositionY, setBannerPositionY] = useState(book.bannerPositionY ?? 50)
+    const [isRepositioningBanner, setIsRepositioningBanner] = useState(false)
+    const [tempBannerPositionY, setTempBannerPositionY] = useState(book.bannerPositionY ?? 50)
+    const [isDragging, setIsDragging] = useState(false)
+    const [dragStartY, setDragStartY] = useState(0)
+    const [dragStartPosition, setDragStartPosition] = useState(50)
     const [isEditingBriefing, setIsEditingBriefing] = useState(false)
     const [isSavingBriefing, setIsSavingBriefing] = useState(false)
     const [isSavingImza, setIsSavingImza] = useState(false)
@@ -802,20 +810,81 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
         setIsSavingBanner(false)
     }
 
+    // Banner sürükleme fonksiyonları
+    const handleBannerMouseDown = (e: React.MouseEvent) => {
+        if (!isRepositioningBanner) return
+        e.preventDefault()
+        setIsDragging(true)
+        setDragStartY(e.clientY)
+        setDragStartPosition(tempBannerPositionY)
+    }
+
+    const handleBannerMouseMove = (e: React.MouseEvent) => {
+        if (!isDragging || !isRepositioningBanner) return
+        e.preventDefault()
+        const deltaY = e.clientY - dragStartY
+        // Her 3 piksel = 1% pozisyon değişimi
+        const newPosition = Math.max(0, Math.min(100, dragStartPosition - (deltaY / 3)))
+        setTempBannerPositionY(Math.round(newPosition))
+    }
+
+    const handleBannerMouseUp = () => {
+        setIsDragging(false)
+    }
+
+    const handleBannerMouseLeave = () => {
+        if (isDragging) {
+            setIsDragging(false)
+        }
+    }
+
+    const handleSaveBannerPosition = async () => {
+        setIsSavingBanner(true)
+        const result = await updateBook(book.id, { bannerPositionY: tempBannerPositionY })
+        if (result.success) {
+            setBannerPositionY(tempBannerPositionY)
+            toast.success("Banner pozisyonu kaydedildi")
+            setIsRepositioningBanner(false)
+        } else {
+            toast.error("Kaydetme başarısız")
+        }
+        setIsSavingBanner(false)
+    }
+
+    const handleCancelReposition = () => {
+        setTempBannerPositionY(bannerPositionY)
+        setIsRepositioningBanner(false)
+    }
+
     return (
         <div className="space-y-6">
             {/* Profile-Style Hero Section */}
             <div className="relative rounded-xl overflow-hidden border border-border/50 shadow-sm bg-card">
                 {/* Banner Area */}
-                <div className="relative h-48 md:h-64 lg:h-72 group">
+                <div
+                    className={cn(
+                        "relative h-48 md:h-64 lg:h-72 group",
+                        isRepositioningBanner && "cursor-grab",
+                        isDragging && "cursor-grabbing"
+                    )}
+                    onMouseDown={handleBannerMouseDown}
+                    onMouseMove={handleBannerMouseMove}
+                    onMouseUp={handleBannerMouseUp}
+                    onMouseLeave={handleBannerMouseLeave}
+                >
                     {/* Banner Image or Gradient Fallback */}
                     {bannerUrl ? (
                         <Image
                             src={convertToDirectImageUrl(bannerUrl)}
                             alt="Banner"
                             fill
-                            className="object-cover"
+                            className={cn(
+                                "object-cover select-none",
+                                isRepositioningBanner && "pointer-events-none"
+                            )}
+                            style={{ objectPosition: `center ${isRepositioningBanner ? tempBannerPositionY : bannerPositionY}%` }}
                             priority
+                            draggable={false}
                         />
                     ) : book.coverUrl ? (
                         <>
@@ -824,26 +893,75 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 src={book.coverUrl.replace("http:", "https:")}
                                 alt="Banner"
                                 fill
-                                className="object-cover blur-2xl scale-110 opacity-60"
+                                className="object-cover blur-2xl scale-110 opacity-60 select-none"
+                                style={{ objectPosition: `center ${isRepositioningBanner ? tempBannerPositionY : bannerPositionY}%` }}
+                                draggable={false}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
                         </>
                     ) : (
                         /* Gradient Fallback */
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-primary/10 to-card" />
                     )}
 
-                    {/* Banner Edit Button */}
-                    <button
-                        onClick={() => {
-                            setBannerInput(bannerUrl)
-                            setShowBannerDialog(true)
-                        }}
-                        className="absolute top-4 right-4 h-9 px-3 rounded-lg bg-black/40 hover:bg-black/60 text-white text-sm font-medium flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm"
-                    >
-                        <Pencil className="h-4 w-4" />
-                        Banner Düzenle
-                    </button>
+                    {/* Reposition Mode Overlay */}
+                    {isRepositioningBanner && (
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                            <div className="flex flex-col items-center gap-2 text-white">
+                                <Move className="h-8 w-8" />
+                                <span className="text-sm font-medium">Yukarı/aşağı sürükleyerek konumlandır</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Banner Edit Buttons */}
+                    {isRepositioningBanner ? (
+                        <div className="absolute top-4 right-4 flex gap-2">
+                            <button
+                                onClick={handleCancelReposition}
+                                className="h-9 px-3 rounded-lg bg-black/60 hover:bg-black/80 text-white text-sm font-medium flex items-center gap-2 backdrop-blur-sm"
+                            >
+                                <X className="h-4 w-4" />
+                                İptal
+                            </button>
+                            <button
+                                onClick={handleSaveBannerPosition}
+                                disabled={isSavingBanner}
+                                className="h-9 px-3 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium flex items-center gap-2"
+                            >
+                                {isSavingBanner ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Check className="h-4 w-4" />
+                                )}
+                                Kaydet
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                            {bannerUrl && (
+                                <button
+                                    onClick={() => {
+                                        setTempBannerPositionY(bannerPositionY)
+                                        setIsRepositioningBanner(true)
+                                    }}
+                                    className="h-9 px-3 rounded-lg bg-black/40 hover:bg-black/60 text-white text-sm font-medium flex items-center gap-2 backdrop-blur-sm"
+                                >
+                                    <Move className="h-4 w-4" />
+                                    Konumla
+                                </button>
+                            )}
+                            <button
+                                onClick={() => {
+                                    setBannerInput(bannerUrl)
+                                    setShowBannerDialog(true)
+                                }}
+                                className="h-9 px-3 rounded-lg bg-black/40 hover:bg-black/60 text-white text-sm font-medium flex items-center gap-2 backdrop-blur-sm"
+                            >
+                                <Pencil className="h-4 w-4" />
+                                Değiştir
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Content Area - Overlapping the banner */}

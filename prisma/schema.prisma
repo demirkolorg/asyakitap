@@ -79,6 +79,7 @@ model Book {
   briefing             String?               @db.Text // Detaylı brifing (hazır döküman)
   infographicUrl       String?               // AI tarafından üretilen infografik görsel URL'i
   bannerUrl            String?               // Profil banner görseli URL'i
+  bannerPositionY      Int?                  @default(50) // Banner Y pozisyonu (0-100 arası yüzde)
   quotes               Quote[]
   readingLogs          ReadingLog[]
   readingNotes         ReadingNote[]         // Okuma notları (okurken alınan notlar)

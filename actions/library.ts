@@ -213,6 +213,7 @@ export async function updateBook(id: string, data: {
     briefing?: string
     infographicUrl?: string | null
     bannerUrl?: string | null
+    bannerPositionY?: number | null
     startDate?: Date | null
     endDate?: Date | null
     coverUrl?: string | null
