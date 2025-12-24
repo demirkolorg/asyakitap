@@ -31,11 +31,11 @@ export function ColorThemeSelector() {
           <span className="sr-only">Renk teması seç</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>Renk Teması</DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-3 gap-3 py-4">
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3 py-4 max-h-[70vh] overflow-y-auto">
           {themes.map((theme) => {
             const isSelected = colorTheme === theme.name
             return (
