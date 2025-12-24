@@ -35,14 +35,12 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import {
-    Map,
     BookOpen,
     ChevronDown,
-    ChevronUp,
+    ChevronRight,
     ArrowLeft,
     Search,
     X,
-    Copy,
     Plus,
     MoreVertical,
     Pencil,
@@ -50,10 +48,10 @@ import {
     ExternalLink,
     Loader2,
     Settings,
-    GripVertical,
     Library,
     Share2,
-    FileText,
+    Check,
+    Layers,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -124,8 +122,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
         levelId?: string
         name: string
         description: string
-        coverUrl: string
-    }>({ open: false, mode: "create", name: "", description: "", coverUrl: "" })
+    }>({ open: false, mode: "create", name: "", description: "" })
 
     const [bookDialog, setBookDialog] = useState<{
         open: boolean
@@ -185,31 +182,12 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
         return filteredLevels.reduce((sum, level) => sum + level.books.length, 0)
     }, [filteredLevels])
 
-    // Copy as JSON
-    const handleCopyAsJson = () => {
-        const jsonData = {
-            list: {
-                name: list.name,
-                slug: list.slug,
-                description: list.description
-            },
-            levels: list.levels.map(level => ({
-                levelNumber: level.levelNumber,
-                name: level.name,
-                description: level.description,
-                books: level.books.map(rb => ({
-                    title: rb.book.title,
-                    author: rb.book.author?.name || "Bilinmeyen Yazar",
-                    neden: rb.neden,
-                    pageCount: rb.book.pageCount
-                }))
-            }))
-        }
-
-        navigator.clipboard.writeText(JSON.stringify(jsonData, null, 2))
-            .then(() => toast.success("JSON panoya kopyalandı"))
-            .catch(() => toast.error("Kopyalama başarısız"))
-    }
+    // Stats
+    const completedBooks = list.levels.reduce((sum, level) =>
+        sum + level.books.filter(b => b.book.status === "COMPLETED").length, 0)
+    const progressPercentage = list.totalBooks > 0
+        ? Math.round((completedBooks / list.totalBooks) * 100)
+        : 0
 
     // Copy as Text
     const handleCopyAsText = () => {
@@ -271,7 +249,6 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 })
                 if (result.success && result.level) {
                     toast.success("Seviye eklendi")
-                    // State'i güncelle - yeni seviyeyi ekle
                     const newLevel: ReadingListLevel = {
                         id: result.level.id,
                         levelNumber: result.level.levelNumber,
@@ -283,7 +260,6 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                         ...prev,
                         levels: [...prev.levels, newLevel]
                     }))
-                    // Yeni seviyeyi expand et
                     setExpandedLevels(prev => new Set([...prev, result.level!.id]))
                 } else {
                     toast.error(result.error)
@@ -295,7 +271,6 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 })
                 if (result.success) {
                     toast.success("Seviye güncellendi")
-                    // State'i güncelle
                     setList(prev => ({
                         ...prev,
                         levels: prev.levels.map(l =>
@@ -308,7 +283,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                     toast.error(result.error)
                 }
             }
-            setLevelDialog({ open: false, mode: "create", name: "", description: "", coverUrl: "" })
+            setLevelDialog({ open: false, mode: "create", name: "", description: "" })
         } finally {
             setIsLoading(false)
         }
@@ -332,7 +307,6 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 })
                 if (result.success && result.readingListBook) {
                     toast.success(`"${result.bookTitle}" eklendi`)
-                    // State'i güncelle - yeni kitabı ekle
                     const newBook: ReadingListBook = {
                         id: result.readingListBook.id,
                         bookId: result.readingListBook.bookId,
@@ -386,7 +360,6 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 })
                 if (result.success && result.readingListBook) {
                     toast.success("Kitap eklendi")
-                    // State'i güncelle - yeni kitabı ekle
                     const newBook: ReadingListBook = {
                         id: result.readingListBook.id,
                         bookId: result.readingListBook.bookId,
@@ -429,7 +402,6 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 })
                 if (result.success) {
                     toast.success("Kitap güncellendi")
-                    // State'i güncelle
                     setList(prev => ({
                         ...prev,
                         levels: prev.levels.map(level => ({
@@ -461,7 +433,6 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 const result = await deleteLevel(deleteDialog.id)
                 if (result.success) {
                     toast.success("Seviye silindi")
-                    // State'i güncelle
                     const deletedLevel = list.levels.find(l => l.id === deleteDialog.id)
                     const deletedBookCount = deletedLevel?.books.length || 0
                     setList(prev => ({
@@ -476,7 +447,6 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 const result = await removeBookFromLevel(deleteDialog.id)
                 if (result.success) {
                     toast.success("Kitap listeden kaldırıldı")
-                    // State'i güncelle
                     setList(prev => ({
                         ...prev,
                         totalBooks: prev.totalBooks - 1,
@@ -511,7 +481,6 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
             })
             if (result.success) {
                 toast.success("Liste güncellendi")
-                // State'i güncelle
                 setList(prev => ({
                     ...prev,
                     name: listSettingsDialog.name,
@@ -528,121 +497,136 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
     }
 
     return (
-        <div className="max-w-5xl mx-auto">
-            {/* Top Bar */}
-            <div className="flex items-center justify-between mb-6">
-                <Link
-                    href="/reading-lists"
-                    className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    Tüm Listeler
-                </Link>
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleCopyAsText}
-                        className="gap-2"
-                    >
-                        <Share2 className="h-4 w-4" />
-                        <span className="hidden sm:inline">Paylaş</span>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleCopyAsJson}
-                        className="gap-2"
-                    >
-                        <FileText className="h-4 w-4" />
-                        <span className="hidden sm:inline">JSON</span>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setListSettingsDialog({
-                            open: true,
-                            name: list.name,
-                            description: list.description || "",
-                            coverUrl: list.coverUrl || ""
-                        })}
-                        className="gap-2"
-                    >
-                        <Settings className="h-4 w-4" />
-                        <span className="hidden sm:inline">Ayarlar</span>
-                    </Button>
+        <div className="max-w-4xl mx-auto">
+            {/* Back Link */}
+            <Link
+                href="/reading-lists"
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
+            >
+                <ArrowLeft className="h-4 w-4" />
+                Tüm Listeler
+            </Link>
+
+            {/* Header */}
+            <div className="mb-10">
+                <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex-1">
+                        <h1 className="text-3xl font-semibold tracking-tight mb-2">
+                            {list.name}
+                        </h1>
+                        {list.description && (
+                            <p className="text-muted-foreground max-w-2xl">
+                                {list.description}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleCopyAsText}
+                        >
+                            <Share2 className="h-4 w-4 mr-2" />
+                            Paylaş
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9"
+                            onClick={() => setListSettingsDialog({
+                                open: true,
+                                name: list.name,
+                                description: list.description || "",
+                                coverUrl: list.coverUrl || ""
+                            })}
+                        >
+                            <Settings className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Stats Bar */}
+                <div className="flex items-center gap-6 py-4 border-y">
+                    <div className="flex items-center gap-2">
+                        <Layers className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">
+                            <span className="font-medium">{list.levels.length}</span>
+                            <span className="text-muted-foreground ml-1">seviye</span>
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <BookOpen className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">
+                            <span className="font-medium">{list.totalBooks}</span>
+                            <span className="text-muted-foreground ml-1">kitap</span>
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">
+                            <span className="font-medium">{completedBooks}</span>
+                            <span className="text-muted-foreground ml-1">okundu</span>
+                        </span>
+                    </div>
+                    {progressPercentage > 0 && (
+                        <div className="flex items-center gap-2 ml-auto">
+                            <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-primary rounded-full transition-all"
+                                    style={{ width: `${progressPercentage}%` }}
+                                />
+                            </div>
+                            <span className="text-sm font-medium">{progressPercentage}%</span>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold flex items-center gap-3">
-                    <Map className="h-8 w-8 text-primary" />
-                    {list.name}
-                </h1>
-                {list.description && (
-                    <p className="text-muted-foreground mt-2 max-w-3xl">
-                        {list.description}
-                    </p>
-                )}
-
-                {/* Stats */}
-                <div className="mt-6 p-4 bg-muted/30 rounded-lg flex items-center justify-between">
-                    <div className="flex items-center gap-6 text-sm">
-                        <span className="flex items-center gap-1 text-muted-foreground">
-                            <BookOpen className="h-4 w-4" />
-                            {list.levels.length} seviye
-                        </span>
-                        <span className="font-medium">
-                            {list.totalBooks} kitap
-                        </span>
-                    </div>
-                    <Button
-                        size="sm"
-                        onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "", coverUrl: "" })}
-                        className="gap-2"
-                    >
-                        <Plus className="h-4 w-4" />
-                        Seviye Ekle
-                    </Button>
-                </div>
-
-                {/* Search */}
-                <div className="mt-4 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            {/* Search & Add */}
+            <div className="flex items-center gap-3 mb-8">
+                <div className="relative flex-1">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         type="text"
                         placeholder="Kitap veya yazar ara..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 pr-10"
+                        className="pl-11 h-11 bg-muted/50 border-0 focus-visible:ring-1"
                     />
                     {searchQuery && (
                         <button
                             onClick={() => setSearchQuery("")}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                         >
                             <X className="h-4 w-4" />
                         </button>
                     )}
                 </div>
-                {searchQuery && (
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        {totalFilteredBooks} kitap bulundu
-                    </p>
-                )}
+                <Button
+                    onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "" })}
+                >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Seviye Ekle
+                </Button>
             </div>
 
+            {searchQuery && (
+                <p className="text-sm text-muted-foreground mb-6">
+                    {totalFilteredBooks} kitap bulundu
+                </p>
+            )}
+
             {/* Levels */}
-            <div className="space-y-6">
+            <div className="space-y-4">
                 {list.levels.length === 0 && (
-                    <div className="text-center py-12 border border-dashed rounded-xl">
-                        <Map className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                        <p className="text-lg font-medium text-muted-foreground">Henüz seviye yok</p>
-                        <p className="text-sm text-muted-foreground mt-1">İlk seviyeyi ekleyerek başlayın</p>
+                    <div className="text-center py-20 border border-dashed rounded-xl">
+                        <Layers className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                        <h2 className="text-lg font-medium mb-2">Henüz seviye yok</h2>
+                        <p className="text-sm text-muted-foreground mb-6">İlk seviyeyi ekleyerek başlayın</p>
                         <Button
-                            className="mt-4"
-                            onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "", coverUrl: "" })}
+                            onClick={() => setLevelDialog({ open: true, mode: "create", name: "", description: "" })}
                         >
                             <Plus className="h-4 w-4 mr-2" />
                             Seviye Ekle
@@ -651,127 +635,135 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                 )}
 
                 {searchQuery && filteredLevels.length === 0 && (
-                    <div className="text-center py-12 text-muted-foreground">
-                        <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p className="text-lg font-medium">Kitap bulunamadı</p>
-                        <p className="text-sm mt-1">&quot;{searchQuery}&quot; ile eşleşen kitap yok</p>
+                    <div className="text-center py-16">
+                        <Search className="h-10 w-10 mx-auto mb-4 text-muted-foreground/50" />
+                        <p className="text-muted-foreground">"{searchQuery}" ile eşleşen kitap bulunamadı</p>
                     </div>
                 )}
 
                 {filteredLevels.map((level) => {
                     const isExpanded = expandedLevels.has(level.id)
+                    const levelCompleted = level.books.filter(b => b.book.status === "COMPLETED").length
 
                     return (
                         <div key={level.id} className="border rounded-xl overflow-hidden">
                             {/* Level Header */}
-                            <div className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
-                                <button
-                                    onClick={() => toggleLevel(level.id)}
-                                    className="flex items-center gap-4 flex-1"
-                                >
-                                    <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-primary text-primary-foreground">
+                            <div
+                                className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                                onClick={() => toggleLevel(level.id)}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold">
                                         {level.levelNumber}
                                     </div>
-                                    <div className="text-left">
-                                        <h2 className="font-semibold">
-                                            Seviye {level.levelNumber}: {level.name}
+                                    <div>
+                                        <h2 className="font-medium flex items-center gap-2">
+                                            {level.name}
+                                            <span className="text-sm font-normal text-muted-foreground">
+                                                {levelCompleted}/{level.books.length}
+                                            </span>
                                         </h2>
-                                        <p className="text-sm text-muted-foreground">
-                                            {level.books.length} kitap
-                                        </p>
+                                        {level.description && (
+                                            <p className="text-sm text-muted-foreground line-clamp-1">
+                                                {level.description}
+                                            </p>
+                                        )}
                                     </div>
-                                </button>
+                                </div>
+
                                 <div className="flex items-center gap-2">
                                     <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
+                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                                             <Button variant="ghost" size="icon" className="h-8 w-8">
                                                 <MoreVertical className="h-4 w-4" />
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => setBookDialog({
-                                                open: true,
-                                                mode: "kitapyurdu",
-                                                levelId: level.id,
-                                                url: "",
-                                                title: "",
-                                                author: "",
-                                                pageCount: "",
-                                                coverUrl: "",
-                                                neden: "",
-                                                inLibrary: false
-                                            })}>
+                                            <DropdownMenuItem onClick={(e) => {
+                                                e.stopPropagation()
+                                                setBookDialog({
+                                                    open: true,
+                                                    mode: "kitapyurdu",
+                                                    levelId: level.id,
+                                                    url: "",
+                                                    title: "",
+                                                    author: "",
+                                                    pageCount: "",
+                                                    coverUrl: "",
+                                                    neden: "",
+                                                    inLibrary: false
+                                                })
+                                            }}>
                                                 <ExternalLink className="h-4 w-4 mr-2" />
-                                                Kitapyurdu&apos;ndan Ekle
+                                                Kitapyurdu'ndan Ekle
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setBookDialog({
-                                                open: true,
-                                                mode: "manual",
-                                                levelId: level.id,
-                                                url: "",
-                                                title: "",
-                                                author: "",
-                                                pageCount: "",
-                                                coverUrl: "",
-                                                neden: "",
-                                                inLibrary: false
-                                            })}>
+                                            <DropdownMenuItem onClick={(e) => {
+                                                e.stopPropagation()
+                                                setBookDialog({
+                                                    open: true,
+                                                    mode: "manual",
+                                                    levelId: level.id,
+                                                    url: "",
+                                                    title: "",
+                                                    author: "",
+                                                    pageCount: "",
+                                                    coverUrl: "",
+                                                    neden: "",
+                                                    inLibrary: false
+                                                })
+                                            }}>
                                                 <Plus className="h-4 w-4 mr-2" />
                                                 Manuel Ekle
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
-                                            <DropdownMenuItem onClick={() => setLevelDialog({
-                                                open: true,
-                                                mode: "edit",
-                                                levelId: level.id,
-                                                name: level.name,
-                                                description: level.description || "",
-                                                coverUrl: ""
-                                            })}>
+                                            <DropdownMenuItem onClick={(e) => {
+                                                e.stopPropagation()
+                                                setLevelDialog({
+                                                    open: true,
+                                                    mode: "edit",
+                                                    levelId: level.id,
+                                                    name: level.name,
+                                                    description: level.description || ""
+                                                })
+                                            }}>
                                                 <Pencil className="h-4 w-4 mr-2" />
-                                                Seviyeyi Düzenle
+                                                Düzenle
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 className="text-destructive"
-                                                onClick={() => setDeleteDialog({
-                                                    open: true,
-                                                    type: "level",
-                                                    id: level.id,
-                                                    name: level.name
-                                                })}
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    setDeleteDialog({
+                                                        open: true,
+                                                        type: "level",
+                                                        id: level.id,
+                                                        name: level.name
+                                                    })
+                                                }}
                                             >
                                                 <Trash2 className="h-4 w-4 mr-2" />
-                                                Seviyeyi Sil
+                                                Sil
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
-                                    <button onClick={() => toggleLevel(level.id)}>
-                                        {isExpanded ? (
-                                            <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                                        ) : (
-                                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                                        )}
-                                    </button>
+                                    {isExpanded ? (
+                                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                    ) : (
+                                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                    )}
                                 </div>
                             </div>
 
                             {/* Level Content */}
                             {isExpanded && (
                                 <div className="border-t">
-                                    {level.description && (
-                                        <p className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
-                                            {level.description}
-                                        </p>
-                                    )}
-
                                     {level.books.length === 0 ? (
                                         <div className="p-8 text-center text-muted-foreground">
                                             <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                            <p>Bu seviyede kitap yok</p>
+                                            <p className="mb-3">Bu seviyede kitap yok</p>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="mt-3"
                                                 onClick={() => setBookDialog({
                                                     open: true,
                                                     mode: "kitapyurdu",
@@ -792,116 +784,30 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                                     ) : (
                                         <div className="divide-y">
                                             {level.books.map((book) => (
-                                                <div
+                                                <BookRow
                                                     key={book.id}
-                                                    className="p-4 hover:bg-muted/30 transition-colors group"
-                                                >
-                                                    <div className="flex items-start gap-4">
-                                                        {/* Book Cover - Clickable */}
-                                                        <Link
-                                                            href={`/book/${book.book.id}`}
-                                                            className="relative flex-shrink-0 h-20 w-14 rounded-md border bg-muted/50 overflow-hidden hover:ring-2 hover:ring-primary transition-all"
-                                                        >
-                                                            {book.book.coverUrl ? (
-                                                                <Image
-                                                                    src={book.book.coverUrl}
-                                                                    alt={book.book.title}
-                                                                    fill
-                                                                    className="object-cover"
-                                                                    unoptimized
-                                                                />
-                                                            ) : (
-                                                                <div className="flex items-center justify-center h-full">
-                                                                    <BookOpen className="h-6 w-6 text-muted-foreground/50" />
-                                                                </div>
-                                                            )}
-                                                            {book.book.inLibrary && (
-                                                                <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-primary-foreground text-[10px] text-center py-0.5">
-                                                                    <Library className="h-3 w-3 inline" />
-                                                                </div>
-                                                            )}
-                                                        </Link>
-
-                                                        {/* Book Info - Clickable */}
-                                                        <Link
-                                                            href={`/book/${book.book.id}`}
-                                                            className="flex-1 min-w-0 hover:text-primary transition-colors"
-                                                        >
-                                                            <div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <h3 className="font-medium">
-                                                                        {book.book.title}
-                                                                    </h3>
-                                                                    {book.book.status === "COMPLETED" && (
-                                                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500 text-white flex-shrink-0">Okudum</span>
-                                                                    )}
-                                                                    {book.book.status === "READING" && (
-                                                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500 text-white flex-shrink-0">Okunuyor</span>
-                                                                    )}
-                                                                </div>
-                                                                <p className="text-sm text-muted-foreground">
-                                                                    {book.book.author?.name || "Bilinmeyen Yazar"}
-                                                                    {book.book.pageCount && ` • ${book.book.pageCount} sayfa`}
-                                                                </p>
-                                                            </div>
-
-                                                            {book.neden && (
-                                                                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                                                                    <span className="font-medium text-foreground">Neden: </span>
-                                                                    {book.neden}
-                                                                </p>
-                                                            )}
-                                                        </Link>
-
-                                                        {/* Book Actions */}
-                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <DropdownMenu>
-                                                                <DropdownMenuTrigger asChild>
-                                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                                        <MoreVertical className="h-4 w-4" />
-                                                                    </Button>
-                                                                </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align="end">
-                                                                    <DropdownMenuItem asChild>
-                                                                        <Link href={`/book/${book.book.id}`}>
-                                                                            <ExternalLink className="h-4 w-4 mr-2" />
-                                                                            Kitap Detayı
-                                                                        </Link>
-                                                                    </DropdownMenuItem>
-                                                                    <DropdownMenuSeparator />
-                                                                    <DropdownMenuItem onClick={() => setBookDialog({
-                                                                        open: true,
-                                                                        mode: "edit",
-                                                                        levelId: level.id,
-                                                                        bookId: book.id,
-                                                                        url: "",
-                                                                        title: book.book.title,
-                                                                        author: book.book.author?.name || "",
-                                                                        pageCount: book.book.pageCount?.toString() || "",
-                                                                        coverUrl: book.book.coverUrl || "",
-                                                                        neden: book.neden || "",
-                                                                        inLibrary: book.book.inLibrary
-                                                                    })}>
-                                                                        <Pencil className="h-4 w-4 mr-2" />
-                                                                        Düzenle
-                                                                    </DropdownMenuItem>
-                                                                    <DropdownMenuItem
-                                                                        className="text-destructive"
-                                                                        onClick={() => setDeleteDialog({
-                                                                            open: true,
-                                                                            type: "book",
-                                                                            id: book.id,
-                                                                            name: book.book.title
-                                                                        })}
-                                                                    >
-                                                                        <Trash2 className="h-4 w-4 mr-2" />
-                                                                        Listeden Kaldır
-                                                                    </DropdownMenuItem>
-                                                                </DropdownMenuContent>
-                                                            </DropdownMenu>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                    book={book}
+                                                    levelId={level.id}
+                                                    onEdit={() => setBookDialog({
+                                                        open: true,
+                                                        mode: "edit",
+                                                        levelId: level.id,
+                                                        bookId: book.id,
+                                                        url: "",
+                                                        title: book.book.title,
+                                                        author: book.book.author?.name || "",
+                                                        pageCount: book.book.pageCount?.toString() || "",
+                                                        coverUrl: book.book.coverUrl || "",
+                                                        neden: book.neden || "",
+                                                        inLibrary: book.book.inLibrary
+                                                    })}
+                                                    onDelete={() => setDeleteDialog({
+                                                        open: true,
+                                                        type: "book",
+                                                        id: book.id,
+                                                        name: book.book.title
+                                                    })}
+                                                />
                                             ))}
                                         </div>
                                     )}
@@ -914,7 +820,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
 
             {/* Level Dialog */}
             <Dialog open={levelDialog.open} onOpenChange={(open) => !open && setLevelDialog({ ...levelDialog, open: false })}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>
                             {levelDialog.mode === "create" ? "Yeni Seviye" : "Seviye Düzenle"}
@@ -928,21 +834,20 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label htmlFor="level-name">Seviye Adı</Label>
+                            <Label>Seviye Adı</Label>
                             <Input
-                                id="level-name"
                                 placeholder="Örn: Başlangıç"
                                 value={levelDialog.name}
                                 onChange={(e) => setLevelDialog({ ...levelDialog, name: e.target.value })}
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="level-description">Açıklama (Opsiyonel)</Label>
+                            <Label>Açıklama <span className="text-muted-foreground font-normal">(opsiyonel)</span></Label>
                             <Textarea
-                                id="level-description"
                                 placeholder="Bu seviyede hangi kitaplar var?"
                                 value={levelDialog.description}
                                 onChange={(e) => setLevelDialog({ ...levelDialog, description: e.target.value })}
+                                rows={3}
                             />
                         </div>
                     </div>
@@ -950,7 +855,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                         <Button variant="outline" onClick={() => setLevelDialog({ ...levelDialog, open: false })}>
                             Vazgeç
                         </Button>
-                        <Button onClick={handleLevelSubmit} disabled={isLoading}>
+                        <Button onClick={handleLevelSubmit} disabled={isLoading || !levelDialog.name.trim()}>
                             {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {levelDialog.mode === "create" ? "Ekle" : "Kaydet"}
                         </Button>
@@ -960,7 +865,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
 
             {/* Book Dialog */}
             <Dialog open={bookDialog.open} onOpenChange={(open) => !open && setBookDialog({ ...bookDialog, open: false })}>
-                <DialogContent className="sm:max-w-lg">
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>
                             {bookDialog.mode === "kitapyurdu" && "Kitapyurdu'ndan Ekle"}
@@ -976,9 +881,8 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                     <div className="space-y-4 py-4">
                         {bookDialog.mode === "kitapyurdu" && (
                             <div className="space-y-2">
-                                <Label htmlFor="book-url">Kitapyurdu Linki</Label>
+                                <Label>Kitapyurdu Linki</Label>
                                 <Input
-                                    id="book-url"
                                     placeholder="https://www.kitapyurdu.com/kitap/..."
                                     value={bookDialog.url}
                                     onChange={(e) => setBookDialog({ ...bookDialog, url: e.target.value })}
@@ -989,70 +893,68 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                         {bookDialog.mode === "manual" && (
                             <>
                                 <div className="space-y-2">
-                                    <Label htmlFor="book-title">Kitap Adı</Label>
+                                    <Label>Kitap Adı</Label>
                                     <Input
-                                        id="book-title"
                                         placeholder="Kitap adı"
                                         value={bookDialog.title}
                                         onChange={(e) => setBookDialog({ ...bookDialog, title: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="book-author">Yazar</Label>
+                                    <Label>Yazar</Label>
                                     <Input
-                                        id="book-author"
                                         placeholder="Yazar adı"
                                         value={bookDialog.author}
                                         onChange={(e) => setBookDialog({ ...bookDialog, author: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="book-pages">Sayfa Sayısı (Opsiyonel)</Label>
-                                    <Input
-                                        id="book-pages"
-                                        type="number"
-                                        placeholder="300"
-                                        value={bookDialog.pageCount}
-                                        onChange={(e) => setBookDialog({ ...bookDialog, pageCount: e.target.value })}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="book-cover-url">Kapak URL (Opsiyonel)</Label>
-                                    <Input
-                                        id="book-cover-url"
-                                        placeholder="https://..."
-                                        value={bookDialog.coverUrl}
-                                        onChange={(e) => setBookDialog({ ...bookDialog, coverUrl: e.target.value })}
-                                    />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Sayfa <span className="text-muted-foreground font-normal">(opsiyonel)</span></Label>
+                                        <Input
+                                            type="number"
+                                            placeholder="300"
+                                            value={bookDialog.pageCount}
+                                            onChange={(e) => setBookDialog({ ...bookDialog, pageCount: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Kapak URL <span className="text-muted-foreground font-normal">(opsiyonel)</span></Label>
+                                        <Input
+                                            placeholder="https://..."
+                                            value={bookDialog.coverUrl}
+                                            onChange={(e) => setBookDialog({ ...bookDialog, coverUrl: e.target.value })}
+                                        />
+                                    </div>
                                 </div>
                             </>
                         )}
 
                         {bookDialog.mode === "edit" && (
-                            <div className="p-3 bg-muted/50 rounded-lg">
+                            <div className="p-4 bg-muted/50 rounded-lg">
                                 <p className="font-medium">{bookDialog.title}</p>
                                 <p className="text-sm text-muted-foreground">{bookDialog.author}</p>
                             </div>
                         )}
 
                         <div className="space-y-2">
-                            <Label htmlFor="book-neden">Bu Kitap Neden Okunmalı? (Opsiyonel)</Label>
+                            <Label>Bu Kitap Neden Okunmalı? <span className="text-muted-foreground font-normal">(opsiyonel)</span></Label>
                             <Textarea
-                                id="book-neden"
                                 placeholder="Bu kitabı neden bu listeye eklediniz?"
                                 value={bookDialog.neden}
                                 onChange={(e) => setBookDialog({ ...bookDialog, neden: e.target.value })}
+                                rows={3}
                             />
                         </div>
 
                         {bookDialog.mode !== "edit" && (
                             <div className="flex items-center space-x-2">
                                 <Checkbox
-                                    id="book-inLibrary"
+                                    id="inLibrary"
                                     checked={bookDialog.inLibrary}
                                     onCheckedChange={(checked) => setBookDialog({ ...bookDialog, inLibrary: checked === true })}
                                 />
-                                <Label htmlFor="book-inLibrary" className="text-sm font-normal">
+                                <Label htmlFor="inLibrary" className="text-sm font-normal cursor-pointer">
                                     Bu kitap kütüphanemde var
                                 </Label>
                             </div>
@@ -1096,7 +998,7 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
 
             {/* List Settings Dialog */}
             <Dialog open={listSettingsDialog.open} onOpenChange={(open) => !open && setListSettingsDialog({ ...listSettingsDialog, open: false })}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Liste Ayarları</DialogTitle>
                         <DialogDescription>
@@ -1105,25 +1007,23 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label htmlFor="list-name">Liste Adı</Label>
+                            <Label>Liste Adı</Label>
                             <Input
-                                id="list-name"
                                 value={listSettingsDialog.name}
                                 onChange={(e) => setListSettingsDialog({ ...listSettingsDialog, name: e.target.value })}
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="list-description">Açıklama</Label>
+                            <Label>Açıklama</Label>
                             <Textarea
-                                id="list-description"
                                 value={listSettingsDialog.description}
                                 onChange={(e) => setListSettingsDialog({ ...listSettingsDialog, description: e.target.value })}
+                                rows={3}
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="list-cover-url">Kapak URL</Label>
+                            <Label>Kapak URL</Label>
                             <Input
-                                id="list-cover-url"
                                 placeholder="https://..."
                                 value={listSettingsDialog.coverUrl}
                                 onChange={(e) => setListSettingsDialog({ ...listSettingsDialog, coverUrl: e.target.value })}
@@ -1134,13 +1034,112 @@ export default function ReadingListClient({ list: initialList }: ReadingListClie
                         <Button variant="outline" onClick={() => setListSettingsDialog({ ...listSettingsDialog, open: false })}>
                             Vazgeç
                         </Button>
-                        <Button onClick={handleListSettingsSubmit} disabled={isLoading}>
+                        <Button onClick={handleListSettingsSubmit} disabled={isLoading || !listSettingsDialog.name.trim()}>
                             {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             Kaydet
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+        </div>
+    )
+}
+
+// Book Row Component
+function BookRow({
+    book,
+    levelId,
+    onEdit,
+    onDelete,
+}: {
+    book: ReadingListBook
+    levelId: string
+    onEdit: () => void
+    onDelete: () => void
+}) {
+    const isCompleted = book.book.status === "COMPLETED"
+    const isReading = book.book.status === "READING"
+
+    return (
+        <div className="flex items-start gap-4 p-4 hover:bg-muted/30 transition-colors group">
+            {/* Cover */}
+            <Link
+                href={`/book/${book.book.id}`}
+                className="relative flex-shrink-0 w-12 h-[72px] rounded-md overflow-hidden bg-muted hover:ring-2 hover:ring-primary/50 transition-all"
+            >
+                {book.book.coverUrl ? (
+                    <Image
+                        src={book.book.coverUrl}
+                        alt={book.book.title}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                    />
+                ) : (
+                    <div className="flex items-center justify-center h-full">
+                        <BookOpen className="h-5 w-5 text-muted-foreground/50" />
+                    </div>
+                )}
+            </Link>
+
+            {/* Info */}
+            <Link
+                href={`/book/${book.book.id}`}
+                className="flex-1 min-w-0 hover:text-primary transition-colors"
+            >
+                <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="font-medium line-clamp-1">
+                        {book.book.title}
+                    </h3>
+                    {isCompleted && (
+                        <span className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-600 font-medium">
+                            Okundu
+                        </span>
+                    )}
+                    {isReading && (
+                        <span className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                            Okunuyor
+                        </span>
+                    )}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                    {book.book.author?.name || "Bilinmeyen Yazar"}
+                    {book.book.pageCount && ` • ${book.book.pageCount} sayfa`}
+                </p>
+                {book.neden && (
+                    <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2">
+                        {book.neden}
+                    </p>
+                )}
+            </Link>
+
+            {/* Actions */}
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreVertical className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem asChild>
+                            <Link href={`/book/${book.book.id}`}>
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                Kitap Detayı
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={onEdit}>
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Düzenle
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onClick={onDelete}>
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Listeden Kaldır
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </div>
     )
 }
