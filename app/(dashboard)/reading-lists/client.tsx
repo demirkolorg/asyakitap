@@ -141,7 +141,7 @@ export function ReadingListsPageClient({ lists: initialLists }: ReadingListsPage
     }
 
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                 <div>
@@ -161,70 +161,73 @@ export function ReadingListsPageClient({ lists: initialLists }: ReadingListsPage
             </div>
 
             {/* Search */}
-            <div className="relative mb-8">
+            <div className="relative mb-8 max-w-md">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                     type="text"
                     placeholder="Liste ara..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-11 h-12 text-base bg-muted/50 border-0 focus-visible:ring-1"
+                    className="pl-11 h-11 text-base bg-muted/50 border-0 focus-visible:ring-1"
                 />
             </div>
 
-            {/* Lists Grid */}
-            <div className="grid gap-4">
+            {/* Lists Grid - 4 Columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {filteredLists.map((list) => (
                     <Link
                         key={list.id}
                         href={`/reading-lists/${list.slug}`}
                         className="group block"
                     >
-                        <div className="flex items-stretch gap-5 p-5 rounded-xl border bg-card hover:bg-accent/50 transition-colors">
+                        <div className="flex flex-col h-full rounded-xl border bg-card hover:bg-accent/50 hover:border-primary/30 transition-all overflow-hidden">
                             {/* Cover */}
-                            <div className="relative w-20 h-28 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                            <div className="relative w-full aspect-[16/10] bg-muted">
                                 {list.coverUrl ? (
                                     <Image
                                         src={list.coverUrl}
                                         alt={list.name}
                                         fill
-                                        className="object-cover"
+                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-                                        <Layers className="h-8 w-8 text-primary/50" />
+                                        <Layers className="h-12 w-12 text-primary/40" />
                                     </div>
                                 )}
-                            </div>
-
-                            {/* Content */}
-                            <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
-                                <div>
-                                    <h2 className="text-lg font-medium group-hover:text-primary transition-colors line-clamp-1">
-                                        {list.name}
-                                    </h2>
-                                    {list.description && (
-                                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                            {list.description}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="flex items-center gap-4 text-sm text-muted-foreground mt-3">
-                                    <span className="flex items-center gap-1.5">
-                                        <Layers className="h-3.5 w-3.5" />
+                                {/* Overlay gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                {/* Stats on image */}
+                                <div className="absolute bottom-3 left-3 right-3 flex items-center gap-3 text-xs text-white/90">
+                                    <span className="flex items-center gap-1 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+                                        <Layers className="h-3 w-3" />
                                         {list.levelCount} seviye
                                     </span>
-                                    <span className="flex items-center gap-1.5">
-                                        <BookOpen className="h-3.5 w-3.5" />
+                                    <span className="flex items-center gap-1 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+                                        <BookOpen className="h-3 w-3" />
                                         {list.totalBooks} kitap
                                     </span>
                                 </div>
                             </div>
 
-                            {/* Arrow */}
-                            <div className="flex items-center">
-                                <ArrowRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                            {/* Content */}
+                            <div className="flex-1 p-4">
+                                <h2 className="font-semibold group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                                    {list.name}
+                                </h2>
+                                {list.description && (
+                                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                                        {list.description}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Footer */}
+                            <div className="px-4 pb-4">
+                                <div className="flex items-center justify-between text-sm text-primary font-medium">
+                                    <span>Listeyi Görüntüle</span>
+                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                </div>
                             </div>
                         </div>
                     </Link>
