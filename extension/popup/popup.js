@@ -20,6 +20,7 @@ const elements = {
   loginForm: document.getElementById('loginForm'),
   loginBtn: document.getElementById('loginBtn'),
   googleLoginBtn: document.getElementById('googleLoginBtn'),
+  syncSessionBtn: document.getElementById('syncSessionBtn'),
   loginError: document.getElementById('loginError'),
   email: document.getElementById('email'),
   password: document.getElementById('password'),
@@ -126,6 +127,9 @@ function setupEventListeners() {
   // Google login
   elements.googleLoginBtn.addEventListener('click', handleGoogleLogin)
 
+  // Sync session from open tab
+  elements.syncSessionBtn.addEventListener('click', handleSyncSession)
+
   // Settings
   elements.settingsBtn.addEventListener('click', showSettingsScreen)
   elements.backFromSettings.addEventListener('click', () => {
@@ -162,6 +166,64 @@ function showSettingsScreen() {
   elements.loginScreen.style.display = 'none'
   elements.mainScreen.style.display = 'none'
   elements.settingsScreen.style.display = 'block'
+}
+
+// Sync Session from open AsyaKitap tab
+async function handleSyncSession() {
+  setButtonLoading(elements.syncSessionBtn, true)
+  elements.loginError.textContent = ''
+
+  try {
+    // Find any open AsyaKitap tab
+    const tabs = await chrome.tabs.query({
+      url: [`${state.apiUrl}/*`, 'http://localhost:3000/*']
+    })
+
+    if (tabs.length === 0) {
+      elements.loginError.textContent = 'AsyaKitap sekmesi bulunamadı. Önce web sitesinde giriş yapın.'
+      setButtonLoading(elements.syncSessionBtn, false)
+      return
+    }
+
+    const tab = tabs[0]
+
+    // Execute script to get session from localStorage
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => {
+        // Get Supabase session from localStorage
+        const keys = Object.keys(localStorage)
+        const supabaseKey = keys.find(k => k.includes('supabase') && k.includes('auth'))
+        if (supabaseKey) {
+          const data = JSON.parse(localStorage.getItem(supabaseKey))
+          return data
+        }
+        return null
+      }
+    })
+
+    if (results && results[0] && results[0].result) {
+      const session = results[0].result
+      if (session.access_token) {
+        state.token = session.access_token
+        state.user = session.user
+
+        await saveToStorage('token', state.token)
+        await saveToStorage('user', state.user)
+
+        showMainScreen()
+        loadData()
+        return
+      }
+    }
+
+    elements.loginError.textContent = 'Oturum bulunamadı. Web sitesinde giriş yapın.'
+  } catch (error) {
+    console.error('Sync session error:', error)
+    elements.loginError.textContent = 'Oturum alınamadı. Web sitesine erişim izni gerekebilir.'
+  } finally {
+    setButtonLoading(elements.syncSessionBtn, false)
+  }
 }
 
 // Google Login
