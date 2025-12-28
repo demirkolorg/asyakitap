@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 // Only these routes are accessible without login
-const publicRoutes = ['/', '/auth/callback', '/auth/auth-code-error', '/auth/extension-login']
+const publicRoutes = ['/', '/auth/callback', '/auth/auth-code-error', '/auth/extension-login', '/auth/extension-callback']
 
 // CORS headers for API v1 (Chrome extension)
 const corsHeaders = {

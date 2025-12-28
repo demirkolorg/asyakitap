@@ -70,7 +70,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       api(request.endpoint, request.options)
         .then(data => sendResponse({ success: true, data }))
         .catch(error => sendResponse({ success: false, error: error.message }))
-      return true // Will respond asynchronously
+      return true
 
     case 'UPDATE_BADGE':
       updateBadge()
@@ -88,17 +88,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Initialize on install
 chrome.runtime.onInstalled.addListener(() => {
   console.log('AsyaKitap extension installed')
-  // Create alarm for periodic badge update
-  chrome.alarms.create('updateBadge', { periodInMinutes: 30 })
   updateBadge()
 })
-
-// Listen for alarms
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'updateBadge') {
-    updateBadge()
-  }
-})
-
-// Initial badge update
-updateBadge()

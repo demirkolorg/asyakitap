@@ -191,12 +191,10 @@ async function handleSyncSession() {
     const results = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: () => {
-        // Get Supabase session from localStorage
-        const keys = Object.keys(localStorage)
-        const supabaseKey = keys.find(k => k.includes('supabase') && k.includes('auth'))
-        if (supabaseKey) {
-          const data = JSON.parse(localStorage.getItem(supabaseKey))
-          return data
+        // Get extension session from localStorage
+        const sessionStr = localStorage.getItem('asyakitap-extension-session')
+        if (sessionStr) {
+          return JSON.parse(sessionStr)
         }
         return null
       }
@@ -242,8 +240,8 @@ async function handleGoogleLogin() {
     const listener = async (tabId, changeInfo, tabInfo) => {
       if (tabId !== tab.id) return
 
-      // Check if redirected to dashboard (login successful)
-      if (changeInfo.url && changeInfo.url.includes('/dashboard')) {
+      // Check if redirected to extension-callback (login successful)
+      if (changeInfo.url && changeInfo.url.includes('/extension-callback')) {
         chrome.tabs.onUpdated.removeListener(listener)
 
         // Get session from the page
@@ -251,12 +249,10 @@ async function handleGoogleLogin() {
           const results = await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func: () => {
-              // Get Supabase session from localStorage
-              const keys = Object.keys(localStorage)
-              const supabaseKey = keys.find(k => k.includes('supabase') && k.includes('auth'))
-              if (supabaseKey) {
-                const data = JSON.parse(localStorage.getItem(supabaseKey))
-                return data
+              // Get extension session from localStorage
+              const sessionStr = localStorage.getItem('asyakitap-extension-session')
+              if (sessionStr) {
+                return JSON.parse(sessionStr)
               }
               return null
             }

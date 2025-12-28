@@ -12,7 +12,7 @@ export default function ExtensionLoginPage() {
         await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${location.origin}/auth/callback?next=/dashboard`,
+                redirectTo: `${location.origin}/auth/callback?next=/auth/extension-callback`,
             },
         })
     }
