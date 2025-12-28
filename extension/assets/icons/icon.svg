@@ -1,0 +1,26 @@
+<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Squircle -->
+  <rect width="512" height="512" rx="80" fill="#F94361"/>
+
+  <!-- Clip path for shadow -->
+  <defs>
+    <clipPath id="squircleClip">
+      <rect width="512" height="512" rx="80"/>
+    </clipPath>
+  </defs>
+
+  <!-- Long Shadow -->
+  <g clip-path="url(#squircleClip)">
+    <path
+      d="M 256 65 L 600 409 L 600 600 L 380 600 L 380 440 L 317 440 L 317 600 L 195 600 L 195 440 L 132 440 L 132 600 L -100 600 L -100 197 L 132 197 L 132 440 L 195 440 L 195 340 L 317 340 L 317 440 L 380 440 L 380 197 C 380 130 325 65 256 65 Z"
+      fill="rgba(0,0,0,0.18)"
+    />
+  </g>
+
+  <!-- The "A" Letter -->
+  <path
+    d="M 256 65 C 187 65 132 130 132 197 L 132 440 L 195 440 L 195 340 L 317 340 L 317 440 L 380 440 L 380 197 C 380 130 325 65 256 65 Z M 195 280 L 195 197 C 195 157 222 125 256 125 C 290 125 317 157 317 197 L 317 280 L 195 280 Z"
+    fill="white"
+    fill-rule="evenodd"
+  />
+</svg>
