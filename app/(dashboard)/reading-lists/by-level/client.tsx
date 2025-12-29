@@ -297,7 +297,7 @@ export function ByLevelClient({ lists }: ByLevelClientProps) {
                                 <div className="border-t">
                                     {level.lists.map((list, listIndex) => {
                                         const listKey = `${level.levelNumber}-${list.listId}`
-                                        const isListExpanded = expandedLists.has(listKey) || level.lists.length === 1
+                                        const isListExpanded = !expandedLists.has(listKey) || level.lists.length === 1
 
                                         return (
                                             <div key={list.listId} className={cn(listIndex > 0 && "border-t")}>
