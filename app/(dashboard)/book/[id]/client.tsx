@@ -61,6 +61,7 @@ import {
     ExternalLink,
     Move,
     Check,
+    Fullscreen,
 } from "lucide-react"
 import { addQuote } from "@/actions/quotes"
 import { addReadingNote, deleteReadingNote } from "@/actions/reading-notes"
@@ -234,6 +235,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const [dragStartPosition, setDragStartPosition] = useState(50)
     const [isEditingBriefing, setIsEditingBriefing] = useState(false)
     const [isSavingBriefing, setIsSavingBriefing] = useState(false)
+    const [isBriefingFullscreen, setIsBriefingFullscreen] = useState(false)
     const [isSavingImza, setIsSavingImza] = useState(false)
     const [isSavingTortu, setIsSavingTortu] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -1899,14 +1901,24 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         Detaylı Brifing
                                     </h3>
                                     {!isEditingBriefing && briefing && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setIsEditingBriefing(true)}
-                                        >
-                                            <Pencil className="h-4 w-4 mr-2" />
-                                            Düzenle
-                                        </Button>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setIsBriefingFullscreen(true)}
+                                                title="Tam Ekran"
+                                            >
+                                                <Fullscreen className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setIsEditingBriefing(true)}
+                                            >
+                                                <Pencil className="h-4 w-4 mr-2" />
+                                                Düzenle
+                                            </Button>
+                                        </div>
                                     )}
                                 </div>
                                 <p className="text-sm text-muted-foreground mb-4">
@@ -1999,6 +2011,39 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                         </ReactMarkdown>
                                     </div>
                                 )}
+
+                                {/* Fullscreen Briefing Modal */}
+                                <Dialog open={isBriefingFullscreen} onOpenChange={setIsBriefingFullscreen}>
+                                    <DialogContent
+                                        showCloseButton={false}
+                                        className="fixed inset-0 translate-x-0 translate-y-0 top-0 left-0 p-0 rounded-none border-none gap-0 bg-background"
+                                        style={{ maxWidth: '100vw', width: '100vw', height: '100vh', maxHeight: '100vh' }}
+                                    >
+                                        <div className="absolute top-0 left-0 right-0 z-10 px-6 py-3 bg-background/80 backdrop-blur-sm border-b flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <BookMarked className="h-5 w-5 text-primary" />
+                                                <span className="text-base font-semibold">{book.title} - Detaylı Brifing</span>
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setIsBriefingFullscreen(false)}
+                                            >
+                                                <X className="h-4 w-4 mr-2" />
+                                                Kapat
+                                            </Button>
+                                        </div>
+                                        <div className="w-full h-full pt-16 pb-8 px-8 overflow-auto">
+                                            <div className="max-w-4xl mx-auto">
+                                                <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground prose-blockquote:text-muted-foreground prose-blockquote:border-primary prose-code:text-primary prose-pre:bg-muted prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-relaxed">
+                                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                        {briefing}
+                                                    </ReactMarkdown>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
                         )}
 
