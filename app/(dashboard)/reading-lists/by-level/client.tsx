@@ -307,13 +307,9 @@ export function ByLevelClient({ lists }: ByLevelClientProps) {
                                                     onClick={() => toggleList(listKey)}
                                                 >
                                                     <div className="flex items-center gap-3">
-                                                        <Link
-                                                            href={`/reading-lists/${list.listSlug}`}
-                                                            className="text-sm font-medium hover:text-primary transition-colors"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                        >
+                                                        <span className="text-sm font-medium">
                                                             {list.listName}
-                                                        </Link>
+                                                        </span>
                                                         <span className="text-xs text-muted-foreground px-2 py-0.5 bg-background rounded-full">
                                                             {list.levelName}
                                                         </span>
