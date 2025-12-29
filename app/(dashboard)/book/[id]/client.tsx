@@ -1245,28 +1245,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                 <div className="lg:col-span-2 flex flex-col gap-6">
                     {/* Navigation Tabs */}
                     <div className="flex overflow-x-auto bg-card p-1.5 rounded-2xl border border-border/50 gap-1">
-                        <button
-                            onClick={() => setActiveSection("tortu")}
-                            className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
-                                activeSection === "tortu"
-                                    ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                            )}
-                        >
-                            Tortu
-                        </button>
-                        <button
-                            onClick={() => setActiveSection("imza")}
-                            className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
-                                activeSection === "imza"
-                                    ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                            )}
-                        >
-                            İmza
-                        </button>
+                        {/* 1. Alıntılar - Okurken en sık kullanılan */}
                         <button
                             onClick={() => setActiveSection("quotes")}
                             className={cn(
@@ -1278,6 +1257,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         >
                             Alıntılar
                         </button>
+                        {/* 2. Notlar - Okurken not alma */}
                         <button
                             onClick={() => setActiveSection("notes")}
                             className={cn(
@@ -1289,6 +1269,31 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         >
                             Notlar
                         </button>
+                        {/* 3. Tortu - Okuduktan sonra özet */}
+                        <button
+                            onClick={() => setActiveSection("tortu")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
+                                activeSection === "tortu"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Tortu
+                        </button>
+                        {/* 4. İmza - Yazar üslubu */}
+                        <button
+                            onClick={() => setActiveSection("imza")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
+                                activeSection === "imza"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            İmza
+                        </button>
+                        {/* 5. Puanlama - Kitap bitince (sadece COMPLETED) */}
                         {currentStatus === "COMPLETED" && (
                             <button
                                 onClick={() => setActiveSection("rating")}
@@ -1302,28 +1307,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                 Puanlama
                             </button>
                         )}
-                        <button
-                            onClick={() => setActiveSection("discussion")}
-                            className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
-                                activeSection === "discussion"
-                                    ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                            )}
-                        >
-                            Tartış
-                        </button>
-                        <button
-                            onClick={() => setActiveSection("report")}
-                            className={cn(
-                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
-                                activeSection === "report"
-                                    ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                            )}
-                        >
-                            Rapor
-                        </button>
+                        {/* 6. Zihin Haritası - Kitabın yapısı */}
                         <button
                             onClick={() => setActiveSection("mindmap")}
                             className={cn(
@@ -1335,6 +1319,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                         >
                             Zihin Haritası
                         </button>
+                        {/* 7. Detaylı Brifing - Kapsamlı döküman */}
                         <button
                             onClick={() => setActiveSection("briefing")}
                             className={cn(
@@ -1344,8 +1329,33 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                             )}
                         >
-                            Detaylı Brifing
+                            Brifing
                         </button>
+                        {/* 8. Tartış - AI Tartışma soruları */}
+                        <button
+                            onClick={() => setActiveSection("discussion")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
+                                activeSection === "discussion"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Tartış
+                        </button>
+                        {/* 9. Rapor - AI Deneyim raporu */}
+                        <button
+                            onClick={() => setActiveSection("report")}
+                            className={cn(
+                                "flex-1 min-w-[80px] py-2.5 px-3 rounded-xl text-sm font-medium transition-all cursor-pointer",
+                                activeSection === "report"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            Rapor
+                        </button>
+                        {/* 10. İnfografik - Görsel içerik */}
                         <button
                             onClick={() => setActiveSection("infographic")}
                             className={cn(
