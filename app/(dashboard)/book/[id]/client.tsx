@@ -215,7 +215,7 @@ export default function BookDetailClient({ book }: BookDetailClientProps) {
     const readingListBooks = book.readingListBooks || []
     const challengeBooks = book.challengeBooks || []
 
-    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "discussion" | "report" | "mindmap" | "briefing" | "infographic">("tortu")
+    const [activeSection, setActiveSection] = useState<"tortu" | "imza" | "quotes" | "notes" | "rating" | "discussion" | "report" | "mindmap" | "briefing" | "infographic">("quotes")
     const [tortu, setTortu] = useState(book.tortu || "")
     const [imza, setImza] = useState(book.imza || "")
     const [mindmapContent, setMindmapContent] = useState(book.mindmapContent || "")
