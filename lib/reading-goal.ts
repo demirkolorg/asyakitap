@@ -72,8 +72,10 @@ export function calculateReadingGoal(book: {
     // Zaman hesaplamaları
     const now = new Date()
     const elapsedMs = now.getTime() - startDate.getTime()
+    // Bugün kaçıncı gün (1'den başlar)
     const elapsedDays = Math.max(1, Math.ceil(elapsedMs / (1000 * 60 * 60 * 24)))
-    const remainingDays = Math.max(0, goalDays - elapsedDays)
+    // Bugün dahil kalan gün sayısı
+    const remainingDays = Math.max(0, goalDays - elapsedDays + 1)
 
     // Hedef bitiş tarihi
     const goalEndDate = new Date(startDate)
@@ -85,8 +87,8 @@ export function calculateReadingGoal(book: {
         ? Math.ceil(remainingPages / remainingDays)
         : remainingPages // Süre dolduysa kalan tüm sayfalar
 
-    // İlerleme durumu
-    const expectedPagesRead = Math.floor((totalPages / goalDays) * elapsedDays)
+    // İlerleme durumu - dün sonuna kadar okunması gereken (bugün henüz bitmedi)
+    const expectedPagesRead = Math.floor((totalPages / goalDays) * (elapsedDays - 1))
     const pagesAhead = currentPage - expectedPagesRead
 
     // Durum belirleme
