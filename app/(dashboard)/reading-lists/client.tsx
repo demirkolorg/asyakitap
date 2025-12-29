@@ -151,13 +151,25 @@ export function ReadingListsPageClient({ lists: initialLists }: ReadingListsPage
                     </p>
                 </div>
 
-                <Button
-                    onClick={() => setListDialog({ open: true, data: { name: "", description: "", coverUrl: "" } })}
-                    className="w-full md:w-auto"
-                >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Yeni Liste
-                </Button>
+                <div className="flex gap-2 w-full md:w-auto">
+                    <Button
+                        variant="outline"
+                        asChild
+                        className="flex-1 md:flex-initial"
+                    >
+                        <Link href="/reading-lists/by-level">
+                            <Layers className="h-4 w-4 mr-2" />
+                            Seviye Görünümü
+                        </Link>
+                    </Button>
+                    <Button
+                        onClick={() => setListDialog({ open: true, data: { name: "", description: "", coverUrl: "" } })}
+                        className="flex-1 md:flex-initial"
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Yeni Liste
+                    </Button>
+                </div>
             </div>
 
             {/* Search */}
