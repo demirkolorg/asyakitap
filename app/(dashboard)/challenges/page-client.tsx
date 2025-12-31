@@ -53,8 +53,12 @@ interface ChallengesPageClientProps {
 export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPageClientProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
+
+    // Mevcut yılın hedefini varsayılan olarak seç
+    const currentYear = new Date().getFullYear()
+    const currentYearChallenge = allChallenges.find(c => c.year === currentYear)
     const [selectedChallengeId, setSelectedChallengeId] = useState<string | null>(
-        allChallenges.length > 0 ? allChallenges[0].id : null
+        currentYearChallenge?.id || (allChallenges.length > 0 ? allChallenges[0].id : null)
     )
     const [selectedMonthId, setSelectedMonthId] = useState<string | null>(null)
     const [createDialog, setCreateDialog] = useState<{
