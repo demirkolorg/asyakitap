@@ -17,6 +17,13 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
     Target,
     Plus,
     Loader2,
@@ -27,10 +34,12 @@ import {
     ChevronLeft,
     ChevronRight,
     Sparkles,
-    Flag
+    Flag,
+    Pencil,
+    CalendarPlus
 } from "lucide-react"
 import { toast } from "sonner"
-import { createChallenge } from "@/actions/challenge"
+import { createChallenge, updateChallenge, createChallengeMonth } from "@/actions/challenge"
 import type { ChallengeTimeline, ChallengeMonth } from "@/actions/challenge"
 import { cn } from "@/lib/utils"
 
@@ -53,6 +62,28 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
         name: string
         description: string
     }>({ open: false, year: new Date().getFullYear().toString(), name: "", description: "" })
+
+    // Edit challenge dialog state
+    const [editDialog, setEditDialog] = useState<{
+        open: boolean
+        id: string
+        name: string
+        description: string
+    }>({ open: false, id: "", name: "", description: "" })
+
+    // Create month dialog state
+    const [monthDialog, setMonthDialog] = useState<{
+        open: boolean
+        challengeId: string
+        monthNumber: string
+        theme: string
+        themeIcon: string
+    }>({ open: false, challengeId: "", monthNumber: "", theme: "", themeIcon: "" })
+
+    const monthNames = [
+        "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+    ]
 
     // Seçili challenge'ı bul
     const selectedChallenge = timeline?.challenges.find(c => c.id === selectedChallengeId) ||
@@ -88,6 +119,64 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                 router.push(`/challenges/${year}`)
             } else {
                 toast.error(result.error || "Hedef oluşturulamadı")
+            }
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    // Edit challenge handler
+    const handleEditSubmit = async () => {
+        if (!editDialog.name.trim()) {
+            toast.error("Hedef adı gerekli")
+            return
+        }
+
+        setIsLoading(true)
+        try {
+            const result = await updateChallenge(editDialog.id, {
+                name: editDialog.name,
+                description: editDialog.description || undefined
+            })
+            if (result.success) {
+                toast.success("Hedef güncellendi")
+                setEditDialog({ open: false, id: "", name: "", description: "" })
+                router.refresh()
+            } else {
+                toast.error(result.error || "Hedef güncellenemedi")
+            }
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    // Create month handler
+    const handleMonthSubmit = async () => {
+        const monthNum = parseInt(monthDialog.monthNumber)
+        if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+            toast.error("Geçerli bir ay seçin")
+            return
+        }
+        if (!monthDialog.theme.trim()) {
+            toast.error("Tema gerekli")
+            return
+        }
+
+        setIsLoading(true)
+        try {
+            const result = await createChallengeMonth({
+                challengeId: monthDialog.challengeId,
+                monthNumber: monthNum,
+                monthName: monthNames[monthNum - 1],
+                theme: monthDialog.theme,
+                themeIcon: monthDialog.themeIcon || undefined
+            })
+            if (result.success) {
+                toast.success("Ay hedefi eklendi")
+                setMonthDialog({ open: false, challengeId: "", monthNumber: "", theme: "", themeIcon: "" })
+                router.refresh()
+            } else {
+                toast.error(result.error || "Ay eklenemedi")
             }
         } finally {
             setIsLoading(false)
@@ -197,11 +286,29 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                                         : "bg-card border border-border hover:border-primary/50"
                                 )}
                             >
-                                {isSelected && (
-                                    <div className="absolute top-3 right-3 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                        Seçili
-                                    </div>
-                                )}
+                                <div className="absolute top-3 right-3 flex items-center gap-2">
+                                    {isSelected && (
+                                        <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                            Seçili
+                                        </span>
+                                    )}
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-7 w-7"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            setEditDialog({
+                                                open: true,
+                                                id: challenge.id,
+                                                name: challenge.name,
+                                                description: challenge.description || ""
+                                            })
+                                        }}
+                                    >
+                                        <Pencil className="h-3.5 w-3.5" />
+                                    </Button>
+                                </div>
 
                                 <div className="flex items-center gap-3">
                                     <div className={cn(
@@ -295,6 +402,33 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-1.5"
+                                onClick={() => {
+                                    // Mevcut ayları bul
+                                    const existingMonths = selectedChallenge.months.map(m => m.monthNumber)
+                                    // İlk boş ayı bul
+                                    let nextMonth = ""
+                                    for (let i = 1; i <= 12; i++) {
+                                        if (!existingMonths.includes(i)) {
+                                            nextMonth = i.toString()
+                                            break
+                                        }
+                                    }
+                                    setMonthDialog({
+                                        open: true,
+                                        challengeId: selectedChallenge.id,
+                                        monthNumber: nextMonth,
+                                        theme: "",
+                                        themeIcon: ""
+                                    })
+                                }}
+                            >
+                                <CalendarPlus className="h-4 w-4" />
+                                Ay Ekle
+                            </Button>
                         </div>
                     </div>
 
@@ -382,6 +516,23 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                 setCreateDialog={setCreateDialog}
                 handleCreateSubmit={handleCreateSubmit}
                 isLoading={isLoading}
+            />
+
+            {/* Edit Dialog */}
+            <EditChallengeDialog
+                editDialog={editDialog}
+                setEditDialog={setEditDialog}
+                handleEditSubmit={handleEditSubmit}
+                isLoading={isLoading}
+            />
+
+            {/* Create Month Dialog */}
+            <CreateMonthDialog
+                monthDialog={monthDialog}
+                setMonthDialog={setMonthDialog}
+                handleMonthSubmit={handleMonthSubmit}
+                isLoading={isLoading}
+                monthNames={monthNames}
             />
         </div>
     )
@@ -609,6 +760,136 @@ function CreateChallengeDialog({
                     <Button onClick={handleCreateSubmit} disabled={isLoading}>
                         {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                         Oluştur
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+// Edit Challenge Dialog Component
+function EditChallengeDialog({
+    editDialog,
+    setEditDialog,
+    handleEditSubmit,
+    isLoading
+}: {
+    editDialog: { open: boolean; id: string; name: string; description: string }
+    setEditDialog: (dialog: { open: boolean; id: string; name: string; description: string }) => void
+    handleEditSubmit: () => void
+    isLoading: boolean
+}) {
+    return (
+        <Dialog open={editDialog.open} onOpenChange={(open) => !open && setEditDialog({ ...editDialog, open: false })}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Hedefi Düzenle</DialogTitle>
+                    <DialogDescription>
+                        Yıllık okuma hedefini düzenleyin
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="edit-name">Hedef Adı</Label>
+                        <Input
+                            id="edit-name"
+                            placeholder="Örn: 2025 Okuma Hedefi"
+                            value={editDialog.name}
+                            onChange={(e) => setEditDialog({ ...editDialog, name: e.target.value })}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="edit-description">Açıklama (Opsiyonel)</Label>
+                        <Textarea
+                            id="edit-description"
+                            placeholder="Bu hedef hakkında kısa bir açıklama..."
+                            value={editDialog.description}
+                            onChange={(e) => setEditDialog({ ...editDialog, description: e.target.value })}
+                        />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setEditDialog({ ...editDialog, open: false })}>
+                        Vazgeç
+                    </Button>
+                    <Button onClick={handleEditSubmit} disabled={isLoading}>
+                        {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        Kaydet
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+// Create Month Dialog Component
+function CreateMonthDialog({
+    monthDialog,
+    setMonthDialog,
+    handleMonthSubmit,
+    isLoading,
+    monthNames
+}: {
+    monthDialog: { open: boolean; challengeId: string; monthNumber: string; theme: string; themeIcon: string }
+    setMonthDialog: (dialog: { open: boolean; challengeId: string; monthNumber: string; theme: string; themeIcon: string }) => void
+    handleMonthSubmit: () => void
+    isLoading: boolean
+    monthNames: string[]
+}) {
+    return (
+        <Dialog open={monthDialog.open} onOpenChange={(open) => !open && setMonthDialog({ ...monthDialog, open: false })}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Ay Hedefi Ekle</DialogTitle>
+                    <DialogDescription>
+                        Bu yıla yeni bir ay hedefi ekleyin
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="month-number">Ay</Label>
+                        <Select
+                            value={monthDialog.monthNumber}
+                            onValueChange={(value) => setMonthDialog({ ...monthDialog, monthNumber: value })}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Ay seçin" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {monthNames.map((name, index) => (
+                                    <SelectItem key={index + 1} value={(index + 1).toString()}>
+                                        {name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="month-theme">Tema</Label>
+                        <Input
+                            id="month-theme"
+                            placeholder="Örn: Bilim Kurgu, Felsefe, Tarih..."
+                            value={monthDialog.theme}
+                            onChange={(e) => setMonthDialog({ ...monthDialog, theme: e.target.value })}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="month-icon">Tema İkonu (Emoji)</Label>
+                        <Input
+                            id="month-icon"
+                            placeholder="Örn: 🚀, 📚, 🌍..."
+                            value={monthDialog.themeIcon}
+                            onChange={(e) => setMonthDialog({ ...monthDialog, themeIcon: e.target.value })}
+                        />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setMonthDialog({ ...monthDialog, open: false })}>
+                        Vazgeç
+                    </Button>
+                    <Button onClick={handleMonthSubmit} disabled={isLoading}>
+                        {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        Ekle
                     </Button>
                 </DialogFooter>
             </DialogContent>
