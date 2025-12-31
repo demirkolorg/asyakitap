@@ -36,10 +36,11 @@ import {
     Sparkles,
     Flag,
     Pencil,
-    CalendarPlus
+    CalendarPlus,
+    Trash2
 } from "lucide-react"
 import { toast } from "sonner"
-import { createChallenge, updateChallenge, createChallengeMonth } from "@/actions/challenge"
+import { createChallenge, updateChallenge, createChallengeMonth, deleteChallengeMonth } from "@/actions/challenge"
 import type { ChallengeTimeline, ChallengeMonth } from "@/actions/challenge"
 import { cn } from "@/lib/utils"
 
@@ -177,6 +178,26 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                 router.refresh()
             } else {
                 toast.error(result.error || "Ay eklenemedi")
+            }
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    // Delete month handler
+    const handleDeleteMonth = async (monthId: string, monthName: string) => {
+        if (!confirm(`"${monthName}" ayını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`)) {
+            return
+        }
+
+        setIsLoading(true)
+        try {
+            const result = await deleteChallengeMonth(monthId)
+            if (result.success) {
+                toast.success("Ay silindi")
+                router.refresh()
+            } else {
+                toast.error(result.error || "Ay silinemedi")
             }
         } finally {
             setIsLoading(false)
@@ -367,41 +388,45 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
             <div className="w-full h-px bg-border" />
 
             {/* Aylık Temalar Section */}
-            {selectedChallenge && selectedChallenge.months.length > 0 && (
+            {selectedChallenge && (
                 <section className="space-y-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold">
                             {selectedChallenge.year} Detayları: Aylık Temalar
                         </h2>
                         <div className="flex gap-2">
-                            <Button
-                                size="icon"
-                                variant="outline"
-                                className="h-8 w-8 rounded-full"
-                                onClick={() => {
-                                    const currentIndex = selectedChallenge.months.findIndex(m => m.id === selectedMonth?.id)
-                                    if (currentIndex > 0) {
-                                        setSelectedMonthId(selectedChallenge.months[currentIndex - 1].id)
-                                    }
-                                }}
-                                disabled={!selectedMonth || selectedChallenge.months.findIndex(m => m.id === selectedMonth.id) === 0}
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                size="icon"
-                                variant="outline"
-                                className="h-8 w-8 rounded-full"
-                                onClick={() => {
-                                    const currentIndex = selectedChallenge.months.findIndex(m => m.id === selectedMonth?.id)
-                                    if (currentIndex < selectedChallenge.months.length - 1) {
-                                        setSelectedMonthId(selectedChallenge.months[currentIndex + 1].id)
-                                    }
-                                }}
-                                disabled={!selectedMonth || selectedChallenge.months.findIndex(m => m.id === selectedMonth.id) === selectedChallenge.months.length - 1}
-                            >
-                                <ChevronRight className="h-4 w-4" />
-                            </Button>
+                            {selectedChallenge.months.length > 0 && (
+                                <>
+                                    <Button
+                                        size="icon"
+                                        variant="outline"
+                                        className="h-8 w-8 rounded-full"
+                                        onClick={() => {
+                                            const currentIndex = selectedChallenge.months.findIndex(m => m.id === selectedMonth?.id)
+                                            if (currentIndex > 0) {
+                                                setSelectedMonthId(selectedChallenge.months[currentIndex - 1].id)
+                                            }
+                                        }}
+                                        disabled={!selectedMonth || selectedChallenge.months.findIndex(m => m.id === selectedMonth.id) === 0}
+                                    >
+                                        <ChevronLeft className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        size="icon"
+                                        variant="outline"
+                                        className="h-8 w-8 rounded-full"
+                                        onClick={() => {
+                                            const currentIndex = selectedChallenge.months.findIndex(m => m.id === selectedMonth?.id)
+                                            if (currentIndex < selectedChallenge.months.length - 1) {
+                                                setSelectedMonthId(selectedChallenge.months[currentIndex + 1].id)
+                                            }
+                                        }}
+                                        disabled={!selectedMonth || selectedChallenge.months.findIndex(m => m.id === selectedMonth.id) === selectedChallenge.months.length - 1}
+                                    >
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                </>
+                            )}
                             <Button
                                 size="sm"
                                 variant="outline"
@@ -433,6 +458,13 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                     </div>
 
                     {/* Month Cards Strip */}
+                    {selectedChallenge.months.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 border border-dashed rounded-xl bg-muted/30">
+                            <CalendarPlus className="h-10 w-10 text-muted-foreground mb-3" />
+                            <p className="text-muted-foreground mb-1">Henüz ay hedefi eklenmemiş</p>
+                            <p className="text-sm text-muted-foreground">Yukarıdaki "Ay Ekle" butonuyla başlayın</p>
+                        </div>
+                    ) : (
                     <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide snap-x">
                         {selectedChallenge.months.map((month) => {
                             const isCurrentMonth = month.monthNumber === currentMonthNumber
@@ -464,11 +496,24 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                                             )}>
                                                 {month.monthName}
                                             </h4>
-                                            <div className={cn(
-                                                "p-2 rounded-full",
-                                                isSelectedMonth ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground group-hover:text-primary"
-                                            )}>
-                                                <span className="text-lg">{month.themeIcon}</span>
+                                            <div className="flex items-center gap-1">
+                                                <div className={cn(
+                                                    "p-2 rounded-full",
+                                                    isSelectedMonth ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground group-hover:text-primary"
+                                                )}>
+                                                    <span className="text-lg">{month.themeIcon}</span>
+                                                </div>
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleDeleteMonth(month.id, month.monthName)
+                                                    }}
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </Button>
                                             </div>
                                         </div>
                                         <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Tema</p>
@@ -499,6 +544,7 @@ export function ChallengesPageClient({ timeline, allChallenges }: ChallengesPage
                             )
                         })}
                     </div>
+                    )}
                 </section>
             )}
 
