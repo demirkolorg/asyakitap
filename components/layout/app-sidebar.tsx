@@ -232,10 +232,10 @@ export function AppSidebar() {
             /> */}
             <LogoIcon className="w-9 h-9" />
             <div className="flex flex-col">
-              <span className="text-xl font-bold tracking-tight text-white">
+              <span className="text-xl font-bold tracking-tight text-foreground">
                 AsyaKitap
               </span>
-              <span className="text-[10px] text-slate-400 -mt-0.5">
+              <span className="text-[10px] text-muted-foreground -mt-0.5">
                 Kişisel Kütüphane
               </span>
             </div>

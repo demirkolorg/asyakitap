@@ -388,7 +388,7 @@ export default async function DashboardPage() {
                             {/* Bu Ay Hedefi */}
                             {challenge.currentMonth && currentMonthProgress && (
                                 <div className="bg-card rounded-2xl p-4 md:p-5 border border-border/50 flex flex-col">
-                                    <div className="flex justify-between items-center mb-4">
+                                    <div className="flex justify-between items-center mb-3">
                                         <div className="flex items-center gap-2">
                                             <span className="text-xl">{challenge.currentMonth.themeIcon}</span>
                                             <div>
@@ -401,29 +401,82 @@ export default async function DashboardPage() {
                                         </span>
                                     </div>
 
-                                    {/* Progress */}
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
-                                            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="currentColor" strokeWidth="10" className="text-muted" />
-                                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="currentColor" strokeWidth="10" strokeDasharray={251.2} strokeDashoffset={251.2 - (251.2 * currentMonthProgress.percentage) / 100} strokeLinecap="round" className="text-primary transition-all duration-500" />
-                                            </svg>
-                                            <div className="absolute inset-0 flex items-center justify-center">
-                                                <span className="text-sm md:text-lg font-bold">{currentMonthProgress.percentage}%</span>
-                                            </div>
+                                    {/* Progress Bar */}
+                                    <div className="mb-3">
+                                        <div className="flex justify-between text-xs mb-1">
+                                            <span className="text-muted-foreground">İlerleme</span>
+                                            <span className="font-bold text-primary">{currentMonthProgress.percentage}%</span>
                                         </div>
-                                        <div className="flex flex-col flex-1">
-                                            <span className="text-xl md:text-2xl font-bold">
-                                                {currentMonthProgress.mainCompleted}
-                                                <span className="text-muted-foreground text-base md:text-lg font-normal">/{currentMonthProgress.mainTotal}</span>
-                                            </span>
-                                            <span className="text-[10px] md:text-xs text-muted-foreground">Ana Kitap</span>
+                                        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-primary rounded-full transition-all"
+                                                style={{ width: `${currentMonthProgress.percentage}%` }}
+                                            />
+                                        </div>
+                                        <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+                                            <span>{currentMonthProgress.mainCompleted}/{currentMonthProgress.mainTotal} Ana Kitap</span>
                                             {currentMonthProgress.bonusTotal > 0 && (
-                                                <span className="text-[10px] md:text-xs text-yellow-500 mt-1">
-                                                    +{currentMonthProgress.bonusCompleted}/{currentMonthProgress.bonusTotal} Bonus
-                                                </span>
+                                                <span className="text-yellow-500">+{currentMonthProgress.bonusCompleted}/{currentMonthProgress.bonusTotal} Bonus</span>
                                             )}
                                         </div>
+                                    </div>
+
+                                    {/* Book List */}
+                                    <div className="flex flex-col gap-1.5 mb-3">
+                                        {challenge.currentMonth.mainBooks.slice(0, 4).map((book) => {
+                                            const isCompleted = book.bookStatus === "COMPLETED"
+                                            const isReading = book.bookStatus === "READING"
+                                            return (
+                                                <Link
+                                                    key={book.id}
+                                                    href={`/book/${book.bookId}`}
+                                                    className={cn(
+                                                        "flex items-center gap-2 p-1.5 rounded-lg transition-colors group",
+                                                        isCompleted ? "bg-green-500/10" : "hover:bg-muted/50"
+                                                    )}
+                                                >
+                                                    <div className="relative w-7 h-10 rounded overflow-hidden bg-muted shrink-0">
+                                                        {book.coverUrl ? (
+                                                            <Image
+                                                                src={book.coverUrl.replace("http:", "https:")}
+                                                                alt={book.title}
+                                                                width={28}
+                                                                height={40}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center">
+                                                                <BookOpen className="h-3 w-3 text-muted-foreground" />
+                                                            </div>
+                                                        )}
+                                                        {isCompleted && (
+                                                            <div className="absolute inset-0 bg-green-500/40 flex items-center justify-center">
+                                                                <CheckCircle2 className="h-4 w-4 text-white" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={cn(
+                                                            "text-xs font-medium truncate group-hover:text-primary transition-colors",
+                                                            isCompleted && "text-green-600 dark:text-green-400"
+                                                        )}>
+                                                            {book.title}
+                                                        </p>
+                                                        <p className="text-[10px] text-muted-foreground truncate">{book.author}</p>
+                                                    </div>
+                                                    {isReading && (
+                                                        <span className="text-[9px] bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-1.5 py-0.5 rounded font-medium">
+                                                            Okunuyor
+                                                        </span>
+                                                    )}
+                                                </Link>
+                                            )
+                                        })}
+                                        {challenge.currentMonth.mainBooks.length > 4 && (
+                                            <p className="text-[10px] text-muted-foreground text-center">
+                                                +{challenge.currentMonth.mainBooks.length - 4} kitap daha
+                                            </p>
+                                        )}
                                     </div>
 
                                     <Link
