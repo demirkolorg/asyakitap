@@ -53,26 +53,63 @@ export default async function DashboardPage() {
     }) : null
 
     // Challenge progress hesaplama - bu ay
-    const currentMonthProgress = challenge?.currentMonth ? {
-        percentage: challenge.currentMonth.mainTotalCount > 0
-            ? Math.round((challenge.currentMonth.mainCompletedCount / challenge.currentMonth.mainTotalCount) * 100)
-            : 0,
-        mainCompleted: challenge.currentMonth.mainCompletedCount,
-        mainTotal: challenge.currentMonth.mainTotalCount,
-        bonusCompleted: challenge.currentMonth.bonusBooks.filter(b => b.bookStatus === "COMPLETED").length,
-        bonusTotal: challenge.currentMonth.bonusBooks.length
-    } : null
+    const currentMonthProgress = challenge?.currentMonth ? (() => {
+        const allBooks = [...challenge.currentMonth.mainBooks, ...challenge.currentMonth.bonusBooks]
+        const totalPages = allBooks.reduce((sum, b) => sum + (b.pageCount || 0), 0)
+        const completedBooks = allBooks.filter(b => b.bookStatus === "COMPLETED")
+        const readPages = completedBooks.reduce((sum, b) => sum + (b.pageCount || 0), 0)
+        const remainingPages = totalPages - readPages
+
+        // Ayın kalan günü hesapla
+        const now = new Date()
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+        const remainingDays = Math.max(1, lastDay - now.getDate() + 1) // bugün dahil
+        const dailyTarget = remainingPages > 0 ? Math.ceil(remainingPages / remainingDays) : 0
+
+        return {
+            percentage: challenge.currentMonth.mainTotalCount > 0
+                ? Math.round((challenge.currentMonth.mainCompletedCount / challenge.currentMonth.mainTotalCount) * 100)
+                : 0,
+            mainCompleted: challenge.currentMonth.mainCompletedCount,
+            mainTotal: challenge.currentMonth.mainTotalCount,
+            bonusCompleted: challenge.currentMonth.bonusBooks.filter(b => b.bookStatus === "COMPLETED").length,
+            bonusTotal: challenge.currentMonth.bonusBooks.length,
+            // İstatistikler
+            totalBooks: allBooks.length,
+            totalPages,
+            readPages,
+            remainingPages,
+            remainingDays,
+            dailyTarget
+        }
+    })() : null
 
     // Challenge progress hesaplama - gelecek ay
-    const nextMonthProgress = challenge?.nextMonth ? {
-        percentage: challenge.nextMonth.mainTotalCount > 0
-            ? Math.round((challenge.nextMonth.mainCompletedCount / challenge.nextMonth.mainTotalCount) * 100)
-            : 0,
-        mainCompleted: challenge.nextMonth.mainCompletedCount,
-        mainTotal: challenge.nextMonth.mainTotalCount,
-        bonusCompleted: challenge.nextMonth.bonusBooks.filter(b => b.bookStatus === "COMPLETED").length,
-        bonusTotal: challenge.nextMonth.bonusBooks.length
-    } : null
+    const nextMonthProgress = challenge?.nextMonth ? (() => {
+        const allBooks = [...challenge.nextMonth.mainBooks, ...challenge.nextMonth.bonusBooks]
+        const totalPages = allBooks.reduce((sum, b) => sum + (b.pageCount || 0), 0)
+
+        // Gelecek ayın gün sayısı
+        const now = new Date()
+        const nextMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+        const daysInMonth = new Date(nextMonthDate.getFullYear(), nextMonthDate.getMonth() + 1, 0).getDate()
+        const dailyTarget = totalPages > 0 ? Math.ceil(totalPages / daysInMonth) : 0
+
+        return {
+            percentage: challenge.nextMonth.mainTotalCount > 0
+                ? Math.round((challenge.nextMonth.mainCompletedCount / challenge.nextMonth.mainTotalCount) * 100)
+                : 0,
+            mainCompleted: challenge.nextMonth.mainCompletedCount,
+            mainTotal: challenge.nextMonth.mainTotalCount,
+            bonusCompleted: challenge.nextMonth.bonusBooks.filter(b => b.bookStatus === "COMPLETED").length,
+            bonusTotal: challenge.nextMonth.bonusBooks.length,
+            // İstatistikler
+            totalBooks: allBooks.length,
+            totalPages,
+            daysInMonth,
+            dailyTarget
+        }
+    })() : null
 
     return (
         <div className="space-y-6 md:space-y-8">
@@ -401,10 +438,30 @@ export default async function DashboardPage() {
                                         </span>
                                     </div>
 
+                                    {/* Stats Grid */}
+                                    <div className="grid grid-cols-4 gap-2 mb-3 p-2 bg-muted/30 rounded-lg">
+                                        <div className="text-center">
+                                            <p className="text-lg md:text-xl font-bold text-primary">{currentMonthProgress.totalBooks}</p>
+                                            <p className="text-[9px] text-muted-foreground">Kitap</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-lg md:text-xl font-bold">{currentMonthProgress.totalPages}</p>
+                                            <p className="text-[9px] text-muted-foreground">Sayfa</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-lg md:text-xl font-bold text-orange-500">{currentMonthProgress.remainingDays}</p>
+                                            <p className="text-[9px] text-muted-foreground">Kalan Gün</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-lg md:text-xl font-bold text-blue-500">{currentMonthProgress.dailyTarget}</p>
+                                            <p className="text-[9px] text-muted-foreground">Sayfa/Gün</p>
+                                        </div>
+                                    </div>
+
                                     {/* Progress Bar */}
                                     <div className="mb-3">
                                         <div className="flex justify-between text-xs mb-1">
-                                            <span className="text-muted-foreground">İlerleme</span>
+                                            <span className="text-muted-foreground">{currentMonthProgress.readPages}/{currentMonthProgress.totalPages} sayfa</span>
                                             <span className="font-bold text-primary">{currentMonthProgress.percentage}%</span>
                                         </div>
                                         <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
@@ -492,7 +549,7 @@ export default async function DashboardPage() {
                             {/* Gelecek Ay Hedefi */}
                             {challenge.nextMonth && nextMonthProgress && (
                                 <div className="bg-card rounded-2xl p-4 md:p-5 border border-border/50 border-dashed flex flex-col">
-                                    <div className="flex justify-between items-center mb-4">
+                                    <div className="flex justify-between items-center mb-3">
                                         <div className="flex items-center gap-2">
                                             <span className="text-xl opacity-60">{challenge.nextMonth.themeIcon}</span>
                                             <div>
@@ -503,6 +560,26 @@ export default async function DashboardPage() {
                                         <span className="bg-muted text-muted-foreground text-[10px] md:text-xs font-medium px-2 py-1 rounded-full">
                                             Gelecek Ay
                                         </span>
+                                    </div>
+
+                                    {/* Stats Grid */}
+                                    <div className="grid grid-cols-4 gap-2 mb-3 p-2 bg-muted/20 rounded-lg">
+                                        <div className="text-center">
+                                            <p className="text-base md:text-lg font-bold text-muted-foreground">{nextMonthProgress.totalBooks}</p>
+                                            <p className="text-[9px] text-muted-foreground/70">Kitap</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-base md:text-lg font-bold text-muted-foreground">{nextMonthProgress.totalPages}</p>
+                                            <p className="text-[9px] text-muted-foreground/70">Sayfa</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-base md:text-lg font-bold text-muted-foreground">{nextMonthProgress.daysInMonth}</p>
+                                            <p className="text-[9px] text-muted-foreground/70">Gün</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-base md:text-lg font-bold text-muted-foreground">{nextMonthProgress.dailyTarget}</p>
+                                            <p className="text-[9px] text-muted-foreground/70">Sayfa/Gün</p>
+                                        </div>
                                     </div>
 
                                     {/* Book List Preview */}
