@@ -346,7 +346,67 @@ export async function getChallengeWithProgress(year: number): Promise<ChallengeD
     }
 }
 
-// Get active challenge for dashboard widget
+// Helper function to process month data
+function processMonthData(monthData: {
+    id: string
+    monthNumber: number
+    monthName: string
+    theme: string
+    themeIcon: string | null
+    books: Array<{
+        id: string
+        bookId: string
+        role: ChallengeBookRole
+        reason: string | null
+        book: {
+            id: string
+            title: string
+            coverUrl: string | null
+            pageCount: number | null
+            status: BookStatus
+            author: { name: string } | null
+        }
+    }>
+}) {
+    const mainBooks = monthData.books.filter(b => b.role === "MAIN")
+    const bonusBooks = monthData.books.filter(b => b.role === "BONUS")
+    const mainCompletedCount = mainBooks.filter(b => b.book.status === "COMPLETED").length
+    const isAllMainCompleted = mainBooks.length > 0 && mainCompletedCount === mainBooks.length
+
+    return {
+        id: monthData.id,
+        monthNumber: monthData.monthNumber,
+        monthName: monthData.monthName,
+        theme: monthData.theme,
+        themeIcon: monthData.themeIcon,
+        mainBooks: mainBooks.map(book => ({
+            id: book.id,
+            bookId: book.bookId,
+            title: book.book.title,
+            author: book.book.author?.name || "Bilinmeyen Yazar",
+            coverUrl: book.book.coverUrl,
+            pageCount: book.book.pageCount,
+            reason: book.reason,
+            bookStatus: book.book.status
+        })),
+        bonusBooks: bonusBooks.map(book => ({
+            id: book.id,
+            bookId: book.bookId,
+            title: book.book.title,
+            author: book.book.author?.name || "Bilinmeyen Yazar",
+            coverUrl: book.book.coverUrl,
+            pageCount: book.book.pageCount,
+            reason: book.reason,
+            bookStatus: book.book.status,
+            isLocked: !isAllMainCompleted
+        })),
+        mainCompletedCount,
+        mainTotalCount: mainBooks.length,
+        isAllMainCompleted
+    }
+}
+
+// Get active challenge for dashboard widget - returns current and next month
 export async function getActiveChallenge() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -355,93 +415,76 @@ export async function getActiveChallenge() {
 
     try {
         const now = getNowInTurkey()
-        const currentMonth = now.getMonth() + 1
+        const currentMonthNum = now.getMonth() + 1
         const currentYear = now.getFullYear()
 
-        // Find active challenge for current year
-        const challenge = await prisma.readingChallenge.findFirst({
+        // Gelecek ay hesapla (yıl geçişi dahil)
+        const nextMonthNum = currentMonthNum === 12 ? 1 : currentMonthNum + 1
+        const nextMonthYear = currentMonthNum === 12 ? currentYear + 1 : currentYear
+
+        // Bu yılın aktif challenge'ını getir (bu ay dahil)
+        const currentYearChallenge = await prisma.readingChallenge.findFirst({
             where: {
                 year: currentYear,
                 isActive: true
             },
             include: {
                 months: {
-                    where: { monthNumber: currentMonth },
+                    where: { monthNumber: { in: [currentMonthNum, ...(nextMonthYear === currentYear ? [nextMonthNum] : [])] } },
                     include: {
                         books: {
-                            orderBy: [
-                                { role: "asc" },
-                                { sortOrder: "asc" }
-                            ],
+                            orderBy: [{ role: "asc" }, { sortOrder: "asc" }],
                             include: {
                                 book: {
-                                    include: {
-                                        author: { select: { name: true } }
-                                    }
+                                    include: { author: { select: { name: true } } }
                                 }
                             }
                         }
-                    }
-                },
-                userProgress: {
-                    where: { userId: user.id },
-                    include: {
-                        books: true
                     }
                 }
             }
         })
 
-        if (!challenge || challenge.months.length === 0) return null
+        // Gelecek ay farklı yıldaysa (Aralık → Ocak), o yılın challenge'ını da getir
+        let nextYearChallenge = null
+        if (nextMonthYear !== currentYear) {
+            nextYearChallenge = await prisma.readingChallenge.findFirst({
+                where: {
+                    year: nextMonthYear,
+                    isActive: true
+                },
+                include: {
+                    months: {
+                        where: { monthNumber: nextMonthNum },
+                        include: {
+                            books: {
+                                orderBy: [{ role: "asc" }, { sortOrder: "asc" }],
+                                include: {
+                                    book: {
+                                        include: { author: { select: { name: true } } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }
 
-        const currentMonthData = challenge.months[0]
-        const userProgress = challenge.userProgress[0]
-        const userBooksMap = new Map(
-            userProgress?.books.map(b => [b.challengeBookId, b]) || []
-        )
+        // Bu ay verisini bul
+        const currentMonthData = currentYearChallenge?.months.find(m => m.monthNumber === currentMonthNum)
 
-        const mainBooks = currentMonthData.books.filter(b => b.role === "MAIN")
-        const bonusBooks = currentMonthData.books.filter(b => b.role === "BONUS")
+        // Gelecek ay verisini bul
+        const nextMonthData = nextMonthYear === currentYear
+            ? currentYearChallenge?.months.find(m => m.monthNumber === nextMonthNum)
+            : nextYearChallenge?.months[0]
 
-        // Tüm ana kitapların tamamlanıp tamamlanmadığını kontrol et
-        const mainCompletedCount = mainBooks.filter(b => b.book.status === "COMPLETED").length
-        const isAllMainCompleted = mainBooks.length > 0 && mainCompletedCount === mainBooks.length
+        // Her iki ay da yoksa null döndür
+        if (!currentMonthData && !nextMonthData) return null
 
         return {
-            challengeId: challenge.id,
-            year: challenge.year,
-            name: challenge.name,
-            hasJoined: !!userProgress,
-            currentMonth: {
-                monthNumber: currentMonthData.monthNumber,
-                monthName: currentMonthData.monthName,
-                theme: currentMonthData.theme,
-                themeIcon: currentMonthData.themeIcon,
-                mainBooks: mainBooks.map(book => ({
-                    id: book.id,
-                    title: book.book.title,
-                    author: book.book.author?.name || "Bilinmeyen Yazar",
-                    coverUrl: book.book.coverUrl,
-                    pageCount: book.book.pageCount,
-                    reason: book.reason,
-                    bookStatus: book.book.status
-                })),
-                bonusBooks: bonusBooks.map(book => {
-                    return {
-                        id: book.id,
-                        title: book.book.title,
-                        author: book.book.author?.name || "Bilinmeyen Yazar",
-                        coverUrl: book.book.coverUrl,
-                        pageCount: book.book.pageCount,
-                        reason: book.reason,
-                        bookStatus: book.book.status,
-                        isLocked: !isAllMainCompleted // Tüm ana kitaplar tamamlanmadıysa kilitli
-                    }
-                }),
-                mainCompletedCount,
-                mainTotalCount: mainBooks.length,
-                isAllMainCompleted
-            }
+            currentMonth: currentMonthData ? processMonthData(currentMonthData) : null,
+            nextMonth: nextMonthData ? processMonthData(nextMonthData) : null
         }
     } catch (error) {
         console.error("Get active challenge error:", error)

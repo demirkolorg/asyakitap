@@ -52,8 +52,8 @@ export default async function DashboardPage() {
         readingGoalDays: featuredBook.readingGoalDays,
     }) : null
 
-    // Challenge progress hesaplama
-    const challengeProgress = challenge ? {
+    // Challenge progress hesaplama - bu ay
+    const currentMonthProgress = challenge?.currentMonth ? {
         percentage: challenge.currentMonth.mainTotalCount > 0
             ? Math.round((challenge.currentMonth.mainCompletedCount / challenge.currentMonth.mainTotalCount) * 100)
             : 0,
@@ -61,6 +61,17 @@ export default async function DashboardPage() {
         mainTotal: challenge.currentMonth.mainTotalCount,
         bonusCompleted: challenge.currentMonth.bonusBooks.filter(b => b.bookStatus === "COMPLETED").length,
         bonusTotal: challenge.currentMonth.bonusBooks.length
+    } : null
+
+    // Challenge progress hesaplama - gelecek ay
+    const nextMonthProgress = challenge?.nextMonth ? {
+        percentage: challenge.nextMonth.mainTotalCount > 0
+            ? Math.round((challenge.nextMonth.mainCompletedCount / challenge.nextMonth.mainTotalCount) * 100)
+            : 0,
+        mainCompleted: challenge.nextMonth.mainCompletedCount,
+        mainTotal: challenge.nextMonth.mainTotalCount,
+        bonusCompleted: challenge.nextMonth.bonusBooks.filter(b => b.bookStatus === "COMPLETED").length,
+        bonusTotal: challenge.nextMonth.bonusBooks.length
     } : null
 
     return (
@@ -369,106 +380,122 @@ export default async function DashboardPage() {
                 <div className="xl:col-span-1 flex flex-col gap-4">
                     <h2 className="font-bold text-lg md:text-xl flex items-center gap-2">
                         <Target className="h-5 w-5 text-primary" />
-                        Okuma Hedefi
+                        Aylık Hedefler
                     </h2>
 
-                    {challenge && challengeProgress ? (
-                        <div className="bg-card rounded-2xl p-4 md:p-6 border border-border/50 h-full flex flex-col">
-                            <div className="flex justify-between items-center mb-6">
-                                <span className="font-semibold text-base md:text-lg">{challenge.year} Hedefi</span>
-                                <span className="text-muted-foreground text-xs md:text-sm">
-                                    {challenge.currentMonth.monthName}
-                                </span>
-                            </div>
-
-                            {/* Circular Progress */}
-                            <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-8">
-                                <div className="relative w-20 h-20 md:w-24 md:h-24 shrink-0">
-                                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                                        <circle
-                                            cx="50"
-                                            cy="50"
-                                            r="40"
-                                            fill="transparent"
-                                            stroke="currentColor"
-                                            strokeWidth="8"
-                                            className="text-muted"
-                                        />
-                                        <circle
-                                            cx="50"
-                                            cy="50"
-                                            r="40"
-                                            fill="transparent"
-                                            stroke="currentColor"
-                                            strokeWidth="8"
-                                            strokeDasharray={251.2}
-                                            strokeDashoffset={251.2 - (251.2 * challengeProgress.percentage) / 100}
-                                            strokeLinecap="round"
-                                            className="text-primary transition-all duration-500"
-                                        />
-                                    </svg>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="text-lg md:text-xl font-bold">{challengeProgress.percentage}%</span>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-2xl md:text-3xl font-bold">
-                                        {challengeProgress.mainCompleted}
-                                        <span className="text-muted-foreground text-lg md:text-xl font-normal">
-                                            /{challengeProgress.mainTotal}
-                                        </span>
-                                    </span>
-                                    <span className="text-xs md:text-sm text-muted-foreground">Kitap Tamamlandı</span>
-                                </div>
-                            </div>
-
-                            {/* Progress Bars */}
-                            <div className="flex flex-col gap-4 flex-1">
-                                <div className="flex flex-col gap-2">
-                                    <div className="flex justify-between text-xs md:text-sm">
-                                        <span className="font-medium">Ana Hedefler</span>
-                                        <span className="text-primary font-bold">
-                                            {challengeProgress.mainCompleted}/{challengeProgress.mainTotal}
+                    {(challenge?.currentMonth || challenge?.nextMonth) ? (
+                        <div className="flex flex-col gap-4 h-full">
+                            {/* Bu Ay Hedefi */}
+                            {challenge.currentMonth && currentMonthProgress && (
+                                <div className="bg-card rounded-2xl p-4 md:p-5 border border-border/50 flex flex-col">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl">{challenge.currentMonth.themeIcon}</span>
+                                            <div>
+                                                <span className="font-semibold text-sm md:text-base block">{challenge.currentMonth.monthName}</span>
+                                                <span className="text-[10px] md:text-xs text-muted-foreground">{challenge.currentMonth.theme}</span>
+                                            </div>
+                                        </div>
+                                        <span className="bg-primary/20 text-primary text-[10px] md:text-xs font-bold px-2 py-1 rounded-full">
+                                            Bu Ay
                                         </span>
                                     </div>
-                                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-primary rounded-full transition-all"
-                                            style={{ width: `${challengeProgress.mainTotal > 0 ? (challengeProgress.mainCompleted / challengeProgress.mainTotal) * 100 : 0}%` }}
-                                        />
-                                    </div>
-                                </div>
 
-                                {challengeProgress.bonusTotal > 0 && (
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex justify-between text-xs md:text-sm">
-                                            <span className="font-medium">Bonus Kitaplar</span>
-                                            <span className="text-yellow-500 font-bold">
-                                                {challengeProgress.bonusCompleted}/{challengeProgress.bonusTotal}
+                                    {/* Progress */}
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
+                                            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="currentColor" strokeWidth="10" className="text-muted" />
+                                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="currentColor" strokeWidth="10" strokeDasharray={251.2} strokeDashoffset={251.2 - (251.2 * currentMonthProgress.percentage) / 100} strokeLinecap="round" className="text-primary transition-all duration-500" />
+                                            </svg>
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <span className="text-sm md:text-lg font-bold">{currentMonthProgress.percentage}%</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col flex-1">
+                                            <span className="text-xl md:text-2xl font-bold">
+                                                {currentMonthProgress.mainCompleted}
+                                                <span className="text-muted-foreground text-base md:text-lg font-normal">/{currentMonthProgress.mainTotal}</span>
                                             </span>
-                                        </div>
-                                        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-yellow-500 rounded-full transition-all"
-                                                style={{ width: `${(challengeProgress.bonusCompleted / challengeProgress.bonusTotal) * 100}%` }}
-                                            />
+                                            <span className="text-[10px] md:text-xs text-muted-foreground">Ana Kitap</span>
+                                            {currentMonthProgress.bonusTotal > 0 && (
+                                                <span className="text-[10px] md:text-xs text-yellow-500 mt-1">
+                                                    +{currentMonthProgress.bonusCompleted}/{currentMonthProgress.bonusTotal} Bonus
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
-                                )}
-                            </div>
 
-                            <Link
-                                href={`/challenges/${challenge.year}`}
-                                className="mt-auto w-full py-2.5 md:py-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors text-xs md:text-sm flex items-center justify-center gap-2"
-                            >
-                                <Edit className="h-4 w-4" />
-                                Hedefi Düzenle
-                            </Link>
+                                    <Link
+                                        href="/challenges"
+                                        className="w-full py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors text-xs flex items-center justify-center gap-2"
+                                    >
+                                        <Edit className="h-3.5 w-3.5" />
+                                        Detaylar
+                                    </Link>
+                                </div>
+                            )}
+
+                            {/* Gelecek Ay Hedefi */}
+                            {challenge.nextMonth && nextMonthProgress && (
+                                <div className="bg-card rounded-2xl p-4 md:p-5 border border-border/50 border-dashed flex flex-col">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl opacity-60">{challenge.nextMonth.themeIcon}</span>
+                                            <div>
+                                                <span className="font-semibold text-sm md:text-base block text-muted-foreground">{challenge.nextMonth.monthName}</span>
+                                                <span className="text-[10px] md:text-xs text-muted-foreground/70">{challenge.nextMonth.theme}</span>
+                                            </div>
+                                        </div>
+                                        <span className="bg-muted text-muted-foreground text-[10px] md:text-xs font-medium px-2 py-1 rounded-full">
+                                            Gelecek Ay
+                                        </span>
+                                    </div>
+
+                                    {/* Book List Preview */}
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>{nextMonthProgress.mainTotal} Ana Kitap</span>
+                                            {nextMonthProgress.bonusTotal > 0 && (
+                                                <span>+{nextMonthProgress.bonusTotal} Bonus</span>
+                                            )}
+                                        </div>
+                                        <div className="flex -space-x-2">
+                                            {challenge.nextMonth.mainBooks.slice(0, 4).map((book, i) => (
+                                                <div
+                                                    key={book.id}
+                                                    className="w-8 h-12 rounded border-2 border-background bg-muted overflow-hidden"
+                                                    style={{ zIndex: 4 - i }}
+                                                >
+                                                    {book.coverUrl ? (
+                                                        <Image
+                                                            src={book.coverUrl.replace("http:", "https:")}
+                                                            alt={book.title}
+                                                            width={32}
+                                                            height={48}
+                                                            className="w-full h-full object-cover opacity-70"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center">
+                                                            <BookOpen className="h-3 w-3 text-muted-foreground" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            {challenge.nextMonth.mainBooks.length > 4 && (
+                                                <div className="w-8 h-12 rounded border-2 border-background bg-muted flex items-center justify-center text-[10px] text-muted-foreground">
+                                                    +{challenge.nextMonth.mainBooks.length - 4}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="bg-card rounded-2xl p-6 border border-border/50 h-full flex flex-col items-center justify-center text-center">
                             <Target className="h-12 w-12 text-muted-foreground mb-4" />
-                            <p className="text-muted-foreground mb-4">Henüz okuma hedefi yok</p>
+                            <p className="text-muted-foreground mb-4">Bu ay için okuma hedefi yok</p>
                             <Button asChild variant="outline">
                                 <Link href="/challenges">Hedef Oluştur</Link>
                             </Button>
