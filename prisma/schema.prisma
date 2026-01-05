@@ -90,6 +90,7 @@ model Book {
   themes               BookTheme[]           // Kitabın temaları (AI ile çıkarılan)
   discussionQuestions  DiscussionQuestion[]  // AI tartışma soruları
   experienceReport     ExperienceReport?     // AI okuma deneyimi raporu
+  timerSessions        TimerSession[]        // Timer oturumları
   startDate            DateTime?
   endDate              DateTime?
   readingGoalDays      Int?                  // Kullanıcının hedeflediği okuma gün sayısı
@@ -442,5 +443,49 @@ model ExperienceReport {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
+  @@index([bookId])
+}
+
+// ==========================================
+// Timer Oturumları (Okuma/Çalışma Süresi Takibi)
+// ==========================================
+
+enum ActivityType {
+  READING     // Kitap okuma
+  STUDYING    // Çalışma/Öğrenme
+  RESEARCH    // Araştırma
+  NOTE_TAKING // Not alma
+  LISTENING   // Sesli kitap/Podcast
+  OTHER       // Diğer
+}
+
+model TimerSession {
+  id              String       @id @default(cuid())
+  userId          String
+  bookId          String?      // Opsiyonel - kitaba bağlı olabilir
+
+  activityType    ActivityType @default(READING)
+  title           String?      // Oturum başlığı (opsiyonel)
+
+  startTime       DateTime
+  endTime         DateTime?
+  durationSeconds Int          // Toplam süre (saniye)
+
+  // Kitap okuma için ek bilgiler
+  pageStart       Int?
+  pageEnd         Int?
+  pagesRead       Int?
+
+  notes           String?      @db.Text
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  // İlişkiler
+  book            Book?        @relation(fields: [bookId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, activityType])
+  @@index([userId, startTime])
   @@index([bookId])
 }

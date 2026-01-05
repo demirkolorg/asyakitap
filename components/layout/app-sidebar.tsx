@@ -48,6 +48,7 @@ import {
 } from "lucide-react";
 import { getCurrentlyReadingBooks, updateBook } from "@/actions/library";
 import { KitapyurduModal } from "@/components/kitapyurdu-modal";
+import { SidebarTimer } from "@/components/timer";
 import { toast } from "sonner";
 import { Book, Author } from "@prisma/client";
 
@@ -307,6 +308,9 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+
+          {/* Timer */}
+          <SidebarTimer />
 
           {/* İşlemler */}
           <SidebarGroup>

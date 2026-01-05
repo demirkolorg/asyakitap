@@ -1,6 +1,7 @@
 import { getDashboardData } from "@/actions/dashboard"
 import { getActiveChallenge } from "@/actions/challenge"
 import { getReadingListsSummary } from "@/actions/reading-lists"
+import { getDashboardTimerStats } from "@/actions/timer-stats"
 import { Button } from "@/components/ui/button"
 import {
     BookOpen,
@@ -20,6 +21,8 @@ import {
     CheckCircle2,
     Clock,
     Edit,
+    Timer,
+    Flame,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -28,10 +31,11 @@ import { calculateReadingGoal, formatRemainingDays } from "@/lib/reading-goal"
 import { QuickActions } from "./quick-actions"
 
 export default async function DashboardPage() {
-    const [data, challenge, readingLists] = await Promise.all([
+    const [data, challenge, readingLists, timerStats] = await Promise.all([
         getDashboardData(),
         getActiveChallenge(),
-        getReadingListsSummary()
+        getReadingListsSummary(),
+        getDashboardTimerStats()
     ])
 
     if (!data) {
@@ -169,6 +173,57 @@ export default async function DashboardPage() {
                     <p className="text-lg md:text-3xl font-bold tracking-tight">{stats.totalImza}</p>
                 </div>
             </section>
+
+            {/* Timer Stats Mini Widget */}
+            {timerStats && (
+                <section className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                    <Link href="/timer" className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-24 hover:border-primary/30 transition-colors group">
+                        <div className="flex justify-between items-center md:items-start">
+                            <p className="text-muted-foreground text-[10px] md:text-sm font-medium">Bugün</p>
+                            <Timer className="h-3 w-3 md:h-4 md:w-4 text-primary/50 group-hover:text-primary transition-colors" />
+                        </div>
+                        <p className="text-base md:text-2xl font-bold tracking-tight">
+                            {timerStats.today.totalSeconds > 0
+                                ? `${Math.floor(timerStats.today.totalSeconds / 60)}dk`
+                                : "0dk"}
+                        </p>
+                    </Link>
+
+                    <Link href="/timer" className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-24 hover:border-primary/30 transition-colors group">
+                        <div className="flex justify-between items-center md:items-start">
+                            <p className="text-muted-foreground text-[10px] md:text-sm font-medium">Bu Hafta</p>
+                            <Clock className="h-3 w-3 md:h-4 md:w-4 text-primary/50 group-hover:text-primary transition-colors" />
+                        </div>
+                        <p className="text-base md:text-2xl font-bold tracking-tight">
+                            {timerStats.week.totalSeconds >= 3600
+                                ? `${Math.floor(timerStats.week.totalSeconds / 3600)}s ${Math.floor((timerStats.week.totalSeconds % 3600) / 60)}dk`
+                                : `${Math.floor(timerStats.week.totalSeconds / 60)}dk`}
+                        </p>
+                    </Link>
+
+                    <Link href="/timer" className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-24 hover:border-primary/30 transition-colors group">
+                        <div className="flex justify-between items-center md:items-start">
+                            <p className="text-muted-foreground text-[10px] md:text-sm font-medium">Bu Ay</p>
+                            <Clock className="h-3 w-3 md:h-4 md:w-4 text-primary/50 group-hover:text-primary transition-colors" />
+                        </div>
+                        <p className="text-base md:text-2xl font-bold tracking-tight">
+                            {timerStats.month.totalSeconds >= 3600
+                                ? `${Math.floor(timerStats.month.totalSeconds / 3600)}s ${Math.floor((timerStats.month.totalSeconds % 3600) / 60)}dk`
+                                : `${Math.floor(timerStats.month.totalSeconds / 60)}dk`}
+                        </p>
+                    </Link>
+
+                    <Link href="/timer" className="bg-card rounded-lg md:rounded-xl p-2.5 md:p-5 border border-border/50 flex flex-col justify-between h-16 md:h-24 hover:border-primary/30 transition-colors group">
+                        <div className="flex justify-between items-center md:items-start">
+                            <p className="text-muted-foreground text-[10px] md:text-sm font-medium">Seri</p>
+                            <Flame className="h-3 w-3 md:h-4 md:w-4 text-orange-500 group-hover:text-orange-400 transition-colors" />
+                        </div>
+                        <p className="text-base md:text-2xl font-bold tracking-tight">
+                            {timerStats.streak?.current || 0} gün
+                        </p>
+                    </Link>
+                </section>
+            )}
 
             {/* Main Split Section: Currently Reading + Reading Goals */}
             <section className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
