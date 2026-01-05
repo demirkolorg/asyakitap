@@ -538,3 +538,244 @@ export async function getDashboardTimerStats() {
         return null
     }
 }
+
+// ==========================================
+// Yıllık günlük veriler (Heatmap için)
+// ==========================================
+
+export async function getYearlyDailyData(year?: number) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    const targetYear = year || new Date().getFullYear()
+    const startOfYear = new Date(targetYear, 0, 1)
+    const endOfYear = new Date(targetYear, 11, 31, 23, 59, 59, 999)
+
+    try {
+        const sessions = await prisma.timerSession.findMany({
+            where: {
+                userId: user.id,
+                startTime: {
+                    gte: startOfYear,
+                    lte: endOfYear,
+                }
+            },
+            select: {
+                startTime: true,
+                durationSeconds: true,
+            },
+            orderBy: { startTime: 'asc' },
+        })
+
+        // Günlere göre grupla
+        const dailyData: { [key: string]: number } = {}
+        const activeDays: string[] = []
+
+        sessions.forEach(session => {
+            const dateKey = new Date(session.startTime).toISOString().split('T')[0]
+            if (!dailyData[dateKey]) {
+                dailyData[dateKey] = 0
+                activeDays.push(dateKey)
+            }
+            dailyData[dateKey] += session.durationSeconds
+        })
+
+        return {
+            dailyData,
+            activeDays,
+            year: targetYear,
+            totalDays: activeDays.length,
+            totalSeconds: Object.values(dailyData).reduce((sum, s) => sum + s, 0),
+        }
+    } catch (error) {
+        console.error("Yıllık günlük veriler getirilemedi:", error)
+        return null
+    }
+}
+
+// ==========================================
+// Haftalık trend verisi (son 12 hafta)
+// ==========================================
+
+export async function getWeeklyTrend() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    const today = new Date()
+    const twelveWeeksAgo = new Date(today)
+    twelveWeeksAgo.setDate(twelveWeeksAgo.getDate() - 84) // 12 hafta
+
+    try {
+        const sessions = await prisma.timerSession.findMany({
+            where: {
+                userId: user.id,
+                startTime: { gte: twelveWeeksAgo },
+            },
+            select: {
+                startTime: true,
+                durationSeconds: true,
+            },
+            orderBy: { startTime: 'asc' },
+        })
+
+        // Haftalara göre grupla
+        const weeklyData: { week: string; seconds: number; sessions: number }[] = []
+        const weekMap = new Map<string, { seconds: number; sessions: number }>()
+
+        sessions.forEach(session => {
+            const date = new Date(session.startTime)
+            const weekStart = getStartOfWeek(date)
+            const weekKey = weekStart.toISOString().split('T')[0]
+
+            if (!weekMap.has(weekKey)) {
+                weekMap.set(weekKey, { seconds: 0, sessions: 0 })
+            }
+            const data = weekMap.get(weekKey)!
+            data.seconds += session.durationSeconds
+            data.sessions += 1
+        })
+
+        // Son 12 haftayı sıralı şekilde oluştur
+        for (let i = 11; i >= 0; i--) {
+            const weekStart = new Date(today)
+            weekStart.setDate(weekStart.getDate() - (i * 7))
+            const actualWeekStart = getStartOfWeek(weekStart)
+            const weekKey = actualWeekStart.toISOString().split('T')[0]
+
+            const data = weekMap.get(weekKey) || { seconds: 0, sessions: 0 }
+            weeklyData.push({
+                week: weekKey,
+                ...data,
+            })
+        }
+
+        return weeklyData
+    } catch (error) {
+        console.error("Haftalık trend getirilemedi:", error)
+        return null
+    }
+}
+
+// ==========================================
+// Timer Hedefleri
+// ==========================================
+
+export async function getTimerGoals() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    try {
+        let goal = await prisma.timerGoal.findUnique({
+            where: { userId: user.id }
+        })
+
+        // Hedef yoksa varsayılan oluştur
+        if (!goal) {
+            goal = await prisma.timerGoal.create({
+                data: {
+                    userId: user.id,
+                    dailyGoalMinutes: 30,
+                    weeklyGoalMinutes: 300,
+                }
+            })
+        }
+
+        return goal
+    } catch (error) {
+        console.error("Timer hedefleri getirilemedi:", error)
+        return null
+    }
+}
+
+export async function updateTimerGoals(data: {
+    dailyGoalMinutes?: number
+    weeklyGoalMinutes?: number
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        return { success: false, error: "Yetkisiz erişim" }
+    }
+
+    try {
+        const goal = await prisma.timerGoal.upsert({
+            where: { userId: user.id },
+            update: data,
+            create: {
+                userId: user.id,
+                dailyGoalMinutes: data.dailyGoalMinutes || 30,
+                weeklyGoalMinutes: data.weeklyGoalMinutes || 300,
+            }
+        })
+
+        return { success: true, goal }
+    } catch (error) {
+        console.error("Timer hedefleri güncellenemedi:", error)
+        return { success: false, error: "Güncelleme başarısız" }
+    }
+}
+
+// ==========================================
+// Hedef ilerleme durumu
+// ==========================================
+
+export async function getGoalProgress() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return null
+
+    const today = new Date()
+    const startOfToday = getStartOfDay(today)
+    const startOfWeek = getStartOfWeek(today)
+
+    try {
+        const [goals, todayStats, weekStats] = await Promise.all([
+            getTimerGoals(),
+            prisma.timerSession.aggregate({
+                where: {
+                    userId: user.id,
+                    startTime: { gte: startOfToday },
+                },
+                _sum: { durationSeconds: true },
+            }),
+            prisma.timerSession.aggregate({
+                where: {
+                    userId: user.id,
+                    startTime: { gte: startOfWeek },
+                },
+                _sum: { durationSeconds: true },
+            }),
+        ])
+
+        if (!goals) return null
+
+        const todayMinutes = Math.floor((todayStats._sum.durationSeconds || 0) / 60)
+        const weekMinutes = Math.floor((weekStats._sum.durationSeconds || 0) / 60)
+
+        return {
+            daily: {
+                goal: goals.dailyGoalMinutes,
+                current: todayMinutes,
+                percentage: Math.min(100, Math.round((todayMinutes / goals.dailyGoalMinutes) * 100)),
+                remaining: Math.max(0, goals.dailyGoalMinutes - todayMinutes),
+            },
+            weekly: {
+                goal: goals.weeklyGoalMinutes,
+                current: weekMinutes,
+                percentage: Math.min(100, Math.round((weekMinutes / goals.weeklyGoalMinutes) * 100)),
+                remaining: Math.max(0, goals.weeklyGoalMinutes - weekMinutes),
+            }
+        }
+    } catch (error) {
+        console.error("Hedef ilerleme durumu getirilemedi:", error)
+        return null
+    }
+}

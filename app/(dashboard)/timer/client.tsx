@@ -5,8 +5,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { ActivityType } from "@prisma/client"
-import { ActivityBadge, ActivityIcon } from "@/components/timer"
+import { ActivityIcon, ActivityHeatmap } from "@/components/timer"
 import { useTimer } from "@/contexts/timer-context"
 import {
     Timer,
@@ -14,17 +26,33 @@ import {
     Clock,
     Calendar,
     Flame,
-    TrendingUp,
     BookOpen,
     BarChart3,
     Trash2,
+    Target,
+    Settings,
+    TrendingUp,
 } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
+import { formatDistanceToNow, format } from "date-fns"
 import { tr } from "date-fns/locale"
 import { deleteTimerSession } from "@/actions/timer"
+import { updateTimerGoals } from "@/actions/timer-stats"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    Tooltip as RechartsTooltip,
+    ResponsiveContainer,
+    AreaChart,
+    Area,
+    PieChart,
+    Pie,
+    Cell,
+} from "recharts"
 
 // ==========================================
 // Types
@@ -79,6 +107,31 @@ interface StreakData {
     activeDays: string[]
 }
 
+interface YearlyData {
+    dailyData: { [key: string]: number }
+    activeDays: string[]
+    year: number
+    totalDays: number
+    totalSeconds: number
+}
+
+interface WeeklyTrendItem {
+    week: string
+    seconds: number
+    sessions: number
+}
+
+interface GoalProgress {
+    daily: { goal: number; current: number; percentage: number; remaining: number }
+    weekly: { goal: number; current: number; percentage: number; remaining: number }
+}
+
+interface TimerGoals {
+    id: string
+    dailyGoalMinutes: number
+    weeklyGoalMinutes: number
+}
+
 interface Session {
     id: string
     activityType: ActivityType
@@ -102,6 +155,10 @@ interface TimerStatsClientProps {
     bookTimeStats: BookTimeStat[]
     streakData: StreakData | null
     recentSessions: Session[]
+    yearlyData: YearlyData | null
+    weeklyTrend: WeeklyTrendItem[] | null
+    goalProgress: GoalProgress | null
+    timerGoals: TimerGoals | null
 }
 
 // ==========================================
@@ -118,18 +175,6 @@ function formatDuration(seconds: number): string {
     return `${minutes}dk`
 }
 
-function formatDurationLong(seconds: number): string {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-
-    if (hours > 0 && minutes > 0) {
-        return `${hours} saat ${minutes} dakika`
-    } else if (hours > 0) {
-        return `${hours} saat`
-    }
-    return `${minutes} dakika`
-}
-
 const activityLabels: Record<ActivityType, string> = {
     READING: "Okuma",
     STUDYING: "Çalışma",
@@ -140,12 +185,12 @@ const activityLabels: Record<ActivityType, string> = {
 }
 
 const activityColors: Record<ActivityType, string> = {
-    READING: "bg-blue-500",
-    STUDYING: "bg-purple-500",
-    RESEARCH: "bg-green-500",
-    NOTE_TAKING: "bg-yellow-500",
-    LISTENING: "bg-pink-500",
-    OTHER: "bg-gray-500",
+    READING: "#3b82f6",
+    STUDYING: "#8b5cf6",
+    RESEARCH: "#22c55e",
+    NOTE_TAKING: "#eab308",
+    LISTENING: "#ec4899",
+    OTHER: "#6b7280",
 }
 
 // ==========================================
@@ -160,10 +205,18 @@ export function TimerStatsClient({
     bookTimeStats,
     streakData,
     recentSessions,
+    yearlyData,
+    weeklyTrend,
+    goalProgress,
+    timerGoals,
 }: TimerStatsClientProps) {
     const router = useRouter()
     const { startTimer } = useTimer()
     const [activeTab, setActiveTab] = useState("overview")
+    const [showGoalDialog, setShowGoalDialog] = useState(false)
+    const [dailyGoal, setDailyGoal] = useState(timerGoals?.dailyGoalMinutes?.toString() || "30")
+    const [weeklyGoal, setWeeklyGoal] = useState(timerGoals?.weeklyGoalMinutes?.toString() || "300")
+    const [isSavingGoals, setIsSavingGoals] = useState(false)
 
     const handleDeleteSession = async (id: string) => {
         const result = await deleteTimerSession(id)
@@ -175,6 +228,37 @@ export function TimerStatsClient({
         }
     }
 
+    const handleSaveGoals = async () => {
+        setIsSavingGoals(true)
+        const result = await updateTimerGoals({
+            dailyGoalMinutes: parseInt(dailyGoal) || 30,
+            weeklyGoalMinutes: parseInt(weeklyGoal) || 300,
+        })
+
+        if (result.success) {
+            toast.success("Hedefler güncellendi")
+            setShowGoalDialog(false)
+            router.refresh()
+        } else {
+            toast.error(result.error || "Güncelleme başarısız")
+        }
+        setIsSavingGoals(false)
+    }
+
+    // Weekly trend chart data
+    const trendChartData = weeklyTrend?.map(item => ({
+        name: format(new Date(item.week), "d MMM", { locale: tr }),
+        dakika: Math.round(item.seconds / 60),
+        oturum: item.sessions,
+    })) || []
+
+    // Activity pie chart data
+    const pieChartData = activityBreakdown?.breakdown.map(item => ({
+        name: activityLabels[item.activityType],
+        value: Math.round(item.totalSeconds / 60),
+        color: activityColors[item.activityType],
+    })) || []
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -183,11 +267,118 @@ export function TimerStatsClient({
                     <h1 className="text-2xl font-bold">Timer İstatistikleri</h1>
                     <p className="text-muted-foreground">Okuma ve çalışma sürelerinizi takip edin</p>
                 </div>
-                <Button onClick={() => startTimer()} className="gap-2">
-                    <Play className="h-4 w-4" />
-                    Timer Başlat
-                </Button>
+                <div className="flex gap-2">
+                    <Dialog open={showGoalDialog} onOpenChange={setShowGoalDialog}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className="gap-2">
+                                <Target className="h-4 w-4" />
+                                Hedef Ayarla
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle>Süre Hedefleri</DialogTitle>
+                                <DialogDescription>
+                                    Günlük ve haftalık okuma/çalışma hedeflerinizi belirleyin
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4 py-4">
+                                <div className="space-y-2">
+                                    <Label>Günlük Hedef (dakika)</Label>
+                                    <Input
+                                        type="number"
+                                        value={dailyGoal}
+                                        onChange={(e) => setDailyGoal(e.target.value)}
+                                        min={1}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Haftalık Hedef (dakika)</Label>
+                                    <Input
+                                        type="number"
+                                        value={weeklyGoal}
+                                        onChange={(e) => setWeeklyGoal(e.target.value)}
+                                        min={1}
+                                    />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setShowGoalDialog(false)}>
+                                    İptal
+                                </Button>
+                                <Button onClick={handleSaveGoals} disabled={isSavingGoals}>
+                                    {isSavingGoals ? "Kaydediliyor..." : "Kaydet"}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                    <Button onClick={() => startTimer()} className="gap-2">
+                        <Play className="h-4 w-4" />
+                        Timer Başlat
+                    </Button>
+                </div>
             </div>
+
+            {/* Goal Progress */}
+            {goalProgress && (
+                <div className="grid gap-4 md:grid-cols-2">
+                    <Card>
+                        <CardHeader className="pb-2">
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-sm font-medium">Günlük Hedef</CardTitle>
+                                <Target className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span>{goalProgress.daily.current} / {goalProgress.daily.goal} dk</span>
+                                    <span className="font-medium">{goalProgress.daily.percentage}%</span>
+                                </div>
+                                <Progress value={goalProgress.daily.percentage} className="h-2" />
+                                {goalProgress.daily.remaining > 0 && (
+                                    <p className="text-xs text-muted-foreground">
+                                        Hedefe {goalProgress.daily.remaining} dakika kaldı
+                                    </p>
+                                )}
+                                {goalProgress.daily.percentage >= 100 && (
+                                    <p className="text-xs text-green-500 font-medium">
+                                        Günlük hedef tamamlandı!
+                                    </p>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="pb-2">
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-sm font-medium">Haftalık Hedef</CardTitle>
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span>{goalProgress.weekly.current} / {goalProgress.weekly.goal} dk</span>
+                                    <span className="font-medium">{goalProgress.weekly.percentage}%</span>
+                                </div>
+                                <Progress value={goalProgress.weekly.percentage} className="h-2" />
+                                {goalProgress.weekly.remaining > 0 && (
+                                    <p className="text-xs text-muted-foreground">
+                                        Hedefe {Math.floor(goalProgress.weekly.remaining / 60)}s {goalProgress.weekly.remaining % 60}dk kaldı
+                                    </p>
+                                )}
+                                {goalProgress.weekly.percentage >= 100 && (
+                                    <p className="text-xs text-green-500 font-medium">
+                                        Haftalık hedef tamamlandı!
+                                    </p>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
 
             {/* Quick Stats */}
             <div className="grid gap-4 md:grid-cols-4">
@@ -256,84 +447,103 @@ export function TimerStatsClient({
             <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList>
                     <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
+                    <TabsTrigger value="heatmap">Aktivite Haritası</TabsTrigger>
                     <TabsTrigger value="history">Geçmiş</TabsTrigger>
                     <TabsTrigger value="books">Kitaplar</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-2">
-                        {/* Haftalık Dağılım */}
+                        {/* Weekly Trend Chart */}
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-base">Haftalık Dağılım</CardTitle>
-                                <CardDescription>Günlere göre aktivite süresi</CardDescription>
+                                <CardTitle className="text-base">Haftalık Trend</CardTitle>
+                                <CardDescription>Son 12 haftanın aktivite grafiği</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {weeklyStats && Object.keys(weeklyStats.dailyData).length > 0 ? (
-                                    <div className="space-y-2">
-                                        {['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map((day) => {
-                                            const seconds = weeklyStats.dailyData[day] || 0
-                                            const maxSeconds = Math.max(...Object.values(weeklyStats.dailyData), 1)
-                                            const percentage = (seconds / maxSeconds) * 100
-
-                                            return (
-                                                <div key={day} className="flex items-center gap-2">
-                                                    <span className="w-8 text-xs text-muted-foreground">{day}</span>
-                                                    <div className="flex-1 h-6 bg-muted rounded-sm overflow-hidden">
-                                                        <div
-                                                            className="h-full bg-primary transition-all"
-                                                            style={{ width: `${percentage}%` }}
-                                                        />
-                                                    </div>
-                                                    <span className="w-16 text-xs text-right">
-                                                        {seconds > 0 ? formatDuration(seconds) : '-'}
-                                                    </span>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
+                                {trendChartData.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={200}>
+                                        <AreaChart data={trendChartData}>
+                                            <defs>
+                                                <linearGradient id="colorDakika" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <XAxis
+                                                dataKey="name"
+                                                tick={{ fontSize: 10 }}
+                                                tickLine={false}
+                                                axisLine={false}
+                                            />
+                                            <YAxis hide />
+                                            <RechartsTooltip
+                                                contentStyle={{
+                                                    backgroundColor: "hsl(var(--card))",
+                                                    border: "1px solid hsl(var(--border))",
+                                                    borderRadius: "8px",
+                                                    fontSize: "12px"
+                                                }}
+                                                formatter={(value) => [`${value} dk`, "Süre"]}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="dakika"
+                                                stroke="hsl(var(--primary))"
+                                                fillOpacity={1}
+                                                fill="url(#colorDakika)"
+                                                strokeWidth={2}
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
                                 ) : (
                                     <p className="text-sm text-muted-foreground text-center py-8">
-                                        Bu hafta henüz aktivite yok
+                                        Henüz yeterli veri yok
                                     </p>
                                 )}
                             </CardContent>
                         </Card>
 
-                        {/* Aktivite Dağılımı */}
+                        {/* Activity Distribution Pie Chart */}
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-base">Aktivite Dağılımı</CardTitle>
                                 <CardDescription>Aktivite türlerine göre süre</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {activityBreakdown && activityBreakdown.breakdown.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {activityBreakdown.breakdown.map((item) => {
-                                            const percentage = activityBreakdown.totalSeconds > 0
-                                                ? (item.totalSeconds / activityBreakdown.totalSeconds) * 100
-                                                : 0
-
-                                            return (
-                                                <div key={item.activityType} className="space-y-1">
-                                                    <div className="flex items-center justify-between text-sm">
-                                                        <div className="flex items-center gap-2">
-                                                            <ActivityIcon type={item.activityType} className="h-4 w-4" />
-                                                            <span>{activityLabels[item.activityType]}</span>
-                                                        </div>
-                                                        <span className="text-muted-foreground">
-                                                            {formatDuration(item.totalSeconds)}
-                                                        </span>
-                                                    </div>
-                                                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                {pieChartData.length > 0 ? (
+                                    <div className="flex items-center gap-4">
+                                        <ResponsiveContainer width={120} height={120}>
+                                            <PieChart>
+                                                <Pie
+                                                    data={pieChartData}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={30}
+                                                    outerRadius={50}
+                                                    paddingAngle={2}
+                                                    dataKey="value"
+                                                >
+                                                    {pieChartData.map((entry, index) => (
+                                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                                    ))}
+                                                </Pie>
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                        <div className="flex-1 space-y-2">
+                                            {pieChartData.map((item, index) => (
+                                                <div key={index} className="flex items-center justify-between text-sm">
+                                                    <div className="flex items-center gap-2">
                                                         <div
-                                                            className={`h-full ${activityColors[item.activityType]} transition-all`}
-                                                            style={{ width: `${percentage}%` }}
+                                                            className="w-3 h-3 rounded-full"
+                                                            style={{ backgroundColor: item.color }}
                                                         />
+                                                        <span>{item.name}</span>
                                                     </div>
+                                                    <span className="text-muted-foreground">{item.value} dk</span>
                                                 </div>
-                                            )
-                                        })}
+                                            ))}
+                                        </div>
                                     </div>
                                 ) : (
                                     <p className="text-sm text-muted-foreground text-center py-8">
@@ -343,6 +553,61 @@ export function TimerStatsClient({
                             </CardContent>
                         </Card>
                     </div>
+
+                    {/* Weekly Bar Chart */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">Bu Haftanın Dağılımı</CardTitle>
+                            <CardDescription>Günlere göre aktivite süresi</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {weeklyStats && Object.keys(weeklyStats.dailyData).length > 0 ? (
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <BarChart
+                                        data={['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map(day => ({
+                                            name: day,
+                                            dakika: Math.round((weeklyStats.dailyData[day] || 0) / 60)
+                                        }))}
+                                    >
+                                        <XAxis dataKey="name" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                                        <YAxis hide />
+                                        <RechartsTooltip
+                                            contentStyle={{
+                                                backgroundColor: "hsl(var(--card))",
+                                                border: "1px solid hsl(var(--border))",
+                                                borderRadius: "8px",
+                                                fontSize: "12px"
+                                            }}
+                                            formatter={(value) => [`${value} dk`, "Süre"]}
+                                        />
+                                        <Bar dataKey="dakika" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <p className="text-sm text-muted-foreground text-center py-8">
+                                    Bu hafta henüz aktivite yok
+                                </p>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="heatmap" className="space-y-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">{yearlyData?.year || new Date().getFullYear()} Aktivite Haritası</CardTitle>
+                            <CardDescription>
+                                {yearlyData?.totalDays || 0} gün aktif • Toplam {formatDuration(yearlyData?.totalSeconds || 0)}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <ActivityHeatmap
+                                activeDays={yearlyData?.activeDays || []}
+                                dailyData={yearlyData?.dailyData || {}}
+                                year={yearlyData?.year}
+                            />
+                        </CardContent>
+                    </Card>
                 </TabsContent>
 
                 <TabsContent value="history" className="space-y-4">
