@@ -73,13 +73,15 @@ import {
     deleteChallengeMonth,
     addBookFromKitapyurduToChallenge,
     addBookManuallyToChallenge,
+    addExistingBookToChallenge,
     updateChallengeBook,
     removeBookFromChallenge,
     updateChallenge,
     deleteChallenge,
     type ChallengeOverview,
     type ChallengeBook as ChallengeBookType,
-    type ChallengeMonth as ChallengeMonthType
+    type ChallengeMonth as ChallengeMonthType,
+    searchBooks
 } from "@/actions/challenge"
 import { toast } from "sonner"
 import { ChallengeBookRole } from "@prisma/client"
@@ -113,7 +115,7 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
     // Book Dialog
     const [bookDialog, setBookDialog] = useState<{
         open: boolean
-        mode: "kitapyurdu" | "manual" | "edit"
+        mode: "kitapyurdu" | "manual" | "edit" | "library"
         monthId: string
         bookId?: string
         kitapyurduUrl: string
@@ -125,6 +127,7 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
         role: ChallengeBookRole
         reason: string
         inLibrary: boolean
+        selectedBookId: string
     }>({
         open: false,
         mode: "kitapyurdu",
@@ -135,10 +138,22 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
         pageCount: "",
         coverUrl: "",
         publisher: "",
-        role: "MAIN",  // Default to MAIN
+        role: "MAIN",
         reason: "",
-        inLibrary: false
+        inLibrary: false,
+        selectedBookId: ""
     })
+
+    // Library search state
+    const [librarySearch, setLibrarySearch] = useState("")
+    const [libraryResults, setLibraryResults] = useState<Array<{
+        id: string
+        title: string
+        author: string | null
+        coverUrl: string | null
+        pageCount: number | null
+    }>>([])
+    const [isSearching, setIsSearching] = useState(false)
 
     // Delete Dialogs
     const [deleteMonthDialog, setDeleteMonthDialog] = useState<{
@@ -276,7 +291,12 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
     // Book CRUD Handlers
     // ==========================================
 
-    const openBookDialog = (monthId: string, mode: "kitapyurdu" | "manual") => {
+    const openBookDialog = (monthId: string, mode: "kitapyurdu" | "manual" | "library") => {
+        // Library modunda arama sonuçlarını temizle
+        if (mode === "library") {
+            setLibrarySearch("")
+            setLibraryResults([])
+        }
         setBookDialog({
             open: true,
             mode,
@@ -287,9 +307,10 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
             pageCount: "",
             coverUrl: "",
             publisher: "",
-            role: "MAIN",  // Default to MAIN
+            role: "MAIN",
             reason: "",
-            inLibrary: false
+            inLibrary: false,
+            selectedBookId: ""
         })
     }
 
@@ -307,7 +328,8 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
             publisher: book.book.publisher?.name || "",
             role: book.role,
             reason: book.reason || "",
-            inLibrary: book.book.inLibrary
+            inLibrary: book.book.inLibrary,
+            selectedBookId: ""
         })
     }
 
@@ -472,10 +494,103 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                 setIsLoading(false)
                 return
             }
+        } else if (bookDialog.mode === "library") {
+            if (!bookDialog.selectedBookId) {
+                toast.error("Bir kitap seçin")
+                setIsLoading(false)
+                return
+            }
+
+            const result = await addExistingBookToChallenge({
+                monthId: bookDialog.monthId,
+                bookId: bookDialog.selectedBookId,
+                role: bookDialog.role,
+                reason: bookDialog.reason || undefined
+            })
+
+            if (result.success && result.challengeBook) {
+                toast.success("Kitap eklendi")
+                const newBook: ChallengeBookType = {
+                    id: result.challengeBook.id,
+                    bookId: result.challengeBook.bookId,
+                    role: result.challengeBook.role,
+                    reason: result.challengeBook.reason,
+                    sortOrder: result.challengeBook.sortOrder,
+                    book: {
+                        id: result.challengeBook.book.id,
+                        title: result.challengeBook.book.title,
+                        coverUrl: result.challengeBook.book.coverUrl,
+                        pageCount: result.challengeBook.book.pageCount,
+                        inLibrary: result.challengeBook.book.inLibrary,
+                        status: result.challengeBook.book.status,
+                        author: result.challengeBook.book.author ? {
+                            id: result.challengeBook.book.author.id,
+                            name: result.challengeBook.book.author.name
+                        } : null,
+                        publisher: result.challengeBook.book.publisher ? {
+                            id: result.challengeBook.book.publisher.id,
+                            name: result.challengeBook.book.publisher.name
+                        } : null
+                    }
+                }
+                setChallenge(prev => ({
+                    ...prev,
+                    months: prev.months.map(month =>
+                        month.id === bookDialog.monthId
+                            ? {
+                                ...month,
+                                books: [...month.books, newBook],
+                                progress: {
+                                    ...month.progress!,
+                                    total: (month.progress?.total || 0) + 1
+                                }
+                            }
+                            : month
+                    ),
+                    totalProgress: prev.totalProgress ? {
+                        ...prev.totalProgress,
+                        totalBooks: prev.totalProgress.totalBooks + 1
+                    } : undefined
+                }))
+                // Arama sonuçlarını temizle
+                setLibrarySearch("")
+                setLibraryResults([])
+            } else {
+                toast.error(result.error || "Kitap eklenemedi")
+                setIsLoading(false)
+                return
+            }
         }
 
         setIsLoading(false)
         setBookDialog({ ...bookDialog, open: false })
+    }
+
+    // Kütüphanede arama fonksiyonu
+    const handleLibrarySearch = async (query: string) => {
+        setLibrarySearch(query)
+        if (query.length < 2) {
+            setLibraryResults([])
+            return
+        }
+
+        setIsSearching(true)
+        try {
+            const result = await searchBooks(query)
+            if (result.success && result.books) {
+                setLibraryResults(result.books.map(b => ({
+                    id: b.id,
+                    title: b.title,
+                    author: b.author?.name || null,
+                    coverUrl: b.coverUrl,
+                    pageCount: b.pageCount
+                })))
+            }
+        } catch (error) {
+            console.error("Search error:", error)
+        } finally {
+            setIsSearching(false)
+        }
     }
 
     const handleDeleteBook = async () => {
@@ -672,6 +787,10 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => openBookDialog(month.id, "library")}>
+                                                <Library className="h-4 w-4 mr-2" />
+                                                Kütüphaneden Seç
+                                            </DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => openBookDialog(month.id, "kitapyurdu")}>
                                                 <LinkIcon className="h-4 w-4 mr-2" />
                                                 Kitapyurdu'dan Ekle
@@ -924,15 +1043,28 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                                         <div className="text-center py-8 text-muted-foreground">
                                             <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
                                             <p>Bu ayda kitap yok</p>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="mt-3"
-                                                onClick={() => openBookDialog(month.id, "kitapyurdu")}
-                                            >
-                                                <Plus className="h-4 w-4 mr-2" />
-                                                Kitap Ekle
-                                            </Button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="outline" size="sm" className="mt-3">
+                                                        <Plus className="h-4 w-4 mr-2" />
+                                                        Kitap Ekle
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent>
+                                                    <DropdownMenuItem onClick={() => openBookDialog(month.id, "library")}>
+                                                        <Library className="h-4 w-4 mr-2" />
+                                                        Kütüphaneden Seç
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => openBookDialog(month.id, "kitapyurdu")}>
+                                                        <LinkIcon className="h-4 w-4 mr-2" />
+                                                        Kitapyurdu'dan Ekle
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => openBookDialog(month.id, "manual")}>
+                                                        <Book className="h-4 w-4 mr-2" />
+                                                        Manuel Ekle
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                     )}
                                 </div>
@@ -1042,11 +1174,13 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                         <DialogTitle>
                             {bookDialog.mode === "kitapyurdu" && "Kitapyurdu'dan Ekle"}
                             {bookDialog.mode === "manual" && "Manuel Kitap Ekle"}
+                            {bookDialog.mode === "library" && "Kütüphaneden Seç"}
                             {bookDialog.mode === "edit" && "Kitabı Düzenle"}
                         </DialogTitle>
                         <DialogDescription>
                             {bookDialog.mode === "kitapyurdu" && "Kitapyurdu URL'sini yapıştırın"}
                             {bookDialog.mode === "manual" && "Kitap bilgilerini girin"}
+                            {bookDialog.mode === "library" && "Mevcut kitaplarınızdan seçin"}
                             {bookDialog.mode === "edit" && "Kitap bilgilerini güncelleyin"}
                         </DialogDescription>
                     </DialogHeader>
@@ -1110,6 +1244,80 @@ export function ChallengePageClient({ challenge: initialChallenge }: ChallengePa
                                     />
                                 </div>
                             </>
+                        )}
+
+                        {bookDialog.mode === "library" && (
+                            <div className="space-y-3">
+                                <div className="space-y-2">
+                                    <Label htmlFor="library-search">Kitap Ara</Label>
+                                    <Input
+                                        id="library-search"
+                                        placeholder="Kitap adı veya yazar..."
+                                        value={librarySearch}
+                                        onChange={(e) => handleLibrarySearch(e.target.value)}
+                                    />
+                                </div>
+
+                                {isSearching && (
+                                    <div className="flex items-center justify-center py-4">
+                                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                                    </div>
+                                )}
+
+                                {libraryResults.length > 0 && (
+                                    <div className="border rounded-lg max-h-48 overflow-y-auto">
+                                        {libraryResults.map((book) => (
+                                            <button
+                                                key={book.id}
+                                                type="button"
+                                                className={cn(
+                                                    "w-full flex items-center gap-3 p-2 hover:bg-muted/50 transition-colors text-left",
+                                                    bookDialog.selectedBookId === book.id && "bg-primary/10 border-l-2 border-primary"
+                                                )}
+                                                onClick={() => setBookDialog({ ...bookDialog, selectedBookId: book.id })}
+                                            >
+                                                <div className="w-8 h-12 rounded bg-muted shrink-0 overflow-hidden">
+                                                    {book.coverUrl ? (
+                                                        <Image
+                                                            src={book.coverUrl.replace("http:", "https:")}
+                                                            alt={book.title}
+                                                            width={32}
+                                                            height={48}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center">
+                                                            <Book className="h-4 w-4 text-muted-foreground" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-medium text-sm truncate">{book.title}</p>
+                                                    <p className="text-xs text-muted-foreground truncate">{book.author || "Bilinmeyen Yazar"}</p>
+                                                    {book.pageCount && (
+                                                        <p className="text-[10px] text-muted-foreground">{book.pageCount} sayfa</p>
+                                                    )}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {librarySearch.length >= 2 && !isSearching && libraryResults.length === 0 && (
+                                    <p className="text-sm text-muted-foreground text-center py-4">
+                                        Kitap bulunamadı
+                                    </p>
+                                )}
+
+                                {bookDialog.selectedBookId && (
+                                    <div className="p-2 bg-primary/10 rounded-lg border border-primary/20">
+                                        <p className="text-xs text-primary font-medium">Seçili kitap:</p>
+                                        <p className="text-sm font-medium">
+                                            {libraryResults.find(b => b.id === bookDialog.selectedBookId)?.title}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
                         )}
 
                         {bookDialog.mode === "edit" && (

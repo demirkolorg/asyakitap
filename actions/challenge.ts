@@ -1492,3 +1492,107 @@ export async function addBookManuallyToChallenge(data: {
         return { success: false, error: "Kitap eklenirken hata oluştu" }
     }
 }
+
+// Add existing book from library to a challenge month
+export async function addExistingBookToChallenge(data: {
+    monthId: string
+    bookId: string
+    role: ChallengeBookRole
+    reason?: string
+}) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        // Check if book exists
+        const book = await prisma.book.findUnique({
+            where: { id: data.bookId }
+        })
+        if (!book) {
+            return { success: false, error: "Kitap bulunamadı" }
+        }
+
+        // Check if book already exists in this month
+        const existing = await prisma.challengeBook.findUnique({
+            where: {
+                monthId_bookId: {
+                    monthId: data.monthId,
+                    bookId: data.bookId
+                }
+            }
+        })
+        if (existing) {
+            return { success: false, error: "Bu kitap zaten bu ayda mevcut" }
+        }
+
+        // Get max sort order
+        const maxOrder = await prisma.challengeBook.aggregate({
+            where: { monthId: data.monthId },
+            _max: { sortOrder: true }
+        })
+
+        // Add book to challenge month
+        const challengeBook = await prisma.challengeBook.create({
+            data: {
+                monthId: data.monthId,
+                bookId: data.bookId,
+                role: data.role,
+                reason: data.reason || null,
+                sortOrder: (maxOrder._max.sortOrder ?? -1) + 1
+            },
+            include: {
+                book: {
+                    include: {
+                        author: true,
+                        publisher: true
+                    }
+                }
+            }
+        })
+
+        revalidatePath("/challenges")
+        return { success: true, challengeBook }
+    } catch (error) {
+        console.error("Failed to add existing book:", error)
+        return { success: false, error: "Kitap eklenirken hata oluştu" }
+    }
+}
+
+// Search books in library
+export async function searchBooks(query: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: "Oturum açmanız gerekiyor" }
+
+    try {
+        const books = await prisma.book.findMany({
+            where: {
+                userId: user.id,
+                OR: [
+                    { title: { contains: query, mode: "insensitive" } },
+                    { author: { name: { contains: query, mode: "insensitive" } } }
+                ]
+            },
+            include: {
+                author: { select: { name: true } }
+            },
+            take: 20,
+            orderBy: { title: "asc" }
+        })
+
+        return {
+            success: true,
+            books: books.map(b => ({
+                id: b.id,
+                title: b.title,
+                coverUrl: b.coverUrl,
+                pageCount: b.pageCount,
+                author: b.author
+            }))
+        }
+    } catch (error) {
+        console.error("Search books error:", error)
+        return { success: false, error: "Arama yapılırken hata oluştu" }
+    }
+}
