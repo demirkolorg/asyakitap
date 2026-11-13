@@ -32,7 +32,13 @@ npm run dev
 
 Geliştirme sunucusu: **http://localhost:5000** (package.json içindeki `dev` komutu).
 
-The project uses database and authentication services. Configure the required environment variables for your own development environment before using data-backed screens. Never commit real credentials. A full one-command database bootstrap is not yet documented.
+The project uses database and authentication services. Create a local environment file using the repository's placeholder template:
+
+```bash
+cp .env.example .env
+```
+
+On Windows PowerShell, use `Copy-Item .env.example .env` instead. Set `DATABASE_URL` (PostgreSQL connection string), `NEXT_PUBLIC_SUPABASE_URL`, and `NEXT_PUBLIC_SUPABASE_ANON_KEY` for your own services. The Supabase anon key is designed for client-side use; never put a service-role secret in a `NEXT_PUBLIC_*` variable. Do not commit real credentials. A full one-command database bootstrap is not yet documented.
 
 ```bash
 npm run lint
