@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AsyaKitap
 
-## Getting Started
+**Kişisel kitaplık ve okuma takibi uygulaması** · Personal library & reading tracker
 
-First, run the development server:
+AsyaKitap is a Next.js web application for organizing books and reading activity. Its landing page presents personal shelves, reading lists, quotes, reading goals and statistics.
+
+> **Project status:** Active development. This README documents the repository structure and available implementation, not a production-service guarantee.
+
+## Özellikler / Features
+
+- Kişisel kütüphane ve kitap rafları / Personal library and shelves
+- Okuma listeleri, hedefler ve ilerleme görünümü / Reading lists, goals and progress views
+- Kitap, yazar ve yayınevi ekranları / Book, author and publisher pages
+- Alıntı, özet ve okuma zamanlayıcısı ekranları / Quotes, summaries and reading timer
+- Google ile giriş için Supabase Auth akışı / Supabase Auth Google sign-in flow
+- Yönetim paneli ve ek modüller / Dashboard and additional modules
+
+> Listed modules are visible in the source tree; their complete production readiness has not been independently tested.
+
+## Teknolojiler
+
+Next.js 16 · React 19 · TypeScript · Tailwind CSS · Prisma · Supabase · TipTap
+
+## Yerelde çalıştırma / Local development
 
 ```bash
+git clone https://github.com/demirkolorg/asyakitap.git
+cd asyakitap
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Geliştirme sunucusu: **http://localhost:5000** (package.json içindeki `dev` komutu).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The project uses database and authentication services. Configure the required environment variables for your own development environment before using data-backed screens. Never commit real credentials. A full one-command database bootstrap is not yet documented.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run build
+```
 
-## Learn More
+## Kod yapısı / Codebase
 
-To learn more about Next.js, take a look at the following resources:
+| Path | Responsibility |
+| --- | --- |
+| `app/` | App Router routes, dashboard and auth pages |
+| `components/` | Reusable UI components |
+| `lib/` | Shared helpers and integrations |
+| `prisma/` | Database schema and seed scripts |
+| `actions/` | Server-side actions |
+| `docs/` | Additional project documentation |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Ekran görüntüleri / Screenshots
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Screenshots will be added after real application screens are captured. No mockup is presented as a verified product screenshot.
 
-## Deploy on Vercel
+## Notlar / Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Project is under development; verify authentication, migrations and permissions before deployment.
+- This repository does not currently document a complete automated test suite.
+- See `package.json` for available commands and dependency versions.
